@@ -1,7 +1,5 @@
 package architecture.community.user;
 
-import java.util.List;
-
 public interface UserManager {
 
 	
