@@ -19,7 +19,7 @@ import architecture.community.web.util.ServletUtils;
 public class ErrorPageController {
 
 	private static final Logger log = LoggerFactory.getLogger(ErrorPageController.class);
-	
+		
 	@RequestMapping(value="/error/{error}" , method = { RequestMethod.POST, RequestMethod.GET } )
     public String displayErrorPage (@PathVariable String error, HttpServletRequest request, HttpServletResponse response, Model model) {
 		

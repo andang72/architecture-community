@@ -26,7 +26,7 @@ import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.util.StringUtils;
 
-@Repository("userDao")
+//@Repository("userDao")
 @MaxValue("USER")
 public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 
@@ -39,7 +39,6 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 	private SequencerFactory sequencerFactory;
 
 	private final RowMapper<UserTemplate> userMapper = new RowMapper<UserTemplate>() {
-
 		public UserTemplate mapRow(ResultSet rs, int rowNum) throws SQLException {
 			UserTemplate ut = new UserTemplate();
 			ut.setUserId(rs.getLong("USER_ID"));

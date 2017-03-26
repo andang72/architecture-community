@@ -23,7 +23,7 @@ import architecture.ee.jdbc.sequencer.annotation.MaxValue;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
-@Repository("roleDao")
+//@Repository("roleDao")
 @MaxValue("ROLE")
 public class JdbcRoleDao extends ExtendedJdbcDaoSupport implements RoleDao {
 
@@ -56,8 +56,7 @@ public class JdbcRoleDao extends ExtendedJdbcDaoSupport implements RoleDao {
 	}
 
 	@Override
-	public void createRole(Role role) {
-		
+	public void createRole(Role role) {		
 		DefaultRole roleToUse = (DefaultRole)role;
 		if (roleToUse.getName() == null)
 			throw new IllegalArgumentException();		

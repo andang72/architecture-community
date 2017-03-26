@@ -22,7 +22,7 @@ import architecture.community.user.UserNotFoundException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
-@ContextConfiguration(locations = { "classpath:application-user-context.xml" })
+@ContextConfiguration(locations = { "classpath:application-community-context.xml" })
 public class RoleManagerTest {
 
 	@Autowired

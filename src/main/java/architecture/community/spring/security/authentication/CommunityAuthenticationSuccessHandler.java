@@ -15,7 +15,6 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import architecture.community.web.model.json.Result;
@@ -24,11 +23,51 @@ import architecture.ee.util.StringUtils;
 
 public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-	private RequestCache requestCache = new HttpSessionRequestCache();
-
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+	private RequestCache requestCache = new HttpSessionRequestCache();
+
+	@Override
+	public void onAuthenticationSuccess(HttpServletRequest request,
+			HttpServletResponse response, Authentication authentication)
+			throws ServletException, IOException {
+		
+		SavedRequest savedRequest = requestCache.getRequest(request, response);
+
+		if (savedRequest == null) {
+			logger.debug("no savend request");			
+			if (ServletUtils.isAcceptJson(request)) {
+				logger.debug("handle json request");
+				handleJsonRequest(request, response, authentication);
+			}else{
+				logger.debug("handle normal request");
+				super.onAuthenticationSuccess(request, response, authentication);
+			}
+			return;
+			
+		}
+		
+		String targetUrlParameter = getTargetUrlParameter();		
+		logger.debug("checing parameters {0}", (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) );
+		
+		if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
+			requestCache.removeRequest(request, response);
+			super.onAuthenticationSuccess(request, response, authentication);
+
+			return;
+		}
+
+		logger.debug("clear authentication attrs");
+		clearAuthenticationAttributes(request);
+
+		// Use the DefaultSavedRequest URL
+		String targetUrl = savedRequest.getRedirectUrl();
+		logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
+		getRedirectStrategy().sendRedirect(request, response, targetUrl);
+	}
+
+	
+	public void onAuthenticationSuccess2(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
 		// Checking Cache Exist.
 		if (savedRequest == null) {		
@@ -66,29 +105,23 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 	protected void handleJsonRequest(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException{
 		Result result = Result.newResult();
 		result.getData().put("success", true);
-		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));
-		
-		String referer = request.getHeader("Referer");
-		
+		result.getData().put("returnUrl", ServletUtils.getReturnUrl(request, response));		
+		String referer = request.getHeader("Referer");		
 		if (StringUtils.isNullOrEmpty(referer))
 			result.getData().put("referer", referer);
 		
 		Map<String, Object> model = new ModelMap();
 		model.put("item", result);
-		MappingJackson2JsonView view = new MappingJackson2JsonView();
-		view.setExtractValueFromSingleKeyModel(true);
-		view.setModelKey("item");
 		try {
-			createJsonView().render(model, request, response);
-		} catch (Exception e) {}
-		return;		
+			createJsonViewAndRender(model, request, response);
+		} catch (Exception e) {}	
 	}
 	
-    protected View createJsonView(){
+    protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception{
     	MappingJackson2JsonView view = new MappingJackson2JsonView();
     	view.setExtractValueFromSingleKeyModel(true);
     	view.setModelKey("item");
-    	return view;
+    	view.render(model, request, response);
     }
 
 }

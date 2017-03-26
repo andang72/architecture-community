@@ -3,16 +3,24 @@ package architecture.community.web.model.json;
 import java.util.HashMap;
 
 public class Result implements java.io.Serializable {
-
 	
 	private Error error;
 	private boolean anonymous;
+	private boolean success;
 	private Integer count = 0;
 	private HashMap<String, Object> data;
 
 	public Result() {
 		data = new HashMap<String, Object>();
+		error = null;
 	}
+	
+	public Result(String name, Object value) {
+		data = new HashMap<String, Object>();
+		data.put(name, value);
+		error = null;
+	}
+	
 
 	public Error getError() {
 		return error;
@@ -22,21 +30,33 @@ public class Result implements java.io.Serializable {
 		this.error = error;
 	}
 
+	
+	public void setError(Throwable e) {
+		this.error = new Error(e);
+		this.success = false;
+		this.count = 0;
+	}
+
 	public HashMap<String, Object> getData() {
 		return data;
 	}
+	
+	public static Result newResult(String name, Object value) {
+		Result r = new Result(name, value);
+		//r.anonymous = SecurityHelper.getUser().isAnonymous();
+		return r;
+	}
+	
 
 	public static Result newResult() {
-
 		Result r = new Result();
 		//r.anonymous = SecurityHelper.getUser().isAnonymous();
-
 		return r;
 	}
 
 	public static Result newResult(Throwable e) {
 		Result r = new Result();
-		r.error = new Error(e);
+		r.setError(e);
 		//r.anonymous = SecurityHelper.getUser().isAnonymous();
 		return r;
 	}
@@ -55,6 +75,14 @@ public class Result implements java.io.Serializable {
 
 	public void setCount(Integer count) {
 		this.count = count;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 
 }

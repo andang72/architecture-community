@@ -3,6 +3,8 @@ package architecture.community.user;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.ee.util.StringUtils;
 
@@ -187,6 +189,7 @@ public class UserTemplate implements User, Serializable {
 		this.lastName = lastName;
 	}
 
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
@@ -195,10 +198,12 @@ public class UserTemplate implements User, Serializable {
 		this.password = password;
 	}
 
+	@JsonIgnore
 	public String getPasswordHash() {
 		return passwordHash;
 	}
 
+	@JsonIgnore
 	public void setPasswordHash(String passwordHash) {
 		this.passwordHash = passwordHash;
 	}

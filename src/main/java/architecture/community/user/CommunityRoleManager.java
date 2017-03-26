@@ -33,9 +33,8 @@ public class CommunityRoleManager implements RoleManager {
 	
 	
 	@PostConstruct
-	public void initialize(){
-		logger.debug("creating cache ...");
-		
+	public void initialize(){		
+		logger.debug("creating cache ...");		
 		roleCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(30, TimeUnit.MINUTES).build(		
 				new CacheLoader<Long, Role>(){			
 					public Role load(Long roleId) throws Exception {
@@ -51,8 +50,7 @@ public class CommunityRoleManager implements RoleManager {
 						Role role = roleDao.getRoleByName(name, caseInsensitiveRoleNameMatch);					
 						return role.getRoleId();
 				}}
-		);
-		
+		);		
 		userRoleIdsCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(30, TimeUnit.MINUTES).build(		
 				new CacheLoader<Long, List<Long>>(){			
 					public List<Long> load(Long userId) throws Exception {	
@@ -60,6 +58,7 @@ public class CommunityRoleManager implements RoleManager {
 						return roleDao.getUserRoleIds(userId);	
 				}}
 		);
+		
 	}
 	
 	@Inject
@@ -167,8 +166,7 @@ public class CommunityRoleManager implements RoleManager {
 	}
 	
 	private List<Long> getUserRoleIds(Long userId){
-		try {			
-			
+		try {					
 			return userRoleIdsCache.get(userId);			
 		} catch (ExecutionException e) {
 			logger.error("", e);

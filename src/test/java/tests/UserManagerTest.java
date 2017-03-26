@@ -16,7 +16,7 @@ import architecture.community.user.UserTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
-@ContextConfiguration(locations = { "classpath:application-user-context.xml" })
+@ContextConfiguration(locations = { "classpath:application-community-context.xml" })
 public class UserManagerTest {
 
 	@Autowired
