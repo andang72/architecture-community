@@ -42,15 +42,12 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 			board.setName(rs.getString("NAME"));
 			board.setDescription(rs.getString("DISPLAY_NAME"));
 			board.setDescription(rs.getString("DESCRIPTION"));
-			board.setCreationDate(rs.getTimestamp("CREATION_DATE"));
-			board.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));			
+			board.setCreationDate(rs.getDate("CREATION_DATE"));
+			board.setModifiedDate(rs.getDate("MODIFIED_DATE"));			
 			return board;
 		}
 		
 	};
-	
-	
-
 	
 	public void createBoard(Board board) {		
 		if( board == null)
@@ -82,9 +79,13 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		if (boardId <= 0L) {
 			return null;
 		}
+		
 		Board board = null;
 		try {
-			board = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_BY_ID").getSql(), boardMapper, new SqlParameterValue(Types.NUMERIC, boardId));
+			board = getExtendedJdbcTemplate().queryForObject(
+					getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_BY_ID").getSql(), 
+					boardMapper, 
+					new SqlParameterValue(Types.NUMERIC, boardId));
 		} catch (IncorrectResultSizeDataAccessException e) {
 			if (e.getActualSize() > 1) {
 				logger.warn(CommunityLogLocalizer.format("013002", boardId));

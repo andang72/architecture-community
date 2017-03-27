@@ -4,7 +4,7 @@ import java.util.Date;
 
 import architecture.community.user.User;
 
-public interface BoardMessage {
+public interface Post {
 
 	/**
 	 * Post 를 소유하는 객체 타입.

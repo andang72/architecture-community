@@ -2,7 +2,7 @@ package architecture.community.board;
 
 import java.util.Date;
 
-public interface BoardThread {
+public interface Topic {
 	
 	public long getThreadId();
 	

@@ -31,6 +31,10 @@ public class DefaultBoard implements Board , Serializable {
 	
 	public DefaultBoard(long boardId) {
 		this.boardId = boardId;
+		this.objectType = 0;
+		this.objectId = -1L;
+		this.creationDate = new Date();
+		this.modifiedDate = creationDate;
 	}
 
 	public long getBoardId() {
@@ -136,6 +140,13 @@ public class DefaultBoard implements Board , Serializable {
             return this.boardId == that.getBoardId();
         }
     }
+
+	@Override
+	public String toString() {
+		return "Board [boardId=" + boardId + ", objectType=" + objectType + ", objectId=" + objectId + ", name="
+				+ name + ", displayName=" + displayName + ", description=" + description + ", creationDate="
+				+ creationDate + ", modifiedDate=" + modifiedDate + "]";
+	}
 	
 	
 }

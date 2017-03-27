@@ -52,13 +52,15 @@ public class DeafultBoardService implements BoardService {
 
  
 	public Board getBoard(long boardId) throws BoardNotFoundException {				
+		
 		Board board = getBoardInCache(boardId);		
-		if( board == null && boardId > 0L )
-		try {			
-			board = boardDao.getBoardById(boardId);
-			updateCaches(board);					
-		} catch (Throwable e) {
-			throw new BoardNotFoundException(CommunityLogLocalizer.format("013003", boardId), e);
+		if( board == null && boardId > 0L ){
+			try {			
+				board = boardDao.getBoardById(boardId);
+				updateCaches(board);
+			} catch (Throwable e) {				
+				throw new BoardNotFoundException(CommunityLogLocalizer.format("013003", boardId), e);
+			}
 		}
 		return board;
 	}
@@ -71,7 +73,9 @@ public class DeafultBoardService implements BoardService {
 		{
 			try {
 				boards.add(getBoard(id));
-			} catch (BoardNotFoundException e) {}
+			} catch (BoardNotFoundException e) {
+				logger.warn(e.getMessage(), e);
+			}
 		}
 		return boards;
 	}
@@ -84,20 +88,45 @@ public class DeafultBoardService implements BoardService {
 	protected Board getBoardInCache(Long boardId) {
 		if (boardCache.get(boardId) != null)
 			return (Board)boardCache.get(boardId).getObjectValue();
-		return null;
+		else
+			return null;
 	}
 	
 	protected void updateCaches(Board board) {
 		if (board != null) {
 			if (board.getBoardId() > 0 ) {
-				boardCache.remove(board.getBoardId());
+				if (boardCache.get(board.getBoardId()) != null)
+					boardCache.remove(board.getBoardId());
 				boardCache.put(new Element(board.getBoardId(), board ));
-				
 			}
 		}
 	}
 	protected void evictCaches(Board board){		
 		boardCache.remove(Long.valueOf(board.getBoardId()));
+	}
+
+	@Override
+	public Topic getTopic(long topicId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteTopic(Topic boardThread) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Topic createTopic(Post rootMssage) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addThread() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
