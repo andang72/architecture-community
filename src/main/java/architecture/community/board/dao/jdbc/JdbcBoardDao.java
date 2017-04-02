@@ -40,13 +40,12 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		public Board mapRow(ResultSet rs, int rowNum) throws SQLException {			
 			DefaultBoard board = new DefaultBoard(rs.getLong("BOARD_ID"));			
 			board.setName(rs.getString("NAME"));
-			board.setDescription(rs.getString("DISPLAY_NAME"));
+			board.setDisplayName(rs.getString("DISPLAY_NAME"));
 			board.setDescription(rs.getString("DESCRIPTION"));
 			board.setCreationDate(rs.getDate("CREATION_DATE"));
-			board.setModifiedDate(rs.getDate("MODIFIED_DATE"));			
+			board.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
 			return board;
-		}
-		
+		}		
 	};
 	
 	public void createBoard(Board board) {		
@@ -73,8 +72,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	public long getNextBoardId(){
 		return sequencerFactory.getNextValue("BOARD");
 	}
-
-
+	
 	public Board getBoardById(long boardId) {
 		if (boardId <= 0L) {
 			return null;

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import architecture.community.board.dao.BoardDao;
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.user.User;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
@@ -101,32 +102,9 @@ public class DeafultBoardService implements BoardService {
 			}
 		}
 	}
+	
 	protected void evictCaches(Board board){		
 		boardCache.remove(Long.valueOf(board.getBoardId()));
-	}
-
-	@Override
-	public Topic getTopic(long topicId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void deleteTopic(Topic boardThread) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Topic createTopic(Post rootMssage) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addThread() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

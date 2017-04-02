@@ -18,6 +18,7 @@
 	<import resource="classpath:context/community-ehcache-context.xml"/>
 	<import resource="classpath:context/community-user-context.xml"/>
 	<import resource="classpath:context/community-board-context.xml"/>
+	<import resource="classpath:context/community-forum-context.xml"/>
 	<import resource="classpath:context/community-security-context.xml"/>
 	
 	<!-- to activate annotations in beans already registered in the application  context -->

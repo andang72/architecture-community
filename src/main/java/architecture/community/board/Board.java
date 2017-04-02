@@ -7,8 +7,6 @@ import architecture.community.model.ModelObject;
 public interface Board extends ModelObject {
 
 	public abstract long getBoardId();
-
-	public abstract long getObjectId();	
 	
 	public abstract String getName();
 	
