@@ -9,8 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import architecture.community.spring.security.userdetails.CommuintyUserDetails;
-import architecture.community.spring.security.userdetails.CommunityUserDetailsService;
+import architecture.community.security.spring.userdetails.CommuintyUserDetails;
+import architecture.community.security.spring.userdetails.CommunityUserDetailsService;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
 import architecture.ee.util.StringUtils;

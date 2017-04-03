@@ -1,4 +1,4 @@
-package architecture.community.spring.security.userdetails;
+package architecture.community.security.spring.userdetails;
 
 import java.util.ArrayList;
 import java.util.List;

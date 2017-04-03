@@ -1,4 +1,4 @@
-package architecture.community.spring.security.authentication;
+package architecture.community.security.spring.authentication;
 
 import javax.inject.Inject;
 
@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.google.common.eventbus.EventBus;
 
 import architecture.community.i18n.CommunityLogLocalizer;
-import architecture.community.spring.security.userdetails.CommuintyUserDetails;
+import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.user.UserManager;
 import architecture.community.user.event.UserActivityEvent;
 

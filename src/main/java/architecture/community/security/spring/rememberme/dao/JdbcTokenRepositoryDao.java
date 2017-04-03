@@ -1,4 +1,4 @@
-package architecture.community.spring.security.rememberme.dao;
+package architecture.community.security.spring.rememberme.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

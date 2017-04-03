@@ -1,4 +1,4 @@
-package architecture.community.spring.security.authentication;
+package architecture.community.security.spring.authentication;
 
 import java.io.IOException;
 import java.util.Map;
