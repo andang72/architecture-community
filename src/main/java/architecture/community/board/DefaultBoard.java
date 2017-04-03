@@ -146,7 +146,5 @@ public class DefaultBoard implements Board , Serializable {
 		return "Board [boardId=" + boardId + ", objectType=" + objectType + ", objectId=" + objectId + ", name="
 				+ name + ", displayName=" + displayName + ", description=" + description + ", creationDate="
 				+ creationDate + ", modifiedDate=" + modifiedDate + "]";
-	}
-	
-	
+	}	
 }
