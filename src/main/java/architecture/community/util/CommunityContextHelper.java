@@ -28,7 +28,6 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 			return false;
 		return true;
 	}
-
 	
 	public static ForumService getForumService(){
 		return getComponent(ForumService.class);
@@ -39,7 +38,6 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 	}
 	
 	public static <T> T getComponent(Class<T> requiredType) {
-
 		if (applicationContext == null) {
 			throw new IllegalStateException(CommunityLogLocalizer.getMessage("012005"));
 		}
