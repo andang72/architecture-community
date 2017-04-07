@@ -2,8 +2,6 @@ package architecture.community.forum;
 
 import java.util.List;
 
-import org.w3c.dom.traversal.TreeWalker;
-
 import architecture.community.user.User;
 
 public interface ForumService {

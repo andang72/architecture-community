@@ -13,13 +13,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
-import org.springframework.stereotype.Repository;
 
 import architecture.community.board.Board;
 import architecture.community.board.DefaultBoard;
 import architecture.community.board.dao.BoardDao;
 import architecture.community.i18n.CommunityLogLocalizer;
-import architecture.community.user.Role;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.jdbc.sequencer.annotation.MaxValue;
 import architecture.ee.service.ConfigService;

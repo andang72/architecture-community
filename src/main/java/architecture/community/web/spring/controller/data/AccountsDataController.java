@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import architecture.community.user.EmailAlreadyExistsException;
 import architecture.community.user.User;
-import architecture.community.user.UserAlreadyExistsException;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserTemplate;
 import architecture.community.web.model.json.RequestData;

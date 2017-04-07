@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import architecture.community.board.dao.BoardDao;
 import architecture.community.i18n.CommunityLogLocalizer;
-import architecture.community.user.User;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
