@@ -27,7 +27,7 @@ import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.util.StringUtils;
 
 //@Repository("userDao")
-@MaxValue("USER")
+@MaxValue( id=User.MODLE_TYPE, name="USER" )
 public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 
 	@Inject

@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
@@ -18,9 +19,11 @@ import architecture.community.forum.DefaultForumMessage;
 import architecture.community.forum.DefaultForumThread;
 import architecture.community.forum.ForumMessage;
 import architecture.community.forum.ForumThread;
+import architecture.community.forum.MessageTreeWalker;
 import architecture.community.forum.dao.ForumDao;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.user.UserTemplate;
+import architecture.community.util.LongTree;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
@@ -69,11 +72,11 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 	};
 	
 	public long getNextThreadId(){
-		return sequencerFactory.getNextValue("FORUM_THREAD");
+		return sequencerFactory.getNextValue(ForumThread.MODLE_TYPE, "FORUM_THREAD");
 	}	
 	
 	public long getNextMessageId(){
-		return sequencerFactory.getNextValue("FORUM_MESSAGE");
+		return sequencerFactory.getNextValue(ForumMessage.MODLE_TYPE, "FORUM_MESSAGE");
 	}	
 	
 	
@@ -212,7 +215,49 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 				new SqlParameterValue(Types.TIMESTAMP, date ),	
 				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
 		);
+	}
+
+	@Override
+	public int getForumThreadCount(int objectType, long objectId) {
+		return getExtendedJdbcTemplate().queryForObject(
+			getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_COUNT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+			Integer.class,
+			new SqlParameterValue(Types.NUMERIC, objectType ),
+			new SqlParameterValue(Types.NUMERIC, objectId )
+			);
+	}
+
+	@Override
+	public List<Long> getMessageIds(ForumThread thread) {
+		
+		return getExtendedJdbcTemplate().queryForList(
+				getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_MESSAGE_IDS_BY_THREAD_ID").getSql(), Long.class,
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
+				);
+	}
+
+	@Override
+	public int getMessageCount(ForumThread thread) {
+		return getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_MESSAGE_COUNT_BY_THREAD_ID").getSql(), 
+				Integer.class,
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
+				);
 	}	
 	
+	public MessageTreeWalker getTreeWalker(ForumThread thread) {	
+		
+		final LongTree tree = new LongTree(thread.getRootMessage().getMessageId(), getMessageCount(thread));
+		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_MESSAGES_BY_THREAD_ID").getSql(), 
+				new RowCallbackHandler() {
+					public void processRow(ResultSet rs) throws SQLException {
+						long messageId = rs.getLong(1);
+						long parentMessageId = rs.getLong(2);
+						tree.addChild(parentMessageId, messageId);						
+					}}, 
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() ));
+		
+		return new MessageTreeWalker( thread.getThreadId(), tree);
+	}
 
 }

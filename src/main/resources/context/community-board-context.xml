@@ -11,7 +11,23 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+	<!-- view count service  -->
+	<beans:bean id="viewCountDao" class="architecture.community.viewcount.dao.jdbc.JdbcViewCountDao"  p:dataSource-ref="dataSource" />
+    
+    <beans:bean id="viewCountCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="viewCountCache"  
+     	p:maxElementsInMemory="20000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="30"  
+     	p:timeToLive="60" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+		
+	<beans:bean id="viewCountService" class="architecture.community.viewcount.DefaultVIewCountService"  />	
 
+		
 	<!-- ================================= -->
     <!-- BOARD							   -->
     <!-- ================================= -->

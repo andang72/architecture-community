@@ -18,7 +18,7 @@ public class WalcomePageController {
 	private static final Logger log = LoggerFactory.getLogger(WalcomePageController.class);	
 
 	@RequestMapping(value={"/","/index"} , method = { RequestMethod.POST, RequestMethod.GET } )
-    public String displayMainPage (HttpServletRequest request, HttpServletResponse response, Model model) {
+    public String displayWelcomePage (HttpServletRequest request, HttpServletResponse response, Model model) {
 		ServletUtils.setContentType(null, response);	
 		return "index" ;
     }

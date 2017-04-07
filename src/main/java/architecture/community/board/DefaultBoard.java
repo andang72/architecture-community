@@ -3,6 +3,10 @@ package architecture.community.board;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import architecture.community.model.json.JsonDateSerializer;
+
 public class DefaultBoard implements Board , Serializable {
 
 	private long boardId;
@@ -23,7 +27,7 @@ public class DefaultBoard implements Board , Serializable {
 	
 	public DefaultBoard() {
 		this.boardId = -1L;
-		this.objectType = 0;
+		this.objectType = MODLE_TYPE;
 		this.objectId = -1L;
 		this.creationDate = new Date();
 		this.modifiedDate = creationDate;
@@ -31,7 +35,7 @@ public class DefaultBoard implements Board , Serializable {
 	
 	public DefaultBoard(long boardId) {
 		this.boardId = boardId;
-		this.objectType = 0;
+		this.objectType = MODLE_TYPE;
 		this.objectId = -1L;
 		this.creationDate = new Date();
 		this.modifiedDate = creationDate;
@@ -101,6 +105,7 @@ public class DefaultBoard implements Board , Serializable {
 		this.description = description;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -113,6 +118,7 @@ public class DefaultBoard implements Board , Serializable {
         	modifiedDate = this.creationDate;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getModifiedDate() {
 		return modifiedDate;
 	}

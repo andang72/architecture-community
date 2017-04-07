@@ -7,6 +7,8 @@ import architecture.community.user.User;
 
 public interface ForumMessage extends ModelObject {
 	
+	public static final int MODLE_TYPE = 7;
+	
 	public abstract User getUser();
 	
 	public abstract long getParentMessageId();

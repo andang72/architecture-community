@@ -1,7 +1,6 @@
 package architecture.community.user;
 
 public interface UserManager {
-
 	
 	public abstract User getUser(User template );
 	

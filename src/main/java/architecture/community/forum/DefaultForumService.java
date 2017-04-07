@@ -12,16 +12,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import architecture.community.board.Board;
 import architecture.community.forum.dao.ForumDao;
+import architecture.community.forum.event.ForumThreadEvent;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.util.SecurityHelper;
+import architecture.ee.spring.event.EventSupport;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
-public class DefaultForumService implements ForumService {
+public class DefaultForumService extends EventSupport implements ForumService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass().getName());
 	
@@ -41,6 +42,10 @@ public class DefaultForumService implements ForumService {
 	@Qualifier("messageCache")
 	private Cache messageCache;
 	
+	@Inject
+	@Qualifier("messageTreeWalkerCache")
+	private Cache messageTreeWalkerCache;
+	
 		
 	public ForumThread createThread(int objectType, long objectId, ForumMessage rootMessage) {		
 		DefaultForumThread newThread = new DefaultForumThread(objectType, objectId, rootMessage);
@@ -48,19 +53,18 @@ public class DefaultForumService implements ForumService {
 	}
  
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void addThread(int objectType, long objectId, ForumThread thread) {
-		
+	public void addThread(int objectType, long objectId, ForumThread thread) {		
 		DefaultForumThread threadToUse = (DefaultForumThread)thread; 
 		DefaultForumMessage rootMessage = (DefaultForumMessage)threadToUse.getRootMessage();		
 		boolean isNew = rootMessage.getThreadId() < 1L ;
 		if( !isNew ){
 			// get exist old value..			
-		}		
-		
+		}				
 		// insert thread ..
 		forumDao.createForumThread(threadToUse);
 		// insert message ..
-		forumDao.createForumMessage(threadToUse, rootMessage, -1L );		
+		forumDao.createForumMessage(threadToUse, rootMessage, -1L );				
+		fireEvent(new ForumThreadEvent(threadToUse, ForumThreadEvent.Type.CREATED));		
 	}
 
 	public ForumMessage createMessage(int objectType, long objectId) {
@@ -185,6 +189,7 @@ public class DefaultForumService implements ForumService {
 		forumDao.createForumMessage(forumthread, newMessageToUse, parentMessage.getMessageId());
 		updateThreadModifiedDate(forumthread, newMessageToUse);		
 		evictCaches(forumthread);
+		
 	}
 	
 	protected void evictCaches(ForumThread thread){				
@@ -242,6 +247,35 @@ public class DefaultForumService implements ForumService {
 			return (ForumMessage)messageCache.get(messageId).getObjectValue();
 		else
 			return null;
+	}
+
+	public int getFourmThreadCount(int objectType, long objectId) {
+		return forumDao.getForumThreadCount(objectType, objectId);
+	}
+
+	public int getMessageCount(ForumThread thread) {		
+		return forumDao.getMessageCount(thread);
+	}
+
+	public List<ForumMessage> getMessages(ForumThread thread) {		
+		List<Long> messageIds = forumDao.getMessageIds(thread);
+		List<ForumMessage> list = new ArrayList<ForumMessage>(messageIds.size());
+		for(Long messageId : messageIds){
+			try {
+				list.add(getForumMessage(messageId));
+			} catch (ForumMessageNotFoundException e) {
+			}
+		}
+		return list;
+	}
+
+	public MessageTreeWalker getTreeWalker(ForumThread thread) {
+		if( messageTreeWalkerCache != null && messageTreeWalkerCache.get(thread.getThreadId()) != null)
+			return (MessageTreeWalker)messageTreeWalkerCache.get(thread.getThreadId()).getObjectValue();
+		
+		MessageTreeWalker treeWalker = forumDao.getTreeWalker(thread);
+		messageTreeWalkerCache.put(new Element(thread.getThreadId(), treeWalker ));
+		return treeWalker;
 	}
 
 

@@ -2,7 +2,10 @@ package architecture.community.forum;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.user.User;
+import architecture.community.util.CommunityContextHelper;
 
 public class DefaultForumMessage implements ForumMessage {
 	
@@ -85,6 +88,7 @@ public class DefaultForumMessage implements ForumMessage {
 		this.body = body;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -93,6 +97,8 @@ public class DefaultForumMessage implements ForumMessage {
 		this.creationDate = creationDate;
 	}
 
+	
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getModifiedDate() {
 		return modifiedDate;
 	}
@@ -123,6 +129,17 @@ public class DefaultForumMessage implements ForumMessage {
 
 	public void setObjectId(long objectId) {
 		this.objectId = objectId;
+	}
+	
+	public int getReplyCount (){
+		if( threadId > 0 ){
+			try {
+				return CommunityContextHelper.getForumService().getTreeWalker(CommunityContextHelper.getForumService().getForumThread(threadId)).getChildCount(this);
+			} catch (ForumThreadNotFoundException e) {
+				
+			}
+		}
+		return 0;
 	}
 
 }

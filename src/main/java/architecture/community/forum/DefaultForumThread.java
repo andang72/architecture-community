@@ -3,6 +3,11 @@ package architecture.community.forum;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.util.CommunityContextHelper;
+
 public class DefaultForumThread implements ForumThread {
 
 	private long threadId;
@@ -48,6 +53,13 @@ public class DefaultForumThread implements ForumThread {
 		this.messageCount.set(messageCount);
 	}
 	
+	public int getViewCount(){
+		if( threadId < 1)
+			return -1;
+		
+		return CommunityContextHelper.getViewCountServive().getViewCount(this);		
+	}
+	
     public int getMessageCount()
     {
         int count = messageCount.get();
@@ -71,7 +83,6 @@ public class DefaultForumThread implements ForumThread {
             messageCount.decrementAndGet();
     }
     
-
 	public long getThreadId() {
 		return threadId;
 	}
@@ -96,6 +107,7 @@ public class DefaultForumThread implements ForumThread {
 		this.objectId = objectId;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -104,6 +116,7 @@ public class DefaultForumThread implements ForumThread {
 		this.creationDate = creationDate;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getModifiedDate() {
 		return modifiedDate;
 	}

@@ -101,7 +101,7 @@ public class SecurityHelper {
 		User user = getUser();
 		
 		if( !user.isAnonymous() ){
-			CommunityUserDetailsService detailsService = ApplicationHelper.getComponent(CommunityUserDetailsService.class);
+			CommunityUserDetailsService detailsService = CommunityContextHelper.getComponent(CommunityUserDetailsService.class);
 			UserDetails details = detailsService.loadUserByUsername(user.getUsername());
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken( details, null , details.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(token);

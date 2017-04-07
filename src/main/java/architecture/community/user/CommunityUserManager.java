@@ -1,7 +1,6 @@
 package architecture.community.user;
 
 import java.util.Date;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -11,7 +10,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.user.dao.UserDao;
 import architecture.community.user.event.UserRemovedEvent;

@@ -7,13 +7,15 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import architecture.community.forum.ForumService;
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.viewcount.ViewCountService;
 import architecture.ee.exception.ComponentNotFoundException;
 import architecture.ee.util.StringUtils;
 
-public final class ApplicationHelper implements ApplicationContextAware {
+public final class CommunityContextHelper implements ApplicationContextAware {
 
-	private static final Logger logger = LoggerFactory.getLogger(ApplicationHelper.class);
+	private static final Logger logger = LoggerFactory.getLogger(CommunityContextHelper.class);
 
 	private static ApplicationContext applicationContext = null;
 
@@ -21,6 +23,21 @@ public final class ApplicationHelper implements ApplicationContextAware {
 		this.applicationContext = applicationContext;
 	}
 
+	public static boolean isReady(){
+		if( applicationContext == null )
+			return false;
+		return true;
+	}
+
+	
+	public static ForumService getForumService(){
+		return getComponent(ForumService.class);
+	}
+	
+	public static ViewCountService getViewCountServive(){
+		return getComponent(ViewCountService.class);
+	}
+	
 	public static <T> T getComponent(Class<T> requiredType) {
 
 		if (applicationContext == null) {

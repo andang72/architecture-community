@@ -24,7 +24,7 @@ import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
 //@Repository("roleDao")
-@MaxValue("ROLE")
+@MaxValue(id=Role.MODLE_TYPE, name="ROLE")
 public class JdbcRoleDao extends ExtendedJdbcDaoSupport implements RoleDao {
 
 	private final RowMapper<Role> roleMapper = new RowMapper<Role>() {

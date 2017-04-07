@@ -5,12 +5,15 @@ import java.util.List;
 
 import architecture.community.forum.ForumMessage;
 import architecture.community.forum.ForumThread;
+import architecture.community.forum.MessageTreeWalker;
 
 public interface ForumDao {
 	
 	public abstract void createForumThread( ForumThread thread );
 	
 	public abstract void createForumMessage (ForumThread thread, ForumMessage message, long parentMessageId);
+	
+	public abstract int getForumThreadCount(int objectType, long objectId);
 	
 	public abstract List<Long> getForumThreadIds(int objectType, long objectId);
 	
@@ -27,5 +30,11 @@ public interface ForumDao {
 	public abstract void updateForumThread(ForumThread thread);
 	
 	public abstract void updateModifiedDate(ForumThread thread, Date date);
+	
+	public abstract List<Long> getMessageIds(ForumThread thread);
+	
+	public abstract int getMessageCount(ForumThread thread);
+	
+	public abstract MessageTreeWalker getTreeWalker(ForumThread thread) ;
 	
 }

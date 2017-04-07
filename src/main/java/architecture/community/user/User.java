@@ -3,7 +3,9 @@ package architecture.community.user;
 import java.util.Date;
 
 public interface User {
-
+	
+	public static final int MODLE_TYPE = 1;
+	
 	enum Status {
 
 		NONE(0),

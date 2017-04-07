@@ -6,6 +6,8 @@ import architecture.community.model.ModelObject;
 
 public interface Board extends ModelObject {
 
+	public static final int MODLE_TYPE = 5;
+	
 	public abstract long getBoardId();
 	
 	public abstract String getName();
