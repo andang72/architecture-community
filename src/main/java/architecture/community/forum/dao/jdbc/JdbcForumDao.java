@@ -22,6 +22,7 @@ import architecture.community.forum.ForumThread;
 import architecture.community.forum.MessageTreeWalker;
 import architecture.community.forum.dao.ForumDao;
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.model.ModelObject;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.LongTree;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
@@ -29,7 +30,6 @@ import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
 public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
-
 	
 	@Inject
 	@Qualifier("configService")
@@ -72,11 +72,11 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 	};
 	
 	public long getNextThreadId(){
-		return sequencerFactory.getNextValue(ForumThread.MODLE_TYPE, "FORUM_THREAD");
+		return sequencerFactory.getNextValue(ModelObject.FORUM_THREAD, "FORUM_THREAD");
 	}	
 	
 	public long getNextMessageId(){
-		return sequencerFactory.getNextValue(ForumMessage.MODLE_TYPE, "FORUM_MESSAGE");
+		return sequencerFactory.getNextValue(ModelObject.FORUM_MESSAGE, "FORUM_MESSAGE");
 	}	
 	
 	

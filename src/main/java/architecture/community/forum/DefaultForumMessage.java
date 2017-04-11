@@ -26,6 +26,10 @@ public class DefaultForumMessage implements ForumMessage {
 	
 	private String body;
 	
+
+	private Date creationDate;
+
+	private Date modifiedDate;
 	
 	public DefaultForumMessage(long messageId) {
 		this.messageId = messageId;
@@ -61,9 +65,6 @@ public class DefaultForumMessage implements ForumMessage {
 		this.threadId = threadId;
 	}
 
-	private Date creationDate;
-
-	private Date modifiedDate;
 
 	public long getMessageId() {
 		return messageId;

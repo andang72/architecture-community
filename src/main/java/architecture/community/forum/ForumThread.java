@@ -6,7 +6,7 @@ import architecture.community.model.ModelObject;
 
 public interface ForumThread extends ModelObject {
 	
-	public static final int MODLE_TYPE = 6;
+	//public static final int MODLE_ENTITY_TYPE = 6;
 	
 	public long getThreadId() ;
 

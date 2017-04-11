@@ -48,8 +48,7 @@ public class MessageTreeWalker {
 	public int getMessageDepth(ForumMessage message) {
 		int depth = tree.getDepth(message.getMessageId());
 		if (depth == -1)
-			throw new IllegalArgumentException((new StringBuilder()).append("Message ").append(message.getMessageId())
-					.append(" does not belong to this document.").toString());
+			throw new IllegalArgumentException((new StringBuilder()).append("Message ").append(message.getMessageId()).append(" does not belong to this document.").toString());
 		else
 			return depth - 1;
 	}

@@ -19,6 +19,7 @@ import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.forum.ForumService;
 import architecture.community.forum.ForumThread;
+import architecture.community.model.ModelObject;
 import architecture.community.web.model.ItemList;
 
 @Controller("boards-data-controller")
@@ -56,8 +57,8 @@ public class BoardDataController {
 	public ItemList listThread (@PathVariable Long boardId, NativeWebRequest request) throws BoardNotFoundException {	
 		Board board = boardService.getBoard(boardId);	
 		
-		int totalSize = forumService.getFourmThreadCount(Board.MODLE_TYPE, board.getBoardId());
-		List<ForumThread> list = forumService.getForumThreads(Board.MODLE_TYPE, board.getBoardId());
+		int totalSize = forumService.getFourmThreadCount(ModelObject.BOARD, board.getBoardId());
+		List<ForumThread> list = forumService.getForumThreads(ModelObject.BOARD, board.getBoardId());
 		
 		return new ItemList(list, totalSize);
 	}

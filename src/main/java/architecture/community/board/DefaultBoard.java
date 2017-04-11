@@ -27,7 +27,7 @@ public class DefaultBoard implements Board , Serializable {
 	
 	public DefaultBoard() {
 		this.boardId = -1L;
-		this.objectType = MODLE_TYPE;
+		this.objectType = UNKNOWN_OBJECT_TYPE;
 		this.objectId = -1L;
 		this.creationDate = new Date();
 		this.modifiedDate = creationDate;
@@ -35,7 +35,7 @@ public class DefaultBoard implements Board , Serializable {
 	
 	public DefaultBoard(long boardId) {
 		this.boardId = boardId;
-		this.objectType = MODLE_TYPE;
+		this.objectType = UNKNOWN_OBJECT_TYPE;
 		this.objectId = -1L;
 		this.creationDate = new Date();
 		this.modifiedDate = creationDate;

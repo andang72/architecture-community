@@ -38,6 +38,7 @@ import com.google.common.eventbus.Subscribe;
 
 import architecture.community.forum.ForumThread;
 import architecture.community.forum.event.ForumThreadEvent;
+import architecture.community.model.ModelObject;
 import architecture.community.viewcount.dao.ViewCountDao;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.event.EventSupport;
@@ -90,14 +91,14 @@ public class DefaultVIewCountService extends EventSupport implements ViewCountSe
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void addViewCount(ForumThread thread) {
 		if (viewCountsEnabled) {
-			addCount(ForumThread.MODLE_TYPE, thread.getThreadId(), viewCountCache, 1);
+			addCount(ModelObject.FORUM_THREAD, thread.getThreadId(), viewCountCache, 1);
 		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public int getViewCount(ForumThread thread) {
 		if (viewCountsEnabled) {
-			return getCachedCount(ForumThread.MODLE_TYPE, thread.getThreadId());
+			return getCachedCount(ModelObject.FORUM_THREAD, thread.getThreadId());
 		} else {
 			return -1;
 		}
@@ -106,9 +107,9 @@ public class DefaultVIewCountService extends EventSupport implements ViewCountSe
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void clearCount(ForumThread thread){
 		if (viewCountsEnabled) {
-			String key = getCacheKey(ForumThread.MODLE_TYPE, thread.getThreadId());
+			String key = getCacheKey(ModelObject.FORUM_THREAD, thread.getThreadId());
 			queue.remove(key);
-			clearCount(ForumThread.MODLE_TYPE, thread.getThreadId());
+			clearCount(ModelObject.FORUM_THREAD, thread.getThreadId());
 		}
 	}
 	
@@ -119,7 +120,7 @@ public class DefaultVIewCountService extends EventSupport implements ViewCountSe
 		logger.debug("forum thread event : " + e.getType().name());
 		ForumThread thread = (ForumThread) e.getSource();
 		
-		int entityType = ForumThread.MODLE_TYPE;
+		int entityType = ModelObject.FORUM_THREAD;
 		long entityId = thread.getThreadId();	
 		String key = getCacheKey(entityType, entityId);
 		if(e.getType() == ForumThreadEvent.Type.CREATED )

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import architecture.community.comment.CommentService;
 import architecture.community.forum.ForumService;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.viewcount.ViewCountService;
@@ -31,6 +32,10 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 	
 	public static ForumService getForumService(){
 		return getComponent(ForumService.class);
+	}
+
+	public static CommentService getCommentService(){
+		return getComponent(CommentService.class);
 	}
 	
 	public static ViewCountService getViewCountServive(){

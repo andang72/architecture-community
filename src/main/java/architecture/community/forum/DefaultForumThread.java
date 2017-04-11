@@ -28,7 +28,7 @@ public class DefaultForumThread implements ForumThread {
 	
 	public DefaultForumThread(long threadId) {
 		this.threadId = threadId;
-		this.objectType = -1;
+		this.objectType = UNKNOWN_OBJECT_TYPE;
 		this.objectId = -1L;
 		this.rootMessage = null;
 		this.latestMessage = null;
