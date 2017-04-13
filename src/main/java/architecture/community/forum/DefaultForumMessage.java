@@ -47,6 +47,7 @@ public class DefaultForumMessage implements ForumMessage {
 		Date now = new Date();
 		this.creationDate = now;
 		this.modifiedDate = now;
+		
 	}
 
 	public User getUser() {

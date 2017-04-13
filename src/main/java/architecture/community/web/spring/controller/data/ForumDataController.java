@@ -26,17 +26,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import architecture.community.board.BoardNotFoundException;
+import architecture.community.comment.Comment;
+import architecture.community.comment.CommentService;
 import architecture.community.forum.ForumMessage;
 import architecture.community.forum.ForumMessageNotFoundException;
 import architecture.community.forum.ForumService;
 import architecture.community.forum.ForumThread;
 import architecture.community.forum.ForumThreadNotFoundException;
 import architecture.community.forum.MessageTreeWalker;
+import architecture.community.model.ModelObject;
+import architecture.community.user.User;
+import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
+import architecture.community.web.model.json.Result;
 
 @Controller("forums-data-controller")
 @RequestMapping("/data/boards")
@@ -45,6 +52,10 @@ public class ForumDataController {
 	@Inject
 	@Qualifier("forumService")
 	private ForumService forumService;
+
+	@Inject
+	@Qualifier("commentService")
+	private CommentService commentService;
 	
 	public ForumDataController() {
 	}
@@ -89,6 +100,38 @@ public class ForumDataController {
 		List<ForumMessage> list = getMessages(walker.getChildIds(parent));	
 		return new ItemList(list, totalSize);
 	}
+	
+	
+	
+	/**
+	 * /data/forums/{threadId}/messages/{messageId}/comments/add.json?text=
+	 * @return
+	 * @throws ForumMessageNotFoundException 
+	 * @throws BoardNotFoundException
+	 */
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public Result addComment (			
+			@PathVariable Long threadId, 
+			@PathVariable Long messageId, 
+			@RequestParam(value = "text", defaultValue = "", required = true) String text,
+			NativeWebRequest request) {	
+		
+		Result result = Result.newResult();
+		try {
+			User user = SecurityHelper.getUser();		
+			ForumMessage message = forumService.getForumMessage(messageId);		
+			Comment newComment = commentService.createComment(ModelObject.FORUM_MESSAGE, message.getMessageId(), user, text);		
+			commentService.addComment(newComment);			
+			result.setCount(1);			
+		} catch (Exception e) {
+			result.setError(e);
+		}
+		
+		return result;
+	}
+	
+	
 	
 	protected List<ForumMessage> getMessages(long[] messageIds){
 		

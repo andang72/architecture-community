@@ -13,12 +13,14 @@ public class Result implements java.io.Serializable {
 	public Result() {
 		data = new HashMap<String, Object>();
 		error = null;
+		success = true;		
 	}
 	
 	public Result(String name, Object value) {
 		data = new HashMap<String, Object>();
 		data.put(name, value);
 		error = null;
+		success = true;
 	}
 	
 
