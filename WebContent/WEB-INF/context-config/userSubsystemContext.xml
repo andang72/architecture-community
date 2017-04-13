@@ -10,16 +10,19 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-
-	<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:shared="false" p:cacheManagerName="ehCacheManager"/>
-    
-    <!-- ================================= -->
-    <!-- Caches 						   -->
-    <!-- ================================= -->
-     
+   
 	<beans:bean id="userIdCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" p:cacheName="userIdCache"  p:maxElementsInMemory="5000" p:diskPersistent="false"  p:overflowToDisk="false" p:timeToIdle="30" p:timeToLive="60"  p:eternal="false"  p:diskExpiryThreadIntervalSeconds="0" p:statisticsEnabled="true"  />
 	
 	<beans:bean id="userCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" p:cacheName="userCache"  p:maxElementsInMemory="5000"  p:diskPersistent="false" p:overflowToDisk="false"  p:timeToIdle="30"  p:timeToLive="60" p:eternal="false"  p:diskExpiryThreadIntervalSeconds="0"  p:statisticsEnabled="true" />
-	    
+	
+	<beans:bean id="userDao" class="architecture.community.user.dao.JdbcUserDao" p:dataSource-ref="dataSource" />
+    
+    <beans:bean id="roleDao" class="architecture.community.user.dao.JdbcRoleDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="rememberMeDao" class="architecture.community.security.spring.rememberme.dao.JdbcTokenRepositoryDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="userManager" class="architecture.community.user.CommunityUserManager"  />		
+	
+	<beans:bean id="roleManager" class="architecture.community.user.CommunityRoleManager"  />			    
     
 </beans:beans> 

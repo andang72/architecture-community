@@ -11,11 +11,6 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- ================================= -->
-    <!-- USER DAO						   -->
-    <!-- ================================= -->
-    <beans:bean id="userDao" class="architecture.community.user.dao.JdbcUserDao" p:dataSource-ref="dataSource" />
-    
-    <beans:bean id="roleDao" class="architecture.community.user.dao.JdbcRoleDao" p:dataSource-ref="dataSource" />
-	
+
+	 	     
 </beans:beans> 

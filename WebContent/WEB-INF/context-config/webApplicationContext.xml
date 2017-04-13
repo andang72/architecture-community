@@ -18,7 +18,8 @@
 	<import resource="classpath:context/community-components-context.xml"/>
 	<import resource="classpath:context/community-transaction-context.xml"/>
 	<import resource="classpath:context/community-freemarker-context.xml"/>
-
+	<import resource="classpath:context/community-ehcache-context.xml"/>
+	
 	<!-- to activate annotations in beans already registered in the application  context -->
 	
 	<context:annotation-config />
