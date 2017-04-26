@@ -12,7 +12,15 @@ public interface ModelObject {
 	
 	public static final int FORUM_MESSAGE = 7;
 	
-	public static final int COMMENT = 8 ;
+	public static final int COMMENT = 8 ;	
+	
+	public static final int ATTACHEMNT = 10 ;
+	
+	public static final int IMAGE = 11 ;
+	
+	public static final int LOGO_IMAGE = 12 ;
+	
+	public static final int PROFILE_IMAGE = 13 ;
 	
 	
 	public abstract int getObjectType();

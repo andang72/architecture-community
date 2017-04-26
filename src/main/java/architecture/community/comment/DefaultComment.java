@@ -79,28 +79,13 @@ public class DefaultComment implements Comment {
 		this.commentId = commentId;
 	}
 
-	public int getContainerType() {
-		return objectType;
-	}
-
-	public void setContainerType(int containerType) {
-		this.objectType = containerType;
-	}
-
-	public long getContainerId() {
-		return objectId;
-	}
-
-	public void setContainerId(long containerId) {
-		this.objectId = containerId;
-	}
 
 	public int getObjectType() {
 		return objectType;
 	}
 
 	public long getObjectId() {
-		return commentId;
+		return objectId;
 	}
 
 	public long getCommentId() {
@@ -274,6 +259,35 @@ public class DefaultComment implements Comment {
 
 	public boolean isAnonymous() {
 		return user.isAnonymous();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Comment [commentId=").append(commentId).append(", objectType=").append(objectType)
+				.append(", objectId=").append(objectId).append(", parentObjectType=").append(parentObjectType)
+				.append(", parentObjectId=").append(parentObjectId).append(", parentCommentId=").append(parentCommentId)
+				.append(", ");
+		if (creationDate != null)
+			builder.append("creationDate=").append(creationDate).append(", ");
+		if (modifiedDate != null)
+			builder.append("modifiedDate=").append(modifiedDate).append(", ");
+		if (name != null)
+			builder.append("name=").append(name).append(", ");
+		if (email != null)
+			builder.append("email=").append(email).append(", ");
+		if (url != null)
+			builder.append("url=").append(url).append(", ");
+		if (ip != null)
+			builder.append("ip=").append(ip).append(", ");
+		if (body != null)
+			builder.append("body=").append(body).append(", ");
+		if (user != null)
+			builder.append("user=").append(user).append(", ");
+		if (status != null)
+			builder.append("status=").append(status);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

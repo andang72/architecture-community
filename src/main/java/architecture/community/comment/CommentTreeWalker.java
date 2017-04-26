@@ -62,7 +62,7 @@ public class CommentTreeWalker extends ModelObjectTreeWalker{
 	
 	
 	public List<Comment> topLevelComments() {
-		return children(new DefaultComment(getObjectId()));
+		return children(new DefaultComment(-1L));
 	}
 
 	
@@ -87,9 +87,10 @@ public class CommentTreeWalker extends ModelObjectTreeWalker{
 	public List<Comment> children(Comment comment) {
 		long children[] = getTree().getChildren(comment.getCommentId());
 		List<Comment> list = new ArrayList<Comment>();
+		CommentService commentService = CommunityContextHelper.getCommentService();
 		for (long childId : children)
 			try {
-				list.add(CommunityContextHelper.getCommentService().getComment(childId));
+				list.add(commentService.getComment(childId));
 			} catch (CommentNotFoundException e) {
 			}
 		return list;
@@ -98,9 +99,10 @@ public class CommentTreeWalker extends ModelObjectTreeWalker{
 	public List<Comment> recursiveChildren(Comment comment) {
 		long comments[] = getTree().getRecursiveChildren(comment.getCommentId());
 		List<Comment> list = new ArrayList<Comment>();
+		CommentService commentService = CommunityContextHelper.getCommentService();
 		for (long commentId : comments)
 			try {
-				list.add(CommunityContextHelper.getCommentService().getComment(commentId));
+				list.add(commentService.getComment(commentId));
 			} catch (CommentNotFoundException e) {
 				e.printStackTrace();
 			}

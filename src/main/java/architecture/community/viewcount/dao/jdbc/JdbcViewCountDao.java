@@ -49,7 +49,7 @@ public class JdbcViewCountDao extends ExtendedJdbcDaoSupport implements ViewCoun
 		int count = 0;
 		try {
 			count = getExtendedJdbcTemplate().queryForObject(
-					getBoundSql("COMMUNITY_COMMON.VIEW_COUNT_BY_ENTITY_TYPE_AND_ENTITY_ID").getSql(), 
+					getBoundSql("COMMUNITY_CORE.VIEW_COUNT_BY_ENTITY_TYPE_AND_ENTITY_ID").getSql(), 
 					Integer.class, 
 					new SqlParameterValue(Types.NUMERIC, entityType ),	
 					new SqlParameterValue(Types.NUMERIC, entityId ));
@@ -63,7 +63,7 @@ public class JdbcViewCountDao extends ExtendedJdbcDaoSupport implements ViewCoun
 	public void updateViewCounts(List<ViewCountInfo> views) {
 		final List<ViewCountInfo> viewsToUser = views;
 		getExtendedJdbcTemplate().batchUpdate(
-				getBoundSql("COMMUNITY_COMMON.UPDATE_VIEW_COUNT").getSql(),
+				getBoundSql("COMMUNITY_CORE.UPDATE_VIEW_COUNT").getSql(),
 				new BatchPreparedStatementSetter() { 
 				    public void setValues(PreparedStatement ps, int i) throws SQLException {
 				    	ViewCountInfo c = viewsToUser.get(i);
@@ -80,7 +80,7 @@ public class JdbcViewCountDao extends ExtendedJdbcDaoSupport implements ViewCoun
 
  
 	public void deleteViewCount(int entityType, long entityId) {
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_COMMON.DELETE_VIEW_COUNT").getSql(), 
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.DELETE_VIEW_COUNT").getSql(), 
 				new SqlParameterValue(Types.NUMERIC, entityType ),	
 				new SqlParameterValue(Types.NUMERIC, entityId )
 		);
@@ -88,7 +88,7 @@ public class JdbcViewCountDao extends ExtendedJdbcDaoSupport implements ViewCoun
 
  
 	public void insertInitialViewCount(int entityType, long entityId, int count) {
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_COMMON.CREATE_VIEW_COUNT").getSql(), 
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.CREATE_VIEW_COUNT").getSql(), 
 				new SqlParameterValue(Types.NUMERIC, entityType ),	
 				new SqlParameterValue(Types.NUMERIC, entityId ),
 				new SqlParameterValue(Types.NUMERIC, count )

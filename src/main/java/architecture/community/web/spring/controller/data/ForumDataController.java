@@ -20,7 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +36,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
+import architecture.community.comment.CommentTreeWalker;
+import architecture.community.comment.DefaultComment;
 import architecture.community.forum.ForumMessage;
 import architecture.community.forum.ForumMessageNotFoundException;
 import architecture.community.forum.ForumService;
@@ -44,9 +49,10 @@ import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.Result;
+import architecture.ee.util.StringUtils;
 
 @Controller("forums-data-controller")
-@RequestMapping("/data/boards")
+@RequestMapping("/data/forums")
 public class ForumDataController {
 
 	@Inject
@@ -57,6 +63,7 @@ public class ForumDataController {
 	@Qualifier("commentService")
 	private CommentService commentService;
 	
+	private Logger log = LoggerFactory.getLogger(ForumDataController.class);
 	public ForumDataController() {
 	}
 
@@ -104,7 +111,7 @@ public class ForumDataController {
 	
 	
 	/**
-	 * /data/forums/{threadId}/messages/{messageId}/comments/add.json?text=
+	 * /data/forums/threads/{threadId}/messages/{messageId}/comments/add.json?text=
 	 * @return
 	 * @throws ForumMessageNotFoundException 
 	 * @throws BoardNotFoundException
@@ -114,15 +121,33 @@ public class ForumDataController {
 	public Result addComment (			
 			@PathVariable Long threadId, 
 			@PathVariable Long messageId, 
+			@RequestParam(value = "name", defaultValue = "", required = false) String name,
+		    @RequestParam(value = "email", defaultValue = "", required = false) String email,
 			@RequestParam(value = "text", defaultValue = "", required = true) String text,
 			NativeWebRequest request) {	
 		
+		log.debug("params : " + request.getParameterMap() );
+		
+		
 		Result result = Result.newResult();
 		try {
-			User user = SecurityHelper.getUser();		
+			User user = SecurityHelper.getUser();	
+			String address = request.getNativeRequest(HttpServletRequest.class).getRemoteAddr();
+			
 			ForumMessage message = forumService.getForumMessage(messageId);		
-			Comment newComment = commentService.createComment(ModelObject.FORUM_MESSAGE, message.getMessageId(), user, text);		
+			Comment newComment = commentService.createComment(ModelObject.FORUM_MESSAGE, message.getMessageId(), user, text);	
+			
+			
+			newComment.setIPAddress(address);
+			if (!StringUtils.isNullOrEmpty(name))
+				newComment.setName(name);
+			if (!StringUtils.isNullOrEmpty(email))
+				newComment.setEmail(email);
+			log.debug("text : {}", text);
+			log.debug("adding {}", newComment.toString());
+			
 			commentService.addComment(newComment);			
+			
 			result.setCount(1);			
 		} catch (Exception e) {
 			result.setError(e);
@@ -131,10 +156,20 @@ public class ForumDataController {
 		return result;
 	}
 	
-	
-	
-	protected List<ForumMessage> getMessages(long[] messageIds){
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request) throws ForumMessageNotFoundException{	
 		
+		ForumMessage message = forumService.getForumMessage(messageId);		
+		CommentTreeWalker walker = commentService.getCommentTreeWalker(ModelObject.FORUM_MESSAGE, message.getMessageId());
+		Comment parent = new DefaultComment(-1L);
+		int totalSize = walker.getRecursiveChildCount(parent);
+		List<Comment> list = walker.recursiveChildren(parent);	
+		return new ItemList(list, totalSize);
+	}
+	
+	
+	protected List<ForumMessage> getMessages(long[] messageIds){		
 		List<ForumMessage> list = new ArrayList<ForumMessage>(messageIds.length);
 		for( long messageId : messageIds )
 		{

@@ -88,13 +88,13 @@ public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao
 	
 	public Comment getCommentById(long commentId) {
 		return getExtendedJdbcTemplate().queryForObject(
-			    getBoundSql("COMMUNITY_COMMON.SELECT_COMMENT_BY_ID").getSql(), commentMapper,
+			    getBoundSql("COMMUNITY_CORE.SELECT_COMMENT_BY_ID").getSql(), commentMapper,
 			    new SqlParameterValue(Types.NUMERIC, commentId));		   
     }
 
 	public void deleteComment(Comment comment) {
 		getExtendedJdbcTemplate().update(
-				getBoundSql("COMMUNITY_COMMON.DELETE_COMMENT").getSql(),
+				getBoundSql("COMMUNITY_CORE.DELETE_COMMENT").getSql(),
 				new SqlParameterValue(Types.NUMERIC, comment.getCommentId()));
 	}
 	 
@@ -102,7 +102,7 @@ public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao
 		if (comment.getCommentId() == -1L)
 		    ((DefaultComment)comment).setCommentId(getNextCommentId());
 		
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_COMMON.CREATE_COMMENT").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.CREATE_COMMENT").getSql(),
 			new SqlParameterValue(Types.NUMERIC, comment.getCommentId()),
 			new SqlParameterValue(Types.NUMERIC, comment.getObjectType()),
 			new SqlParameterValue(Types.NUMERIC, comment.getObjectId()),
@@ -121,7 +121,7 @@ public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao
 	}
  
 	public void updateComment(Comment comment) {
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_COMMON.UPDATE_COMMENT").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.UPDATE_COMMENT").getSql(),
 				new SqlParameterValue(Types.NUMERIC, comment.getParentCommentId()),
 				new SqlParameterValue(Types.NUMERIC, comment.getName()),
 				new SqlParameterValue(Types.NUMERIC, comment.getEmail()),
@@ -135,14 +135,14 @@ public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao
 	public CommentTreeWalker getCommentTreeWalker(int objectType, long objectId) {
 
 		int numComments = getExtendedJdbcTemplate().queryForObject(
-				getBoundSql("COMMUNITY_COMMON.COUNT_COMMENT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Integer.class,
+				getBoundSql("COMMUNITY_CORE.COUNT_COMMENT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Integer.class,
 				new SqlParameterValue(Types.NUMERIC, objectType), new SqlParameterValue(Types.NUMERIC, objectId));
 
 		numComments++;
 
 		final LongTree tree = new LongTree(-1L, numComments);
 
-		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_COMMON.SELECT_ROOT_COMMENT").getSql(),
+		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_CORE.SELECT_ROOT_COMMENT").getSql(),
 				new RowCallbackHandler() {
 					public void processRow(ResultSet rs) throws SQLException {
 						long commentId = rs.getLong(1);
@@ -150,7 +150,7 @@ public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao
 					}
 				}, new SqlParameterValue(Types.NUMERIC, objectType), new SqlParameterValue(Types.NUMERIC, objectId));
 
-		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_COMMON.SELECT_CHILD_COMMENT").getSql(),
+		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_CORE.SELECT_CHILD_COMMENT").getSql(),
 				new RowCallbackHandler() {
 					public void processRow(ResultSet rs) throws SQLException {
 						long commentId = rs.getLong(1);
