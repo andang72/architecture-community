@@ -14,6 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
+import architecture.ee.service.Repository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
@@ -24,6 +25,10 @@ public class BoardTest {
 	
 	@Autowired
 	private BoardService boardService;
+	
+	@Autowired
+	private Repository repository;
+	
 	
 	@Test
 	public void testSelectOrCreateBoard(){

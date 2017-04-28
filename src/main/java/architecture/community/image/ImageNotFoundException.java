@@ -16,7 +16,9 @@
 
 package architecture.community.image;
 
-public class ImageNotFoundException extends Exception {
+import architecture.community.exception.NotFoundException;
+
+public class ImageNotFoundException extends NotFoundException {
 
 	public ImageNotFoundException() {
 		// TODO Auto-generated constructor stub

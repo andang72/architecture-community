@@ -35,7 +35,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.support.SqlLobValue;
 
+import architecture.community.image.DefaultImage;
 import architecture.community.image.DefaultLogoImage;
+import architecture.community.image.Image;
 import architecture.community.image.ImageNotFoundException;
 import architecture.community.image.LogoImage;
 import architecture.community.image.dao.ImageDao;
@@ -68,8 +70,23 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 		    image.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));
 		    return image;
 		}
-	    };
-	    
+	};
+	
+	private final RowMapper<Image> imageMapper = new RowMapper<Image>(){
+		public Image mapRow(ResultSet rs, int rowNum) throws SQLException {
+			DefaultImage image = new DefaultImage();
+			image.setImageId(rs.getLong("IMAGE_ID"));
+			image.setObjectType(rs.getInt("OBJECT_TYPE"));
+			image.setObjectId(rs.getLong("OBJECT_ID"));
+			image.setName(rs.getString("FILE_NAME"));
+			image.setSize(rs.getInt("FILE_SIZE"));
+			image.setContentType(rs.getString("CONTENT_TYPE"));
+			image.setCreationDate(rs.getDate("CREATION_DATE"));
+			image.setModifiedDate(rs.getDate("MODIFIED_DATE"));			
+			return image;
+		}		
+	};
+	
 	public JdbcImageDao() {
 	}
 
@@ -86,6 +103,89 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	}
 	
 	
+	
+
+	public Image createImage(Image image) {
+		
+		Image toUse = image;		
+		if( toUse.getImageId() <1L){
+			long imageId = getNextImageId();
+			if( image instanceof DefaultImage){
+				DefaultImage impl = (DefaultImage)toUse;
+				impl.setImageId(imageId);
+			}			
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.CREATE_IMAGE").getSql(), 	
+					new SqlParameterValue (Types.NUMERIC, imageId), 
+					new SqlParameterValue (Types.INTEGER, image.getObjectType() ), 
+					new SqlParameterValue (Types.INTEGER, image.getObjectId() ), 
+					new SqlParameterValue (Types.VARCHAR, image.getName() ), 
+					new SqlParameterValue (Types.INTEGER, image.getSize() ), 
+					new SqlParameterValue (Types.VARCHAR, image.getContentType()), 
+					new SqlParameterValue(Types.DATE, image.getCreationDate()),
+					new SqlParameterValue(Types.DATE, image.getModifiedDate()));	
+		}		
+		return  image;
+	}
+
+	public Image updateImage(Image image) {
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_IMAGE").getSql(), 	
+				new SqlParameterValue (Types.NUMERIC, image.getImageId()), 
+				new SqlParameterValue (Types.INTEGER, image.getObjectType() ), 
+				new SqlParameterValue (Types.INTEGER, image.getObjectId() ), 
+				new SqlParameterValue (Types.VARCHAR, image.getName() ), 
+				new SqlParameterValue (Types.INTEGER, image.getSize() ), 
+				new SqlParameterValue (Types.VARCHAR, image.getContentType()), 
+				new SqlParameterValue(Types.DATE, image.getCreationDate()),
+				new SqlParameterValue(Types.DATE, image.getModifiedDate()),
+				new SqlParameterValue (Types.NUMERIC, image.getImageId()) );	
+		return image;
+	}
+			
+	public void deleteImage(Image image) {
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_IMAGE_BY_ID").getSql(), 	
+				new SqlParameterValue (Types.NUMERIC, image.getImageId()));
+		
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_IMAGE_DATA_BY_ID").getSql(), 	
+				new SqlParameterValue (Types.NUMERIC, image.getImageId()));	
+	}
+
+	public InputStream getImageInputStream(Image image) {
+		return getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_WEB.SELECT_IMAGE_DATA_BY_ID").getSql(), new InputStreamRowMapper(), new SqlParameterValue (Types.NUMERIC, image.getImageId()));		
+	}
+	
+	public void saveImageInputStream(Image image, InputStream inputStream) {
+		
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_IMAGE_DATA_BY_ID").getSql(), new SqlParameterValue (Types.NUMERIC, image.getImageId()));
+		
+		if( getExtendedJdbcTemplate().getDBInfo() == DB.ORACLE ){						
+			
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.CREATE_EMPTY_IMAGE_DATA").getSql(), new SqlParameterValue (Types.NUMERIC, image.getImageId()));
+			
+			
+			getExtendedJdbcTemplate().update(
+					getBoundSql("COMMUNITY_WEB.UPDATE_IMAGE_DATA").getSql(), 
+					new Object[]{
+						new SqlLobValue( inputStream , image.getSize(), getLobHandler()),
+						image.getImageId()
+					}, 
+					new int[]{
+						Types.BLOB,
+						Types.NUMERIC
+					});
+		}else{			
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.CREATE_IMAGE_DATA").getSql(), 
+					new SqlParameterValue ( Types.NUMERIC, image.getImageId()), 
+					new SqlParameterValue ( Types.BLOB,  new SqlLobValue( inputStream , image.getSize(), getLobHandler() ) ) 
+			);
+		}		
+	}
+
+	public Image getImageById(long imageId) {		
+		return getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_WEB.SELECT_IMAGE_BY_ID").getSql(), imageMapper, new SqlParameterValue (Types.NUMERIC, imageId ));			
+	}
+	
+	
+	//
 	
 	public void addLogoImage(LogoImage logoImage, File file) {
 		try {
@@ -106,11 +206,11 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 			logoImage.setLogoId(logoIdToUse);
 		}
 		getExtendedJdbcTemplate().update(
-				getBoundSql("COMMUNITY_CORE.RESET_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
+				getBoundSql("COMMUNITY_WEB.RESET_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
 				new SqlParameterValue(Types.INTEGER, toUse.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, toUse.getObjectId()));
 
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.CREATE_LOGO_IMAGE").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.CREATE_LOGO_IMAGE").getSql(),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getObjectId()),
@@ -136,12 +236,12 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 
 		if (logoImage.isPrimary()) {
 			getExtendedJdbcTemplate().update(
-					getBoundSql("COMMUNITY_CORE.RESET_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
+					getBoundSql("COMMUNITY_WEB.RESET_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
 					new SqlParameterValue(Types.INTEGER, logoImage.getObjectType()),
 					new SqlParameterValue(Types.NUMERIC, logoImage.getObjectId()));
 		}
 
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.UPDATE_LOGO_IMAGE").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_LOGO_IMAGE").getSql(),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getObjectId()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.isPrimary() ? 1 : 0),
@@ -155,35 +255,35 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	}
 
 	protected void updateImageImputStream(LogoImage logoImage, InputStream inputStream) {
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.DELETE_LOGO_IMAGE_DATA_BY_ID").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_LOGO_IMAGE_DATA_BY_ID").getSql(),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
 		
 		if ( getExtendedJdbcTemplate().getDBInfo() == DB.ORACLE ){
 			getExtendedJdbcTemplate().update(
-					getBoundSql("COMMUNITY_CORE.INSERT_EMPTY_LOGO_IMAGE_DATA").getSql(),
+					getBoundSql("COMMUNITY_WEB.INSERT_EMPTY_LOGO_IMAGE_DATA").getSql(),
 					new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
 			getExtendedJdbcTemplate().update(
-					getBoundSql("COMMUNITY_CORE.UPDATE_LOGO_IMAGE_DATA").getSql(),
+					getBoundSql("COMMUNITY_WEB.UPDATE_LOGO_IMAGE_DATA").getSql(),
 					new SqlParameterValue(Types.BLOB, new SqlLobValue(inputStream, logoImage.getImageSize(), getLobHandler())),
 					new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
 		} else {
 			getExtendedJdbcTemplate().update(
-					getBoundSql("COMMUNITY_CORE.INSERT_LOGO_IMAGE_DATA").getSql(),
+					getBoundSql("COMMUNITY_WEB.INSERT_LOGO_IMAGE_DATA").getSql(),
 					new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()), 
 					new SqlParameterValue(Types.BLOB, new SqlLobValue(inputStream, logoImage.getImageSize(), getLobHandler())));
 		}
 	}
 
 	public void removeLogoImage(LogoImage logoImage) {
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.DELETE_LOGO_IMAGE_BY_ID").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_LOGO_IMAGE_BY_ID").getSql(),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_CORE.DELETE_LOGO_IMAGE_DATA_BY_ID").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_LOGO_IMAGE_DATA_BY_ID").getSql(),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
 	}
 
 	public InputStream getInputStream(LogoImage logoImage) throws IOException {
 		return getExtendedJdbcTemplate().queryForObject(
-				getBoundSql("COMMUNITY_CORE.SELECT_LOGO_IMAGE_DATA_BY_ID").getSql(),
+				getBoundSql("COMMUNITY_WEB.SELECT_LOGO_IMAGE_DATA_BY_ID").getSql(),
 				new InputStreamRowMapper(), 
 				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
 	}
@@ -191,7 +291,7 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	public Long getPrimaryLogoImageId(int objectType, long objectId) throws ImageNotFoundException {
 		try {
 			return getExtendedJdbcTemplate().queryForObject(
-					getBoundSql("COMMUNITY_CORE.SELECT_PRIMARY_LOGO_IMAGE_ID_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
+					getBoundSql("COMMUNITY_WEB.SELECT_PRIMARY_LOGO_IMAGE_ID_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
 					Long.class,
 					new SqlParameterValue(Types.NUMERIC, objectType), 
 					new SqlParameterValue(Types.NUMERIC, objectId));
@@ -203,7 +303,7 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	public LogoImage getLogoImageById(long logoId) throws ImageNotFoundException {
 		try {
 			return getExtendedJdbcTemplate().queryForObject(
-					getBoundSql("COMMUNITY_CORE.SELECT_LOGO_IMAGE_BY_ID").getSql(), logoMapper,
+					getBoundSql("COMMUNITY_WEB.SELECT_LOGO_IMAGE_BY_ID").getSql(), logoMapper,
 					new SqlParameterValue(Types.NUMERIC, logoId));
 		} catch (DataAccessException e) {
 			e.printStackTrace();
@@ -213,7 +313,7 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 
 	public List<Long> getLogoImageIds(int objectType, long objectId) {
 		return getExtendedJdbcTemplate().queryForList(
-				getBoundSql("COMMUNITY_CORE.SELECT_LOGO_IMAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				getBoundSql("COMMUNITY_WEB.SELECT_LOGO_IMAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
 				Long.class,
 				new SqlParameterValue(Types.NUMERIC, objectType), 
 				new SqlParameterValue(Types.NUMERIC, objectId));
@@ -221,9 +321,10 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 
 	public int getLogoImageCount(int objectType, long objectId) {
 		return getExtendedJdbcTemplate().queryForObject(
-				getBoundSql("COMMUNITY_CORE.COUNT_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
+				getBoundSql("COMMUNITY_WEB.COUNT_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
 				Integer.class,
 				new SqlParameterValue(Types.NUMERIC, objectType), 
 				new SqlParameterValue(Types.NUMERIC, objectId));
 	}
+	
 }

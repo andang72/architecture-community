@@ -21,4 +21,11 @@ public class RequestData {
         return data;
     }    
     
+    public String getDataAsString(String key, String defaultValue){
+    	if( data.containsKey(key)){
+    		return data.get(key).toString();
+    	}
+    	return defaultValue;
+    }
+    
 }

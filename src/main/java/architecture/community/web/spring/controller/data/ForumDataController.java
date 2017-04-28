@@ -26,14 +26,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import architecture.community.board.BoardNotFoundException;
 import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
 import architecture.community.comment.CommentTreeWalker;
@@ -48,6 +49,7 @@ import architecture.community.model.ModelObject;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
+import architecture.community.web.model.json.RequestData;
 import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
 
@@ -116,7 +118,7 @@ public class ForumDataController {
 	 * @throws ForumMessageNotFoundException 
 	 * @throws BoardNotFoundException
 	 */
-	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add_simple.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public Result addComment (			
 			@PathVariable Long threadId, 
@@ -124,16 +126,48 @@ public class ForumDataController {
 			@RequestParam(value = "name", defaultValue = "", required = false) String name,
 		    @RequestParam(value = "email", defaultValue = "", required = false) String email,
 			@RequestParam(value = "text", defaultValue = "", required = true) String text,
-			NativeWebRequest request) {	
-		
-		log.debug("params : " + request.getParameterMap() );
-		
+			HttpServletRequest request, 
+			ModelMap model) {	
 		
 		Result result = Result.newResult();
 		try {
 			User user = SecurityHelper.getUser();	
-			String address = request.getNativeRequest(HttpServletRequest.class).getRemoteAddr();
+			String address = request.getRemoteAddr();
 			
+			ForumMessage message = forumService.getForumMessage(messageId);		
+			Comment newComment = commentService.createComment(ModelObject.FORUM_MESSAGE, message.getMessageId(), user, text);
+			
+			newComment.setIPAddress(address);
+			if (!StringUtils.isNullOrEmpty(name))
+				newComment.setName(name);
+			if (!StringUtils.isNullOrEmpty(email))
+				newComment.setEmail(email);
+			
+			commentService.addComment(newComment);			
+			
+			result.setCount(1);			
+		} catch (Exception e) {
+			result.setError(e);
+		}
+		
+		return result;
+	}
+
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public Result addMessageComment (			
+			@PathVariable Long threadId, 
+			@PathVariable Long messageId, 
+			@RequestBody RequestData reqeustData,
+			HttpServletRequest request, 
+			ModelMap model) {			
+		Result result = Result.newResult();
+		try {
+			User user = SecurityHelper.getUser();	
+			String address = request.getRemoteAddr();
+			String name = reqeustData.getDataAsString("name", null);
+			String email = reqeustData.getDataAsString("email", null);
+			String text = reqeustData.getDataAsString("text", null);
 			ForumMessage message = forumService.getForumMessage(messageId);		
 			Comment newComment = commentService.createComment(ModelObject.FORUM_MESSAGE, message.getMessageId(), user, text);	
 			
@@ -143,8 +177,6 @@ public class ForumDataController {
 				newComment.setName(name);
 			if (!StringUtils.isNullOrEmpty(email))
 				newComment.setEmail(email);
-			log.debug("text : {}", text);
-			log.debug("adding {}", newComment.toString());
 			
 			commentService.addComment(newComment);			
 			

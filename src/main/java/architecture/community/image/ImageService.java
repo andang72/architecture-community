@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import architecture.community.model.ModelObject;
+import architecture.community.exception.NotFoundException;
 
 public interface ImageService {
 
@@ -47,11 +47,66 @@ public interface ImageService {
 	
 	public InputStream getImageThumbnailInputStream(LogoImage image, int width, int height ) ;
 	
-	public List<LogoImage> getLogoImages(ModelObject model);
 	
-	public LogoImage getPrimaryLogoImage(ModelObject model)  throws ImageNotFoundException  ;
+
+	
+	public abstract boolean isImageEnabled();
+	
+	public abstract void setImageEnabled(boolean enabled) ;
+	
+	public abstract Image getImage(long imageId) throws NotFoundException ;
+
+	public abstract int getMaxImageSize();
+	
+	public abstract void setMaxImageSize(int maxImageSize);
+	
+	public abstract int getImagePreviewMaxSize();
+	
+	public abstract void setImagePreviewMaxSize(int imagePreviewMaxSize);
+	
+	public abstract boolean isForceThumbnailsEnabled();
+	
+	public abstract void setFourceThumbnailsEnabled(boolean forceThumbnailsEnabled);
+	
+	public abstract int getImageMaxWidth();
+	
+	public abstract void setImageMaxWidth(int imageMaxWidth);
+	
+	public abstract int getImageMaxHeight();
+	
+	public abstract void setImageMaxHeight( int imageMaxHeight );
+	
+	public abstract boolean isValidType(String contentType);
+	
+	public abstract void addAllowedType(String contentType);
+	
+	public abstract void removeAllowedType(String contentType);
+	
+	public abstract List<String> getAllowedTypes();
+	
+	public abstract boolean isAllowAllByDefault();
+	
+	public abstract void setAllowAllByDefault( boolean allowed );
+	
+	public abstract List<String> getDisallowedTypes();
+	
+	public abstract void addDisallowedType(String contentType);
+	
+	public abstract void removeDisallowedType(String contentType);
+	
+	public abstract Image createImage(int objectType, long objectId, String name, String contentType, File file);
+	
+	public abstract Image createImage(int objectType, long objectId, String name, String contentType, InputStream inputStream);
+	
+	public abstract void saveOrUpdate( Image image );
+	
+	public abstract Image saveImage( Image image );
+	
+	public abstract InputStream getImageInputStream(Image image);
+	
+	public abstract InputStream getImageThumbnailInputStream(Image image, int width, int height ) ;
+	
+	
+	
 		
-	public int getLogoImageCount(ModelObject model);
-	
-	
 }

@@ -13,6 +13,8 @@ import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
 import architecture.community.user.UserTemplate;
+import architecture.community.util.excel.XSSFExcelWriter;
+import architecture.ee.service.Repository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
@@ -21,7 +23,10 @@ public class UserManagerTest {
 
 	@Autowired
 	private UserManager userManager;
-
+	
+	@Autowired
+	private Repository repository;
+	
 	private static Logger log = LoggerFactory.getLogger(UserManagerTest.class);
 
 	@Test
@@ -67,5 +72,5 @@ public class UserManagerTest {
 		}
 		log.debug(newUesr.toString());
 	}
-	
+
 }

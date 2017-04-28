@@ -1,5 +1,7 @@
 package architecture.community.util;
 
+import java.io.File;
+
 public class CommunityConstants {
 	
 	/** SECURITY PROPERTY KEY */
@@ -23,4 +25,18 @@ public class CommunityConstants {
     public static final String FREEMARKER_LOG_ERROR_PROP_NAME = "framework.freemarker.logError";
     public static final String FREEMARKER_STRONG_TEMPLATE_CACHE_SIZE_PROP_NAME = "framework.freemarker.strongTemplateCacheSize";
     public static final String FREEMARKER_WEAK_TEMPLATE_CACHE_SIZE_PROP_NAME = "framework.freemarker.weakTemplateCacheSize";
+
+
+	public enum Platform {
+		WINDOWS(';'), UNIX(':');
+		public final char pathSeparator;
+		private Platform(char pathSeparator) {
+			this.pathSeparator = pathSeparator;
+		}
+		public static Platform current() {
+			if (File.pathSeparatorChar == ':')
+				return UNIX;
+			return WINDOWS;
+		}
+	}
 }

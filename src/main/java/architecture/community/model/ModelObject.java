@@ -22,7 +22,6 @@ public interface ModelObject {
 	
 	public static final int PROFILE_IMAGE = 13 ;
 	
-	
 	public abstract int getObjectType();
 	
 	public abstract long getObjectId();
