@@ -173,4 +173,32 @@
     ) VALUES ( ?, ? )
     ]]></sql-query>
                    	
+    <!-- REMEMBER_USER_TOKEN  -->    
+    <sql-query name="CREATE_REMEMBER_USER_TOKEN" description="CREATE_REMEMBER_USER_TOKEN"><![CDATA[
+     INSERT INTO MUSI_USER_LOGIN_TOKEN ( 
+    	UUID, 
+    	USERNAME,
+    	TOKEN,
+    	LAST_USE_DATE
+    ) VALUES ( ?, ?, ? ,? )
+    ]]></sql-query>
+    
+    <sql-query name="UPDATE_REMEMBER_USER_TOKEN" description="UPDATE_REMEMBER_USER_TOKEN"><![CDATA[
+    UPDATE MUSI_USER_LOGIN_TOKEN
+    SET TOKEN = ? , LAST_USE_DATE = ? 
+    WHERE UUID = ?
+    ]]></sql-query>
+    
+    <sql-query name="SELECT_REMEMBER_USER_TOKEN_BY_UUID" description="SELECT_REMEMBER_USER_TOKEN_BY_UUID"><![CDATA[
+    SELECT 
+	    USERNAME,
+	    UUID,
+	    TOKEN,
+	    LAST_USE_DATE
+    FROM MUSI_USER_LOGIN_TOKEN WHERE UUID = ?
+    ]]></sql-query>
+    
+    <sql-query name="DELETE_REMEMBER_USER_TOKEN_BY_USERNAME" description="DELETE_REMEMBER_USER_TOKEN"><![CDATA[
+    DELETE FROM MUSI_USER_LOGIN_TOKEN WHERE USERNAME = ?
+    ]]></sql-query>              	
 </sqlset>

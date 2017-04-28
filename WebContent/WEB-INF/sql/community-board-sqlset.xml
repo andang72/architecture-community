@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlset>
+	<name>COMMUNITY_BOARD</name>
+	<description>COMMUNITY BOARD 쿼리</description>	
+	
+ 	<sql-query name="CREATE_BOARD" description="BOARD 생성"><![CDATA[
+		INSERT INTO MUSI_BOARD (
+		  BOARD_ID,
+		  NAME,
+		  DISPLAY_NAME,
+		  DESCRIPTION,
+		  CREATION_DATE,
+		  MODIFIED_DATE
+		) VALUES ( ?, ?, ?, ?, ?, ? )
+    ]]></sql-query>	
+
+	<sql-query name="SELECT_ALL_BOARD_IDS" description="모든 BOARD 아이디 조회"><![CDATA[
+		SELECT BOARD_ID FROM MUSI_BOARD
+    ]]></sql-query>	
+
+	<sql-query name="SELECT_BOARD_BY_ID" description="BOARD 조회"><![CDATA[
+		SELECT
+		  BOARD_ID,
+		  NAME,
+		  DISPLAY_NAME,
+		  DESCRIPTION,
+		  CREATION_DATE,
+		  MODIFIED_DATE
+		FROM MUSI_BOARD WHERE BOARD_ID = ?
+    ]]></sql-query>	
+
+	<sql-query name="DELETE_BOARD" description="BOARD 삭제"><![CDATA[
+		DELETE FROM MUSI_BOARD WHERE BOARD_ID = ?
+    ]]></sql-query>		
+	
+</sqlset>
