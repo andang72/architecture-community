@@ -108,5 +108,10 @@ public class CommentTreeWalker extends ModelObjectTreeWalker{
 			}
 		return list;
 	}
+	
+	
+	public interface ObjectLoader<T>{
+		T load( long primaryKey );
+	}
 
 }

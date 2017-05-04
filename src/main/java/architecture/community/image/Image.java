@@ -23,15 +23,16 @@ import java.util.Date;
 import architecture.community.model.ModelObject;
 
 public interface Image extends ModelObject {
-
+	
+	public static final String DEFAULT_THUMBNAIL_CONTENT_TYPE = "image/png";
+	
 	public abstract long getImageId();
 
 	public abstract int getObjectType();
 	
 	public abstract long getObjectId();
 	
-	public abstract String getName();
-	
+	public abstract String getName();	
 
     public Date getCreationDate();
 

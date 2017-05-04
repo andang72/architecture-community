@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -35,6 +36,7 @@ import architecture.community.attachment.Attachment;
 import architecture.community.attachment.DefaultAttachment;
 import architecture.community.attachment.dao.AttachmentDao;
 import architecture.community.model.ModelObject;
+import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.spring.jdbc.ExtendedJdbcUtils.DB;
@@ -47,7 +49,17 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 	@Qualifier("sequencerFactory")
 	private SequencerFactory sequencerFactory;
 
+	@Inject
+	@Qualifier("propertyDao")
+	private PropertyDao propertyDao;	
+	
+	private String propertyTableName = "ATTACHMENT_PROPERTY";
+	private String propertyPrimaryColumnName = "ATTACHMENT_ID";
+	
 
+	private boolean enableSaveUserId = false ;
+	
+	
 	private final RowMapper<Attachment> attachmentMapper = new RowMapper<Attachment>(){
 		public Attachment mapRow(ResultSet rs, int rowNum) throws SQLException {
 			DefaultAttachment image = new DefaultAttachment();			
@@ -65,7 +77,21 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 			return image;
 		}		
 	};
-		
+	
+	
+
+	public Map<String, String> getAttachmentProperties(long attachmentId) {
+		return propertyDao.getProperties(propertyTableName, propertyPrimaryColumnName, attachmentId);
+	}
+
+	public void deleteAttachmentProperties(long attachmentId) {
+		propertyDao.deleteProperties(propertyTableName, propertyPrimaryColumnName, attachmentId);
+	}
+	
+	public void setAttachmentProperties(long attachmentId, Map<String, String> props) {
+		propertyDao.updateProperties(propertyTableName, propertyPrimaryColumnName, attachmentId, props);
+	}
+	
 	public void insertAttachmentDownloads(List<AttachmentDownloadItem> list) {
 		
 		final List<AttachmentDownloadItem> itemsToUse = list;		
@@ -88,8 +114,6 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 	public long getNextAttachmentId(){
 		return sequencerFactory.getNextValue(ModelObject.ATTACHEMNT, "ATTACHEMNT");
 	}	
-	
-	private boolean enableSaveUserId = false ;
 	
 	
 	public boolean isEnableSaveUserId() {
@@ -123,8 +147,6 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 			long attachmentId = getNextAttachmentId();
 			toUse.setAttachmentId(attachmentId);
 		}
-		
-		String sql = getBoundSql("COMMUNITY_WEB.INSERT_ATTACHMENT").getSql();
 		
 		if( enableSaveUserId ){
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_ATTACHMENT").getSql(), 	
@@ -164,7 +186,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 				new SqlParameterValue(Types.DATE, attachment.getCreationDate()),
 				new SqlParameterValue(Types.DATE, attachment.getModifiedDate()),
 				new SqlParameterValue (Types.NUMERIC, attachment.getAttachmentId()) );		
-		//setAttachmentProperties(attachment.getAttachmentId(), attachment.getProperties());	
+		setAttachmentProperties(attachment.getAttachmentId(), attachment.getProperties());	
 	}
 
 	public void deleteAttachment(Attachment attachment) {		
@@ -172,7 +194,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 				getBoundSql("COMMUNITY_WEB.DELETE_ATTACHMENT" ).getSql(),
 				new SqlParameterValue (Types.NUMERIC, attachment.getAttachmentId())
 		);
-		//deleteAttachmentProperties(attachment.getAttachmentId());
+		deleteAttachmentProperties(attachment.getAttachmentId());
 	}
 
 	public void deleteAttachmentData(Attachment attachment) {		

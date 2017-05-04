@@ -17,7 +17,7 @@
 package architecture.community.comment.dao;
 
 import architecture.community.comment.Comment;
-import architecture.community.comment.CommentTreeWalker;
+import architecture.community.model.ModelObjectTreeWalker;
 
 public interface CommentDao {
 	
@@ -27,6 +27,6 @@ public interface CommentDao {
 	
 	public abstract void updateComment(Comment comment);
 	
-	public abstract CommentTreeWalker getCommentTreeWalker (int objectType, long objectId);
+	public abstract ModelObjectTreeWalker getTreeWalker (int objectType, long objectId);
 
 }

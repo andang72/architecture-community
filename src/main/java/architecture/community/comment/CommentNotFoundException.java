@@ -16,7 +16,9 @@
 
 package architecture.community.comment;
 
-public class CommentNotFoundException extends Exception {
+import architecture.community.exception.NotFoundException;
+
+public class CommentNotFoundException extends NotFoundException {
 
 	public CommentNotFoundException() {
 		// TODO Auto-generated constructor stub

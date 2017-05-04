@@ -32,6 +32,7 @@ import architecture.community.comment.CommentTreeWalker;
 import architecture.community.comment.DefaultComment;
 import architecture.community.comment.dao.CommentDao;
 import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.LongTree;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
@@ -132,7 +133,7 @@ public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao
 				new SqlParameterValue(Types.TIMESTAMP, comment.getModifiedDate()));
 	}
  
-	public CommentTreeWalker getCommentTreeWalker(int objectType, long objectId) {
+	public ModelObjectTreeWalker getTreeWalker(int objectType, long objectId) {
 
 		int numComments = getExtendedJdbcTemplate().queryForObject(
 				getBoundSql("COMMUNITY_WEB.COUNT_COMMENT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Integer.class,
@@ -159,7 +160,7 @@ public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao
 					}
 				}, new SqlParameterValue(Types.NUMERIC, objectType), new SqlParameterValue(Types.NUMERIC, objectId));
 		
-		return new CommentTreeWalker(objectType, objectId, tree);
+		return new ModelObjectTreeWalker(objectType, objectId, tree);
 	}
 
 }

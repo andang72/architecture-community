@@ -16,6 +16,7 @@
 
 package architecture.community.comment;
 
+import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.user.User;
 
 public interface CommentService {
@@ -32,6 +33,6 @@ public interface CommentService {
 
 	public abstract Comment createComment(int objectType, long objectId, User user, String text);
 
-	public CommentTreeWalker getCommentTreeWalker(int objectType, long objectId);
+	public ModelObjectTreeWalker getCommentTreeWalker(int objectType, long objectId);
 
 }

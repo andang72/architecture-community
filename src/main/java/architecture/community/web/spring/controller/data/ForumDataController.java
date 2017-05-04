@@ -35,10 +35,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import architecture.community.board.BoardNotFoundException;
 import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
-import architecture.community.comment.CommentTreeWalker;
-import architecture.community.comment.DefaultComment;
+import architecture.community.exception.NotFoundException;
 import architecture.community.forum.ForumMessage;
 import architecture.community.forum.ForumMessageNotFoundException;
 import architecture.community.forum.ForumService;
@@ -46,6 +46,8 @@ import architecture.community.forum.ForumThread;
 import architecture.community.forum.ForumThreadNotFoundException;
 import architecture.community.forum.MessageTreeWalker;
 import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectTreeWalker;
+import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
@@ -66,6 +68,7 @@ public class ForumDataController {
 	private CommentService commentService;
 	
 	private Logger log = LoggerFactory.getLogger(ForumDataController.class);
+	
 	public ForumDataController() {
 	}
 
@@ -193,10 +196,15 @@ public class ForumDataController {
 	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request) throws ForumMessageNotFoundException{	
 		
 		ForumMessage message = forumService.getForumMessage(messageId);		
-		CommentTreeWalker walker = commentService.getCommentTreeWalker(ModelObject.FORUM_MESSAGE, message.getMessageId());
-		Comment parent = new DefaultComment(-1L);
-		int totalSize = walker.getRecursiveChildCount(parent);
-		List<Comment> list = walker.recursiveChildren(parent);	
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(ModelObject.FORUM_MESSAGE, message.getMessageId());
+		long parentId = -1L;
+		int totalSize = walker.getChildCount(parentId);
+		List<Comment> list = walker.children(parentId, new ObjectLoader<Comment>(){
+			public Comment load(long commentId) throws NotFoundException {
+				return commentService.getComment(commentId);
+			}
+			
+		});
 		return new ItemList(list, totalSize);
 	}
 	

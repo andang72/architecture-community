@@ -1,5 +1,8 @@
 package architecture.community.web.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,8 +26,7 @@ public class ServletUtils {
 	 * @param contentType 컨텐츠 타입 값
 	 * @param response 
 	 */
-	public static void setContentType(String contentType, HttpServletResponse response) {
-		
+	public static void setContentType(String contentType, HttpServletResponse response) {		
     	String contentTypeToUse = StringUtils.defaultString(contentType, DEFAULT_HTML_CONTENT_TYPE);
     	response.setContentType(contentTypeToUse);
     }
@@ -57,5 +59,13 @@ public class ServletUtils {
 			return true;
 		else 
 			return false;
+	}
+	
+	public static String getEncodedFileName(String name) {
+		try {
+			return URLEncoder.encode(name, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return name;
+		}
 	}
 }

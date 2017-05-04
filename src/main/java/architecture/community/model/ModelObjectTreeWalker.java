@@ -16,7 +16,12 @@
 
 package architecture.community.model;
 
-import architecture.community.comment.Comment;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.ss.formula.functions.T;
+
+import architecture.community.exception.NotFoundException;
 import architecture.community.util.LongTree;
 
 public class ModelObjectTreeWalker {
@@ -52,24 +57,75 @@ public class ModelObjectTreeWalker {
 		return modelObject;
 	}
 	
-	protected long[] getCommentIds(Comment parent) {
-		return tree.getChildren(parent.getCommentId());
+
+	public T getParent(long childId, ObjectLoader<T> loader) throws NotFoundException {
+		long parentId = tree.getParent(childId);
+		if (parentId == -1L) {
+			return null;
+		} else {
+			return loader.load(parentId);
+		}
 	}
 
-	protected long[] getRecursiveCommentIds(Comment parent) {
-		return tree.getRecursiveChildren(parent.getCommentId());
+	public boolean isLeaf(long objectId) {
+		return tree.isLeaf(objectId);
 	}
+	
+	public int getChildCount(long objectId) {
+		return tree.getChildCount(objectId);
+	}
+ 
+	
+	public T getChild(long parentId, int index, ObjectLoader<T> loader) throws NotFoundException {
+		long childId = tree.getChild(parentId, index);
+		if (childId == -1L) {
+			return null;
+		} else {
+			return loader.load(childId);
+		}
+	}
+	
+	public <T> List<T> children(long parentId, ObjectLoader<T> loader) {
+		long children[] = tree.getChildren(parentId);
+		List<T> list = new ArrayList<T>();
+		for (long child : children) {
+			try {
+				list.add(loader.load(child));
+			} catch (NotFoundException e) {
+			}
+		}
+		return list;
+	}		
 	
 	protected int getRecursiveChildCount(long parentId) {
 		int numChildren = 0;
 		int num = tree.getChildCount(parentId);
 		numChildren += num;
 		for (int i = 0; i < num; i++) {
-			long childID = tree.getChild(parentId, i);
-			if (childID != -1L)
-				numChildren += getRecursiveChildCount(childID);
+			long childId = tree.getChild(parentId, i);
+			if (childId != -1L)
+				numChildren += getRecursiveChildCount(childId);
 		}
 		return numChildren;
 	}
+	
+	@SuppressWarnings("hiding")
+	public <T> List<T> recursiveChildren(long parentId, ObjectLoader<T> loader ) {
+		long children[] = tree.getRecursiveChildren(parentId);
+		List<T> list = new ArrayList<T>();
+		for (long child : children){
+			try {
+				list.add(loader.load(child));
+			} catch (NotFoundException e) {
+			}
+		}
+		return list;
+	}
+	
+	@SuppressWarnings("hiding")
+	public interface ObjectLoader<T>{
+		T load( long primaryKey ) throws NotFoundException ;
+	}
+	
 
 }

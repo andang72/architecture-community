@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import architecture.community.comment.dao.CommentDao;
 import architecture.community.comment.event.CommentEvent;
+import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
@@ -156,14 +157,14 @@ public class DefaultCommentService extends EventSupport implements CommentServic
 		return comment;
 	}
 
-	public CommentTreeWalker getCommentTreeWalker(int objectType, long objectId) {
+	public ModelObjectTreeWalker getCommentTreeWalker(int objectType, long objectId) {
 		String key = getTreeWalkerCacheKey(objectType, objectId);
-		CommentTreeWalker treeWalker;
+		ModelObjectTreeWalker treeWalker;
 		if (treeWalkerCache.get(key) != null) {
-		    treeWalker = (CommentTreeWalker) treeWalkerCache.get(key).getObjectValue();
+		    treeWalker = (ModelObjectTreeWalker) treeWalkerCache.get(key).getObjectValue();
 		} else {
 		    synchronized (key) {
-			treeWalker = commentDao.getCommentTreeWalker(objectType, objectId);
+			treeWalker = commentDao.getTreeWalker(objectType, objectId);
 			treeWalkerCache.put(new Element(key, treeWalker));
 		    }
 		}
