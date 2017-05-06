@@ -1,6 +1,9 @@
 package tests;
 
+import java.io.File;
 import java.util.List;
+
+import javax.servlet.ServletContext;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +17,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
+import architecture.community.image.ImageNotFoundException;
+import architecture.community.image.ImageService;
+import architecture.community.image.LogoImage;
+import architecture.community.model.ModelObject;
 import architecture.ee.service.Repository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,24 +34,63 @@ public class BoardTest {
 	private BoardService boardService;
 	
 	@Autowired
+	private ImageService imageService;
+	
+	@Autowired
 	private Repository repository;
 	
 	
+	@Autowired
+	ServletContext context; 
+	
+	
+	public File getRandomLogoFile(){
+		
+		String path = context.getRealPath("/images");
+		File file = new File(path);		
+		int rand = (int) ((Math.random() * 4) + 1);
+		File img = new File(file, rand + ".png");
+		log.debug("random file : {}", img.getName()  );
+		return img;
+	}
+	
 	@Test
 	public void testSelectOrCreateBoard(){
+		
+		
+		
 		
 		List<Board> list = boardService.getAllBoards();
 		long boardId = -1L;
 		for( Board board : list){
 			if( boardId < 0 )
 				boardId = board.getBoardId();
+			log.debug("===================");
 			log.debug("BOARD {}, {}, {}", board.getBoardId(), board.getName(), board.getDisplayName() );
+			
+			int count = imageService.getLogoImageCount(ModelObject.BOARD, board.getBoardId());
+			
+			log.debug("logo image count : {}, {}, {}", ModelObject.BOARD, board.getBoardId(), count);
+			
+			if( count == 0){
+				File file = getRandomLogoFile();
+				log.debug("adding" );
+				LogoImage img = imageService.createLogoImage( ModelObject.BOARD, board.getBoardId(), true, file.getName(), "image/png", file );
+				imageService.addLogoImage(img, file);
+			}else{
+				try {
+					log.debug("getting" );
+					LogoImage img = imageService.getPrimaryLogoImage(ModelObject.BOARD, board.getBoardId());
+					
+				} catch (ImageNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
-		
 		
 		if( list.size() == 0)
 			createBoardTest();
-		
 		
 		if( boardId > 0){
 			try {

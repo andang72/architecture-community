@@ -55,6 +55,8 @@ public interface Image extends ModelObject {
 	 */
 	public abstract int getSize();
 	
+	public abstract void setSize(int size);
+	
 	/**
 	 * 이미지 데이터를 InputStream 형태로 리턴한다.
 	 * @return

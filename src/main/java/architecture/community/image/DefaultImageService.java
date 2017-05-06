@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,7 @@ import architecture.community.image.dao.ImageDao;
 import architecture.community.util.CommunityConstants.Platform;
 import architecture.ee.exception.RuntimeError;
 import architecture.ee.service.Repository;
+import architecture.ee.util.StringUtils;
 import net.coobird.thumbnailator.Thumbnails;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -70,13 +72,16 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	@Qualifier("logoImageCache")
 	private Cache logoImageCache;
 
-	
 	@Inject
 	@Qualifier("imageCache")
 	private Cache imageCache;
-	
+
+/*	@Inject
+	@Qualifier("imageLinkIdCache")
+	private Cache imageLinkIdCache;
+	*/
 	private ImageConfig imageConfig;;
-	
+
 	private File imageDir;
 
 	public DefaultImageService() {
@@ -85,14 +90,13 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void addLogoImage(LogoImage logoImage, File file) {
-		if (logoImage.getLogoId() < 1) {
+		if (logoImage.getImageId() < 1) {
 			// clear cache
 			List<Long> list = getLogoImageIdList(logoImage.getObjectType(), logoImage.getObjectId());
 			for (Long logoImageId : list) {
 				this.logoImageCache.remove(logoImageId);
 			}
-			this.logoImageIdsCache
-					.remove(getLogoImageIdListCacheKey(logoImage.getObjectType(), logoImage.getObjectId()));
+			this.logoImageIdsCache.remove(getLogoImageIdListCacheKey(logoImage.getObjectType(), logoImage.getObjectId()));
 			imageDao.addLogoImage(logoImage, file);
 		}
 	}
@@ -101,6 +105,28 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		return new DefaultLogoImage();
 	}
 
+	public LogoImage createLogoImage(int objectType, long objectId, boolean primary, String name, String contentType, File file) {
+		DefaultLogoImage image = new DefaultLogoImage(objectType, objectId, primary);
+		
+		image.setContentType(contentType);
+		
+		image.setName(name);
+		
+		if(StringUtils.isNullOrEmpty(image.getName())){
+			image.setName(file.getName());
+		}
+		
+		image.setSize((int) FileUtils.sizeOf(file));
+		
+		try {
+			image.setInputStream(FileUtils.openInputStream(file));
+		} catch (IOException e) {
+			log.debug(e.getMessage(), e);
+		}
+		
+		return image;
+	}
+	
 	public void addLogoImage(LogoImage logoImage, InputStream is) {
 		imageDao.addLogoImage(logoImage, is);
 	}
@@ -122,7 +148,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void removeLogoImage(LogoImage logoImage) throws ImageNotFoundException {
-		if (logoImage.getLogoId() > 1) {
+		if (logoImage.getImageId() > 1) {
 			// clear cache
 			List<Long> list = getLogoImageIdList(logoImage.getObjectType(), logoImage.getObjectId());
 			for (Long logoImageId : list) {
@@ -137,7 +163,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 
 	private void deleteImageFileCache(LogoImage image) {
 		Collection<File> files = FileUtils.listFiles(getImageCacheDir(),
-				FileFilterUtils.prefixFileFilter(image.getLogoId().toString()),
+				FileFilterUtils.prefixFileFilter(Long.toString(image.getImageId())),
 				FileFilterUtils.suffixFileFilter(".logo"));
 		for (File file : files) {
 			log.debug("deleting {} - {}.", file.getPath(), file.isFile());
@@ -156,7 +182,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		LogoImage imageToUse;
 		if (logoImageCache.get(logoId) == null) {
 			imageToUse = imageDao.getLogoImageById(logoId);
-			logoImageCache.put(new Element(imageToUse.getLogoId(), imageToUse));
+			logoImageCache.put(new Element(imageToUse.getImageId(), imageToUse));
 		} else {
 			imageToUse = (LogoImage) logoImageCache.get(logoId).getObjectValue();
 		}
@@ -187,7 +213,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public int getLogoImageCount(int objectType, long objectId) {
 		String key = getLogoImageIdListCacheKey(objectType, objectId);
 		if (logoImageIdsCache.get(key) != null) {
-			return ((List<Long>) logoImageIdsCache.get(key).getValue()).size();
+			return ((List<Long>) logoImageIdsCache.get(key).getObjectValue()).size();
 		}
 		return imageDao.getLogoImageCount(objectType, objectId);
 	}
@@ -212,8 +238,6 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		}
 	}
 
-
-
 	protected List<Long> getLogoImageIdList(int objectType, long objectId) {
 		String key = getLogoImageIdListCacheKey(objectType, objectId);
 		List<Long> idsList;
@@ -227,12 +251,13 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	}
 
 	protected String getLogoImageIdListCacheKey(int objectType, long objectId) {
-		return (new StringBuilder()).append("objectType-").append(objectType).append("-objectId-").append(objectId).toString();
+		return (new StringBuilder()).append("objectType-").append(objectType).append("-objectId-").append(objectId)
+				.toString();
 	}
 
 	protected String toThumbnailFilename(LogoImage image, int width, int height) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(image.getLogoId()).append("_").append(width).append("_").append(height).append(".logo");
+		sb.append(image.getImageId()).append("_").append(width).append("_").append(height).append(".logo");
 		return sb.toString();
 	}
 
@@ -243,7 +268,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 			File dir = getImageCacheDir();
 			File file = new File(dir, toThumbnailFilename(image, width, height));
 			File originalFile = getImageFromCacheIfExist(image);
-			log.debug("orignal image source: " + originalFile.getAbsoluteFile() + ", " + originalFile.length() + " thumbnail:" + file.getAbsoluteFile() + " - " + file.exists());
+			log.debug("orignal image source: " + originalFile.getAbsoluteFile() + ", " + originalFile.length()
+					+ " thumbnail:" + file.getAbsoluteFile() + " - " + file.exists());
 			if (file.exists()) {
 				log.debug("file size : {}", file.length());
 				if (file.length() > 0) {
@@ -254,18 +280,20 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 			}
 
 			/**
-			 * TIP : 윈동우 경우 Thumbnail 파일 생성후에도 해당 파일을 참조하는 문제가 있음 이를 해결하기 위하여 
+			 * TIP : 윈동우 경우 Thumbnail 파일 생성후에도 해당 파일을 참조하는 문제가 있음 이를 해결하기 위하여
 			 * 임시파이을 생성하고 이를 다시 복사하도록 함.
 			 */
 			log.debug("create thumbnail {}.", file.getAbsolutePath());
 			if (Platform.current() == Platform.WINDOWS) {
 				File tmp = getTemeFile();
-				Thumbnails.of(originalFile).size(width, height).outputFormat("png").toOutputStream(new FileOutputStream(tmp));
+				Thumbnails.of(originalFile).size(width, height).outputFormat("png")
+						.toOutputStream(new FileOutputStream(tmp));
 				image.setThumbnailSize((int) tmp.length());
 				FileUtils.copyFile(tmp, file);
 			} else {
 				try {
-					Thumbnails.of(originalFile).allowOverwrite(true).size(width, height).outputFormat("png").toOutputStream(new FileOutputStream(file));
+					Thumbnails.of(originalFile).allowOverwrite(true).size(width, height).outputFormat("png")
+							.toOutputStream(new FileOutputStream(file));
 				} catch (Throwable e) {
 					log.error(e.getMessage(), e);
 				}
@@ -278,7 +306,6 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 
 	}
 
-
 	/**
 	 * 
 	 * @param image
@@ -288,11 +315,11 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	protected File getImageFromCacheIfExist(LogoImage image) throws IOException {
 		File dir = getImageCacheDir();
 		StringBuilder sb = new StringBuilder();
-		sb.append(image.getLogoId()).append(".logo");
+		sb.append(image.getImageId()).append(".logo");
 		File file = new File(dir, sb.toString());
 		if (file.exists()) {
 			long size = FileUtils.sizeOf(file);
-			if (size != image.getImageSize()) {
+			if (size != image.getSize()) {
 				InputStream inputStream = imageDao.getInputStream(image);
 				FileUtils.copyInputStreamToFile(inputStream, file);
 			}
@@ -304,15 +331,14 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		return file;
 	}
 
-	
-		
 	protected synchronized File getImageDir() {
 		if (imageDir == null) {
 			imageDir = repository.getFile("images");
 			if (!imageDir.exists()) {
 				boolean result = imageDir.mkdir();
 				if (!result)
-					log.error((new StringBuilder()).append("Unable to create image directory: '").append(imageDir).append("'").toString());
+					log.error((new StringBuilder()).append("Unable to create image directory: '").append(imageDir)
+							.append("'").toString());
 				getImageCacheDir();
 				getImageTempDir();
 			} else {
@@ -326,7 +352,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		}
 		return imageDir;
 	}
-	
+
 	protected File getImageCacheDir() {
 		File dir = new File(getImageDir(), "cache");
 		if (!dir.exists()) {
@@ -342,14 +368,12 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		}
 		return dir;
 	}
-	
+
 	protected File getTemeFile() {
 		UUID uuid = UUID.randomUUID();
 		File tmp = new File(getImageTempDir(), uuid.toString());
 		return tmp;
 	}
-	
-	
 
 	public boolean isImageEnabled() {
 		return imageConfig.isEnabled();
@@ -358,7 +382,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public void setImageEnabled(boolean enabled) {
 		imageConfig.setEnabled(enabled);
 		String str = (new StringBuilder()).append("").append(enabled).toString();
-		//ApplicationHelper.getConfigService().setApplicationProperty("image.enabled", str);
+		// ApplicationHelper.getConfigService().setApplicationProperty("image.enabled",
+		// str);
 	}
 
 	public int getMaxImageSize() {
@@ -368,7 +393,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public void setMaxImageSize(int maxImageSize) {
 		imageConfig.setMaxImageSize(maxImageSize);
 		String str = (new StringBuilder()).append("").append(maxImageSize).toString();
-		//ApplicationHelper.getConfigService().setApplicationProperty("image.maxImageSize", str);	
+		// ApplicationHelper.getConfigService().setApplicationProperty("image.maxImageSize",
+		// str);
 	}
 
 	public int getImagePreviewMaxSize() {
@@ -378,7 +404,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public void setImagePreviewMaxSize(int imagePreviewMaxSize) {
 		imageConfig.setImagePreviewMaxSize(imagePreviewMaxSize);
 		String str = (new StringBuilder()).append("").append(imagePreviewMaxSize).toString();
-		//ApplicationHelper.getConfigService().setApplicationProperty("image.imagePreviewMaxSize", str);		
+		// ApplicationHelper.getConfigService().setApplicationProperty("image.imagePreviewMaxSize",
+		// str);
 	}
 
 	public boolean isForceThumbnailsEnabled() {
@@ -388,7 +415,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public void setFourceThumbnailsEnabled(boolean forceThumbnailsEnabled) {
 		imageConfig.setForceThumbnailsEnabled(forceThumbnailsEnabled);
 		String str = (new StringBuilder()).append("").append(forceThumbnailsEnabled).toString();
-		//ApplicationHelper.getConfigService().setApplicationProperty("image.forceThumbnailsEnabled", str);		
+		// ApplicationHelper.getConfigService().setApplicationProperty("image.forceThumbnailsEnabled",
+		// str);
 	}
 
 	public int getImageMaxWidth() {
@@ -398,7 +426,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public void setImageMaxWidth(int imageMaxWidth) {
 		imageConfig.setImageMaxWidth(imageMaxWidth);
 		String str = (new StringBuilder()).append("").append(imageMaxWidth).toString();
-		//ApplicationHelper.getConfigService().setApplicationProperty("image.imageMaxWidth", str);	
+		// ApplicationHelper.getConfigService().setApplicationProperty("image.imageMaxWidth",
+		// str);
 	}
 
 	public int getImageMaxHeight() {
@@ -408,54 +437,57 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public void setImageMaxHeight(int imageMaxHeight) {
 		imageConfig.setImageMaxHeight(imageMaxHeight);
 		String str = (new StringBuilder()).append("").append(imageMaxHeight).toString();
-		//ApplicationHelper.getConfigService().setApplicationProperty("image.imageMaxHeight", str);	
+		// ApplicationHelper.getConfigService().setApplicationProperty("image.imageMaxHeight",
+		// str);
 	}
 
 	public boolean isValidType(String contentType) {
-		boolean flag;		
-		 if(isAllowAllByDefault())
-             flag = !getDisallowedTypes().contains(contentType);
-         else
-             flag = getAllowedTypes().contains(contentType);
-		 return flag;
+		boolean flag;
+		if (isAllowAllByDefault())
+			flag = !getDisallowedTypes().contains(contentType);
+		else
+			flag = getAllowedTypes().contains(contentType);
+		return flag;
 	}
 
-	public List<String> getDisallowedTypes(){		
+	public List<String> getDisallowedTypes() {
 		return imageConfig.getDisallowedTypes();
 	}
-	
-	public void addDisallowedType(String contentType)
-	{
-		if (!imageConfig.getDisallowedTypes().contains(contentType)){			
+
+	public void addDisallowedType(String contentType) {
+		if (!imageConfig.getDisallowedTypes().contains(contentType)) {
 			imageConfig.getDisallowedTypes().add(contentType);
-			String str = listToString( imageConfig.getDisallowedTypes());
-			//ApplicationHelper.getConfigService().setApplicationProperty("image.disallowedTypes", str);	
-		}	
+			String str = listToString(imageConfig.getDisallowedTypes());
+			// ApplicationHelper.getConfigService().setApplicationProperty("image.disallowedTypes",
+			// str);
+		}
 	}
-	
-	public void removeDisallowedType(String contentType)
-	{
-		if (imageConfig.getDisallowedTypes().contains(contentType)){			
+
+	public void removeDisallowedType(String contentType) {
+		if (imageConfig.getDisallowedTypes().contains(contentType)) {
 			imageConfig.getDisallowedTypes().remove(contentType);
-			String str = listToString( imageConfig.getDisallowedTypes());
-			//ApplicationHelper.getConfigService().setApplicationProperty("image.disallowedTypes", str);	
-		}			
+			String str = listToString(imageConfig.getDisallowedTypes());
+			// ApplicationHelper.getConfigService().setApplicationProperty("image.disallowedTypes",
+			// str);
+		}
 	}
-	
+
 	public void addAllowedType(String contentType) {
-		if (!imageConfig.getAllowedTypes().contains(contentType)){			
+		if (!imageConfig.getAllowedTypes().contains(contentType)) {
 			imageConfig.getAllowedTypes().add(contentType);
-			String str = listToString( imageConfig.getAllowedTypes());
-			//ApplicationHelper.getConfigService().setApplicationProperty("image.allowedTypes", str);	
-		}		
+			String str = listToString(imageConfig.getAllowedTypes());
+			// ApplicationHelper.getConfigService().setApplicationProperty("image.allowedTypes",
+			// str);
+		}
 	}
 
 	public void removeAllowedType(String contentType) {
-		if (imageConfig.getAllowedTypes().contains(contentType)){			
+		if (imageConfig.getAllowedTypes().contains(contentType)) {
 			imageConfig.getAllowedTypes().remove(contentType);
-			String str = listToString( imageConfig.getAllowedTypes());
-			//ApplicationHelper.getConfigService().setApplicationProperty("image.allowedTypes", str);	
-		}			
+			String str = listToString(imageConfig.getAllowedTypes());
+			// ApplicationHelper.getConfigService().setApplicationProperty("image.allowedTypes",
+			// str);
+		}
 	}
 
 	public List<String> getAllowedTypes() {
@@ -469,19 +501,20 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public void setAllowAllByDefault(boolean allowed) {
 		imageConfig.setAllowAllByDefault(allowed);
 		String str = (new StringBuilder()).append("").append(allowed).toString();
-		//ApplicationHelper.getConfigService().setApplicationProperty("image.allowAllByDefault", str);			
+		// ApplicationHelper.getConfigService().setApplicationProperty("image.allowAllByDefault",
+		// str);
 	}
-	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW )
-	public void deleteImage(Image image){		
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void deleteImage(Image image) {
 		Image imageToUse = imageDao.getImageById(image.getImageId());
 		imageDao.deleteImage(imageToUse);
-		File dir = new File(getImageDir(), "cache" );
-		 File imageFile = new File(dir, (new StringBuilder()).append(imageToUse.getImageId()).append(".bin").toString());
-         if(imageFile.exists())
-             imageFile.delete();
+		File dir = new File(getImageDir(), "cache");
+		File imageFile = new File(dir, (new StringBuilder()).append(imageToUse.getImageId()).append(".bin").toString());
+		if (imageFile.exists())
+			imageFile.delete();
 	}
-	
+
 	public Image createImage(int objectType, long objectId, String name, String contentType, File file) {
 		Date now = new Date();
 		DefaultImage image = new DefaultImage();
@@ -492,16 +525,16 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		image.setContentType(contentType);
 		image.setName(name);
 		image.setImageId(-1L);
-		
-		image.setSize( (int) FileUtils.sizeOf(file));
+
+		image.setSize((int) FileUtils.sizeOf(file));
 		try {
 			image.setInputStream(FileUtils.openInputStream(file));
 		} catch (IOException e) {
 			log.debug(e.getMessage(), e);
-		}		
+		}
 		return image;
 	}
-	
+
 	public Image createImage(int objectType, long objectId, String name, String contentType, InputStream inputStream) {
 		Date now = new Date();
 		DefaultImage image = new DefaultImage();
@@ -512,80 +545,82 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		image.setContentType(contentType);
 		image.setName(name);
 		image.setImageId(-1L);
-		image.setInputStream(inputStream);		
+		image.setInputStream(inputStream);
 		try {
-			image.setSize( IOUtils.toByteArray(inputStream).length );
+			image.setSize(IOUtils.toByteArray(inputStream).length);
 		} catch (IOException e) {
 			log.debug(e.getMessage(), e);
-		}		
+		}
 		return image;
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW )
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdate(Image image) {
 		try {
-			if( image.getImageId() < 0 ){
+			if (image.getImageId() < 0) {
 				imageDao.createImage(image);
 				imageDao.saveImageInputStream(image, image.getInputStream());
-			}else{
+			} else {
 				Date now = new Date();
-				((DefaultImage)image).setModifiedDate(now);
+				((DefaultImage) image).setModifiedDate(now);
 				imageDao.updateImage(image);
 				imageDao.saveImageInputStream(image, image.getInputStream());
-			}					
-			
-			Collection<File> files = FileUtils.listFiles(getImageCacheDir(), FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
-			for(File file : files){
+			}
+
+			Collection<File> files = FileUtils.listFiles(getImageCacheDir(),
+					FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
+			for (File file : files) {
 				FileUtils.deleteQuietly(file);
 			}
-			
-			Image imageToUse = getImage(image.getImageId());			
+
+			Image imageToUse = getImage(image.getImageId());
 			imageCache.remove(imageToUse.getImageId());
 		} catch (Exception e) {
 			throw new RuntimeError(e);
 		}
 	}
-	
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW )
-	public Image saveImage(Image image){
-		
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public Image saveImage(Image image) {
+
 		try {
-			if( image.getImageId() < 0 ){
+			if (image.getImageId() < 0) {
 				Image newImage = imageDao.createImage(image);
 				imageDao.saveImageInputStream(newImage, image.getInputStream());
-			}else{
+			} else {
 				Date now = new Date();
-				((DefaultImage)image).setModifiedDate(now);
+				((DefaultImage) image).setModifiedDate(now);
 				imageDao.updateImage(image);
-				imageDao.saveImageInputStream(image, image.getInputStream());				
-			}					
-			
-			Collection<File> files = FileUtils.listFiles(getImageCacheDir(), FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
-			for(File file : files){
+				imageDao.saveImageInputStream(image, image.getInputStream());
+			}
+
+			Collection<File> files = FileUtils.listFiles(getImageCacheDir(),
+					FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
+			for (File file : files) {
 				FileUtils.deleteQuietly(file);
 			}
-			
-			Image imageToUse = getImage(image.getImageId());			
+
+			Image imageToUse = getImage(image.getImageId());
 			imageCache.remove(imageToUse.getImageId());
 			return imageToUse;
 		} catch (Exception e) {
 			throw new RuntimeError(e);
 		}
 	}
-		
+
 	public Image getImage(long imageId) throws NotFoundException {
-		Image imageToUse = null  ;
-		if( imageCache.get(imageId) == null){
+		Image imageToUse = null;
+		if (imageCache.get(imageId) == null) {
 			try {
 				imageToUse = getImageById(imageId);
 				imageCache.put(new Element(imageId, imageToUse));
 			} catch (Exception e) {
-				 String msg = (new StringBuilder()).append("Unable to find image ").append(imageId).toString();
-	             throw new NotFoundException(msg, e);
+				String msg = (new StringBuilder()).append("Unable to find image ").append(imageId).toString();
+				throw new NotFoundException(msg, e);
 			}
-		}else{
-			imageToUse =  (Image) imageCache.get( imageId ).getValue();
-		}		
+		} else {
+			imageToUse = (Image) imageCache.get(imageId).getValue();
+		}
 		return imageToUse;
 	}
 
@@ -593,12 +628,12 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		try {
 			return imageDao.getImageById(imageId);
 		} catch (Exception e) {
-			 String msg = (new StringBuilder()).append("Unable to find image ").append(imageId).toString();
-             throw new NotFoundException(msg, e);
+			String msg = (new StringBuilder()).append("Unable to find image ").append(imageId).toString();
+			throw new NotFoundException(msg, e);
 		}
 	}
 
-	public InputStream getImageInputStream(Image image) {		
+	public InputStream getImageInputStream(Image image) {
 		try {
 			File file = getImageFromCacheIfExist(image);
 			return FileUtils.openInputStream(file);
@@ -606,106 +641,173 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 			throw new RuntimeError(e);
 		}
 	}
-	
-	
-	public InputStream getImageThumbnailInputStream(Image image, int width, int height ) {		
-		try {			
+
+	public InputStream getImageThumbnailInputStream(Image image, int width, int height) {
+		try {
 			File file = getThumbnailFromCacheIfExist(image, width, height);
 			return FileUtils.openInputStream(file);
 		} catch (IOException e) {
 			throw new RuntimeError(e.getMessage(), e);
 		}
 	}
-	
+/*
+	public Image getImageByImageLink(String linkId) throws NotFoundException {
+		Long imageIdToUse = -1L;
+		if (imageLinkIdCache.get(linkId) == null) {
+			try {
+				ImageLink link = imageLinkDao.getImageLink(linkId);
+				imageLinkIdCache.put(new Element(link.getLinkId(), link.getImageId()));
+				return getImageById(link.getImageId());
+			} catch (Exception e) {
+				String msg = (new StringBuilder()).append("Unable to find image ").append(linkId).toString();
+				throw new NotFoundException(msg, e);
+			}
+		} else {
+			imageIdToUse = (Long) imageLinkIdCache.get(linkId).getValue();
+		}
+		return getImage(imageIdToUse);
+	}
+
+	public ImageLink getImageLink(Image image) throws NotFoundException {
+		ImageLink link = null;
+		Long imageIdToUse = image.getImageId();
+		if (imageLinkCache.get(imageIdToUse) == null) {
+			try {
+				link = imageLinkDao.getImageLinkByImageId(imageIdToUse);
+				imageLinkCache.put(new Element(imageIdToUse, link));
+			} catch (Exception e) {
+				String msg = (new StringBuilder()).append("Unable to find image link for iamge : ").append(imageIdToUse)
+						.toString();
+				throw new NotFoundException(msg, e);
+			}
+		} else {
+			link = (ImageLink) imageLinkCache.get(imageIdToUse).getValue();
+		}
+		return link;
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public ImageLink getImageLink(Image image, boolean createIfNotExist) throws NotFoundException {
+		try {
+			return getImageLink(image);
+		} catch (NotFoundException e) {
+			if (createIfNotExist) {
+				ImageLink link = new ImageLink(RandomStringUtils.random(64, true, true), image.getImageId(), true);
+				imageLinkDao.saveImageLink(link);
+				imageLinkCache.put(new Element(image.getImageId(), link));
+				return link;
+			} else {
+				throw e;
+			}
+		}
+	}
+
+	public void removeImageLink(Image image) {
+		try {
+			ImageLink link = getImageLink(image);
+			imageLinkIdCache.remove(link.getLinkId());
+			imageLinkCache.remove(image.getImageId());
+			imageLinkDao.removeImageLink(link);
+		} catch (NotFoundException e) {
+		}
+	}
+*/
 	/**
 	 * 
 	 * @param image
 	 * @return
 	 * @throws IOException
 	 */
-	protected File getImageFromCacheIfExist(Image image) throws IOException{		
+	protected File getImageFromCacheIfExist(Image image) throws IOException {
 		File dir = getImageCacheDir();
-		
+
 		StringBuilder sb = new StringBuilder();
-		sb.append( image.getImageId() ).append(".bin");		
-		File file = new File(dir, sb.toString() );		
-		if( file.exists() ){
+		sb.append(image.getImageId()).append(".bin");
+		File file = new File(dir, sb.toString());
+		if (file.exists()) {
 			long size = FileUtils.sizeOf(file);
-			if( size != image.getSize() ){
+			if (size != image.getSize()) {
 				// size different make cache new one....
 				InputStream inputStream = imageDao.getImageInputStream(image);
 				FileUtils.copyInputStreamToFile(inputStream, file);
 			}
-		}else{
+		} else {
 			// doesn't exist, make new one ..
 			InputStream inputStream = imageDao.getImageInputStream(image);
 			FileUtils.copyInputStreamToFile(inputStream, file);
-		}		
+		}
 		return file;
-	}	
+	}
 
-	
-	protected String toThumbnailFilename(Image image,  int width, int height){
+	protected String toThumbnailFilename(Image image, int width, int height) {
 		StringBuilder sb = new StringBuilder();
-		sb.append( image.getImageId() ).append("_").append(width).append("_").append(height).append(".bin");	
+		sb.append(image.getImageId()).append("_").append(width).append("_").append(height).append(".bin");
 		return sb.toString();
 	}
-	
-	
-	protected File getThumbnailFromCacheIfExist(Image image,  int width, int height ) throws IOException{		
-		
-		log.debug( "thumbnail generation " + width + "x" + height );
+
+	protected File getThumbnailFromCacheIfExist(Image image, int width, int height) throws IOException {
+
+		log.debug("thumbnail generation " + width + "x" + height);
 		File dir = getImageCacheDir();
-		File file = new File(dir, toThumbnailFilename(image, width, height) );		
-		File originalFile = getImageFromCacheIfExist( image );	
-		
-		log.debug( "source: " + originalFile.getAbsoluteFile() + ", " + originalFile.length() );
-		log.debug( "target:" + file.getAbsoluteFile());
-		
-		if( file.exists() && file.length() > 0 ){
-			image.setThumbnailSize((int)file.length());
+		File file = new File(dir, toThumbnailFilename(image, width, height));
+		File originalFile = getImageFromCacheIfExist(image);
+
+		log.debug("source: " + originalFile.getAbsoluteFile() + ", " + originalFile.length());
+		log.debug("target:" + file.getAbsoluteFile());
+
+		if (file.exists() && file.length() > 0) {
+			image.setThumbnailSize((int) file.length());
 			return file;
 		}
-		
-		BufferedImage originalImage = ImageIO.read(originalFile);		
-		if( originalImage.getHeight() < height || originalImage.getWidth() < width ){
-			image.setThumbnailSize(0);
-			return originalFile ;
-		}
-		
-		BufferedImage thumbnail = Thumbnails.of(originalImage).size(width, height).asBufferedImage();
-		ImageIO.write(thumbnail, "png", file );
-		image.setThumbnailSize((int)file.length());		
-		return file;		
-	}
-	
-	
 
-	public void  initialize() {		
-		log.debug( "initializing image manager" );		
+		BufferedImage originalImage = ImageIO.read(originalFile);
+		if (originalImage.getHeight() < height || originalImage.getWidth() < width) {
+			image.setThumbnailSize(0);
+			return originalFile;
+		}
+
+		BufferedImage thumbnail = Thumbnails.of(originalImage).size(width, height).asBufferedImage();
+		ImageIO.write(thumbnail, "png", file);
+		image.setThumbnailSize((int) file.length());
+		return file;
+	}
+
+	public void initialize() {
+		log.debug("initializing image manager");
 		ImageConfig imageConfigToUse = new ImageConfig();
 		/*
-		imageConfigToUse.setEnabled( ApplicationHelper.getApplicationBooleanProperty("image.enabled", true) );
-		imageConfigToUse.setAllowAllByDefault( ApplicationHelper.getApplicationBooleanProperty("image.allowAllByDefault", true) );
-		imageConfigToUse.setForceThumbnailsEnabled( ApplicationHelper.getApplicationBooleanProperty("image.forceThumbnailsEnabled", true) );
-		imageConfigToUse.setMaxImageSize( ApplicationHelper.getApplicationIntProperty("", 2048) );
-		imageConfigToUse.setImagePreviewMaxSize(ApplicationHelper.getApplicationIntProperty("image.imagePreviewMaxSize", 250));
-		imageConfigToUse.setImageMaxWidth(ApplicationHelper.getApplicationIntProperty("image.imageMaxWidth", 450));
-		imageConfigToUse.setImageMaxHeight(ApplicationHelper.getApplicationIntProperty("image.imageMaxHeight", 600));
-		imageConfigToUse.setMaxImagesPerObject(ApplicationHelper.getApplicationIntProperty("image.maxImagesPerObject", 50));
-		imageConfigToUse.setAllowedTypes( stringToList(ApplicationHelper.getApplicationProperty("image.allowedTypes", ""))  );
-		imageConfigToUse.setDisallowedTypes( stringToList( ApplicationHelper.getApplicationProperty("image.disallowedTypes", "")));
-		*/
+		 * imageConfigToUse.setEnabled(
+		 * ApplicationHelper.getApplicationBooleanProperty("image.enabled",
+		 * true) ); imageConfigToUse.setAllowAllByDefault(
+		 * ApplicationHelper.getApplicationBooleanProperty(
+		 * "image.allowAllByDefault", true) );
+		 * imageConfigToUse.setForceThumbnailsEnabled(
+		 * ApplicationHelper.getApplicationBooleanProperty(
+		 * "image.forceThumbnailsEnabled", true) );
+		 * imageConfigToUse.setMaxImageSize(
+		 * ApplicationHelper.getApplicationIntProperty("", 2048) );
+		 * imageConfigToUse.setImagePreviewMaxSize(ApplicationHelper.
+		 * getApplicationIntProperty("image.imagePreviewMaxSize", 250));
+		 * imageConfigToUse.setImageMaxWidth(ApplicationHelper.
+		 * getApplicationIntProperty("image.imageMaxWidth", 450));
+		 * imageConfigToUse.setImageMaxHeight(ApplicationHelper.
+		 * getApplicationIntProperty("image.imageMaxHeight", 600));
+		 * imageConfigToUse.setMaxImagesPerObject(ApplicationHelper.
+		 * getApplicationIntProperty("image.maxImagesPerObject", 50));
+		 * imageConfigToUse.setAllowedTypes(
+		 * stringToList(ApplicationHelper.getApplicationProperty(
+		 * "image.allowedTypes", "")) ); imageConfigToUse.setDisallowedTypes(
+		 * stringToList(
+		 * ApplicationHelper.getApplicationProperty("image.disallowedTypes",
+		 * "")));
+		 */
 		this.imageConfig = imageConfigToUse;
-		getImageDir();				
-		log.debug( imageConfig.toString() );
-	}	
-	
-		
-	public void destroy(){
-		
-	}	
-	
-	
-	
+		getImageDir();
+		log.debug(imageConfig.toString());
+	}
+
+	public void destroy() {
+
+	}
+
 }

@@ -5,6 +5,8 @@ import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletContext;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ public class ForumTest {
 	
 	@Autowired
 	private ForumService forumService;
-	
+
 	
 	private String getBodyText(String filename){
 		

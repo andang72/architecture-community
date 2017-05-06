@@ -59,13 +59,13 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	private final RowMapper<LogoImage> logoMapper = new RowMapper<LogoImage>() {
 		public LogoImage mapRow(ResultSet rs, int rowNum) throws SQLException {
 		    DefaultLogoImage image = new DefaultLogoImage();
-		    image.setLogoId(rs.getLong("LOGO_ID"));
+		    image.setImageId(rs.getLong("LOGO_ID"));
 		    image.setObjectType(rs.getInt("OBJECT_TYPE"));
 		    image.setObjectId(rs.getLong("OBJECT_ID"));
-		    image.setFilename(rs.getString("FILE_NAME"));
+		    image.setName(rs.getString("FILE_NAME"));
 		    image.setPrimary((rs.getInt("PRIMARY_IMAGE") == 1 ? true : false));
-		    image.setImageSize(rs.getInt("FILE_SIZE"));
-		    image.setImageContentType(rs.getString("CONTENT_TYPE"));
+		    image.setSize(rs.getInt("FILE_SIZE"));
+		    image.setContentType(rs.getString("CONTENT_TYPE"));
 		    image.setCreationDate(rs.getTimestamp("CREATION_DATE"));
 		    image.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));
 		    return image;
@@ -189,8 +189,8 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	
 	public void addLogoImage(LogoImage logoImage, File file) {
 		try {
-			if (logoImage.getImageSize() == 0)
-				logoImage.setImageSize((int) FileUtils.sizeOf(file));
+			if (logoImage.getSize() == 0)
+				logoImage.setSize((int) FileUtils.sizeOf(file));
 			
 			addLogoImage(logoImage, file != null ? FileUtils.openInputStream(file) : null);
 		} catch (IOException e) {
@@ -200,10 +200,10 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 
 	public void addLogoImage(LogoImage logoImage, InputStream is) {
 		LogoImage toUse = logoImage;
-		long logoIdToUse = logoImage.getLogoId();
+		long logoIdToUse = logoImage.getImageId();
 		if (logoIdToUse < 1) {
 			logoIdToUse = getNextLogoId();
-			logoImage.setLogoId(logoIdToUse);
+			((DefaultLogoImage)logoImage).setImageId(logoIdToUse);
 		}
 		getExtendedJdbcTemplate().update(
 				getBoundSql("COMMUNITY_WEB.RESET_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
@@ -211,13 +211,13 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 				new SqlParameterValue(Types.NUMERIC, toUse.getObjectId()));
 
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.CREATE_LOGO_IMAGE").getSql(),
-				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()),
+				new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getObjectId()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.isPrimary() ? 1 : 0),
-				new SqlParameterValue(Types.VARCHAR, logoImage.getFilename()),
-				new SqlParameterValue(Types.NUMERIC, logoImage.getImageSize()),
-				new SqlParameterValue(Types.VARCHAR, logoImage.getImageContentType()),
+				new SqlParameterValue(Types.VARCHAR, logoImage.getName()),
+				new SqlParameterValue(Types.NUMERIC, logoImage.getSize()),
+				new SqlParameterValue(Types.VARCHAR, logoImage.getContentType()),
 				new SqlParameterValue(Types.DATE, logoImage.getModifiedDate()),
 				new SqlParameterValue(Types.DATE, logoImage.getCreationDate()));
 		
@@ -245,47 +245,47 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 				new SqlParameterValue(Types.NUMERIC, logoImage.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.getObjectId()),
 				new SqlParameterValue(Types.NUMERIC, logoImage.isPrimary() ? 1 : 0),
-				new SqlParameterValue(Types.VARCHAR, logoImage.getFilename()),
-				new SqlParameterValue(Types.NUMERIC, logoImage.getImageSize()),
-				new SqlParameterValue(Types.VARCHAR, logoImage.getImageContentType()),
+				new SqlParameterValue(Types.VARCHAR, logoImage.getName()),
+				new SqlParameterValue(Types.NUMERIC, logoImage.getSize()),
+				new SqlParameterValue(Types.VARCHAR, logoImage.getContentType()),
 				new SqlParameterValue(Types.DATE, logoImage.getModifiedDate()),
-				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
+				new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()));
 		if (is != null)
 			updateImageImputStream(logoImage, is);
 	}
 
 	protected void updateImageImputStream(LogoImage logoImage, InputStream inputStream) {
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_LOGO_IMAGE_DATA_BY_ID").getSql(),
-				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
+				new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()));
 		
 		if ( getExtendedJdbcTemplate().getDBInfo() == DB.ORACLE ){
 			getExtendedJdbcTemplate().update(
 					getBoundSql("COMMUNITY_WEB.INSERT_EMPTY_LOGO_IMAGE_DATA").getSql(),
-					new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
+					new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()));
 			getExtendedJdbcTemplate().update(
 					getBoundSql("COMMUNITY_WEB.UPDATE_LOGO_IMAGE_DATA").getSql(),
-					new SqlParameterValue(Types.BLOB, new SqlLobValue(inputStream, logoImage.getImageSize(), getLobHandler())),
-					new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
+					new SqlParameterValue(Types.BLOB, new SqlLobValue(inputStream, logoImage.getSize(), getLobHandler())),
+					new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()));
 		} else {
 			getExtendedJdbcTemplate().update(
 					getBoundSql("COMMUNITY_WEB.INSERT_LOGO_IMAGE_DATA").getSql(),
-					new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()), 
-					new SqlParameterValue(Types.BLOB, new SqlLobValue(inputStream, logoImage.getImageSize(), getLobHandler())));
+					new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()), 
+					new SqlParameterValue(Types.BLOB, new SqlLobValue(inputStream, logoImage.getSize(), getLobHandler())));
 		}
 	}
 
 	public void removeLogoImage(LogoImage logoImage) {
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_LOGO_IMAGE_BY_ID").getSql(),
-				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
+				new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()));
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_LOGO_IMAGE_DATA_BY_ID").getSql(),
-				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
+				new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()));
 	}
 
 	public InputStream getInputStream(LogoImage logoImage) throws IOException {
 		return getExtendedJdbcTemplate().queryForObject(
 				getBoundSql("COMMUNITY_WEB.SELECT_LOGO_IMAGE_DATA_BY_ID").getSql(),
 				new InputStreamRowMapper(), 
-				new SqlParameterValue(Types.NUMERIC, logoImage.getLogoId()));
+				new SqlParameterValue(Types.NUMERIC, logoImage.getImageId()));
 	}
 
 	public Long getPrimaryLogoImageId(int objectType, long objectId) throws ImageNotFoundException {

@@ -27,6 +27,11 @@ public interface ImageService {
 
 	public LogoImage createLogoImage();
 	
+	public LogoImage createLogoImage(int objectType, long objectId, boolean primary) ;	
+	
+	public abstract LogoImage createLogoImage(int objectType, long objectId, boolean primary, String name, String contentType, File file);
+	
+	
 	public void addLogoImage(LogoImage logoImage, File file);
 	
 	public void addLogoImage(LogoImage logoImage, InputStream is);

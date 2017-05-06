@@ -20,6 +20,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import architecture.community.model.DefaultModelObject;
+import architecture.community.model.json.JsonDateDeserializer;
+import architecture.community.model.json.JsonDateSerializer;
+
 public class DefaultImage implements Image {
 	
 	private Long imageId;
@@ -36,15 +44,30 @@ public class DefaultImage implements Image {
 	
 	private InputStream inputStream;
 	
-	private Integer thumbnailSize = 0;
+	private Integer thumbnailSize ;
 	
-	private String thumbnailContentType = "png";
+	private String thumbnailContentType ;
 	
 	private Date creationDate;
 	
 	private Date modifiedDate;
 	
 	public DefaultImage() {
+		this.imageId = UNKNOWN_OBJECT_ID;
+		this.objectType = UNKNOWN_OBJECT_TYPE;
+		this.objectId = UNKNOWN_OBJECT_ID;
+		this.thumbnailContentType = DEFAULT_THUMBNAIL_CONTENT_TYPE;
+		this.size = 0;
+		this.thumbnailSize = 0 ;
+	}
+
+	public DefaultImage(Integer objectType, Long objectId) {
+		this.imageId = UNKNOWN_OBJECT_ID;
+		this.objectType = objectType;
+		this.objectId = objectId;
+		this.thumbnailContentType = DEFAULT_THUMBNAIL_CONTENT_TYPE;
+		this.size = 0;
+		this.thumbnailSize = 0 ;
 	}
 
 	public String getName() {
@@ -79,6 +102,7 @@ public class DefaultImage implements Image {
 		return size ;
 	}
 
+	@JsonIgnore
 	public InputStream getInputStream() throws IOException {
 		return inputStream;
 	}
@@ -119,18 +143,22 @@ public class DefaultImage implements Image {
 		this.thumbnailContentType = thumbnailContentType;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
 
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getModifiedDate() {
 		return modifiedDate;
 	}
 
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}

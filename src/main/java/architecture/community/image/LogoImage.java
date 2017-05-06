@@ -16,49 +16,10 @@
 
 package architecture.community.image;
 
-import java.util.Date;
-
-import architecture.community.model.ModelObject;
-
-public interface LogoImage extends ModelObject {
-
-	public static final String DEFAULT_THUMBNAIL_CONTENT_TYPE = "image/png";
-
-	public Long getLogoId();
-
-	public void setLogoId(Long logoId);
-
-	public Long getUserId();
+public interface LogoImage extends Image {
 
 	public Boolean isPrimary();
 
-	public String getFilename();
-
-	public void setFilename(String filename);
-
 	public void setPrimary(boolean primary);
 
-	public String getImageContentType();
-
-	public void setImageContentType(String imageContentType);
-
-	public Integer getImageSize();
-
-	public void setImageSize(Integer imageSize);
-
-	public String getThumbnailContentType();
-
-	public Integer getThumbnailSize();
-
-	public void setThumbnailContentType(String thumbnailContentType);
-
-	public void setThumbnailSize(Integer thumbnailSize);
-
-	public Date getCreationDate();
-
-	public void setCreationDate(Date creationDate);
-
-	public Date getModifiedDate();
-
-	public void setModifiedDate(Date modifiedDate);
 }

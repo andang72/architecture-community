@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package architecture.community.web.spring.controller.data;
+package architecture.community.web.spring.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,19 +33,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import architecture.community.exception.NotFoundException;
-import architecture.community.image.Image;
 import architecture.community.image.ImageService;
 import architecture.community.image.LogoImage;
-import architecture.community.user.User;
-import architecture.community.util.SecurityHelper;
+import architecture.community.web.spring.controller.data.ImageDataController;
 import architecture.ee.service.ConfigService;
-import architecture.ee.util.StringUtils;
 
-@Controller("images-data-controller")
-@RequestMapping("/data/images")
-
-public class ImageDataController {
+@Controller("download-controller")
+@RequestMapping("/download")
+public class DownloadController {
 
 	private Logger log = LoggerFactory.getLogger(ImageDataController.class);
 
@@ -56,68 +51,25 @@ public class ImageDataController {
 	@Inject
 	@Qualifier("configService")
 	private ConfigService configService;
-
-	public ImageDataController() {
+	
+	public DownloadController() {
+		
 	}
 
-	@RequestMapping(value = "/{imageId}/{filename:.+}", method = RequestMethod.GET)
+	
+
+
+	@RequestMapping(value = "/logos/{objectType}/{objectId}", method = RequestMethod.GET)
 	@ResponseBody
-	public void handleImage(@PathVariable("imageId") Long imageId, @PathVariable("filename") String filename,
-			@RequestParam(value = "width", defaultValue = "0", required = false) Integer width,
-			@RequestParam(value = "height", defaultValue = "0", required = false) Integer height,
-			HttpServletResponse response) throws IOException {
-
-		log.debug(" ------------------------------------------");
-		log.debug("imageId:" + imageId);
-		log.debug("width:" + width);
-		log.debug("height:" + height);
-		log.debug("------------------------------------------");
-		try {
-			if (imageId > 0 && !StringUtils.isNullOrEmpty(filename)) {
-				Image image = imageService.getImage(imageId);
-				User user = SecurityHelper.getUser();
-
-				if (filename.equals(image.getName())) {
-					InputStream input;
-					String contentType;
-					int contentLength;
-					if (width > 0 && width > 0) {
-						input = imageService.getImageThumbnailInputStream(image, width, height);
-						contentType = image.getThumbnailContentType();
-						contentLength = image.getThumbnailSize();
-					} else {
-						input = imageService.getImageInputStream(image);
-						contentType = image.getContentType();
-						contentLength = image.getSize();
-					}
-					response.setContentType(contentType);
-					response.setContentLength(contentLength);
-					IOUtils.copy(input, response.getOutputStream());
-					response.flushBuffer();
-				} else {
-					throw new NotFoundException();
-				}
-			} else {
-				throw new NotFoundException();
-			}
-		} catch (NotFoundException e) {
-			response.sendError(404);
-		}
-	}
-
-	@RequestMapping(value = "/logo/{type}/{name}", method = RequestMethod.GET)
-	@ResponseBody
-	public void handleLogo(@PathVariable("type") int objectType, @PathVariable("name") String name,
+	public void downloadLogo(
+			@PathVariable("objectType") int objectType, 
+			@PathVariable("objectId") long objectId,
 			@RequestParam(value = "width", defaultValue = "0", required = false) Integer width,
 			@RequestParam(value = "height", defaultValue = "0", required = false) Integer height,
 			HttpServletResponse response) throws IOException {
 
 		try {
-			LogoImage image = null;
-			Long objectId = -1L;
-
-			image = imageService.getPrimaryLogoImage(objectType, objectId);
-
+			LogoImage image = imageService.getPrimaryLogoImage(objectType, objectId);
 			if (image != null) {
 				InputStream input;
 				String contentType;
@@ -131,7 +83,6 @@ public class ImageDataController {
 					contentType = image.getContentType();
 					contentLength = image.getSize();
 				}
-
 				response.setContentType(contentType);
 				response.setContentLength(contentLength);
 				IOUtils.copy(input, response.getOutputStream());
@@ -141,10 +92,10 @@ public class ImageDataController {
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
 			response.setStatus(301);
-			String url = configService.getApplicationProperty("components.download.images.no-logo-url",
-					"/images/common/what-to-know-before-getting-logo-design.png");
+			String url = configService.getApplicationProperty("components.download.images.no-logo-url", "/images/common/what-to-know-before-getting-logo-design.png");
 			response.addHeader("Location", url);
 		}
 	}
 
+	
 }

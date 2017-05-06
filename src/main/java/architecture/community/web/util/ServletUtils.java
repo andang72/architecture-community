@@ -2,6 +2,8 @@ package architecture.community.web.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Base64;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+
+import com.google.common.io.BaseEncoding;
 
 import architecture.ee.util.StringUtils;
 
@@ -68,4 +72,6 @@ public class ServletUtils {
 			return name;
 		}
 	}
+	
+	
 }

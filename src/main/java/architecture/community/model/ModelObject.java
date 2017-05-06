@@ -6,6 +6,11 @@ public interface ModelObject {
 	
 	public static final long UNKNOWN_OBJECT_ID = -1L ;
 	
+	public static final int USER = 1 ;	
+	
+	public static final int ROLE = 3 ;	
+	
+	
 	public static final int BOARD = 5 ;
 	
 	public static final int FORUM_THREAD = 6;
