@@ -52,7 +52,7 @@ public class BoardPageController {
 		Board board = boardService.getBoard(boardId);
 		model.addAttribute("board", board);
 		
-		return "/boards/view-board" ;
+		return "/forums/list-thread" ;
 	}
 	
 	@RequestMapping(value = "/boards/{boardId:[\\p{Digit}]+}/threads/{threadId:[\\p{Digit}]+}", method = { RequestMethod.POST, RequestMethod.GET })

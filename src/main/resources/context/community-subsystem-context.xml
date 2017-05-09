@@ -11,7 +11,9 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- view count service  -->
+	<!-- ================================= -->
+    <!-- VIEWCOUNT						   -->
+    <!-- ================================= -->
 	<beans:bean id="viewCountDao" class="architecture.community.viewcount.dao.jdbc.JdbcViewCountDao"  p:dataSource-ref="dataSource" />
     
     <beans:bean id="viewCountCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
@@ -29,8 +31,7 @@
 	<!-- ================================= -->
     <!-- IMAGE							   -->
     <!-- ================================= -->
-    <beans:bean id="imageDao" class="architecture.community.image.dao.jdbc.JdbcImageDao"  p:dataSource-ref="dataSource" />
-    
+    <beans:bean id="imageDao" class="architecture.community.image.dao.jdbc.JdbcImageDao"  p:dataSource-ref="dataSource" />    
     
     <beans:bean id="logoImageIdsCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
      	p:cacheName="logoImageIdsCache"  
@@ -42,6 +43,7 @@
      	p:eternal="false"  
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />
+     	
     <beans:bean id="logoImageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
      	p:cacheName="logoImageCache"  
      	p:maxElementsInMemory="5000"  
@@ -52,6 +54,7 @@
      	p:eternal="false"  
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />
+     	
     <beans:bean id="imageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
      	p:cacheName="imageCache"  
      	p:maxElementsInMemory="5000"  
@@ -64,7 +67,43 @@
      	p:statisticsEnabled="true" />     	     	    
  
  	<beans:bean id="imageService" class="architecture.community.image.DefaultImageService"  />	
+
+	<!-- ================================= -->
+    <!-- ATTACHMENT						   -->
+    <!-- ================================= -->
+    <beans:bean id="attachmentDao" class="architecture.community.attachment.dao.impl.JdbcAttachmentDao"  p:dataSource-ref="dataSource" />
     
+    <beans:bean id="attachmentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="attachmentCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="30"  
+     	p:timeToLive="60" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />  
+    
+    <beans:bean id="attachmentService" class="architecture.community.attachment.DefaultAttachmentService"  />	
+	 	
+	<!-- ================================= -->
+    <!-- EXTERNALLINK					   -->
+    <!-- ================================= -->
+    <beans:bean id="externalLinkDao" class="architecture.community.link.dao.impl.JdbcExternalLinkDao"  p:dataSource-ref="dataSource" />
+    
+    <beans:bean id="externalLinkCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="externalLinkCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="30"  
+     	p:timeToLive="60" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />  
+     	
+    <beans:bean id="externalLinkService" class="architecture.community.link.DefaultExternalLinkService"  /> 	
+     	            
 	<!-- ================================= -->
     <!-- COMMENT 						   -->
     <!-- ================================= -->

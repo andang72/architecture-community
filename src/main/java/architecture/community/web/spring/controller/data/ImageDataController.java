@@ -18,6 +18,9 @@ package architecture.community.web.spring.controller.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -26,17 +29,23 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import architecture.community.exception.NotFoundException;
+import architecture.community.exception.UnAuthorizedException;
+import architecture.community.image.DefaultImage;
 import architecture.community.image.Image;
 import architecture.community.image.ImageService;
 import architecture.community.image.LogoImage;
+import architecture.community.model.ModelObject;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.ee.service.ConfigService;
@@ -60,6 +69,46 @@ public class ImageDataController {
 	public ImageDataController() {
 	}
 
+	
+	@Secured({ "ROLE_USER" })
+    @RequestMapping(value = "/upload_image.json", method = RequestMethod.POST)
+    @ResponseBody
+    public Image uploadImage(
+    		@RequestParam(value = "imageId", defaultValue = "0", required = false) Long imageId,
+    		MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
+
+		User user = SecurityHelper.getUser();
+		if( user.isAnonymous() )
+		    throw new UnAuthorizedException();
+	
+		Iterator<String> names = request.getFileNames();		
+		while (names.hasNext()) {
+		    String fileName = names.next();
+		    log.debug(fileName);
+		    MultipartFile mpf = request.getFile(fileName);
+		    InputStream is = mpf.getInputStream();
+		    log.debug("imageId: " + imageId);
+		    log.debug("file name: " + mpf.getOriginalFilename());
+		    log.debug("file size: " + mpf.getSize());
+		    log.debug("file type: " + mpf.getContentType());
+		    log.debug("file class: " + is.getClass().getName());
+		    Image image;
+		    if (imageId > 0) {
+		    	image = imageService.getImage(imageId);			
+		    	((DefaultImage) image).setName(mpf.getOriginalFilename());
+		    	((DefaultImage) image).setInputStream(is);
+		    	((DefaultImage) image).setSize((int) mpf.getSize());
+		    } else {
+		    	image = imageService.createImage(ModelObject.UNKNOWN_OBJECT_TYPE, ModelObject.UNKNOWN_OBJECT_ID, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+		    	//((DefaultImage) image).setUser(user);
+		    }		    
+		    imageService.saveImage(image);
+		    return image;
+		}
+		return null;
+    }
+
+	
 	@RequestMapping(value = "/{imageId}/{filename:.+}", method = RequestMethod.GET)
 	@ResponseBody
 	public void handleImage(@PathVariable("imageId") Long imageId, @PathVariable("filename") String filename,

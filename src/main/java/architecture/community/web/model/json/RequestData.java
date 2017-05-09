@@ -28,4 +28,10 @@ public class RequestData {
     	return defaultValue;
     }
     
+    public Long getDataAsLong(String key, Long defaultValue){
+    	if( data.containsKey(key)){
+    		return Long.parseLong( data.get(key).toString() );
+    	}
+    	return defaultValue;
+    }
 }

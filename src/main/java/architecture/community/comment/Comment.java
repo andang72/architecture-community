@@ -63,12 +63,14 @@ public interface Comment extends ContentModelObject {
 
     public abstract void setBody(String body);
 
-    public Date getCreationDate();
+    public abstract int getReplyCount ();
+    
+    public abstract Date getCreationDate();
 
-    public void setCreationDate(Date creationDate);
+    public abstract void setCreationDate(Date creationDate);
 
-    public Date getModifiedDate();
+    public abstract Date getModifiedDate();
 
-    public void setModifiedDate(Date modifiedDate);
+    public abstract void setModifiedDate(Date modifiedDate);
     
 }

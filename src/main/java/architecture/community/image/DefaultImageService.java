@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,6 +104,11 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		return new DefaultLogoImage();
 	}
 
+	public LogoImage createLogoImage(int objectType, long objectId, boolean primary) {
+		DefaultLogoImage image = new DefaultLogoImage(objectType, objectId, primary);
+		return image;
+	}
+	
 	public LogoImage createLogoImage(int objectType, long objectId, boolean primary, String name, String contentType, File file) {
 		DefaultLogoImage image = new DefaultLogoImage(objectType, objectId, primary);
 		
@@ -553,6 +557,23 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		}
 		return image;
 	}
+	
+	public Image createImage(int objectType, long objectId, String name, String contentType, InputStream inputStream, int size) {
+		Date now = new Date();
+		DefaultImage image = new DefaultImage();
+		image.setCreationDate(now);
+		image.setModifiedDate(now);
+		image.setObjectType(objectType);
+		image.setObjectId(objectId);
+		image.setContentType(contentType);
+		image.setName(name);
+		image.setImageId(-1L);
+		image.setInputStream(inputStream);
+		image.setSize(size);
+		
+		return image;
+	}
+	
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdate(Image image) {

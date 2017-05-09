@@ -103,6 +103,8 @@ public interface ImageService {
 	
 	public abstract Image createImage(int objectType, long objectId, String name, String contentType, InputStream inputStream);
 	
+	public abstract Image createImage(int objectType, long objectId, String name, String contentType, InputStream inputStream, int size);
+	
 	public abstract void saveOrUpdate( Image image );
 	
 	public abstract Image saveImage( Image image );

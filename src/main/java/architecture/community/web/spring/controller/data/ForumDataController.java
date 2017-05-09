@@ -171,6 +171,8 @@ public class ForumDataController {
 			String name = reqeustData.getDataAsString("name", null);
 			String email = reqeustData.getDataAsString("email", null);
 			String text = reqeustData.getDataAsString("text", null);
+			Long parentCommentId = reqeustData.getDataAsLong("parentCommentId", 0L);
+			
 			ForumMessage message = forumService.getForumMessage(messageId);		
 			Comment newComment = commentService.createComment(ModelObject.FORUM_MESSAGE, message.getMessageId(), user, text);	
 			
@@ -181,8 +183,12 @@ public class ForumDataController {
 			if (!StringUtils.isNullOrEmpty(email))
 				newComment.setEmail(email);
 			
-			commentService.addComment(newComment);			
-			
+			if( parentCommentId > 0 ){
+				Comment parentComment = commentService.getComment(parentCommentId);
+				commentService.addComment(parentComment, newComment);			
+			}else{
+				commentService.addComment(newComment);			
+			}			
 			result.setCount(1);			
 		} catch (Exception e) {
 			result.setError(e);

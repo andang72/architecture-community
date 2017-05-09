@@ -21,9 +21,11 @@ import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import architecture.community.forum.ForumThreadNotFoundException;
 import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
+import architecture.community.util.CommunityContextHelper;
 
 public class DefaultComment implements Comment {
 
@@ -261,6 +263,13 @@ public class DefaultComment implements Comment {
 		return user.isAnonymous();
 	}
 
+	public int getReplyCount (){
+		if( commentId > 0 ){
+			return CommunityContextHelper.getCommentService().getCommentTreeWalker(objectType, objectId).getChildCount(commentId);
+		}
+		return 0;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
