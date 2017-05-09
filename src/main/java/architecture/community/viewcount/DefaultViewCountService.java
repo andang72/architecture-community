@@ -46,7 +46,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
 
-public class DefaultVIewCountService extends EventSupport implements ViewCountService {
+public class DefaultViewCountService extends EventSupport implements ViewCountService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass().getName());
 
@@ -69,7 +69,7 @@ public class DefaultVIewCountService extends EventSupport implements ViewCountSe
 	private Cache viewCountCache;
 	
 	
-	public DefaultVIewCountService() {
+	public DefaultViewCountService() {
 		this.viewCountsEnabled = true;
 	}
 
