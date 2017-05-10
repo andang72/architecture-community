@@ -18,9 +18,7 @@ package architecture.community.web.spring.controller.data;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +43,9 @@ import architecture.community.image.DefaultImage;
 import architecture.community.image.Image;
 import architecture.community.image.ImageService;
 import architecture.community.image.LogoImage;
+import architecture.community.link.ExternalLink;
+import architecture.community.link.ExternalLinkService;
+import architecture.community.model.DefaultModelObject;
 import architecture.community.model.ModelObject;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
@@ -66,14 +67,53 @@ public class ImageDataController {
 	@Qualifier("configService")
 	private ConfigService configService;
 
+	@Inject
+	@Qualifier("externalLinkService")
+	private ExternalLinkService externalLinkService;
+	
+	
 	public ImageDataController() {
 	}
 
+	@Secured({ "ROLE_USER" })
+    @RequestMapping(value = "/upload_image_and_link.json", method = RequestMethod.POST)
+    @ResponseBody
+    public ExternalLink uploadAndShare(
+    		@RequestParam(value = "imageId", defaultValue = "0", required = false) Long imageId,
+    		MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
+
+		User user = SecurityHelper.getUser();
+		if( user.isAnonymous() )
+		    throw new UnAuthorizedException();
+	
+		Image imageToUse = null ;		
+		Iterator<String> names = request.getFileNames();		
+		while (names.hasNext()) {
+		    String fileName = names.next();
+		    MultipartFile mpf = request.getFile(fileName);
+		    InputStream is = mpf.getInputStream();
+		    log.debug("upload image {}, file:{}, size:{}, type:{} ", imageId,  mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
+		    Image image;
+		    if (imageId > 0) {
+		    	image = imageService.getImage(imageId);			
+		    	((DefaultImage) image).setName(mpf.getOriginalFilename());
+		    	((DefaultImage) image).setInputStream(is);
+		    	((DefaultImage) image).setSize((int) mpf.getSize());
+		    } else {
+		    	image = imageService.createImage(ModelObject.UNKNOWN_OBJECT_TYPE, ModelObject.UNKNOWN_OBJECT_ID, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+		    }		    
+		    imageService.saveImage(image);
+		    imageToUse = image;
+		}				
+		return externalLinkService.getExternalLink(new DefaultModelObject(ModelObject.IMAGE, imageToUse.getImageId()), true);
+    }
+
+	
 	
 	@Secured({ "ROLE_USER" })
     @RequestMapping(value = "/upload_image.json", method = RequestMethod.POST)
     @ResponseBody
-    public Image uploadImage(
+    public Image upload(
     		@RequestParam(value = "imageId", defaultValue = "0", required = false) Long imageId,
     		MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
 
@@ -156,7 +196,7 @@ public class ImageDataController {
 
 	@RequestMapping(value = "/logo/{type}/{name}", method = RequestMethod.GET)
 	@ResponseBody
-	public void handleLogo(@PathVariable("type") int objectType, @PathVariable("name") String name,
+	public void handleLogoImage(@PathVariable("type") int objectType, @PathVariable("name") String name,
 			@RequestParam(value = "width", defaultValue = "0", required = false) Integer width,
 			@RequestParam(value = "height", defaultValue = "0", required = false) Integer height,
 			HttpServletResponse response) throws IOException {

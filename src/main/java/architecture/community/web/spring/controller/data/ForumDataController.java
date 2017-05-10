@@ -199,8 +199,7 @@ public class ForumDataController {
 	
 	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request) throws ForumMessageNotFoundException{	
-		
+	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request) throws ForumMessageNotFoundException{			
 		ForumMessage message = forumService.getForumMessage(messageId);		
 		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(ModelObject.FORUM_MESSAGE, message.getMessageId());
 		long parentId = -1L;
@@ -214,6 +213,25 @@ public class ForumDataController {
 		return new ItemList(list, totalSize);
 	}
 	
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/{commentId:[\\p{Digit}]+}/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getChildComments(
+			@PathVariable Long threadId, 
+			@PathVariable Long messageId, 
+			@PathVariable Long commentId,
+			NativeWebRequest request) throws ForumMessageNotFoundException{		
+		
+		ForumMessage message = forumService.getForumMessage(messageId);		
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(ModelObject.FORUM_MESSAGE, message.getMessageId());
+		
+		int totalSize = walker.getChildCount(commentId);		
+		List<Comment> list = walker.children(commentId, new ObjectLoader<Comment>(){
+			public Comment load(long commentId) throws NotFoundException {
+				return commentService.getComment(commentId);
+			}			
+		});
+		return new ItemList(list, totalSize);
+	}
 	
 	protected List<ForumMessage> getMessages(long[] messageIds){		
 		List<ForumMessage> list = new ArrayList<ForumMessage>(messageIds.length);

@@ -11,11 +11,17 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+
+	<!-- ================================= -->
+    <!-- MODEL PROPERTY 				   -->
+    <!-- ================================= -->
+	<beans:bean id="propertyDao" class="architecture.ee.jdbc.property.dao.impl.JdbcPropertyDao"  p:dataSource-ref="dataSource" />
+   
 	<!-- ================================= -->
     <!-- VIEWCOUNT						   -->
     <!-- ================================= -->
-	<beans:bean id="viewCountDao" class="architecture.community.viewcount.dao.jdbc.JdbcViewCountDao"  p:dataSource-ref="dataSource" />
-    
+	
+    <beans:bean id="viewCountDao" class="architecture.community.viewcount.dao.jdbc.JdbcViewCountDao"  p:dataSource-ref="dataSource" />
     <beans:bean id="viewCountCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
      	p:cacheName="viewCountCache"  
      	p:maxElementsInMemory="20000"  
@@ -27,7 +33,7 @@
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />
 		
-	<beans:bean id="viewCountService" class="architecture.community.viewcount.DefaultVIewCountService"  />	
+	<beans:bean id="viewCountService" class="architecture.community.viewcount.DefaultViewCountService"  />	
 	<!-- ================================= -->
     <!-- IMAGE							   -->
     <!-- ================================= -->

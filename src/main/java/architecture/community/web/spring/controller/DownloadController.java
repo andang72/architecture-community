@@ -33,8 +33,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import architecture.community.image.Image;
 import architecture.community.image.ImageService;
 import architecture.community.image.LogoImage;
+import architecture.community.link.ExternalLink;
+import architecture.community.link.ExternalLinkService;
 import architecture.community.web.spring.controller.data.ImageDataController;
 import architecture.ee.service.ConfigService;
 
@@ -52,13 +55,53 @@ public class DownloadController {
 	@Qualifier("configService")
 	private ConfigService configService;
 	
+	@Inject
+	@Qualifier("externalLinkService")
+	private ExternalLinkService externalLinkService;
+	
 	public DownloadController() {
 		
 	}
 
+
+	@RequestMapping(value = "/images/{externalId}", method = RequestMethod.GET)
+	@ResponseBody
+	public void downloadImage(
+			@PathVariable("externalId") String externalId, 
+			@RequestParam(value = "width", defaultValue = "0", required = false) Integer width,
+			@RequestParam(value = "height", defaultValue = "0", required = false) Integer height,
+			HttpServletResponse response) throws IOException {
+		try {
+			
+			ExternalLink link = externalLinkService.getExternalLink(externalId);
+			Image image = imageService.getImage(link.getObjectId());
+			if (image != null) {
+				InputStream input;
+				String contentType;
+				int contentLength;
+				if (width > 0 && width > 0) {
+					input = imageService.getImageThumbnailInputStream(image, width, height);
+					contentType = image.getThumbnailContentType();
+					contentLength = image.getThumbnailSize();
+				} else {
+					input = imageService.getImageInputStream(image);
+					contentType = image.getContentType();
+					contentLength = image.getSize();
+				}
+				response.setContentType(contentType);
+				response.setContentLength(contentLength);
+				IOUtils.copy(input, response.getOutputStream());
+				response.flushBuffer();
+			}
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
+			response.setStatus(301);
+			String url = configService.getApplicationProperty("components.download.images.no-logo-url", "/images/common/what-to-know-before-getting-logo-design.png");
+			response.addHeader("Location", url);
+		}
+	}
 	
-
-
+	
 	@RequestMapping(value = "/logos/{objectType}/{objectId}", method = RequestMethod.GET)
 	@ResponseBody
 	public void downloadLogo(
