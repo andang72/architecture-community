@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
@@ -26,7 +27,7 @@ import architecture.community.web.model.ItemList;
 @RequestMapping("/data/boards")
 public class BoardDataController {
 	
-	private Logger logger = LoggerFactory.getLogger(getClass());	
+	private Logger log = LoggerFactory.getLogger(getClass());	
 	
 	@Inject
 	@Qualifier("boardService")
@@ -54,11 +55,23 @@ public class BoardDataController {
 	 */
 	@RequestMapping(value = "/{boardId:[\\p{Digit}]+}/threads/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public ItemList listThread (@PathVariable Long boardId, NativeWebRequest request) throws BoardNotFoundException {	
-		Board board = boardService.getBoard(boardId);	
+	public ItemList listThread (@PathVariable Long boardId, 
+			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
+			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
+			NativeWebRequest request) throws BoardNotFoundException {	
 		
+		log.debug(" skip: {}, page: {}, pageSize: {}", skip, page, pageSize );
+		
+		Board board = boardService.getBoard(boardId);	
+		List<ForumThread> list;
 		int totalSize = forumService.getFourmThreadCount(ModelObject.BOARD, board.getBoardId());
-		List<ForumThread> list = forumService.getForumThreads(ModelObject.BOARD, board.getBoardId());
+		
+		if( pageSize == 0 && page == 0){
+			list = forumService.getForumThreads(ModelObject.BOARD, board.getBoardId());
+		}else{
+			list = forumService.getForumThreads(ModelObject.BOARD, board.getBoardId(), skip, pageSize);
+		}
 		
 		return new ItemList(list, totalSize);
 	}

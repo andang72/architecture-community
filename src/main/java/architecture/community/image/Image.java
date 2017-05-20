@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 import architecture.community.model.ModelObject;
+import architecture.community.user.User;
 
 public interface Image extends ModelObject {
 	
@@ -71,5 +72,9 @@ public interface Image extends ModelObject {
 	public abstract void setThumbnailContentType(String contentType);
 	
 	public abstract String getThumbnailContentType();
+	
+	public abstract User getUser();
+	
+	public abstract void setUser(User user);
 	
 }

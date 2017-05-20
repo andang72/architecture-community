@@ -640,7 +640,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				throw new NotFoundException(msg, e);
 			}
 		} else {
-			imageToUse = (Image) imageCache.get(imageId).getValue();
+			imageToUse = (Image) imageCache.get(imageId).getObjectValue();
 		}
 		return imageToUse;
 	}

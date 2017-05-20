@@ -42,7 +42,7 @@ public class BoardPageController {
 	public BoardPageController() {
 	}
 	
-	@RequestMapping(value = "/boards/{boardId:[\\p{Digit}]+}", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = {"/boards/{boardId:[\\p{Digit}]+}", "/board/{boardId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET })
 	public String displayBoardPage(
 			@PathVariable Long boardId, 
 			HttpServletRequest request,
@@ -55,7 +55,7 @@ public class BoardPageController {
 		return "/forums/list-thread" ;
 	}
 	
-	@RequestMapping(value = "/boards/{boardId:[\\p{Digit}]+}/threads/{threadId:[\\p{Digit}]+}", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = {"/boards/{boardId:[\\p{Digit}]+}/threads/{threadId:[\\p{Digit}]+}", "/board/{boardId:[\\p{Digit}]+}/thread/{threadId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET })
 	public String displayForumThreadPage(
 			@PathVariable Long boardId, 
 			@PathVariable Long threadId, 
@@ -74,4 +74,23 @@ public class BoardPageController {
 		return "/forums/view-thread" ;
 	}
 
+	@RequestMapping(value = { "/board/{boardId:[\\p{Digit}]+}/message/{messageId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET })
+	public String displayForumMessagePage(
+			@PathVariable Long boardId, 
+			@PathVariable Long threadId, 
+			HttpServletRequest request,
+		    HttpServletResponse response, 
+		    Model model) throws BoardNotFoundException, ForumThreadNotFoundException{
+		ServletUtils.setContentType(null, response);			
+		Board board = boardService.getBoard(boardId);
+		ForumThread thread = forumService.getForumThread(threadId);
+
+		viewCountService.addViewCount(thread);
+		
+		model.addAttribute("board", board);
+		model.addAttribute("thread", thread);
+		
+		return "/forums/view-thread" ;
+	}
+	
 }

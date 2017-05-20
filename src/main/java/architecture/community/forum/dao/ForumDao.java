@@ -15,7 +15,10 @@ public interface ForumDao {
 	
 	public abstract int getForumThreadCount(int objectType, long objectId);
 	
+	
 	public abstract List<Long> getForumThreadIds(int objectType, long objectId);
+	
+	public abstract List<Long> getForumThreadIds(int objectType, long objectId, int startIndex, int numResults);
 	
 	public abstract long getLatestMessageId(ForumThread thread);
 	

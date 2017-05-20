@@ -77,6 +77,21 @@ public class DefaultForumService extends EventSupport implements ForumService {
 		return newMessage;
 	}
 
+	public List<ForumThread> getForumThreads(int objectType, long objectId, int startIndex, int numResults){
+		List<Long> threadIds = forumDao.getForumThreadIds(objectType, objectId, startIndex, numResults);
+		List<ForumThread> list = new ArrayList<ForumThread>(threadIds.size());
+		for( Long threadId : threadIds )
+		{
+			try {
+				list.add(getForumThread(threadId));
+			} catch (ForumThreadNotFoundException e) {
+				// ignore;
+				logger.warn(e.getMessage(), e);
+			}
+		}
+		return list;
+	}
+	
 	public List<ForumThread> getForumThreads(int objectType, long objectId) {		
 		List<Long> threadIds = forumDao.getForumThreadIds(objectType, objectId);
 		List<ForumThread> list = new ArrayList<ForumThread>(threadIds.size());

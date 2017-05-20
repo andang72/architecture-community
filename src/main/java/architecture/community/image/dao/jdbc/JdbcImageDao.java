@@ -117,10 +117,11 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.CREATE_IMAGE").getSql(), 	
 					new SqlParameterValue (Types.NUMERIC, imageId), 
 					new SqlParameterValue (Types.INTEGER, image.getObjectType() ), 
-					new SqlParameterValue (Types.INTEGER, image.getObjectId() ), 
+					new SqlParameterValue (Types.NUMERIC, image.getObjectId() ), 
 					new SqlParameterValue (Types.VARCHAR, image.getName() ), 
 					new SqlParameterValue (Types.INTEGER, image.getSize() ), 
 					new SqlParameterValue (Types.VARCHAR, image.getContentType()), 
+					new SqlParameterValue (Types.NUMERIC, image.getUser().getUserId()), 
 					new SqlParameterValue(Types.DATE, image.getCreationDate()),
 					new SqlParameterValue(Types.DATE, image.getModifiedDate()));	
 		}		
@@ -129,7 +130,7 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 
 	public Image updateImage(Image image) {
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_IMAGE").getSql(), 	
-				new SqlParameterValue (Types.NUMERIC, image.getImageId()), 
+				///new SqlParameterValue (Types.NUMERIC, image.getImageId()), 
 				new SqlParameterValue (Types.INTEGER, image.getObjectType() ), 
 				new SqlParameterValue (Types.INTEGER, image.getObjectId() ), 
 				new SqlParameterValue (Types.VARCHAR, image.getName() ), 

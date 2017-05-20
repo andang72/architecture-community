@@ -82,12 +82,22 @@ public class ForumDataController {
 	 */
 	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public ItemList getMessages (@PathVariable Long threadId, NativeWebRequest request) throws ForumThreadNotFoundException {	
+	public ItemList getMessages (
+			@PathVariable Long threadId, 
+			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
+			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
+			NativeWebRequest request			
+			) throws ForumThreadNotFoundException {	
+		
+		log.debug(" skip: {}, page: {}, pageSize: {}", skip, page, pageSize );
 		
 		ForumThread thread = forumService.getForumThread(threadId);
 		MessageTreeWalker walker = forumService.getTreeWalker(thread);
+	    
 		int totalSize = walker.getChildCount(thread.getRootMessage());
-		List<ForumMessage> list = getMessages(walker.getChildIds(thread.getRootMessage()));		
+				
+		List<ForumMessage> list = getMessages(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));		
 		
 		return new ItemList(list, totalSize);
 	}
@@ -231,6 +241,27 @@ public class ForumDataController {
 			}			
 		});
 		return new ItemList(list, totalSize);
+	}
+	
+	protected List<ForumMessage> getMessages(int skip, int page, int pageSize, long[] messageIds){	
+		
+		if( pageSize == 0 && page == 0){
+			return getMessages(messageIds);
+		}
+		
+		List<ForumMessage> list = new ArrayList<ForumMessage>();
+		for( int i = 0 ; i < pageSize * page ; i++ )
+		{
+			if( skip > 0 && i < skip ){
+				continue;
+			}
+			try {
+				
+				list.add(forumService.getForumMessage(messageIds[i]));
+			} catch (ForumMessageNotFoundException e) {
+			}			
+		}
+		return list;
 	}
 	
 	protected List<ForumMessage> getMessages(long[] messageIds){		

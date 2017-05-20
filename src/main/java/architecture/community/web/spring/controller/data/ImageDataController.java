@@ -79,6 +79,8 @@ public class ImageDataController {
     @RequestMapping(value = "/upload_image_and_link.json", method = RequestMethod.POST)
     @ResponseBody
     public ExternalLink uploadAndShare(
+    		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
+    		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
     		@RequestParam(value = "imageId", defaultValue = "0", required = false) Long imageId,
     		MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
 
@@ -100,11 +102,13 @@ public class ImageDataController {
 		    	((DefaultImage) image).setInputStream(is);
 		    	((DefaultImage) image).setSize((int) mpf.getSize());
 		    } else {
-		    	image = imageService.createImage(ModelObject.UNKNOWN_OBJECT_TYPE, ModelObject.UNKNOWN_OBJECT_ID, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+		    	image = imageService.createImage(objectType, objectId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+		    	image.setUser(user);
 		    }		    
 		    imageService.saveImage(image);
 		    imageToUse = image;
-		}				
+		}			
+		//return new ExternalLink( "", objectType, objectId, true);
 		return externalLinkService.getExternalLink(new DefaultModelObject(ModelObject.IMAGE, imageToUse.getImageId()), true);
     }
 
@@ -114,6 +118,8 @@ public class ImageDataController {
     @RequestMapping(value = "/upload_image.json", method = RequestMethod.POST)
     @ResponseBody
     public Image upload(
+    		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
+    		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
     		@RequestParam(value = "imageId", defaultValue = "0", required = false) Long imageId,
     		MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
 
@@ -139,8 +145,8 @@ public class ImageDataController {
 		    	((DefaultImage) image).setInputStream(is);
 		    	((DefaultImage) image).setSize((int) mpf.getSize());
 		    } else {
-		    	image = imageService.createImage(ModelObject.UNKNOWN_OBJECT_TYPE, ModelObject.UNKNOWN_OBJECT_ID, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
-		    	//((DefaultImage) image).setUser(user);
+		    	image = imageService.createImage(objectType, objectId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+		    	image.setUser(user);
 		    }		    
 		    imageService.saveImage(image);
 		    return image;
@@ -165,7 +171,7 @@ public class ImageDataController {
 			if (imageId > 0 && !StringUtils.isNullOrEmpty(filename)) {
 				Image image = imageService.getImage(imageId);
 				User user = SecurityHelper.getUser();
-
+				image.setUser(user);
 				if (filename.equals(image.getName())) {
 					InputStream input;
 					String contentType;

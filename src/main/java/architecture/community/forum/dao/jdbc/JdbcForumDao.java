@@ -80,6 +80,22 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 	}	
 	
 	
+	public List<Long> getForumThreadIds(int objectType, long objectId, int startIndex, int numResults){
+		return getExtendedJdbcTemplate().query(
+				getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				startIndex, 
+				numResults, 
+				Long.class, 
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+		);
+		/*return getExtendedJdbcTemplate().queryForList(
+				getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Long.class,
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+				);*/
+	}
+	
 	public List<Long> getForumThreadIds(int objectType, long objectId){
 		return getExtendedJdbcTemplate().queryForList(
 				getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Long.class,

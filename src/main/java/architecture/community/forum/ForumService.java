@@ -46,7 +46,10 @@ public interface ForumService {
 	 */
 	public abstract int getFourmThreadCount(int containerType, long containerId);	
 	
+	
 	public abstract List<ForumThread> getForumThreads(int containerType, long containerId);
+	
+	public abstract List<ForumThread> getForumThreads(int objectType, long objectId, int startIndex, int numResults);
 	
 	public abstract List<ForumMessage> getForumMessages(int containerType, long containerId);
 			

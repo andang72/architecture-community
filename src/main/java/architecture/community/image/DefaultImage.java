@@ -24,9 +24,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import architecture.community.model.DefaultModelObject;
 import architecture.community.model.json.JsonDateDeserializer;
 import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.user.User;
+import architecture.community.util.SecurityHelper;
 
 public class DefaultImage implements Image {
 	
@@ -48,11 +49,14 @@ public class DefaultImage implements Image {
 	
 	private String thumbnailContentType ;
 	
+	private User user;
+	
 	private Date creationDate;
 	
 	private Date modifiedDate;
 	
 	public DefaultImage() {
+		this.user = SecurityHelper.ANONYMOUS;
 		this.imageId = UNKNOWN_OBJECT_ID;
 		this.objectType = UNKNOWN_OBJECT_TYPE;
 		this.objectId = UNKNOWN_OBJECT_ID;
@@ -68,6 +72,7 @@ public class DefaultImage implements Image {
 		this.thumbnailContentType = DEFAULT_THUMBNAIL_CONTENT_TYPE;
 		this.size = 0;
 		this.thumbnailSize = 0 ;
+		this.user = SecurityHelper.ANONYMOUS;
 	}
 
 	public String getName() {
@@ -141,6 +146,14 @@ public class DefaultImage implements Image {
 
 	public void setThumbnailContentType(String thumbnailContentType) {
 		this.thumbnailContentType = thumbnailContentType;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	@JsonSerialize(using = JsonDateSerializer.class)

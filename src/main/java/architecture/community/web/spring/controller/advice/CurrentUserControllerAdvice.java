@@ -1,4 +1,4 @@
-package architecture.community.web.spring.controller;
+package architecture.community.web.spring.controller.advice;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ControllerAdvice;
