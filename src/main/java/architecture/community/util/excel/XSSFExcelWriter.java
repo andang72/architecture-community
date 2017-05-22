@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +60,19 @@ import org.slf4j.LoggerFactory;
  * 
  *  // 데이터 쓰기를 위한 데이터를 설정한다. 첫번째 ROW 다음부터 앞에서 지정한 컬럼 정보에 따라 쓰기를 진행한다. </br>
  * 	writer.setData(items);</br></br>
+ *  <p>sheet 를 추가하는 경우 아래와 같이 위의 작업을 반복하면 된다. </>
+ * 	writer.createSheet("대상자 목록2"); </br>
+ * 	// 첫번째 ROW 를 컬럼으로 사용하며 컬럼 인텍스 , 컬럼 이름, 값 데이터 추출을 위한 키, 마지막으로 필요시 컬럼의 폭을 지정한다.</br></br>
  * 	 
+ * 	writer.setColumn(0, "대상자여부", "EXCEL_CHECKFLAG", 3000);</br>
+ * 	writer.setColumn(1, "학과", "DVS_NAME", 5000);</br>
+ * 	writer.setColumn(2, "학번", "ID", 4000);</br>
+ * 	writer.setColumn(3, "성명", "NAME", 4000);</br>
+ * 	writer.setColumn(4, "학년", "CURRENT_CLASS", 3000);</br>
+ * 	writer.setHeaderToFirstRow(); </br></br>
+ * 
+ *  // 데이터 쓰기를 위한 데이터를 설정한다. 첫번째 ROW 다음부터 앞에서 지정한 컬럼 정보에 따라 쓰기를 진행한다. </br>
+ * 	writer.setData(items);</br></br>
  * 	// 이함수를 호출해야 컬럼 폭을 설정에 따라 적용한다. (BUG)</br>
  * 	writer.setColumnsWidth();</br></br>
  * 
@@ -78,15 +91,25 @@ public class XSSFExcelWriter {
 
 	private int sheetIndex = 0;
 	
-	private List<Column> columns = new ArrayList<Column>();
-	
+	private Map<Integer, List<Column>> columnsList ;
+	  
 	private XSSFCellStyle cellStyle;
 	
 	private static final String EMPTY_STRING = "";
 	
 	public XSSFExcelWriter() {
 		this.workbook = new XSSFWorkbook();
+		columnsList = new HashMap<Integer, List<Column>>();
 	}
+	
+	protected List<Column> getColumnList(boolean CreateIfNotExist){
+		if( columnsList.get(getSheetIndex()) == null && CreateIfNotExist ){
+			List<Column> listToUse = new ArrayList<Column>();
+			columnsList.put(getSheetIndex(), listToUse);
+		}		
+		return columnsList.get(getSheetIndex());
+	}
+	
 	
 	public XSSFCellStyle getCellStyle() {
 		if( cellStyle == null )
@@ -171,7 +194,7 @@ public class XSSFExcelWriter {
 		XSSFFont font = workbook.createFont();
 		font.setBold(true);
 		cellStyle.setFont(font);		
-		for (Column c : columns) {
+		for (Column c : getColumnList(true)) {
 			XSSFCell cell = getRow(row.getRowNum()).createCell(c.columnIndex);			
 			cell.setCellStyle(cellStyle);
 			cell.setCellValue(c.name);
@@ -192,7 +215,7 @@ public class XSSFExcelWriter {
 	
 	public void setDataToRow(Map<String, Object> data ) {		
 		XSSFRow row = addRow(getLastRowNum() + 1);
-		for( Column c : columns )
+		for( Column c : getColumnList(true) )
 		{
 			XSSFCell cell = addCell(row.getRowNum(), c.columnIndex, getCellStyle());
 			Object value = data.get(c.valueKey);	
@@ -239,16 +262,16 @@ public class XSSFExcelWriter {
 	}
 	
 	public void setColumn(int idx, String name, String dataKey ){
-		this.columns.add(new Column(idx, name, dataKey));
+		getColumnList(true).add(new Column(idx, name, dataKey));
 	}
 	
 	public void setColumn(int idx, String name, String dataKey, int width ){
-		this.columns.add(new Column(idx, name, dataKey, width));
+		getColumnList(true).add(new Column(idx, name, dataKey, width));
 	}
 	
 	
 	public void setColumnsWidth(){
-		for (Column c : columns) {
+		for (Column c : getColumnList(true)) {
 			if(c.width > 0){
 				getSheetAt(getSheetIndex()).setColumnWidth(c.columnIndex, c.width);
 			}
