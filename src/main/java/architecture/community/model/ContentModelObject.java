@@ -16,7 +16,7 @@
 
 package architecture.community.model;
 
-public interface ContentModelObject extends ModelObject {
+public interface ContentModelObject extends ModelObjectAware {
 
 	public enum Status {
 		

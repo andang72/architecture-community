@@ -20,7 +20,8 @@ import architecture.community.board.BoardService;
 import architecture.community.image.ImageNotFoundException;
 import architecture.community.image.ImageService;
 import architecture.community.image.LogoImage;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
+import architecture.community.model.Models;
 import architecture.ee.service.Repository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -68,19 +69,19 @@ public class BoardTest {
 			log.debug("===================");
 			log.debug("BOARD {}, {}, {}", board.getBoardId(), board.getName(), board.getDisplayName() );
 			
-			int count = imageService.getLogoImageCount(ModelObject.BOARD, board.getBoardId());
+			int count = imageService.getLogoImageCount(Models.BOARD.getObjectType(), board.getBoardId());
 			
-			log.debug("logo image count : {}, {}, {}", ModelObject.BOARD, board.getBoardId(), count);
+			log.debug("logo image count : {}, {}, {}", Models.BOARD.getObjectType(), board.getBoardId(), count);
 			
 			if( count == 0){
 				File file = getRandomLogoFile();
 				log.debug("adding" );
-				LogoImage img = imageService.createLogoImage( ModelObject.BOARD, board.getBoardId(), true, file.getName(), "image/png", file );
+				LogoImage img = imageService.createLogoImage( Models.BOARD.getObjectType(), board.getBoardId(), true, file.getName(), "image/png", file );
 				imageService.addLogoImage(img, file);
 			}else{
 				try {
 					log.debug("getting" );
-					LogoImage img = imageService.getPrimaryLogoImage(ModelObject.BOARD, board.getBoardId());
+					LogoImage img = imageService.getPrimaryLogoImage(Models.BOARD.getObjectType(), board.getBoardId());
 					
 				} catch (ImageNotFoundException e) {
 					// TODO Auto-generated catch block

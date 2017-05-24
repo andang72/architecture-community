@@ -18,7 +18,8 @@ import architecture.community.board.Board;
 import architecture.community.board.DefaultBoard;
 import architecture.community.board.dao.BoardDao;
 import architecture.community.i18n.CommunityLogLocalizer;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
+import architecture.community.model.Models;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.jdbc.sequencer.annotation.MaxValue;
 import architecture.ee.service.ConfigService;
@@ -26,7 +27,7 @@ import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.util.StringUtils;
 
 //@Repository("boardDao")
-@MaxValue(id=ModelObject.BOARD, name="BOARD")
+//@MaxValue(id=ModelObjectAware.BOARD, name="BOARD")
 public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 
 	@Inject
@@ -72,7 +73,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	
 	
 	public long getNextBoardId(){		
-		return sequencerFactory.getNextValue(this);
+		return sequencerFactory.getNextValue(Models.BOARD.getObjectType(), Models.BOARD.name());
 	}
 	
 	public Board getBoardById(long boardId) {

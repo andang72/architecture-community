@@ -35,7 +35,7 @@ import org.springframework.jdbc.core.support.SqlLobValue;
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.DefaultAttachment;
 import architecture.community.attachment.dao.AttachmentDao;
-import architecture.community.model.ModelObject;
+import architecture.community.model.Models;
 import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
@@ -112,7 +112,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 
 
 	public long getNextAttachmentId(){
-		return sequencerFactory.getNextValue(ModelObject.ATTACHEMNT, "ATTACHEMNT");
+		return sequencerFactory.getNextValue(Models.ATTACHMENT.getObjectType(), Models.ATTACHMENT.name());
 	}	
 	
 	

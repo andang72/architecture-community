@@ -2,9 +2,11 @@ package architecture.community.user;
 
 import java.util.Date;
 
+import architecture.community.model.Models;
+
 public interface User {
 	
-	public static final int MODLE_TYPE = 1;
+	public static final int MODLE_TYPE = Models.USER.getObjectType();
 	
 	enum Status {
 

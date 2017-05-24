@@ -17,16 +17,14 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
-import architecture.ee.jdbc.sequencer.annotation.MaxValue;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.util.StringUtils;
 
-//@Repository("userDao")
-@MaxValue( id=User.MODLE_TYPE, name="USER" )
 public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 
 	@Inject
@@ -62,7 +60,7 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 	}
 	
 	public long getNextUserId(){
-		return sequencerFactory.getNextValue(this);
+		return sequencerFactory.getNextValue(Models.USER.getObjectType(), Models.USER.name());
 	}
 
 	public User getUserById(long userId) {
@@ -168,6 +166,7 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 		return template;
 	}
 
+	
 	public User getUserByUsername(String username) {
 		if (StringUtils.isNullOrEmpty(username))
 			return null;

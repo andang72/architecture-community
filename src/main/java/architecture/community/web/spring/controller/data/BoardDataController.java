@@ -20,7 +20,8 @@ import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.forum.ForumService;
 import architecture.community.forum.ForumThread;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
+import architecture.community.model.Models;
 import architecture.community.web.model.ItemList;
 
 @Controller("boards-data-controller")
@@ -65,12 +66,12 @@ public class BoardDataController {
 		
 		Board board = boardService.getBoard(boardId);	
 		List<ForumThread> list;
-		int totalSize = forumService.getFourmThreadCount(ModelObject.BOARD, board.getBoardId());
+		int totalSize = forumService.getFourmThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
 		
 		if( pageSize == 0 && page == 0){
-			list = forumService.getForumThreads(ModelObject.BOARD, board.getBoardId());
+			list = forumService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId());
 		}else{
-			list = forumService.getForumThreads(ModelObject.BOARD, board.getBoardId(), skip, pageSize);
+			list = forumService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId(), skip, pageSize);
 		}
 		
 		return new ItemList(list, totalSize);

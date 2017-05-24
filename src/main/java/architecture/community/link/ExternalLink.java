@@ -16,9 +16,9 @@
 
 package architecture.community.link;
 
-import architecture.community.model.DefaultModelObject;
+import architecture.community.model.ModelObjectAwareSupport;
 
-public class ExternalLink extends DefaultModelObject {
+public class ExternalLink extends ModelObjectAwareSupport {
 
 	private String externalId;
 

@@ -2,9 +2,9 @@ package architecture.community.board;
 
 import java.util.Date;
 
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
 
-public interface Board extends ModelObject {
+public interface Board extends ModelObjectAware {
 
 	//public static final int MODLE_OBJECT_TYPE = 5;
 	

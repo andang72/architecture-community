@@ -22,7 +22,7 @@ import architecture.community.forum.ForumThread;
 import architecture.community.forum.MessageTreeWalker;
 import architecture.community.forum.dao.ForumDao;
 import architecture.community.i18n.CommunityLogLocalizer;
-import architecture.community.model.ModelObject;
+import architecture.community.model.Models;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.LongTree;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
@@ -72,11 +72,11 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 	};
 	
 	public long getNextThreadId(){
-		return sequencerFactory.getNextValue(ModelObject.FORUM_THREAD, "FORUM_THREAD");
+		return sequencerFactory.getNextValue(Models.FORUM_THREAD.getObjectType(), Models.FORUM_THREAD.name());
 	}	
 	
 	public long getNextMessageId(){
-		return sequencerFactory.getNextValue(ModelObject.FORUM_MESSAGE, "FORUM_MESSAGE");
+		return sequencerFactory.getNextValue(Models.FORUM_MESSAGE.getObjectType(), Models.FORUM_MESSAGE.name());
 	}	
 	
 	

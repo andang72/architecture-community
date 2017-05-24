@@ -41,7 +41,8 @@ import architecture.community.image.Image;
 import architecture.community.image.ImageNotFoundException;
 import architecture.community.image.LogoImage;
 import architecture.community.image.dao.ImageDao;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
+import architecture.community.model.Models;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.spring.jdbc.ExtendedJdbcUtils.DB;
@@ -91,15 +92,15 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	}
 
 	public long getNextImageId(){
-		return sequencerFactory.getNextValue(ModelObject.IMAGE, "IMAGE");
+		return sequencerFactory.getNextValue(Models.IMAGE.getObjectType(), Models.IMAGE.name());
 	}	
 	
 	public long getNextLogoId(){
-		return sequencerFactory.getNextValue(ModelObject.LOGO_IMAGE, "LOGO_IMAGE");
+		return sequencerFactory.getNextValue(Models.LOGO_IMAGE.getObjectType(), Models.LOGO_IMAGE.name());
 	}
 	
 	public long getNextProfileId(){
-		return sequencerFactory.getNextValue(ModelObject.PROFILE_IMAGE, "PROFILE_IMAGE");
+		return sequencerFactory.getNextValue(Models.PROFILE_IMAGE.getObjectType(), Models.PROFILE_IMAGE.name());
 	}
 	
 	

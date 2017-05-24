@@ -31,15 +31,15 @@ import architecture.community.comment.Comment;
 import architecture.community.comment.CommentTreeWalker;
 import architecture.community.comment.DefaultComment;
 import architecture.community.comment.dao.CommentDao;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
 import architecture.community.model.ModelObjectTreeWalker;
+import architecture.community.model.Models;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.LongTree;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.jdbc.sequencer.annotation.MaxValue;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
-@MaxValue(id=ModelObject.COMMENT, name="COMMENT")
 public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao {
 
 	protected static final RowMapper<Comment> commentMapper = new RowMapper<Comment>() {
@@ -83,7 +83,7 @@ public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao
 	}
 
 	public long getNextCommentId(){		
-		return sequencerFactory.getNextValue(this);
+		return sequencerFactory.getNextValue(Models.COMMENT.getObjectType(), Models.COMMENT.name());
 	}
 	
 	

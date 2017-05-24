@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.model.Models;
 import architecture.community.user.DefaultRole;
 import architecture.community.user.Role;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
@@ -23,7 +24,7 @@ import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
 //@Repository("roleDao")
-@MaxValue(id=Role.MODLE_TYPE, name="ROLE")
+//@MaxValue(id=Role.MODLE_TYPE, name="ROLE")
 public class JdbcRoleDao extends ExtendedJdbcDaoSupport implements RoleDao {
 
 	private final RowMapper<Role> roleMapper = new RowMapper<Role>() {
@@ -51,7 +52,7 @@ public class JdbcRoleDao extends ExtendedJdbcDaoSupport implements RoleDao {
 	}
 
 	public long getNextRoleId() {
-		return sequencerFactory.getNextValue(this);
+		return sequencerFactory.getNextValue(Models.ROLE.getObjectType(), Models.ROLE.name());
 	}
 
 	@Override
@@ -66,7 +67,6 @@ public class JdbcRoleDao extends ExtendedJdbcDaoSupport implements RoleDao {
 		if( roleToUse.getRoleId() < 1 ){
 			roleToUse.setRoleId(getNextRoleId());
 		}		
-
 		try {
 			Date now = new Date();
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_USER.CREATE_ROLE").getSql(),
@@ -79,8 +79,7 @@ public class JdbcRoleDao extends ExtendedJdbcDaoSupport implements RoleDao {
 		} catch (DataAccessException e) {
 			//logger.error(CommunityLogLocalizer.getMessage("010013"), e);
 			throw e;
-		}
-		
+		}		
 	}
 
 	@Override

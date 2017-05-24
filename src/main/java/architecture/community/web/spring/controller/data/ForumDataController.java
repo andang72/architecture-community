@@ -45,9 +45,10 @@ import architecture.community.forum.ForumService;
 import architecture.community.forum.ForumThread;
 import architecture.community.forum.ForumThreadNotFoundException;
 import architecture.community.forum.MessageTreeWalker;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
+import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
@@ -148,7 +149,7 @@ public class ForumDataController {
 			String address = request.getRemoteAddr();
 			
 			ForumMessage message = forumService.getForumMessage(messageId);		
-			Comment newComment = commentService.createComment(ModelObject.FORUM_MESSAGE, message.getMessageId(), user, text);
+			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId(), user, text);
 			
 			newComment.setIPAddress(address);
 			if (!StringUtils.isNullOrEmpty(name))
@@ -184,7 +185,7 @@ public class ForumDataController {
 			Long parentCommentId = reqeustData.getDataAsLong("parentCommentId", 0L);
 			
 			ForumMessage message = forumService.getForumMessage(messageId);		
-			Comment newComment = commentService.createComment(ModelObject.FORUM_MESSAGE, message.getMessageId(), user, text);	
+			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId(), user, text);	
 			
 			
 			newComment.setIPAddress(address);
@@ -211,7 +212,7 @@ public class ForumDataController {
 	@ResponseBody
 	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request) throws ForumMessageNotFoundException{			
 		ForumMessage message = forumService.getForumMessage(messageId);		
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(ModelObject.FORUM_MESSAGE, message.getMessageId());
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId());
 		long parentId = -1L;
 		int totalSize = walker.getChildCount(parentId);
 		List<Comment> list = walker.children(parentId, new ObjectLoader<Comment>(){
@@ -232,7 +233,7 @@ public class ForumDataController {
 			NativeWebRequest request) throws ForumMessageNotFoundException{		
 		
 		ForumMessage message = forumService.getForumMessage(messageId);		
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(ModelObject.FORUM_MESSAGE, message.getMessageId());
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId());
 		
 		int totalSize = walker.getChildCount(commentId);		
 		List<Comment> list = walker.children(commentId, new ObjectLoader<Comment>(){

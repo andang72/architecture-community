@@ -28,15 +28,15 @@ public class ModelObjectTreeWalker {
 
 	private LongTree tree;
 	
-	private ModelObject modelObject;
+	private ModelObjectAware modelObject;
 
-	public ModelObjectTreeWalker(ModelObject modelObject, LongTree tree) {
+	public ModelObjectTreeWalker(ModelObjectAware modelObject, LongTree tree) {
 		this.modelObject = modelObject;
 		this.tree = tree;
 	}
 
 	public ModelObjectTreeWalker(int objectType, long objectId, LongTree tree) {
-		this.modelObject = new DefaultModelObject(objectType, objectId);
+		this.modelObject = new ModelObjectAwareSupport(objectType, objectId);
 		this.tree = tree;
 	}
 	
@@ -53,7 +53,7 @@ public class ModelObjectTreeWalker {
 		return tree;
 	}
 
-	protected ModelObject getModelObject() {
+	protected ModelObjectAware getModelObject() {
 		return modelObject;
 	}
 	

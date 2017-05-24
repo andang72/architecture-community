@@ -1,11 +1,12 @@
 package architecture.community.model;
 
-public interface ModelObject {
+public interface ModelObjectAware {
 	
-	public static final int UNKNOWN_OBJECT_TYPE = -1 ;
+	public static final int UNKNOWN_OBJECT_TYPE = Models.UNKNOWN.getObjectType() ;
 	
 	public static final long UNKNOWN_OBJECT_ID = -1L ;
 	
+	/**
 	public static final int USER = 1 ;	
 	
 	public static final int ROLE = 3 ;	
@@ -26,6 +27,7 @@ public interface ModelObject {
 	public static final int LOGO_IMAGE = 12 ;
 	
 	public static final int PROFILE_IMAGE = 13 ;
+	*/
 	
 	public abstract int getObjectType();
 	

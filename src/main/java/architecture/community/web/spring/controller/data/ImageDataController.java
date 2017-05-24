@@ -45,8 +45,8 @@ import architecture.community.image.ImageService;
 import architecture.community.image.LogoImage;
 import architecture.community.link.ExternalLink;
 import architecture.community.link.ExternalLinkService;
-import architecture.community.model.DefaultModelObject;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAwareSupport;
+import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.ee.service.ConfigService;
@@ -109,7 +109,7 @@ public class ImageDataController {
 		    imageToUse = image;
 		}			
 		//return new ExternalLink( "", objectType, objectId, true);
-		return externalLinkService.getExternalLink(new DefaultModelObject(ModelObject.IMAGE, imageToUse.getImageId()), true);
+		return externalLinkService.getExternalLink(new ModelObjectAwareSupport(Models.IMAGE.getObjectType(), imageToUse.getImageId()), true);
     }
 
 	

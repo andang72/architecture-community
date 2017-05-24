@@ -2,9 +2,9 @@ package architecture.community.forum;
 
 import java.util.Date;
 
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
 
-public interface ForumThread extends ModelObject {
+public interface ForumThread extends ModelObjectAware {
 	
 	//public static final int MODLE_ENTITY_TYPE = 6;
 	

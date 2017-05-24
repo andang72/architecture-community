@@ -17,17 +17,17 @@
 package architecture.community.link;
 
 import architecture.community.exception.NotFoundException;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
 
 public interface ExternalLinkService {
 
 	public ExternalLink getExternalLink(String linkId) throws NotFoundException;
 
-	public ExternalLink getExternalLink(ModelObject model) throws NotFoundException ;
+	public ExternalLink getExternalLink(ModelObjectAware model) throws NotFoundException ;
 	
-	public ExternalLink getExternalLink(ModelObject model, boolean createIfNotExist) throws NotFoundException;
+	public ExternalLink getExternalLink(ModelObjectAware model, boolean createIfNotExist) throws NotFoundException;
 	
-	public void removeExternalLink(ModelObject model)  ;
+	public void removeExternalLink(ModelObjectAware model)  ;
 	
 	public void removeExternalLink(String linkId)  ;
 }

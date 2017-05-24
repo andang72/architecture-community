@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import architecture.community.exception.NotFoundException;
 import architecture.community.link.dao.ExternalLinkDao;
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
@@ -62,7 +62,7 @@ public class DefaultExternalLinkService implements ExternalLinkService {
 		}
 	}
 
-	public ExternalLink getExternalLink(ModelObject model) throws NotFoundException {
+	public ExternalLink getExternalLink(ModelObjectAware model) throws NotFoundException {
 		ExternalLink link = null;
 		try {
 			link = externalLinkDao.getExternalLinkByObjectTypeAndObjectId(model.getObjectType(), model.getObjectId());
@@ -75,7 +75,7 @@ public class DefaultExternalLinkService implements ExternalLinkService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public ExternalLink getExternalLink(ModelObject model, boolean createIfNotExist) throws NotFoundException {
+	public ExternalLink getExternalLink(ModelObjectAware model, boolean createIfNotExist) throws NotFoundException {
 		try {
 			return getExternalLink(model);
 		} catch (NotFoundException e) {
@@ -91,7 +91,7 @@ public class DefaultExternalLinkService implements ExternalLinkService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void removeExternalLink(ModelObject model) {		
+	public void removeExternalLink(ModelObjectAware model) {		
 		try {
 			ExternalLink link = getExternalLink(model);
 			if (externalLinkCache.get(link.getExternalId()) != null) {

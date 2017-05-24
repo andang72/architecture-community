@@ -16,18 +16,19 @@
 
 package architecture.community.model;
 
-public class DefaultModelObject implements ModelObject {
+public class ModelObjectAwareSupport implements ModelObjectAware {
 
-	int objectType = -1;
-	long objectId = -1L;
+	int objectType = Models.UNKNOWN.getObjectType();
+	long objectId = UNKNOWN_OBJECT_ID ;
 	
-	public DefaultModelObject(int objectType, long objectId) {
+	public ModelObjectAwareSupport(int objectType, long objectId) {
 		this.objectType = objectType;
 		this.objectId = objectId;
 	}
 	public int getObjectType() {
 		return objectType;
 	}
+	
 	public long getObjectId() {
 		return objectId;
 	}

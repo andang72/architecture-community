@@ -24,9 +24,9 @@ import java.util.Map;
 
 public class DefaultAttachment implements Attachment {
 
-	private long userId = -1L;
+	private long userId = UNKNOWN_OBJECT_ID;
 	
-    private long attachmentId = -1L;
+    private long attachmentId = UNKNOWN_OBJECT_ID;
 	
     private String name;
 	

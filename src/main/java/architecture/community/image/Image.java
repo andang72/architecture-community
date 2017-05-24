@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
 import architecture.community.user.User;
 
-public interface Image extends ModelObject {
+public interface Image extends ModelObjectAware {
 	
 	public static final String DEFAULT_THUMBNAIL_CONTENT_TYPE = "image/png";
 	

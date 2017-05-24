@@ -21,9 +21,9 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Map;
 
-import architecture.community.model.ModelObject;
+import architecture.community.model.ModelObjectAware;
 
-public interface Attachment extends ModelObject {
+public interface Attachment extends ModelObjectAware {
 	
 	public long getAttachmentId();
 
