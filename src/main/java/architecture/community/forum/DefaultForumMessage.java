@@ -2,9 +2,11 @@ package architecture.community.forum;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.model.json.JsonUserDeserializer;
 import architecture.community.user.User;
 import architecture.community.util.CommunityContextHelper;
 
@@ -30,6 +32,10 @@ public class DefaultForumMessage implements ForumMessage {
 	private Date creationDate;
 
 	private Date modifiedDate;
+
+	public DefaultForumMessage() {
+		this.messageId = UNKNOWN_OBJECT_ID;
+	}
 	
 	public DefaultForumMessage(long messageId) {
 		this.messageId = messageId;
@@ -54,6 +60,7 @@ public class DefaultForumMessage implements ForumMessage {
 		return user;
 	}
 
+	@JsonDeserialize(using = JsonUserDeserializer.class)
 	public void setUser(User user) {
 		this.user = user;
 	}
@@ -143,6 +150,27 @@ public class DefaultForumMessage implements ForumMessage {
 			}
 		}
 		return 0;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ForumMessage [");
+		if (user != null)
+			builder.append("user=").append(user).append(", ");
+		builder.append("objectType=").append(objectType).append(", objectId=").append(objectId).append(", threadId=")
+				.append(threadId).append(", messageId=").append(messageId).append(", parentMessageId=")
+				.append(parentMessageId).append(", ");
+		if (subject != null)
+			builder.append("subject=").append(subject).append(", ");
+		if (body != null)
+			builder.append("body=").append(body).append(", ");
+		if (creationDate != null)
+			builder.append("creationDate=").append(creationDate).append(", ");
+		if (modifiedDate != null)
+			builder.append("modifiedDate=").append(modifiedDate);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

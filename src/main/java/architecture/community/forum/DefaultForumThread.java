@@ -3,9 +3,11 @@ package architecture.community.forum;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.model.json.JsonForumMessageDeserializer;
 import architecture.community.util.CommunityContextHelper;
 
 public class DefaultForumThread implements ForumThread {
@@ -25,6 +27,15 @@ public class DefaultForumThread implements ForumThread {
 	private ForumMessage rootMessage;	
 
     private AtomicInteger messageCount = new AtomicInteger(-1);
+
+	public DefaultForumThread() {
+		this.threadId = UNKNOWN_OBJECT_ID;
+		this.objectType = UNKNOWN_OBJECT_TYPE;
+		this.objectId = UNKNOWN_OBJECT_ID;
+		this.rootMessage = null;
+		this.latestMessage = null;
+		this.messageCount = new AtomicInteger(-1);
+	}
 	
 	public DefaultForumThread(long threadId) {
 		this.threadId = threadId;
@@ -129,6 +140,7 @@ public class DefaultForumThread implements ForumThread {
 		return latestMessage;
 	}
 
+	@JsonDeserialize(using = JsonForumMessageDeserializer.class)
 	public void setLatestMessage(ForumMessage latestMessage) {
 		this.latestMessage = latestMessage;
 	}
@@ -137,24 +149,28 @@ public class DefaultForumThread implements ForumThread {
 		return rootMessage;
 	}
 
+	@JsonDeserialize(using = JsonForumMessageDeserializer.class)
 	public void setRootMessage(ForumMessage rootMessage) {
 		this.rootMessage = rootMessage;
 	}
 	
+	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("DefaultForumThread [ ");
-		sb.append("threadId=").append(threadId);
-		sb.append(", rootMessage=").append(rootMessage.getMessageId());
-		sb.append(", latestMessage=").append(latestMessage == null ? -1L : latestMessage.getMessageId());
-		 sb.append(", messageCount=").append(getMessageCount());
-		sb.append(", objectType=").append(objectType);
-		sb.append(", objectId=").append(objectId);
-		sb.append(", creationDate=").append(creationDate);
-		sb.append(", modifiedDate=").append(modifiedDate);
-		sb.append("]");
-		
-		return sb.toString();
+		StringBuilder builder = new StringBuilder();
+		builder.append("ForumThread [threadId=").append(threadId).append(", objectType=").append(objectType)
+				.append(", objectId=").append(objectId).append(", ");
+		if (creationDate != null)
+			builder.append("creationDate=").append(creationDate).append(", ");
+		if (modifiedDate != null)
+			builder.append("modifiedDate=").append(modifiedDate).append(", ");
+		if (latestMessage != null)
+			builder.append("latestMessage=").append(latestMessage).append(", ");
+		if (rootMessage != null)
+			builder.append("rootMessage=").append(rootMessage).append(", ");
+		if (messageCount != null)
+			builder.append("messageCount=").append(messageCount);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

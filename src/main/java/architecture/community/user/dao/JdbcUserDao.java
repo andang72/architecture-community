@@ -86,11 +86,11 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 		if (StringUtils.isNullOrEmpty(email))
 			return null;
 		String emailMatch = email.replace('*', '%');
-		UserTemplate usertemplate = null;
+		UserTemplate user = null;
 		try {
-			UserTemplate user = getExtendedJdbcTemplate().queryForObject(
-					getBoundSql("COMMUNITY_USER.SELECT_USER_BY_EMAIL").getSql(), userMapper,
-					new SqlParameterValue(Types.VARCHAR, emailMatch));
+			user = getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("COMMUNITY_USER.SELECT_USER_BY_EMAIL").getSql(), userMapper,
+				new SqlParameterValue(Types.VARCHAR, emailMatch));
 
 		} catch (IncorrectResultSizeDataAccessException e) {
 			if (e.getActualSize() > 1) {
@@ -101,7 +101,7 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 			logger.error(CommunityLogLocalizer.format("010011", emailMatch), e);
 			throw e;
 		}
-		return usertemplate;
+		return user;
 	}
 
 	private String formatUsername(String username) {

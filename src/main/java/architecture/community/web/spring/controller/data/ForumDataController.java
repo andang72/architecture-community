@@ -39,13 +39,13 @@ import architecture.community.board.BoardNotFoundException;
 import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
 import architecture.community.exception.NotFoundException;
+import architecture.community.forum.DefaultForumMessage;
 import architecture.community.forum.ForumMessage;
 import architecture.community.forum.ForumMessageNotFoundException;
 import architecture.community.forum.ForumService;
 import architecture.community.forum.ForumThread;
 import architecture.community.forum.ForumThreadNotFoundException;
 import architecture.community.forum.MessageTreeWalker;
-import architecture.community.model.ModelObjectAware;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.model.Models;
@@ -71,6 +71,17 @@ public class ForumDataController {
 	private Logger log = LoggerFactory.getLogger(ForumDataController.class);
 	
 	public ForumDataController() {
+	}
+
+	
+	@RequestMapping(value = "/messages/add.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public ForumMessage addThread (@RequestBody DefaultForumMessage newMessage, NativeWebRequest request ){
+			
+			
+		log.debug( "New thread {} " , newMessage );
+		
+		return newMessage;
 	}
 
 	/**

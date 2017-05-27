@@ -19,7 +19,6 @@ import architecture.community.model.Models;
 import architecture.community.user.DefaultRole;
 import architecture.community.user.Role;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
-import architecture.ee.jdbc.sequencer.annotation.MaxValue;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
