@@ -73,7 +73,7 @@ public class DefaultForumService extends EventSupport implements ForumService {
 	}
 
 	public ForumMessage createMessage(int objectType, long objectId, User user) {
-		DefaultForumMessage newMessage = new DefaultForumMessage(objectType, objectId, SecurityHelper.ANONYMOUS);
+		DefaultForumMessage newMessage = new DefaultForumMessage(objectType, objectId, user);
 		return newMessage;
 	}
 

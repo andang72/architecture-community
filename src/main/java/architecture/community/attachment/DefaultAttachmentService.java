@@ -148,6 +148,17 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 		return attachment;
 	}
 	
+	public Attachment createAttachment(int objectType, long objectId, String name, String contentType, InputStream inputStream, int size) {
+		
+		DefaultAttachment attachment = new DefaultAttachment();
+		attachment.setObjectType(objectType);
+		attachment.setObjectId(objectId);
+		attachment.setName(name);
+		attachment.setContentType(contentType);
+		attachment.setInputStream(inputStream);		
+		attachment.setSize(size);
+		return attachment;
+	}
 	
 	public long getUserId() {
 		try {

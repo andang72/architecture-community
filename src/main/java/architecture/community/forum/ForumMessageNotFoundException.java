@@ -1,6 +1,8 @@
 package architecture.community.forum;
 
-public class ForumMessageNotFoundException extends Exception {
+import architecture.community.exception.NotFoundException;
+
+public class ForumMessageNotFoundException extends NotFoundException {
 
 	public ForumMessageNotFoundException() { 
 	}

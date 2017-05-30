@@ -153,7 +153,6 @@ public class ImageDataController {
 		}
 		return null;
     }
-
 	
 	@RequestMapping(value = "/{imageId}/{filename:.+}", method = RequestMethod.GET)
 	@ResponseBody

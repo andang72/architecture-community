@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,17 +30,22 @@ import architecture.community.web.model.json.Result;
 
 @ControllerAdvice("architecture.community.web.spring.controller.data")
 public class ExceptionHandlerAdvice {
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerAdvice.class);
 	
 	@ExceptionHandler
 	@ResponseBody
 	public Result handleExceptioin(HttpServletRequest request, HttpServletResponse response, Exception e){
 		logger.info("Exception Occured:: URL="+request.getRequestURL());
+		
+		if( e instanceof org.springframework.security.access.AccessDeniedException ){
+			response.setStatus(HttpStatus.FORBIDDEN.value());
+		}
+		
 		Result r = Result.newResult(e);			
 		return r;
 	}
-	
+	/**
 	private String getExceptionMessage(Throwable e) {        
 		StringBuilder builder = new StringBuilder();
         while( e != null ) {
@@ -49,10 +55,9 @@ public class ExceptionHandlerAdvice {
         return builder.toString();
     }
 	
-	private boolean isAjax(HttpServletRequest request) {
-        
+	private boolean isAjax(HttpServletRequest request) {        
 		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
         
     }
-	
+	*/
 }

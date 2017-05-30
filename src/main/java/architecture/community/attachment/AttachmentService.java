@@ -34,6 +34,8 @@ public interface AttachmentService {
 	
 	public abstract Attachment createAttachment(int objectType, long objectId, String name, String contentType, InputStream inputStream);	
 	
+	public abstract Attachment createAttachment(int objectType, long objectId, String name, String contentType, InputStream inputStream, int size);	
+	
 	public abstract Attachment saveAttachment( Attachment attachment );	
 
 	public abstract void removeAttachment( Attachment attachment );

@@ -16,7 +16,10 @@
 
 package architecture.community.web.spring.controller.data;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,11 +38,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import architecture.community.attachment.Attachment;
+import architecture.community.attachment.AttachmentService;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
 import architecture.community.exception.NotFoundException;
+import architecture.community.exception.UnAuthorizedException;
 import architecture.community.forum.DefaultForumMessage;
 import architecture.community.forum.ForumMessage;
 import architecture.community.forum.ForumMessageNotFoundException;
@@ -68,21 +77,68 @@ public class ForumDataController {
 	@Qualifier("commentService")
 	private CommentService commentService;
 	
+	
+	@Inject
+	@Qualifier("attachmentService")
+	private AttachmentService attachmentService;
+	
+	
 	private Logger log = LoggerFactory.getLogger(ForumDataController.class);
 	
 	public ForumDataController() {
 	}
 
 	
+	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/messages/add.json", method = { RequestMethod.POST })
 	@ResponseBody
 	public ForumMessage addThread (@RequestBody DefaultForumMessage newMessage, NativeWebRequest request ){
-			
-			
-		log.debug( "New thread {} " , newMessage );
-		
+
+		User user = SecurityHelper.getUser();	
+		if( newMessage.getThreadId() < 1 && newMessage.getMessageId() < 1 )
+		{
+			ForumMessage rootMessage = forumService.createMessage(newMessage.getObjectType(), newMessage.getObjectId(), user );
+			rootMessage.setSubject(newMessage.getSubject());
+			rootMessage.setBody(newMessage.getBody());
+			ForumThread thread = forumService.createThread(rootMessage.getObjectType(), rootMessage.getObjectId(), rootMessage);		
+			forumService.addThread(rootMessage.getObjectType(), rootMessage.getObjectId(), thread);
+			return thread.getRootMessage();
+		}
 		return newMessage;
 	}
+	
+	@Secured({ "ROLE_USER" })
+    @RequestMapping(value = "/message/upload_attachments.json", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Attachment> uploadMessageFiles(
+    		@RequestParam(value = "messageId", defaultValue = "-1", required = false) Long messageId,
+    		MultipartHttpServletRequest request ) throws NotFoundException, IOException, UnAuthorizedException {
+
+		User user = SecurityHelper.getUser();
+		ForumMessage message = forumService.getForumMessage(messageId);
+		if( user.isAnonymous() || message.getUser().getUserId() != user.getUserId() ){
+		    throw new UnAuthorizedException();
+		}
+		
+		if(messageId < 1 ){
+			throw new IllegalArgumentException ("Message Id can't be " + messageId );
+		}
+		
+		List<Attachment> list = new ArrayList<Attachment>();
+		Iterator<String> names = request.getFileNames();		
+		while (names.hasNext()) {
+		    String fileName = names.next();
+		    MultipartFile mpf = request.getFile(fileName);
+		    InputStream is = mpf.getInputStream();
+		    log.debug("upload - file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
+		    Attachment attachment = attachmentService.createAttachment(7, message.getMessageId(), mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+		    attachmentService.saveAttachment(attachment);
+		    list.add(attachment);
+		}			
+		return list;
+    }
+	
+	
 
 	/**
 	 * /data/forums/threads/{threadId}/messages/list.json
@@ -197,8 +253,7 @@ public class ForumDataController {
 			
 			ForumMessage message = forumService.getForumMessage(messageId);		
 			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId(), user, text);	
-			
-			
+						
 			newComment.setIPAddress(address);
 			if (!StringUtils.isNullOrEmpty(name))
 				newComment.setName(name);
@@ -255,12 +310,10 @@ public class ForumDataController {
 		return new ItemList(list, totalSize);
 	}
 	
-	protected List<ForumMessage> getMessages(int skip, int page, int pageSize, long[] messageIds){	
-		
+	protected List<ForumMessage> getMessages(int skip, int page, int pageSize, long[] messageIds){			
 		if( pageSize == 0 && page == 0){
 			return getMessages(messageIds);
-		}
-		
+		}		
 		List<ForumMessage> list = new ArrayList<ForumMessage>();
 		for( int i = 0 ; i < pageSize * page ; i++ )
 		{
