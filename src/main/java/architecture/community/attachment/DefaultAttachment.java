@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class DefaultAttachment implements Attachment {
 
 	private long userId = UNKNOWN_OBJECT_ID;
@@ -42,6 +44,7 @@ public class DefaultAttachment implements Attachment {
 	
 	private Map<String, String> properties ;
 	
+	@JsonIgnore
 	private InputStream inputStream;
 	
 	private Date creationDate;

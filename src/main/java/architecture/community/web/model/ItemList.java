@@ -1,5 +1,6 @@
 package architecture.community.web.model;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,6 +13,11 @@ public class ItemList {
 	private List<?> items;
 	private int totalCount;
 
+	public ItemList() {
+	    this.items = Collections.EMPTY_LIST;
+	    this.totalCount = 0;
+	}
+	
 	/**
 	 * @param items
 	 * @param totalCount

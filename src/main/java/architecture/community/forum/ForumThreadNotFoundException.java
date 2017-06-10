@@ -1,6 +1,8 @@
 package architecture.community.forum;
 
-public class ForumThreadNotFoundException extends Exception {
+import architecture.community.exception.NotFoundException;
+
+public class ForumThreadNotFoundException extends NotFoundException {
 
 	public ForumThreadNotFoundException() {
 		super(); 

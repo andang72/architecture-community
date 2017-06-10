@@ -59,9 +59,9 @@ public class AttachmentDataController {
 	
 
 	@Secured({ "ROLE_USER" })
-    @RequestMapping(value = "/upload_attachments.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload.json", method = RequestMethod.POST)
     @ResponseBody
-    public List<Attachment> uploadMessageFiles(
+    public List<Attachment> uploadFiles(
     		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
     		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
     		MultipartHttpServletRequest request ) throws NotFoundException, IOException, UnAuthorizedException {
@@ -79,7 +79,7 @@ public class AttachmentDataController {
 		    MultipartFile mpf = request.getFile(fileName);
 		    InputStream is = mpf.getInputStream();
 		    log.debug("upload - file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
-		    Attachment attachment = attachmentService.createAttachment(7, messageId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+		    Attachment attachment = attachmentService.createAttachment(objectType, objectId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
 		    attachmentService.saveAttachment(attachment);
 		    list.add(attachment);
 		}			

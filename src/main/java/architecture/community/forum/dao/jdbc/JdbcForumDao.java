@@ -46,8 +46,8 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 			thread.setObjectType(rs.getInt("OBJECT_TYPE"));
 			thread.setObjectId(rs.getLong("OBJECT_ID"));
 			thread.setRootMessage(  new DefaultForumMessage( rs.getLong("ROOT_MESSAGE_ID") ) );
-			thread.setCreationDate(rs.getDate("CREATION_DATE"));
-			thread.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
+			thread.setCreationDate(rs.getTimestamp("CREATION_DATE"));
+			thread.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));		
 			return thread;
 		}
 		
@@ -64,8 +64,8 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 			message.setUser(new UserTemplate(rs.getLong("USER_ID")));
 			message.setSubject(rs.getString("SUBJECT"));
 			message.setBody(rs.getString("BODY"));
-			message.setCreationDate(rs.getDate("CREATION_DATE"));
-			message.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
+			message.setCreationDate(rs.getTimestamp("CREATION_DATE"));
+			message.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));		
 			return message;
 		}
 		

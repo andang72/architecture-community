@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import architecture.community.exception.NotFoundException;
+import architecture.community.image.ThumbnailImage;
 
 public interface AttachmentService {
 	
@@ -42,4 +43,7 @@ public interface AttachmentService {
 	
 	public abstract InputStream getAttachmentInputStream(Attachment attachment);
 	
+	public abstract boolean hasThumbnail(Attachment attachment);
+	
+	public abstract InputStream getAttachmentImageThumbnailInputStream(Attachment image, ThumbnailImage thumbnail);
 }

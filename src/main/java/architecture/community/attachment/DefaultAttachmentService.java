@@ -16,6 +16,7 @@
 
 package architecture.community.attachment;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,21 +25,28 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import architecture.community.attachment.dao.AttachmentDao;
 import architecture.community.exception.NotFoundException;
+import architecture.community.image.ThumbnailImage;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.ee.exception.RuntimeError;
 import architecture.ee.service.Repository;
+import architecture.ee.util.StringUtils;
+import net.coobird.thumbnailator.Thumbnails;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
@@ -59,6 +67,7 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 	
 	private File attachmentDir;		
 	
+	private File attachmentCacheDir;	
 	
 	public DefaultAttachmentService() {
 	}
@@ -242,11 +251,74 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 	}	
 	
 	protected File getAttachmentCacheDir(){
-		File dir = new File(getAttachmentDir(), "cache" );	
-		return dir;
+		if( attachmentCacheDir == null ){
+			attachmentCacheDir = new File(getAttachmentDir(), "cache" );	
+			if(!attachmentCacheDir.exists())
+	        {
+	            boolean result = attachmentCacheDir.mkdir();
+	            if(!result)
+	                log.error((new StringBuilder()).append("Unable to create attachment cache directory: '").append(attachmentCacheDir).append("'").toString());
+	        }
+		}
+		return attachmentCacheDir;
 	}
 	
 
+	public boolean hasThumbnail(Attachment attachment){
+		if (StringUtils.endsWithIgnoreCase(attachment.getContentType(), "pdf") || StringUtils.startsWithIgnoreCase(attachment.getContentType(), "image") ) 
+			return true;
+		return false;
+	}
+	
+	public InputStream getAttachmentImageThumbnailInputStream(Attachment image, ThumbnailImage thumbnail) {
+		try {
+		    File file = getThumbnailFromCacheIfExist(image, thumbnail);
+		    return FileUtils.openInputStream(file);
+		} catch (IOException e) {
+			throw new RuntimeError(e);
+		}
+	}
+
+	protected File getThumbnailFromCacheIfExist(Attachment attach, ThumbnailImage thumbnail ) throws IOException {
+		log.debug("thumbnail generation {} x {} ... ", thumbnail.getWidth(), thumbnail.getHeight());
+		File dir = getAttachmentCacheDir();
+		File file = new File(dir, toThumbnailFilename(attach, thumbnail.getWidth(), thumbnail.getHeight()));
+		File originalFile = getAttachmentFromCacheIfExist(attach);
+		log.debug("source: " + originalFile.getAbsoluteFile() + ", " + originalFile.length());
+		log.debug("thumbnail:" + file.getAbsoluteFile());
+		
+		if (file.exists() && file.length() > 0) {
+			thumbnail.setSize(file.length());
+			return file;
+		}
+
+		if (StringUtils.endsWithIgnoreCase(attach.getContentType(), "pdf")) {
+			PDDocument document = PDDocument.load(originalFile);			
+			PDFRenderer pdfRenderer = new PDFRenderer(document);	
+			BufferedImage image = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
+			ImageIO.write(Thumbnails.of(image).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage(), "png", file);
+			thumbnail.setSize(file.length());
+			return file;
+		} else if (StringUtils.startsWithIgnoreCase(attach.getContentType(), "image")) {
+			BufferedImage originalImage = ImageIO.read(originalFile);
+			if (originalImage.getHeight() < thumbnail.getHeight() || originalImage.getWidth() < thumbnail.getWidth()) {
+				thumbnail.setSize(0);
+				return originalFile;
+			}
+			BufferedImage image = Thumbnails.of(originalImage).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage();
+			ImageIO.write(image, "png", file);
+			thumbnail.setSize(file.length());
+			return file;
+		}
+		return null;
+	}
+	
+    protected String toThumbnailFilename(Attachment image, int width, int height) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(image.getAttachmentId()).append("_").append(width).append("_").append(height).append(".bin");
+    	return sb.toString();
+    }
+	
 	public void  initialize() {		
 		log.debug( "initializing attachement manager" );		
 		getAttachmentDir();

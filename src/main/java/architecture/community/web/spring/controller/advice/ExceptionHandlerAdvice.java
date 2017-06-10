@@ -40,6 +40,8 @@ public class ExceptionHandlerAdvice {
 		
 		if( e instanceof org.springframework.security.access.AccessDeniedException ){
 			response.setStatus(HttpStatus.FORBIDDEN.value());
+		}else{
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		
 		Result r = Result.newResult(e);			

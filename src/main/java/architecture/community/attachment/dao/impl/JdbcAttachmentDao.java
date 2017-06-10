@@ -53,7 +53,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 	@Qualifier("propertyDao")
 	private PropertyDao propertyDao;	
 	
-	private String propertyTableName = "ATTACHMENT_PROPERTY";
+	private String propertyTableName = "MUSI_ATTACHMENT_PROPERTY";
 	private String propertyPrimaryColumnName = "ATTACHMENT_ID";
 	
 
@@ -168,7 +168,8 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 					new SqlParameterValue (Types.NUMERIC, toUse.getObjectId() ), 
 					new SqlParameterValue (Types.VARCHAR, toUse.getContentType()), 
 					new SqlParameterValue (Types.VARCHAR, toUse.getName() ), 
-					new SqlParameterValue (Types.INTEGER, toUse.getSize() ), 					
+					new SqlParameterValue (Types.INTEGER, toUse.getSize() ), 	
+					new SqlParameterValue (Types.NUMERIC, toUse.getUserId() ), 
 					new SqlParameterValue(Types.DATE, toUse.getCreationDate()),
 					new SqlParameterValue(Types.DATE, toUse.getModifiedDate()));			
 		}		

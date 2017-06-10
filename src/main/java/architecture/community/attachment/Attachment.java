@@ -62,7 +62,6 @@ public interface Attachment extends ModelObjectAware {
 	public InputStream getInputStream() throws IOException ;
 	
 	public long getUserId();
-	
 
     public Date getCreationDate();
 
