@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -41,9 +42,13 @@ import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
+import architecture.community.forum.ForumMessage;
+import architecture.community.forum.ForumThread;
 import architecture.community.image.Image;
+import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
+import architecture.community.web.model.ItemList;
 
 @Controller("attachments-data-controller")
 @RequestMapping("/data/attachments")
@@ -87,4 +92,20 @@ public class AttachmentDataController {
 		return list;
     }
 	
+	@RequestMapping(value = "/list.json", method = RequestMethod.POST)
+	@ResponseBody
+	public ItemList listMessageFile(
+    		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
+    		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
+    		NativeWebRequest request) throws NotFoundException {
+
+		ItemList list = new ItemList();
+		if( objectType > 0 && objectId > 0 ){
+		List<Attachment> attachments = attachmentService.getAttachments(objectType, objectId);
+		list.setItems(attachments);
+		list.setTotalCount(attachments.size());
+		}
+		return list;
+
+	}	
 }

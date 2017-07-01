@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Map;
 
 import architecture.community.model.ModelObjectAware;
+import architecture.community.user.User;
 
 public interface Attachment extends ModelObjectAware {
 	
@@ -61,7 +62,9 @@ public interface Attachment extends ModelObjectAware {
 	
 	public InputStream getInputStream() throws IOException ;
 	
-	public long getUserId();
+    public abstract User getUser();
+
+    public abstract void setUser(User user);
 
     public Date getCreationDate();
 

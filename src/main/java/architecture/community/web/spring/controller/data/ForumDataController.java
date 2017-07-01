@@ -108,6 +108,32 @@ public class ForumDataController {
 		return newMessage;
 	}
 
+	@RequestMapping(value = "/message/{messageId:[\\p{Digit}]+}/get.json", method = RequestMethod.POST)
+	@ResponseBody
+	public ForumMessage getMessageById(@PathVariable Long messageId, NativeWebRequest request) throws NotFoundException {
+		if (messageId < 1) {
+			throw new ForumMessageNotFoundException();
+		}
+		ForumMessage message = forumService.getForumMessage(messageId);
+		ForumThread thread = forumService.getForumThread(message.getThreadId());
+
+		return message;
+	}
+
+	@RequestMapping(value = "/message/{messageId:[\\p{Digit}]+}/update.json", method = RequestMethod.POST)
+	@ResponseBody
+	public ForumMessage updateMessage(@RequestBody DefaultForumMessage newMessage, NativeWebRequest request) throws NotFoundException {
+		
+		User user = SecurityHelper.getUser();		
+		
+		ForumMessage message = forumService.getForumMessage(newMessage.getMessageId());
+		message.setSubject(newMessage.getSubject());
+		message.setBody(newMessage.getBody());
+		forumService.updateMessage(message);
+		
+		return message;
+	}	
+	
 	@RequestMapping(value = "/messages/{messageId:[\\p{Digit}]+}/attachments/list.json", method = RequestMethod.POST)
 	@ResponseBody
 	public ItemList listMessageFile(@PathVariable Long messageId, NativeWebRequest request) throws NotFoundException {
@@ -188,10 +214,10 @@ public class ForumDataController {
 	public List<Attachment> uploadMessageFiles(@PathVariable Long messageId, MultipartHttpServletRequest request)
 			throws NotFoundException, UnAuthorizedException, IOException {
 
-		User user = SecurityHelper.getUser();
+		User currentUser = SecurityHelper.getUser();
 		ForumMessage message = forumService.getForumMessage(messageId);
 
-		if (user.isAnonymous() || message.getUser().getUserId() != user.getUserId()) {
+		if (currentUser.isAnonymous() || message.getUser().getUserId() != currentUser.getUserId()) {
 			throw new UnAuthorizedException();
 		}
 
@@ -208,7 +234,7 @@ public class ForumDataController {
 			log.debug("upload - file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize(),
 					mpf.getContentType());
 			Attachment attachment = attachmentService.createAttachment(7, message.getMessageId(), mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
-		    
+			attachment.setUser(currentUser);
 			attachmentService.saveAttachment(attachment);
 			list.add(attachment);
 		}
@@ -244,6 +270,7 @@ public class ForumDataController {
 			Attachment attachment = attachmentService.createAttachment(7, message.getMessageId(),
 					mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
 			attachmentService.saveAttachment(attachment);
+		
 			list.add(attachment);
 		}
 		return list;

@@ -24,9 +24,12 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import architecture.community.user.User;
+import architecture.community.user.UserTemplate;
+
 public class DefaultAttachment implements Attachment {
 
-	private long userId = UNKNOWN_OBJECT_ID;
+	private User user ;
 	
     private long attachmentId = UNKNOWN_OBJECT_ID;
 	
@@ -54,6 +57,7 @@ public class DefaultAttachment implements Attachment {
 	public DefaultAttachment() {
 		this.name = null;
 		this.inputStream = null;
+		this.user = new UserTemplate(-1L);
 		this.properties = new HashMap<String, String>();
 		this.objectType = UNKNOWN_OBJECT_TYPE ;
 		this.objectId = UNKNOWN_OBJECT_ID;
@@ -61,13 +65,16 @@ public class DefaultAttachment implements Attachment {
 		this.modifiedDate = this.creationDate;
 	}
 
-	public long getUserId() {
-		return userId;
+
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(long userId) {
-		this.userId = userId;
+
+	public void setUser(User user) {
+		this.user = user;
 	}
+
 
 	public long getAttachmentId() {
 		return attachmentId;

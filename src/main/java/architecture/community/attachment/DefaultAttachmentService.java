@@ -42,6 +42,8 @@ import architecture.community.attachment.dao.AttachmentDao;
 import architecture.community.exception.NotFoundException;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.user.User;
+import architecture.community.user.UserManager;
+import architecture.community.user.UserNotFoundException;
 import architecture.community.util.SecurityHelper;
 import architecture.ee.exception.RuntimeError;
 import architecture.ee.service.Repository;
@@ -57,6 +59,11 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 	@Qualifier("repository")
 	private Repository repository;
 
+
+	@Inject
+	@Qualifier("userManager")
+	private UserManager userManager;
+	
 	@Inject
 	@Qualifier("attachmentDao")
 	private AttachmentDao attachmentDao;
@@ -94,6 +101,15 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 		Attachment attachment = getAttachmentInCache(attachmentId);
 		if( attachment == null){
 			attachment = attachmentDao.getByAttachmentId(attachmentId);
+			try {
+				long attachUserId = attachment.getUser().getUserId();
+				if( attachUserId > 0)
+					attachment.setUser( userManager.getUser( attachment.getUser().getUserId() ));
+				else
+					attachment.setUser(SecurityHelper.ANONYMOUS);
+			} catch (UserNotFoundException e) {
+
+			}
 			attachmentCache.put(new Element(attachmentId, attachment ));
 		}
 		return attachment;
@@ -169,36 +185,36 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 		return attachment;
 	}
 	
-	public long getUserId() {
+	private User getUser() {
 		try {
 			User user = SecurityHelper.getUser();
-			return user.getUserId();			
+			return user;			
 		} catch (Exception ignore) {
 		}			
-		return -1L;
+		return SecurityHelper.ANONYMOUS;
 	}
 	
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW )
 	public Attachment saveAttachment(Attachment attachment) {
 		
-		long userId = getUserId();
-	
 		Date now = new Date();
 		Attachment attachmentToUse = attachment ;
 		if( attachmentToUse.getAttachmentId() > 0 ){
 			attachmentCache.remove(attachmentToUse.getAttachmentId());			
 			attachmentToUse.setModifiedDate(now);
 			attachmentDao.updateAttachment(attachmentToUse);	
-			
 			if( attachmentCache.get(attachmentToUse.getAttachmentId()) != null ){
 				attachmentCache.remove(attachmentToUse.getAttachmentId());
-			}
-			
+			}			
 		}else{			
+			User currentUser = getUser();
+			if( attachmentToUse.getUser() != null && attachmentToUse.getUser().getUserId() != currentUser.getUserId() )
+			{
+				attachmentToUse.setUser(currentUser);
+			}			
 			attachmentToUse.setCreationDate(now);
 			attachmentToUse.setModifiedDate(now);
-			((DefaultAttachment)attachmentToUse).setUserId(userId);
 			attachmentToUse = attachmentDao.createAttachment(attachmentToUse);
 		}		
 		try {

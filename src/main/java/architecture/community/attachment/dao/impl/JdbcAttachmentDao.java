@@ -36,6 +36,7 @@ import architecture.community.attachment.Attachment;
 import architecture.community.attachment.DefaultAttachment;
 import architecture.community.attachment.dao.AttachmentDao;
 import architecture.community.model.Models;
+import architecture.community.user.UserTemplate;
 import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
@@ -64,7 +65,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 		public Attachment mapRow(ResultSet rs, int rowNum) throws SQLException {
 			DefaultAttachment image = new DefaultAttachment();			
 			if(enableSaveUserId){
-				image.setUserId(rs.getLong("USER_ID"));
+				image.setUser(new UserTemplate( rs.getLong("USER_ID") ) );
 			}
 			image.setAttachmentId(rs.getLong("ATTACHMENT_ID"));
 			image.setObjectType(rs.getInt("OBJECT_TYPE"));
@@ -157,7 +158,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 					new SqlParameterValue (Types.VARCHAR, toUse.getName() ), 
 					new SqlParameterValue (Types.INTEGER, toUse.getSize() ), 	
 					
-					new SqlParameterValue (Types.NUMERIC, toUse.getUserId() ), 
+					new SqlParameterValue (Types.NUMERIC, toUse.getUser().getUserId() ), 
 					
 					new SqlParameterValue(Types.DATE, toUse.getCreationDate()),
 					new SqlParameterValue(Types.DATE, toUse.getModifiedDate()));				
@@ -169,7 +170,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 					new SqlParameterValue (Types.VARCHAR, toUse.getContentType()), 
 					new SqlParameterValue (Types.VARCHAR, toUse.getName() ), 
 					new SqlParameterValue (Types.INTEGER, toUse.getSize() ), 	
-					new SqlParameterValue (Types.NUMERIC, toUse.getUserId() ), 
+					new SqlParameterValue (Types.NUMERIC, toUse.getUser().getUserId() ), 
 					new SqlParameterValue(Types.DATE, toUse.getCreationDate()),
 					new SqlParameterValue(Types.DATE, toUse.getModifiedDate()));			
 		}		
