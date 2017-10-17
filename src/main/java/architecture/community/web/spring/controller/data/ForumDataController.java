@@ -48,12 +48,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.board.BoardNotFoundException;
-import architecture.community.board.DefaultForumMessage;
-import architecture.community.board.ForumMessage;
-import architecture.community.board.ForumMessageNotFoundException;
+import architecture.community.board.DefaultBoardMessage;
+import architecture.community.board.BoardMessage;
+import architecture.community.board.BoardMessageNotFoundException;
 import architecture.community.board.ForumService;
-import architecture.community.board.ForumThread;
-import architecture.community.board.ForumThreadNotFoundException;
+import architecture.community.board.BoardThread;
+import architecture.community.board.BoardThreadNotFoundException;
 import architecture.community.board.MessageTreeWalker;
 import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
@@ -94,14 +94,14 @@ public class ForumDataController {
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/messages/add.json", method = { RequestMethod.POST })
 	@ResponseBody
-	public ForumMessage addThread(@RequestBody DefaultForumMessage newMessage, NativeWebRequest request) {
+	public BoardMessage addThread(@RequestBody DefaultBoardMessage newMessage, NativeWebRequest request) {
 
 		User user = SecurityHelper.getUser();
 		if (newMessage.getThreadId() < 1 && newMessage.getMessageId() < 1) {
-			ForumMessage rootMessage = forumService.createMessage(newMessage.getObjectType(), newMessage.getObjectId(), user);
+			BoardMessage rootMessage = forumService.createMessage(newMessage.getObjectType(), newMessage.getObjectId(), user);
 			rootMessage.setSubject(newMessage.getSubject());
 			rootMessage.setBody(newMessage.getBody());
-			ForumThread thread = forumService.createThread(rootMessage.getObjectType(), rootMessage.getObjectId(), rootMessage);
+			BoardThread thread = forumService.createThread(rootMessage.getObjectType(), rootMessage.getObjectId(), rootMessage);
 			forumService.addThread(rootMessage.getObjectType(), rootMessage.getObjectId(), thread);
 			return thread.getRootMessage();
 		}
@@ -110,23 +110,23 @@ public class ForumDataController {
 
 	@RequestMapping(value = "/message/{messageId:[\\p{Digit}]+}/get.json", method = RequestMethod.POST)
 	@ResponseBody
-	public ForumMessage getMessageById(@PathVariable Long messageId, NativeWebRequest request) throws NotFoundException {
+	public BoardMessage getMessageById(@PathVariable Long messageId, NativeWebRequest request) throws NotFoundException {
 		if (messageId < 1) {
-			throw new ForumMessageNotFoundException();
+			throw new BoardMessageNotFoundException();
 		}
-		ForumMessage message = forumService.getForumMessage(messageId);
-		ForumThread thread = forumService.getForumThread(message.getThreadId());
+		BoardMessage message = forumService.getForumMessage(messageId);
+		BoardThread thread = forumService.getForumThread(message.getThreadId());
 
 		return message;
 	}
 
 	@RequestMapping(value = "/message/{messageId:[\\p{Digit}]+}/update.json", method = RequestMethod.POST)
 	@ResponseBody
-	public ForumMessage updateMessage(@RequestBody DefaultForumMessage newMessage, NativeWebRequest request) throws NotFoundException {
+	public BoardMessage updateMessage(@RequestBody DefaultBoardMessage newMessage, NativeWebRequest request) throws NotFoundException {
 		
 		User user = SecurityHelper.getUser();		
 		
-		ForumMessage message = forumService.getForumMessage(newMessage.getMessageId());
+		BoardMessage message = forumService.getForumMessage(newMessage.getMessageId());
 		message.setSubject(newMessage.getSubject());
 		message.setBody(newMessage.getBody());
 		forumService.updateMessage(message);
@@ -143,8 +143,8 @@ public class ForumDataController {
 			return list;
 		}
 
-		ForumMessage message = forumService.getForumMessage(messageId);
-		ForumThread thread = forumService.getForumThread(message.getThreadId());
+		BoardMessage message = forumService.getForumMessage(messageId);
+		BoardThread thread = forumService.getForumThread(message.getThreadId());
 
 		List<Attachment> attachments = attachmentService.getAttachments(Models.FORUM_MESSAGE.getObjectType(),
 				message.getMessageId());
@@ -167,8 +167,8 @@ public class ForumDataController {
 		
 		if (messageId > 0 && attachmentId > 0 && !StringUtils.isNullOrEmpty(filename)) {
 			
-			ForumMessage message = forumService.getForumMessage(messageId);
-			ForumThread thread = forumService.getForumThread(message.getThreadId());
+			BoardMessage message = forumService.getForumMessage(messageId);
+			BoardThread thread = forumService.getForumThread(message.getThreadId());
 			Attachment attachment = attachmentService.getAttachment(attachmentId);
 			
 			if( thumbnail )
@@ -215,7 +215,7 @@ public class ForumDataController {
 			throws NotFoundException, UnAuthorizedException, IOException {
 
 		User currentUser = SecurityHelper.getUser();
-		ForumMessage message = forumService.getForumMessage(messageId);
+		BoardMessage message = forumService.getForumMessage(messageId);
 
 		if (currentUser.isAnonymous() || message.getUser().getUserId() != currentUser.getUserId()) {
 			throw new UnAuthorizedException();
@@ -250,7 +250,7 @@ public class ForumDataController {
 			MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
 
 		User user = SecurityHelper.getUser();
-		ForumMessage message = forumService.getForumMessage(messageId);
+		BoardMessage message = forumService.getForumMessage(messageId);
 		if (user.isAnonymous() || message.getUser().getUserId() != user.getUserId()) {
 			throw new UnAuthorizedException();
 		}
@@ -292,17 +292,17 @@ public class ForumDataController {
 			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
 			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
 			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
-			NativeWebRequest request) throws ForumThreadNotFoundException {
+			NativeWebRequest request) throws BoardThreadNotFoundException {
 
 		log.debug(" skip: {}, page: {}, pageSize: {}", skip, page, pageSize);
 
-		ForumThread thread = forumService.getForumThread(threadId);
+		BoardThread thread = forumService.getForumThread(threadId);
 
 		MessageTreeWalker walker = forumService.getTreeWalker(thread);
 
 		int totalSize = walker.getChildCount(thread.getRootMessage());
 
-		List<ForumMessage> list = getMessages(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));
+		List<BoardMessage> list = getMessages(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));
 
 		return new ItemList(list, totalSize);
 	}
@@ -314,20 +314,20 @@ public class ForumDataController {
 	 * @param threadId
 	 * @param request
 	 * @return
-	 * @throws ForumMessageNotFoundException
+	 * @throws BoardMessageNotFoundException
 	 * @throws BoardNotFoundException
 	 */
 	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{parentId:[\\p{Digit}]+}/list.json", method = {
 			RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getChildMessages(@PathVariable Long threadId, @PathVariable Long parentId, NativeWebRequest request)
-			throws ForumThreadNotFoundException, ForumMessageNotFoundException {
+			throws BoardThreadNotFoundException, BoardMessageNotFoundException {
 
-		ForumThread thread = forumService.getForumThread(threadId);
-		ForumMessage parent = forumService.getForumMessage(parentId);
+		BoardThread thread = forumService.getForumThread(threadId);
+		BoardMessage parent = forumService.getForumMessage(parentId);
 		MessageTreeWalker walker = forumService.getTreeWalker(thread);
 		int totalSize = walker.getChildCount(parent);
-		List<ForumMessage> list = getMessages(walker.getChildIds(parent));
+		List<BoardMessage> list = getMessages(walker.getChildIds(parent));
 		return new ItemList(list, totalSize);
 	}
 
@@ -336,7 +336,7 @@ public class ForumDataController {
 	 * text=
 	 * 
 	 * @return
-	 * @throws ForumMessageNotFoundException
+	 * @throws BoardMessageNotFoundException
 	 * @throws BoardNotFoundException
 	 */
 	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add_simple.json", method = {
@@ -353,7 +353,7 @@ public class ForumDataController {
 			User user = SecurityHelper.getUser();
 			String address = request.getRemoteAddr();
 
-			ForumMessage message = forumService.getForumMessage(messageId);
+			BoardMessage message = forumService.getForumMessage(messageId);
 			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(),
 					message.getMessageId(), user, text);
 
@@ -387,7 +387,7 @@ public class ForumDataController {
 			String text = reqeustData.getDataAsString("text", null);
 			Long parentCommentId = reqeustData.getDataAsLong("parentCommentId", 0L);
 
-			ForumMessage message = forumService.getForumMessage(messageId);
+			BoardMessage message = forumService.getForumMessage(messageId);
 			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(),
 					message.getMessageId(), user, text);
 
@@ -415,8 +415,8 @@ public class ForumDataController {
 			RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request)
-			throws ForumMessageNotFoundException {
-		ForumMessage message = forumService.getForumMessage(messageId);
+			throws BoardMessageNotFoundException {
+		BoardMessage message = forumService.getForumMessage(messageId);
 		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(),
 				message.getMessageId());
 		long parentId = -1L;
@@ -434,9 +434,9 @@ public class ForumDataController {
 			RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getChildComments(@PathVariable Long threadId, @PathVariable Long messageId,
-			@PathVariable Long commentId, NativeWebRequest request) throws ForumMessageNotFoundException {
+			@PathVariable Long commentId, NativeWebRequest request) throws BoardMessageNotFoundException {
 
-		ForumMessage message = forumService.getForumMessage(messageId);
+		BoardMessage message = forumService.getForumMessage(messageId);
 		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(),
 				message.getMessageId());
 
@@ -449,12 +449,12 @@ public class ForumDataController {
 		return new ItemList(list, totalSize);
 	}
 
-	protected List<ForumMessage> getMessages(int skip, int page, int pageSize, long[] messageIds) {
+	protected List<BoardMessage> getMessages(int skip, int page, int pageSize, long[] messageIds) {
 		if (pageSize == 0 && page == 0) {
 			return getMessages(messageIds);
 		}
 
-		List<ForumMessage> list = new ArrayList<ForumMessage>();
+		List<BoardMessage> list = new ArrayList<BoardMessage>();
 		for (int i = 0; i < pageSize * page; i++) {
 			log.debug("{} : {}", messageIds.length, i);
 			if (i >= messageIds.length)
@@ -466,18 +466,18 @@ public class ForumDataController {
 
 			try {
 				list.add(forumService.getForumMessage(messageIds[i]));
-			} catch (ForumMessageNotFoundException e) {
+			} catch (BoardMessageNotFoundException e) {
 			}
 		}
 		return list;
 	}
 
-	protected List<ForumMessage> getMessages(long[] messageIds) {
-		List<ForumMessage> list = new ArrayList<ForumMessage>(messageIds.length);
+	protected List<BoardMessage> getMessages(long[] messageIds) {
+		List<BoardMessage> list = new ArrayList<BoardMessage>(messageIds.length);
 		for (long messageId : messageIds) {
 			try {
 				list.add(forumService.getForumMessage(messageId));
-			} catch (ForumMessageNotFoundException e) {
+			} catch (BoardMessageNotFoundException e) {
 				// ignore..
 			}
 		}

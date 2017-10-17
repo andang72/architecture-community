@@ -17,10 +17,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.StreamUtils;
 
-import architecture.community.board.ForumMessage;
+import architecture.community.board.BoardMessage;
 import architecture.community.board.ForumService;
-import architecture.community.board.ForumThread;
-import architecture.community.board.ForumThreadNotFoundException;
+import architecture.community.board.BoardThread;
+import architecture.community.board.BoardThreadNotFoundException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
@@ -52,19 +52,19 @@ public class ForumTest {
 		int objectType = 1;
 		long objectId = 1L;
 		
-		List<ForumThread> list = forumService.getForumThreads(objectType, objectId);
+		List<BoardThread> list = forumService.getForumThreads(objectType, objectId);
 		log.debug(" THREAD COUNT {}" , list.size() );		
 		if( list.size() == 0 ){
-			ForumMessage rootMessage = forumService.createMessage(objectType, objectId);
+			BoardMessage rootMessage = forumService.createMessage(objectType, objectId);
 			rootMessage.setSubject("인간이란 무엇인가?");
 			rootMessage.setBody("인간은 고기 덩어리 인가 아님 다른 존재이가?");
-			ForumThread thread = forumService.createThread(objectType, objectId, rootMessage);
+			BoardThread thread = forumService.createThread(objectType, objectId, rootMessage);
 			forumService.addThread(objectType, objectId, thread);
 		}
 		
-		for( ForumThread t : list ){
+		for( BoardThread t : list ){
 			
-			ForumMessage message = t.getRootMessage();
+			BoardMessage message = t.getRootMessage();
 			
 			if( message.getMessageId() == 2 && message.getBody().length() < 20000 ){
 				message.setBody(getBodyText("text1.txt"));
@@ -88,16 +88,16 @@ public class ForumTest {
 		long objectId = 1L;
 		log.debug("replay ============ ");
 		try {
-			ForumThread thread = forumService.getForumThread(2);
+			BoardThread thread = forumService.getForumThread(2);
 			log.debug(thread.toString());
-			ForumMessage parentMessage = thread.getRootMessage();
+			BoardMessage parentMessage = thread.getRootMessage();
 			
-			ForumMessage replayMessage =forumService.createMessage(objectType, objectId);			
+			BoardMessage replayMessage =forumService.createMessage(objectType, objectId);			
 			replayMessage.setSubject("RE:" + parentMessage.getSubject());
 			replayMessage.setBody("인간은 고기 덩어리가 맞다...." + new Date());			
 			forumService.addMessage(thread, parentMessage, replayMessage);
 			
-		} catch (ForumThreadNotFoundException e) {
+		} catch (BoardThreadNotFoundException e) {
 			e.printStackTrace();
 		}
 		

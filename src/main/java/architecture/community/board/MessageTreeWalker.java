@@ -45,7 +45,7 @@ public class MessageTreeWalker {
 		return numChildren;
 	}
 
-	public int getMessageDepth(ForumMessage message) {
+	public int getMessageDepth(BoardMessage message) {
 		int depth = tree.getDepth(message.getMessageId());
 		if (depth == -1)
 			throw new IllegalArgumentException((new StringBuilder()).append("Message ").append(message.getMessageId()).append(" does not belong to this document.").toString());
@@ -53,24 +53,24 @@ public class MessageTreeWalker {
 			return depth - 1;
 	}
 
-	public int getRecursiveChildCount(ForumMessage parent) {
+	public int getRecursiveChildCount(BoardMessage parent) {
 		return getRecursiveChildCount(parent.getMessageId());
 	}
 
-	public int getChildCount(ForumMessage message) {
+	public int getChildCount(BoardMessage message) {
 		return tree.getChildCount(message.getMessageId());
 	}
 
-	public boolean isLeaf(ForumMessage message) {
+	public boolean isLeaf(BoardMessage message) {
 		return tree.isLeaf(message.getMessageId());
 	}
 
-	public boolean hasParent(ForumMessage message) {
+	public boolean hasParent(BoardMessage message) {
 		long parentID = tree.getParent(message.getMessageId());
 		return parentID != -1L;
 	}
 	
-	public ForumMessage getParent(ForumMessage message) throws ForumMessageNotFoundException {
+	public BoardMessage getParent(BoardMessage message) throws BoardMessageNotFoundException {
 		long parentId = tree.getParent(message.getMessageId());
 		if (parentId == -1L) {
 			return null;
@@ -79,7 +79,7 @@ public class MessageTreeWalker {
 		}
 	}
 
-	public ForumMessage getChild(ForumMessage message, int index) throws ForumMessageNotFoundException {
+	public BoardMessage getChild(BoardMessage message, int index) throws BoardMessageNotFoundException {
 		long childId = tree.getChild(message.getMessageId(), index);
 		if (childId == -1L) {
 			return null;
@@ -88,17 +88,17 @@ public class MessageTreeWalker {
 		}
 	}
 
-    public long[] getRecursiveChildren(ForumMessage parent)
+    public long[] getRecursiveChildren(BoardMessage parent)
     {
         long messages[] = tree.getRecursiveChildren(parent.getMessageId());
         return messages;
     }
   
-	public long[] getChildIds(ForumMessage parent) {
+	public long[] getChildIds(BoardMessage parent) {
 		return tree.getChildren(parent.getMessageId());
 	}
 
-	public int getIndexOfChild(ForumMessage parent, ForumMessage child){
+	public int getIndexOfChild(BoardMessage parent, BoardMessage child){
 		return tree.getIndexOfChild(parent.getMessageId(), child.getMessageId());
 	}
 

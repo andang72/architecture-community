@@ -10,7 +10,7 @@ import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.model.json.JsonForumMessageDeserializer;
 import architecture.community.util.CommunityContextHelper;
 
-public class DefaultForumThread implements ForumThread {
+public class DefaultBoardThread implements BoardThread {
 
 	private long threadId;
 	
@@ -22,13 +22,13 @@ public class DefaultForumThread implements ForumThread {
 
 	private Date modifiedDate;
 	
-	private ForumMessage latestMessage;
+	private BoardMessage latestMessage;
 	
-	private ForumMessage rootMessage;	
+	private BoardMessage rootMessage;	
 
     private AtomicInteger messageCount = new AtomicInteger(-1);
 
-	public DefaultForumThread() {
+	public DefaultBoardThread() {
 		this.threadId = UNKNOWN_OBJECT_ID;
 		this.objectType = UNKNOWN_OBJECT_TYPE;
 		this.objectId = UNKNOWN_OBJECT_ID;
@@ -37,7 +37,7 @@ public class DefaultForumThread implements ForumThread {
 		this.messageCount = new AtomicInteger(-1);
 	}
 	
-	public DefaultForumThread(long threadId) {
+	public DefaultBoardThread(long threadId) {
 		this.threadId = threadId;
 		this.objectType = UNKNOWN_OBJECT_TYPE;
 		this.objectId = -1L;
@@ -46,7 +46,7 @@ public class DefaultForumThread implements ForumThread {
 		this.messageCount = new AtomicInteger(-1);
 	}
 
-	public DefaultForumThread(int objectType, long objectId, ForumMessage rootMessage) {
+	public DefaultBoardThread(int objectType, long objectId, BoardMessage rootMessage) {
 		this.threadId = -1L;
 		this.objectType = objectType;
 		this.objectId = objectId;
@@ -136,28 +136,28 @@ public class DefaultForumThread implements ForumThread {
 		this.modifiedDate = modifiedDate;
 	}
 
-	public ForumMessage getLatestMessage() {
+	public BoardMessage getLatestMessage() {
 		return latestMessage;
 	}
 
 	@JsonDeserialize(using = JsonForumMessageDeserializer.class)
-	public void setLatestMessage(ForumMessage latestMessage) {
+	public void setLatestMessage(BoardMessage latestMessage) {
 		this.latestMessage = latestMessage;
 	}
 
-	public ForumMessage getRootMessage() {
+	public BoardMessage getRootMessage() {
 		return rootMessage;
 	}
 
 	@JsonDeserialize(using = JsonForumMessageDeserializer.class)
-	public void setRootMessage(ForumMessage rootMessage) {
+	public void setRootMessage(BoardMessage rootMessage) {
 		this.rootMessage = rootMessage;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ForumThread [threadId=").append(threadId).append(", objectType=").append(objectType)
+		builder.append("BoardThread [threadId=").append(threadId).append(", objectType=").append(objectType)
 				.append(", objectId=").append(objectId).append(", ");
 		if (creationDate != null)
 			builder.append("creationDate=").append(creationDate).append(", ");

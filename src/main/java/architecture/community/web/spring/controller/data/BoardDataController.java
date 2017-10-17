@@ -19,7 +19,7 @@ import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.ForumService;
-import architecture.community.board.ForumThread;
+import architecture.community.board.BoardThread;
 import architecture.community.model.ModelObjectAware;
 import architecture.community.model.Models;
 import architecture.community.web.model.ItemList;
@@ -65,7 +65,7 @@ public class BoardDataController {
 		log.debug(" skip: {}, page: {}, pageSize: {}", skip, page, pageSize );
 		
 		Board board = boardService.getBoard(boardId);	
-		List<ForumThread> list;
+		List<BoardThread> list;
 		int totalSize = forumService.getFourmThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
 		
 		if( pageSize == 0 && page == 0){

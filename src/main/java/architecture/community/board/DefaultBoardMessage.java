@@ -10,7 +10,7 @@ import architecture.community.model.json.JsonUserDeserializer;
 import architecture.community.user.User;
 import architecture.community.util.CommunityContextHelper;
 
-public class DefaultForumMessage implements ForumMessage {
+public class DefaultBoardMessage implements BoardMessage {
 	
 	private User user;
 	
@@ -33,15 +33,15 @@ public class DefaultForumMessage implements ForumMessage {
 
 	private Date modifiedDate;
 
-	public DefaultForumMessage() {
+	public DefaultBoardMessage() {
 		this.messageId = UNKNOWN_OBJECT_ID;
 	}
 	
-	public DefaultForumMessage(long messageId) {
+	public DefaultBoardMessage(long messageId) {
 		this.messageId = messageId;
 	}
 
-	public DefaultForumMessage(int objectType, long objectId, User user) {
+	public DefaultBoardMessage(int objectType, long objectId, User user) {
 		this.objectType = objectType;
 		this.objectId = objectId;
 		this.user = user;
@@ -145,7 +145,7 @@ public class DefaultForumMessage implements ForumMessage {
 		if( threadId > 0 ){
 			try {
 				return CommunityContextHelper.getForumService().getTreeWalker(CommunityContextHelper.getForumService().getForumThread(threadId)).getChildCount(this);
-			} catch (ForumThreadNotFoundException e) {
+			} catch (BoardThreadNotFoundException e) {
 				
 			}
 		}
@@ -155,7 +155,7 @@ public class DefaultForumMessage implements ForumMessage {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ForumMessage [");
+		builder.append("BoardMessage [");
 		if (user != null)
 			builder.append("user=").append(user).append(", ");
 		builder.append("objectType=").append(objectType).append(", objectId=").append(objectId).append(", threadId=")

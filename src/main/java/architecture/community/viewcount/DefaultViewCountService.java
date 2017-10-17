@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.eventbus.Subscribe;
 
-import architecture.community.board.ForumThread;
+import architecture.community.board.BoardThread;
 import architecture.community.board.event.BoardThreadEvent;
 import architecture.community.model.Models;
 import architecture.community.viewcount.dao.ViewCountDao;
@@ -89,14 +89,14 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void addViewCount(ForumThread thread) {
+	public void addViewCount(BoardThread thread) {
 		if (viewCountsEnabled) {
 			addCount(Models.FORUM_THREAD.getObjectType(), thread.getThreadId(), viewCountCache, 1);
 		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public int getViewCount(ForumThread thread) {
+	public int getViewCount(BoardThread thread) {
 		if (viewCountsEnabled) {
 			return getCachedCount(Models.FORUM_THREAD.getObjectType(), thread.getThreadId());
 		} else {
@@ -105,7 +105,7 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void clearCount(ForumThread thread){
+	public void clearCount(BoardThread thread){
 		if (viewCountsEnabled) {
 			String key = getCacheKey(Models.FORUM_THREAD.getObjectType(), thread.getThreadId());
 			queue.remove(key);
@@ -118,7 +118,7 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void onForumThreadEvent(BoardThreadEvent e) {		
 		logger.debug("forum thread event : " + e.getType().name());
-		ForumThread thread = (ForumThread) e.getSource();
+		BoardThread thread = (BoardThread) e.getSource();
 		
 		int entityType = Models.FORUM_THREAD.getObjectType();
 		long entityId = thread.getThreadId();	

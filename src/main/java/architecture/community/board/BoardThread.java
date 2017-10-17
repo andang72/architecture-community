@@ -4,7 +4,7 @@ import java.util.Date;
 
 import architecture.community.model.ModelObjectAware;
 
-public interface ForumThread extends ModelObjectAware {
+public interface BoardThread extends ModelObjectAware {
 	
 	//public static final int MODLE_ENTITY_TYPE = 6;
 	
@@ -18,12 +18,12 @@ public interface ForumThread extends ModelObjectAware {
 
 	public void setModifiedDate(Date modifiedDate);
 
-	public ForumMessage getLatestMessage();
+	public BoardMessage getLatestMessage();
 
-	public void setLatestMessage(ForumMessage latestMessage);
+	public void setLatestMessage(BoardMessage latestMessage);
 
-	public ForumMessage getRootMessage() ;
+	public BoardMessage getRootMessage() ;
 
-	public void setRootMessage(ForumMessage rootMessage) ;
+	public void setRootMessage(BoardMessage rootMessage) ;
 	
 }

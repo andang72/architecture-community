@@ -3,15 +3,15 @@ package architecture.community.board.dao;
 import java.util.Date;
 import java.util.List;
 
-import architecture.community.board.ForumMessage;
-import architecture.community.board.ForumThread;
+import architecture.community.board.BoardMessage;
+import architecture.community.board.BoardThread;
 import architecture.community.board.MessageTreeWalker;
 
 public interface ForumDao {
 	
-	public abstract void createForumThread( ForumThread thread );
+	public abstract void createForumThread( BoardThread thread );
 	
-	public abstract void createForumMessage (ForumThread thread, ForumMessage message, long parentMessageId);
+	public abstract void createForumMessage (BoardThread thread, BoardMessage message, long parentMessageId);
 	
 	public abstract int getForumThreadCount(int objectType, long objectId);
 	
@@ -20,24 +20,24 @@ public interface ForumDao {
 	
 	public abstract List<Long> getForumThreadIds(int objectType, long objectId, int startIndex, int numResults);
 	
-	public abstract long getLatestMessageId(ForumThread thread);
+	public abstract long getLatestMessageId(BoardThread thread);
 	
-	public abstract List<Long> getAllMessageIdsInThread(ForumThread thread);
+	public abstract List<Long> getAllMessageIdsInThread(BoardThread thread);
 	
-	public abstract ForumThread getForumThreadById(long threadId);
+	public abstract BoardThread getForumThreadById(long threadId);
 	
-	public abstract ForumMessage getForumMessageById(long messageId) ;
+	public abstract BoardMessage getForumMessageById(long messageId) ;
 	
-	public abstract void updateForumMessage(ForumMessage message);
+	public abstract void updateForumMessage(BoardMessage message);
 	
-	public abstract void updateForumThread(ForumThread thread);
+	public abstract void updateForumThread(BoardThread thread);
 	
-	public abstract void updateModifiedDate(ForumThread thread, Date date);
+	public abstract void updateModifiedDate(BoardThread thread, Date date);
 	
-	public abstract List<Long> getMessageIds(ForumThread thread);
+	public abstract List<Long> getMessageIds(BoardThread thread);
 	
-	public abstract int getMessageCount(ForumThread thread);
+	public abstract int getMessageCount(BoardThread thread);
 	
-	public abstract MessageTreeWalker getTreeWalker(ForumThread thread) ;
+	public abstract MessageTreeWalker getTreeWalker(BoardThread thread) ;
 	
 }

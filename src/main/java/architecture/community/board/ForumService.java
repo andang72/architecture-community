@@ -13,9 +13,9 @@ public interface ForumService {
 	 * @param containerId
 	 * @return
 	 */
-	public abstract ForumMessage createMessage(int containerType, long containerId);
+	public abstract BoardMessage createMessage(int containerType, long containerId);
 	
-	public abstract ForumMessage createMessage(int containerType, long containerId, User user);
+	public abstract BoardMessage createMessage(int containerType, long containerId, User user);
 	
 	
 	/**
@@ -26,7 +26,7 @@ public interface ForumService {
 	 * @param rootMessage
 	 * @return
 	 */
-	public abstract ForumThread createThread(int containerType, long containerId, ForumMessage rootMessage);
+	public abstract BoardThread createThread(int containerType, long containerId, BoardMessage rootMessage);
 	
 	/**
 	 * containerType, containerId 에 새로운 토픽을 추가한다.
@@ -35,7 +35,7 @@ public interface ForumService {
 	 * @param containerId
 	 * @param thread
 	 */
-	public abstract void addThread(int containerType, long containerId, ForumThread thread);
+	public abstract void addThread(int containerType, long containerId, BoardThread thread);
 	
 	/**
 	 * containerType, containerId 에 등록된 모든 토픽 수를 리턴한다.
@@ -47,25 +47,25 @@ public interface ForumService {
 	public abstract int getFourmThreadCount(int containerType, long containerId);	
 	
 	
-	public abstract List<ForumThread> getForumThreads(int containerType, long containerId);
+	public abstract List<BoardThread> getForumThreads(int containerType, long containerId);
 	
-	public abstract List<ForumThread> getForumThreads(int objectType, long objectId, int startIndex, int numResults);
+	public abstract List<BoardThread> getForumThreads(int objectType, long objectId, int startIndex, int numResults);
 	
-	public abstract List<ForumMessage> getForumMessages(int containerType, long containerId);
+	public abstract List<BoardMessage> getForumMessages(int containerType, long containerId);
 			
-	public abstract ForumThread getForumThread(long threadId) throws ForumThreadNotFoundException ;
+	public abstract BoardThread getForumThread(long threadId) throws BoardThreadNotFoundException ;
 	
-	public abstract ForumMessage getForumMessage(long messageId) throws ForumMessageNotFoundException ;
+	public abstract BoardMessage getForumMessage(long messageId) throws BoardMessageNotFoundException ;
 	
-	public abstract void updateThread(ForumThread thread);
+	public abstract void updateThread(BoardThread thread);
 		
-	public abstract void updateMessage(ForumMessage message);
+	public abstract void updateMessage(BoardMessage message);
 	
-	public abstract void addMessage(ForumThread forumthread, ForumMessage parentMessage, ForumMessage newMessage);
+	public abstract void addMessage(BoardThread forumthread, BoardMessage parentMessage, BoardMessage newMessage);
 	
-	public abstract int getMessageCount(ForumThread thread);
+	public abstract int getMessageCount(BoardThread thread);
 	
-	public abstract List<ForumMessage> getMessages(ForumThread thread);
+	public abstract List<BoardMessage> getMessages(BoardThread thread);
 	
-	public abstract MessageTreeWalker getTreeWalker(ForumThread thread);
+	public abstract MessageTreeWalker getTreeWalker(BoardThread thread);
 }

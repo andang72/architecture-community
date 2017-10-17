@@ -15,10 +15,10 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
-import architecture.community.board.DefaultForumMessage;
-import architecture.community.board.DefaultForumThread;
-import architecture.community.board.ForumMessage;
-import architecture.community.board.ForumThread;
+import architecture.community.board.DefaultBoardMessage;
+import architecture.community.board.DefaultBoardThread;
+import architecture.community.board.BoardMessage;
+import architecture.community.board.BoardThread;
 import architecture.community.board.MessageTreeWalker;
 import architecture.community.board.dao.ForumDao;
 import architecture.community.i18n.CommunityLogLocalizer;
@@ -39,13 +39,13 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 	@Qualifier("sequencerFactory")
 	private SequencerFactory sequencerFactory;
 
-	private final RowMapper<ForumThread> threadMapper = new RowMapper<ForumThread>() {	
+	private final RowMapper<BoardThread> threadMapper = new RowMapper<BoardThread>() {	
 		
-		public ForumThread mapRow(ResultSet rs, int rowNum) throws SQLException {			
-			DefaultForumThread thread = new DefaultForumThread(rs.getLong("THREAD_ID"));			
+		public BoardThread mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			DefaultBoardThread thread = new DefaultBoardThread(rs.getLong("THREAD_ID"));			
 			thread.setObjectType(rs.getInt("OBJECT_TYPE"));
 			thread.setObjectId(rs.getLong("OBJECT_ID"));
-			thread.setRootMessage(  new DefaultForumMessage( rs.getLong("ROOT_MESSAGE_ID") ) );
+			thread.setRootMessage(  new DefaultBoardMessage( rs.getLong("ROOT_MESSAGE_ID") ) );
 			thread.setCreationDate(rs.getTimestamp("CREATION_DATE"));
 			thread.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));		
 			return thread;
@@ -53,10 +53,10 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 		
 	};
 
-	private final RowMapper<ForumMessage> messageMapper = new RowMapper<ForumMessage>() {	
+	private final RowMapper<BoardMessage> messageMapper = new RowMapper<BoardMessage>() {	
 
-		public ForumMessage mapRow(ResultSet rs, int rowNum) throws SQLException {			
-			DefaultForumMessage message = new DefaultForumMessage(rs.getLong("MESSAGE_ID"));		
+		public BoardMessage mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			DefaultBoardMessage message = new DefaultBoardMessage(rs.getLong("MESSAGE_ID"));		
 			message.setParentMessageId(rs.getLong("PARENT_MESSAGE_ID"));
 			message.setThreadId(rs.getLong("THREAD_ID"));
 			message.setObjectType(rs.getInt("OBJECT_TYPE"));
@@ -104,7 +104,7 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 				);
 	}
 	
-	public long getLatestMessageId(ForumThread thread){
+	public long getLatestMessageId(BoardThread thread){
 		try
         {
             return getExtendedJdbcTemplate().queryForObject(
@@ -119,7 +119,7 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
         return -1L;		
 	}
 	
-	public List<Long> getAllMessageIdsInThread(ForumThread thread){
+	public List<Long> getAllMessageIdsInThread(BoardThread thread){
 		return getExtendedJdbcTemplate().queryForList(
 			getBoundSql("COMMUNITY_FORUM.SELECT_ALL_FORUM_MESSAGE_IDS_BY_THREAD_ID").getSql(), 
 			Long.class,
@@ -127,12 +127,12 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 		);		
 	}
 	
-	public void createForumThread(ForumThread thread) {		
-		DefaultForumThread threadToUse = (DefaultForumThread)thread;		
+	public void createForumThread(BoardThread thread) {		
+		DefaultBoardThread threadToUse = (DefaultBoardThread)thread;		
 		threadToUse.setThreadId(getNextThreadId());		
 		
 		if( threadToUse.getRootMessage().getMessageId() <= 0 ){
-			DefaultForumMessage messageToUse = (DefaultForumMessage)thread.getRootMessage();		
+			DefaultBoardMessage messageToUse = (DefaultBoardMessage)thread.getRootMessage();		
 			messageToUse.setMessageId(getNextMessageId());		
 		}
 		
@@ -146,9 +146,9 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 		);
 	}
 	
-	public void createForumMessage (ForumThread thread, ForumMessage message, long parentMessageId) {
+	public void createForumMessage (BoardThread thread, BoardMessage message, long parentMessageId) {
 			
-		DefaultForumMessage messageToUse = (DefaultForumMessage) message;
+		DefaultBoardMessage messageToUse = (DefaultBoardMessage) message;
 		if(messageToUse.getCreationDate() == null )
 		{
 			Date now = new Date();	
@@ -174,8 +174,8 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 		);	
 	}
 
-	public ForumThread getForumThreadById(long threadId) {
-		ForumThread thread = null;
+	public BoardThread getForumThreadById(long threadId) {
+		BoardThread thread = null;
 		if (threadId <= 0L) {
 			return thread;
 		}		
@@ -189,8 +189,8 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 		return thread;
 	}
 	
-	public ForumMessage getForumMessageById(long messageId) {
-		ForumMessage message = null;
+	public BoardMessage getForumMessageById(long messageId) {
+		BoardMessage message = null;
 		if (messageId <= 0L) {
 			return message;
 		}		
@@ -204,7 +204,7 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 		return message;
 	}
 
-	public void updateForumThread(ForumThread thread) {
+	public void updateForumThread(BoardThread thread) {
 		Date now = new Date();
 		thread.setModifiedDate(now);		
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_FORUM.UPDATE_FORUM_THREAD").getSql(), 
@@ -214,7 +214,7 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 		);
 	}
 	
-	public void updateForumMessage(ForumMessage message) {
+	public void updateForumMessage(BoardMessage message) {
 		Date now = new Date();
 		message.setModifiedDate(now);		
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_FORUM.UPDATE_FORUM_MESSAGE").getSql(), 
@@ -225,7 +225,7 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 		);
 	}
  
-	public void updateModifiedDate(ForumThread thread, Date date) {
+	public void updateModifiedDate(BoardThread thread, Date date) {
 		thread.setModifiedDate(date);	
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_FORUM.UPDATE_FORUM_THREAD_MODIFIED_DATE").getSql(), 
 				new SqlParameterValue(Types.TIMESTAMP, date ),	
@@ -244,7 +244,7 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 	}
 
 	@Override
-	public List<Long> getMessageIds(ForumThread thread) {
+	public List<Long> getMessageIds(BoardThread thread) {
 		
 		return getExtendedJdbcTemplate().queryForList(
 				getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_MESSAGE_IDS_BY_THREAD_ID").getSql(), Long.class,
@@ -253,7 +253,7 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 	}
 
 	@Override
-	public int getMessageCount(ForumThread thread) {
+	public int getMessageCount(BoardThread thread) {
 		return getExtendedJdbcTemplate().queryForObject(
 				getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_MESSAGE_COUNT_BY_THREAD_ID").getSql(), 
 				Integer.class,
@@ -261,7 +261,7 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 				);
 	}	
 	
-	public MessageTreeWalker getTreeWalker(ForumThread thread) {	
+	public MessageTreeWalker getTreeWalker(BoardThread thread) {	
 		
 		final LongTree tree = new LongTree(thread.getRootMessage().getMessageId(), getMessageCount(thread));
 		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_FORUM.SELECT_FORUM_THREAD_MESSAGES_BY_THREAD_ID").getSql(), 

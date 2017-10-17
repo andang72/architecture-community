@@ -5,7 +5,7 @@ import java.util.Date;
 import architecture.community.model.ModelObjectAware;
 import architecture.community.user.User;
 
-public interface ForumMessage extends ModelObjectAware {
+public interface BoardMessage extends ModelObjectAware {
 	
 	//public static final int MODLE_ENTITY_TYPE = 7;
 	

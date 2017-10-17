@@ -16,15 +16,15 @@
 
 package architecture.community.viewcount;
 
-import architecture.community.board.ForumThread;
+import architecture.community.board.BoardThread;
 
 public interface ViewCountService {
 
-	public abstract void addViewCount(ForumThread thread);
+	public abstract void addViewCount(BoardThread thread);
 
-	public abstract int getViewCount(ForumThread thread);
+	public abstract int getViewCount(BoardThread thread);
 	
-	public abstract void clearCount(ForumThread thread);
+	public abstract void clearCount(BoardThread thread);
 	
 	public abstract void updateViewCounts();
 }

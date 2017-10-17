@@ -40,8 +40,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
-import architecture.community.board.ForumMessage;
-import architecture.community.board.ForumThread;
+import architecture.community.board.BoardMessage;
+import architecture.community.board.BoardThread;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
 import architecture.community.image.Image;

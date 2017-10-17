@@ -23,12 +23,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import architecture.community.board.ForumMessage;
+import architecture.community.board.BoardMessage;
 
-public class JsonForumMessageDeserializer extends JsonDeserializer<ForumMessage>{
+public class JsonForumMessageDeserializer extends JsonDeserializer<BoardMessage>{
 
 	@Override
-	public ForumMessage deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
+	public BoardMessage deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
 			throws IOException, JsonProcessingException {
  
 		return null;

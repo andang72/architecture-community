@@ -47,15 +47,15 @@ public class DefaultForumService extends EventSupport implements ForumService {
 	private Cache messageTreeWalkerCache;
 	
 		
-	public ForumThread createThread(int objectType, long objectId, ForumMessage rootMessage) {		
-		DefaultForumThread newThread = new DefaultForumThread(objectType, objectId, rootMessage);
+	public BoardThread createThread(int objectType, long objectId, BoardMessage rootMessage) {		
+		DefaultBoardThread newThread = new DefaultBoardThread(objectType, objectId, rootMessage);
 		return newThread;
 	}
  
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void addThread(int objectType, long objectId, ForumThread thread) {		
-		DefaultForumThread threadToUse = (DefaultForumThread)thread; 
-		DefaultForumMessage rootMessage = (DefaultForumMessage)threadToUse.getRootMessage();		
+	public void addThread(int objectType, long objectId, BoardThread thread) {		
+		DefaultBoardThread threadToUse = (DefaultBoardThread)thread; 
+		DefaultBoardMessage rootMessage = (DefaultBoardMessage)threadToUse.getRootMessage();		
 		boolean isNew = rootMessage.getThreadId() < 1L ;
 		if( !isNew ){
 			// get exist old value..			
@@ -67,24 +67,24 @@ public class DefaultForumService extends EventSupport implements ForumService {
 		fireEvent(new BoardThreadEvent(threadToUse, BoardThreadEvent.Type.CREATED));		
 	}
 
-	public ForumMessage createMessage(int objectType, long objectId) {
-		DefaultForumMessage newMessage = new DefaultForumMessage(objectType, objectId, SecurityHelper.ANONYMOUS);
+	public BoardMessage createMessage(int objectType, long objectId) {
+		DefaultBoardMessage newMessage = new DefaultBoardMessage(objectType, objectId, SecurityHelper.ANONYMOUS);
 		return newMessage;
 	}
 
-	public ForumMessage createMessage(int objectType, long objectId, User user) {
-		DefaultForumMessage newMessage = new DefaultForumMessage(objectType, objectId, user);
+	public BoardMessage createMessage(int objectType, long objectId, User user) {
+		DefaultBoardMessage newMessage = new DefaultBoardMessage(objectType, objectId, user);
 		return newMessage;
 	}
 
-	public List<ForumThread> getForumThreads(int objectType, long objectId, int startIndex, int numResults){
+	public List<BoardThread> getForumThreads(int objectType, long objectId, int startIndex, int numResults){
 		List<Long> threadIds = forumDao.getForumThreadIds(objectType, objectId, startIndex, numResults);
-		List<ForumThread> list = new ArrayList<ForumThread>(threadIds.size());
+		List<BoardThread> list = new ArrayList<BoardThread>(threadIds.size());
 		for( Long threadId : threadIds )
 		{
 			try {
 				list.add(getForumThread(threadId));
-			} catch (ForumThreadNotFoundException e) {
+			} catch (BoardThreadNotFoundException e) {
 				// ignore;
 				logger.warn(e.getMessage(), e);
 			}
@@ -92,14 +92,14 @@ public class DefaultForumService extends EventSupport implements ForumService {
 		return list;
 	}
 	
-	public List<ForumThread> getForumThreads(int objectType, long objectId) {		
+	public List<BoardThread> getForumThreads(int objectType, long objectId) {		
 		List<Long> threadIds = forumDao.getForumThreadIds(objectType, objectId);
-		List<ForumThread> list = new ArrayList<ForumThread>(threadIds.size());
+		List<BoardThread> list = new ArrayList<BoardThread>(threadIds.size());
 		for( Long threadId : threadIds )
 		{
 			try {
 				list.add(getForumThread(threadId));
-			} catch (ForumThreadNotFoundException e) {
+			} catch (BoardThreadNotFoundException e) {
 				// ignore;
 				logger.warn(e.getMessage(), e);
 			}
@@ -108,34 +108,34 @@ public class DefaultForumService extends EventSupport implements ForumService {
 	}
 
 	
-	public List<ForumMessage> getForumMessages(int objectType, long objectId) {
+	public List<BoardMessage> getForumMessages(int objectType, long objectId) {
 		return null;
 	}
 
-	public ForumThread getForumThread(long threadId) throws ForumThreadNotFoundException {		
+	public BoardThread getForumThread(long threadId) throws BoardThreadNotFoundException {		
 		if(threadId < 0L)
-            throw new ForumThreadNotFoundException(CommunityLogLocalizer.format("013004", threadId ));
+            throw new BoardThreadNotFoundException(CommunityLogLocalizer.format("013004", threadId ));
 		
-		ForumThread threadToUse = getForumThreadInCache(threadId);
+		BoardThread threadToUse = getForumThreadInCache(threadId);
 		if( threadToUse == null){
 			
 			try {
 				threadToUse = forumDao.getForumThreadById(threadId);
-				threadToUse.setLatestMessage(new DefaultForumMessage(forumDao.getLatestMessageId(threadToUse)));	
-				((DefaultForumThread)threadToUse).setMessageCount(forumDao.getAllMessageIdsInThread(threadToUse).size());
+				threadToUse.setLatestMessage(new DefaultBoardMessage(forumDao.getLatestMessageId(threadToUse)));	
+				((DefaultBoardThread)threadToUse).setMessageCount(forumDao.getAllMessageIdsInThread(threadToUse).size());
 			} catch (Exception e) {
-				throw new ForumThreadNotFoundException(CommunityLogLocalizer.format("013005", threadId ));
+				throw new BoardThreadNotFoundException(CommunityLogLocalizer.format("013005", threadId ));
 			}			
 			try {
-				ForumMessage rootMessage = threadToUse.getRootMessage();		
-				ForumMessage latestMessage = threadToUse.getLatestMessage();					
+				BoardMessage rootMessage = threadToUse.getRootMessage();		
+				BoardMessage latestMessage = threadToUse.getLatestMessage();					
 				threadToUse.setRootMessage(getForumMessage(rootMessage.getMessageId()));					
 				if(latestMessage != null && latestMessage.getMessageId() > 0){
 					threadToUse.setLatestMessage(getForumMessage(latestMessage.getMessageId()));	
 					threadToUse.setModifiedDate(threadToUse.getLatestMessage().getModifiedDate());
 				}						
 			} catch (Exception e) {
-				throw new ForumThreadNotFoundException(CommunityLogLocalizer.format("013005", threadId ), e);
+				throw new BoardThreadNotFoundException(CommunityLogLocalizer.format("013005", threadId ), e);
 			}
 			updateCaches(threadToUse);	
 		}
@@ -143,20 +143,20 @@ public class DefaultForumService extends EventSupport implements ForumService {
 	}
 
 
-	public ForumMessage getForumMessage(long messageId) throws ForumMessageNotFoundException {
+	public BoardMessage getForumMessage(long messageId) throws BoardMessageNotFoundException {
 		if(messageId < 0L)
-            throw new ForumMessageNotFoundException(CommunityLogLocalizer.format("013006", messageId ));
+            throw new BoardMessageNotFoundException(CommunityLogLocalizer.format("013006", messageId ));
 		
-		ForumMessage messageToUse = getForumMessageInCache(messageId);
+		BoardMessage messageToUse = getForumMessageInCache(messageId);
 		if( messageToUse == null){
 			try {
 				messageToUse = forumDao.getForumMessageById(messageId);			
 				if( messageToUse.getUser().getUserId() > 0){
-					((DefaultForumMessage)messageToUse).setUser(userManager.getUser(messageToUse.getUser()));
+					((DefaultBoardMessage)messageToUse).setUser(userManager.getUser(messageToUse.getUser()));
 				}	
 				updateCaches(messageToUse);
 			} catch (Exception e) {
-				throw new ForumMessageNotFoundException(CommunityLogLocalizer.format("013007", messageId ));
+				throw new BoardMessageNotFoundException(CommunityLogLocalizer.format("013007", messageId ));
 			}
 		}
 		return messageToUse;
@@ -165,32 +165,32 @@ public class DefaultForumService extends EventSupport implements ForumService {
 	
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void updateThread(ForumThread thread) {		
+	public void updateThread(BoardThread thread) {		
 		forumDao.updateForumThread(thread);
 		evictCaches(thread);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void updateMessage(ForumMessage message) {
+	public void updateMessage(BoardMessage message) {
 		
 		forumDao.updateForumMessage(message);		
 		try {
-			ForumThread thread = getForumThread(message.getThreadId());
+			BoardThread thread = getForumThread(message.getThreadId());
 			forumDao.updateModifiedDate(thread, message.getModifiedDate() );
 			
 			evictCaches(message);
 			evictCaches(thread);
 			
-		} catch (ForumThreadNotFoundException e) {
+		} catch (BoardThreadNotFoundException e) {
 			logger.error(e.getMessage(), e );
 		}		
 	}	
 
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void addMessage(ForumThread forumthread, ForumMessage parentMessage, ForumMessage newMessage) {
+	public void addMessage(BoardThread forumthread, BoardMessage parentMessage, BoardMessage newMessage) {
 		
-		DefaultForumMessage newMessageToUse = (DefaultForumMessage)newMessage;
+		DefaultBoardMessage newMessageToUse = (DefaultBoardMessage)newMessage;
 		if(newMessageToUse.getCreationDate().getTime() < parentMessage.getCreationDate().getTime() ){
 			logger.warn(CommunityLogLocalizer.getMessage("013008"));
 			
@@ -207,21 +207,21 @@ public class DefaultForumService extends EventSupport implements ForumService {
 		
 	}
 	
-	protected void evictCaches(ForumThread thread){				
+	protected void evictCaches(BoardThread thread){				
 		if (threadCache != null && threadCache.get( thread.getThreadId() ) != null)
 		{
 			threadCache.remove(thread.getThreadId());
 		}			
 	}
 	
-	protected void evictCaches(ForumMessage message){				
+	protected void evictCaches(BoardMessage message){				
 		if (messageCache != null && messageCache.get( message.getMessageId() ) != null)
 		{
 			messageCache.remove(message.getMessageId());
 		}			
 	}
 	
-	protected void updateThreadModifiedDate(ForumThread thread, ForumMessage message){
+	protected void updateThreadModifiedDate(BoardThread thread, BoardMessage message){
 		if( message.getModifiedDate() != null){			
 			thread.setModifiedDate(message.getModifiedDate());
 			if (threadCache != null && threadCache.get(thread.getThreadId()) != null){
@@ -230,36 +230,36 @@ public class DefaultForumService extends EventSupport implements ForumService {
 		}
 	}
 	
-	protected void updateCaches(ForumThread forumThread) {
-		if (forumThread != null) {
-			if (forumThread.getThreadId() > 0 ) {
-				if (threadCache != null && threadCache.get(forumThread.getThreadId()) != null)
-					threadCache.remove(forumThread.getThreadId());
-				threadCache.put(new Element(forumThread.getThreadId(), forumThread ));
+	protected void updateCaches(BoardThread boardThread) {
+		if (boardThread != null) {
+			if (boardThread.getThreadId() > 0 ) {
+				if (threadCache != null && threadCache.get(boardThread.getThreadId()) != null)
+					threadCache.remove(boardThread.getThreadId());
+				threadCache.put(new Element(boardThread.getThreadId(), boardThread ));
 			}
 		}
 	}
 	
-	protected void updateCaches(ForumMessage forumMessage) {
-		if (forumMessage != null) {
-			if (forumMessage.getMessageId() > 0 ) {
-				if (messageCache != null && messageCache.get(forumMessage.getMessageId()) != null)
-					messageCache.remove(forumMessage.getMessageId());
-				messageCache.put(new Element(forumMessage.getMessageId(), forumMessage ));
+	protected void updateCaches(BoardMessage boardMessage) {
+		if (boardMessage != null) {
+			if (boardMessage.getMessageId() > 0 ) {
+				if (messageCache != null && messageCache.get(boardMessage.getMessageId()) != null)
+					messageCache.remove(boardMessage.getMessageId());
+				messageCache.put(new Element(boardMessage.getMessageId(), boardMessage ));
 			}
 		}
 	}
 	
-	protected ForumThread getForumThreadInCache(Long threadId) {
+	protected BoardThread getForumThreadInCache(Long threadId) {
 		if( threadCache != null && threadCache.get(threadId) != null)
-			return (ForumThread)threadCache.get(threadId).getObjectValue();
+			return (BoardThread)threadCache.get(threadId).getObjectValue();
 		else
 			return null;
 	}
 	
-	protected ForumMessage getForumMessageInCache(Long messageId) {
+	protected BoardMessage getForumMessageInCache(Long messageId) {
 		if( messageCache != null && messageCache.get(messageId) != null)
-			return (ForumMessage)messageCache.get(messageId).getObjectValue();
+			return (BoardMessage)messageCache.get(messageId).getObjectValue();
 		else
 			return null;
 	}
@@ -268,23 +268,23 @@ public class DefaultForumService extends EventSupport implements ForumService {
 		return forumDao.getForumThreadCount(objectType, objectId);
 	}
 
-	public int getMessageCount(ForumThread thread) {		
+	public int getMessageCount(BoardThread thread) {		
 		return forumDao.getMessageCount(thread);
 	}
 
-	public List<ForumMessage> getMessages(ForumThread thread) {		
+	public List<BoardMessage> getMessages(BoardThread thread) {		
 		List<Long> messageIds = forumDao.getMessageIds(thread);
-		List<ForumMessage> list = new ArrayList<ForumMessage>(messageIds.size());
+		List<BoardMessage> list = new ArrayList<BoardMessage>(messageIds.size());
 		for(Long messageId : messageIds){
 			try {
 				list.add(getForumMessage(messageId));
-			} catch (ForumMessageNotFoundException e) {
+			} catch (BoardMessageNotFoundException e) {
 			}
 		}
 		return list;
 	}
 
-	public MessageTreeWalker getTreeWalker(ForumThread thread) {
+	public MessageTreeWalker getTreeWalker(BoardThread thread) {
 		if( messageTreeWalkerCache != null && messageTreeWalkerCache.get(thread.getThreadId()) != null)
 			return (MessageTreeWalker)messageTreeWalkerCache.get(thread.getThreadId()).getObjectValue();
 		

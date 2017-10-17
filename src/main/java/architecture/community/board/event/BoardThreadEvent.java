@@ -18,7 +18,7 @@ package architecture.community.board.event;
 
 import org.springframework.context.ApplicationEvent;
 
-import architecture.community.board.ForumThread;
+import architecture.community.board.BoardThread;
 
 public class BoardThreadEvent extends ApplicationEvent {
 
@@ -37,7 +37,7 @@ public class BoardThreadEvent extends ApplicationEvent {
 	
 	private Type type ;
 
-	public BoardThreadEvent(ForumThread source, Type type) {
+	public BoardThreadEvent(BoardThread source, Type type) {
 		
 		super(source);
 		
