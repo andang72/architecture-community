@@ -1,4 +1,4 @@
-package architecture.community.forum.dao.jdbc;
+package architecture.community.board.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,12 +15,12 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
-import architecture.community.forum.DefaultForumMessage;
-import architecture.community.forum.DefaultForumThread;
-import architecture.community.forum.ForumMessage;
-import architecture.community.forum.ForumThread;
-import architecture.community.forum.MessageTreeWalker;
-import architecture.community.forum.dao.ForumDao;
+import architecture.community.board.DefaultForumMessage;
+import architecture.community.board.DefaultForumThread;
+import architecture.community.board.ForumMessage;
+import architecture.community.board.ForumThread;
+import architecture.community.board.MessageTreeWalker;
+import architecture.community.board.dao.ForumDao;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.model.Models;
 import architecture.community.user.UserTemplate;

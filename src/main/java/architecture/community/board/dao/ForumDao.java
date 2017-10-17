@@ -1,11 +1,11 @@
-package architecture.community.forum.dao;
+package architecture.community.board.dao;
 
 import java.util.Date;
 import java.util.List;
 
-import architecture.community.forum.ForumMessage;
-import architecture.community.forum.ForumThread;
-import architecture.community.forum.MessageTreeWalker;
+import architecture.community.board.ForumMessage;
+import architecture.community.board.ForumThread;
+import architecture.community.board.MessageTreeWalker;
 
 public interface ForumDao {
 	

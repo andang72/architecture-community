@@ -17,10 +17,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.StreamUtils;
 
-import architecture.community.forum.ForumMessage;
-import architecture.community.forum.ForumService;
-import architecture.community.forum.ForumThread;
-import architecture.community.forum.ForumThreadNotFoundException;
+import architecture.community.board.ForumMessage;
+import architecture.community.board.ForumService;
+import architecture.community.board.ForumThread;
+import architecture.community.board.ForumThreadNotFoundException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")

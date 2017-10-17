@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
-import architecture.community.forum.ForumService;
-import architecture.community.forum.ForumThread;
-import architecture.community.forum.ForumThreadNotFoundException;
+import architecture.community.board.ForumService;
+import architecture.community.board.ForumThread;
+import architecture.community.board.ForumThreadNotFoundException;
 import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.util.ServletUtils;
 

@@ -14,13 +14,13 @@
  *    limitations under the License.
  */
 
-package architecture.community.forum.event;
+package architecture.community.board.event;
 
 import org.springframework.context.ApplicationEvent;
 
-import architecture.community.forum.ForumThread;
+import architecture.community.board.ForumThread;
 
-public class ForumThreadEvent extends ApplicationEvent {
+public class BoardThreadEvent extends ApplicationEvent {
 
 	public enum Type {
 
@@ -37,7 +37,7 @@ public class ForumThreadEvent extends ApplicationEvent {
 	
 	private Type type ;
 
-	public ForumThreadEvent(ForumThread source, Type type) {
+	public BoardThreadEvent(ForumThread source, Type type) {
 		
 		super(source);
 		

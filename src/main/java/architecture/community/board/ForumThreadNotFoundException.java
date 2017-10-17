@@ -1,4 +1,4 @@
-package architecture.community.forum;
+package architecture.community.board;
 
 import architecture.community.exception.NotFoundException;
 

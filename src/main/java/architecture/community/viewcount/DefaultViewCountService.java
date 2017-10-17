@@ -36,8 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.eventbus.Subscribe;
 
-import architecture.community.forum.ForumThread;
-import architecture.community.forum.event.ForumThreadEvent;
+import architecture.community.board.ForumThread;
+import architecture.community.board.event.BoardThreadEvent;
 import architecture.community.model.Models;
 import architecture.community.viewcount.dao.ViewCountDao;
 import architecture.ee.service.ConfigService;
@@ -116,20 +116,20 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 
 	@Subscribe 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void onForumThreadEvent(ForumThreadEvent e) {		
+	public void onForumThreadEvent(BoardThreadEvent e) {		
 		logger.debug("forum thread event : " + e.getType().name());
 		ForumThread thread = (ForumThread) e.getSource();
 		
 		int entityType = Models.FORUM_THREAD.getObjectType();
 		long entityId = thread.getThreadId();	
 		String key = getCacheKey(entityType, entityId);
-		if(e.getType() == ForumThreadEvent.Type.CREATED )
+		if(e.getType() == BoardThreadEvent.Type.CREATED )
 		{
 			if (viewCountCache.get(key) == null) {
 				viewCountDao.insertInitialViewCount(entityType, entityId,  0);
 				viewCountCache.put(new Element(key, Integer.valueOf(0)));
 			}			
-		}else if (e.getType() == ForumThreadEvent.Type.DELETED ){
+		}else if (e.getType() == BoardThreadEvent.Type.DELETED ){
 			queue.remove(key);
 			viewCountDao.deleteViewCount(entityType, entityId);
 			viewCountCache.remove(key);

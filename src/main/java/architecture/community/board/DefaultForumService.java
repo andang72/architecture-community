@@ -1,4 +1,4 @@
-package architecture.community.forum;
+package architecture.community.board;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import architecture.community.forum.dao.ForumDao;
-import architecture.community.forum.event.ForumThreadEvent;
+import architecture.community.board.dao.ForumDao;
+import architecture.community.board.event.BoardThreadEvent;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
@@ -64,7 +64,7 @@ public class DefaultForumService extends EventSupport implements ForumService {
 		forumDao.createForumThread(threadToUse);
 		// insert message ..
 		forumDao.createForumMessage(threadToUse, rootMessage, -1L );				
-		fireEvent(new ForumThreadEvent(threadToUse, ForumThreadEvent.Type.CREATED));		
+		fireEvent(new BoardThreadEvent(threadToUse, BoardThreadEvent.Type.CREATED));		
 	}
 
 	public ForumMessage createMessage(int objectType, long objectId) {

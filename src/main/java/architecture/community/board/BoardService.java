@@ -13,5 +13,8 @@ public interface BoardService {
 	public abstract Board getBoard(long boardId) throws BoardNotFoundException ;
 	
 	public abstract List<Board> getAllBoards();	
+	
+	
+	
 			
 }

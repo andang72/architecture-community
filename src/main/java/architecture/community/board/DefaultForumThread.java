@@ -1,4 +1,4 @@
-package architecture.community.forum;
+package architecture.community.board;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;

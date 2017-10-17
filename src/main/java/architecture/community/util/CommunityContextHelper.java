@@ -7,8 +7,8 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import architecture.community.board.ForumService;
 import architecture.community.comment.CommentService;
-import architecture.community.forum.ForumService;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.viewcount.ViewCountService;
 import architecture.ee.exception.ComponentNotFoundException;

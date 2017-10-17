@@ -16,7 +16,7 @@
 
 package architecture.community.viewcount;
 
-import architecture.community.forum.ForumThread;
+import architecture.community.board.ForumThread;
 
 public interface ViewCountService {
 

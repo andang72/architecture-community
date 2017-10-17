@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import architecture.community.forum.ForumMessage;
+import architecture.community.board.ForumMessage;
 
 public class JsonForumMessageDeserializer extends JsonDeserializer<ForumMessage>{
 
