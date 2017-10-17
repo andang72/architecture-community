@@ -72,10 +72,12 @@ public class JdbcForumDao extends ExtendedJdbcDaoSupport implements ForumDao{
 	};
 	
 	public long getNextThreadId(){
+		logger.debug("next id for {}, {}", Models.FORUM_THREAD.getObjectType(), Models.FORUM_THREAD.name() );
 		return sequencerFactory.getNextValue(Models.FORUM_THREAD.getObjectType(), Models.FORUM_THREAD.name());
 	}	
 	
 	public long getNextMessageId(){
+		logger.debug("next id for {}, {}", Models.FORUM_MESSAGE.getObjectType(), Models.FORUM_MESSAGE.name() );
 		return sequencerFactory.getNextValue(Models.FORUM_MESSAGE.getObjectType(), Models.FORUM_MESSAGE.name());
 	}	
 	

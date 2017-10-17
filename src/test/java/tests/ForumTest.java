@@ -92,6 +92,7 @@ public class ForumTest {
 			log.debug(thread.toString());
 			BoardMessage parentMessage = thread.getRootMessage();
 			
+			log.debug("Parent Message : {}", parentMessage.toString());
 			BoardMessage replayMessage =forumService.createMessage(objectType, objectId);			
 			replayMessage.setSubject("RE:" + parentMessage.getSubject());
 			replayMessage.setBody("인간은 고기 덩어리가 맞다...." + new Date());			
