@@ -101,17 +101,15 @@
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />
      		
-	<beans:bean id="forumDao" class="architecture.community.forum.dao.jdbc.JdbcForumDao" 
-     	p:dataSource-ref="dataSource" />
+	<beans:bean id="forumDao" class="architecture.community.board.dao.jdbc.JdbcForumDao" p:dataSource-ref="dataSource" />
     	
-	<beans:bean id="forumService" class="architecture.community.forum.DefaultForumService"  />	
+	<beans:bean id="forumService" class="architecture.community.board.DefaultForumService"  />	
 
 
 	<!-- ================================= -->
     <!-- BOARD							   -->
     <!-- ================================= -->
-     <beans:bean id="boardDao" class="architecture.community.board.dao.jdbc.JdbcBoardDao" 
-     	p:dataSource-ref="dataSource" />
+     <beans:bean id="boardDao" class="architecture.community.board.dao.jdbc.JdbcBoardDao" p:dataSource-ref="dataSource" />
     
      <beans:bean id="boardCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
      	p:cacheName="boardCache"  
