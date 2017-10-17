@@ -13,7 +13,6 @@ import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
 import architecture.community.user.UserTemplate;
-import architecture.community.util.excel.XSSFExcelWriter;
 import architecture.ee.service.Repository;
 
 @RunWith(SpringJUnit4ClassRunner.class)

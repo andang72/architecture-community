@@ -18,9 +18,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
-import architecture.community.board.ForumService;
 import architecture.community.board.BoardThread;
-import architecture.community.model.ModelObjectAware;
+import architecture.community.board.ForumService;
 import architecture.community.model.Models;
 import architecture.community.web.model.ItemList;
 

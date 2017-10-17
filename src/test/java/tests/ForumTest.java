@@ -5,8 +5,6 @@ import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -18,9 +16,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.StreamUtils;
 
 import architecture.community.board.BoardMessage;
-import architecture.community.board.ForumService;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
+import architecture.community.board.ForumService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")

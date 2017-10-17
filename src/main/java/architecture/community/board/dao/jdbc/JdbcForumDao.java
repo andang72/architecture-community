@@ -15,10 +15,10 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
-import architecture.community.board.DefaultBoardMessage;
-import architecture.community.board.DefaultBoardThread;
 import architecture.community.board.BoardMessage;
 import architecture.community.board.BoardThread;
+import architecture.community.board.DefaultBoardMessage;
+import architecture.community.board.DefaultBoardThread;
 import architecture.community.board.MessageTreeWalker;
 import architecture.community.board.dao.ForumDao;
 import architecture.community.i18n.CommunityLogLocalizer;

@@ -1,13 +1,8 @@
 package tests;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.codec.Base64;
 
 public class Base64EncodeTest {
 

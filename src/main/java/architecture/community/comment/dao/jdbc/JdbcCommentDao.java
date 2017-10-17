@@ -28,16 +28,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
 import architecture.community.comment.Comment;
-import architecture.community.comment.CommentTreeWalker;
 import architecture.community.comment.DefaultComment;
 import architecture.community.comment.dao.CommentDao;
-import architecture.community.model.ModelObjectAware;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.Models;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.LongTree;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
-import architecture.ee.jdbc.sequencer.annotation.MaxValue;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
 public class JdbcCommentDao extends ExtendedJdbcDaoSupport implements CommentDao {

@@ -41,7 +41,6 @@ import architecture.community.image.Image;
 import architecture.community.image.ImageNotFoundException;
 import architecture.community.image.LogoImage;
 import architecture.community.image.dao.ImageDao;
-import architecture.community.model.ModelObjectAware;
 import architecture.community.model.Models;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;

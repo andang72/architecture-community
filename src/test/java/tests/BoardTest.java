@@ -20,7 +20,6 @@ import architecture.community.board.BoardService;
 import architecture.community.image.ImageNotFoundException;
 import architecture.community.image.ImageService;
 import architecture.community.image.LogoImage;
-import architecture.community.model.ModelObjectAware;
 import architecture.community.model.Models;
 import architecture.ee.service.Repository;
 

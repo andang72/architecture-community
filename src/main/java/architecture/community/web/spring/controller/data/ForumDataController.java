@@ -47,13 +47,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
-import architecture.community.board.BoardNotFoundException;
-import architecture.community.board.DefaultBoardMessage;
 import architecture.community.board.BoardMessage;
 import architecture.community.board.BoardMessageNotFoundException;
-import architecture.community.board.ForumService;
+import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
+import architecture.community.board.DefaultBoardMessage;
+import architecture.community.board.ForumService;
 import architecture.community.board.MessageTreeWalker;
 import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
