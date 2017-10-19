@@ -16,9 +16,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.StreamUtils;
 
 import architecture.community.board.BoardMessage;
+import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
-import architecture.community.board.ForumService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
@@ -29,7 +29,7 @@ public class ForumTest {
 	private static Logger log = LoggerFactory.getLogger(ForumTest.class);
 	
 	@Autowired
-	private ForumService forumService;
+	private BoardService boardService;
 
 	
 	private String getBodyText(String filename){
@@ -50,14 +50,14 @@ public class ForumTest {
 		int objectType = 1;
 		long objectId = 1L;
 		
-		List<BoardThread> list = forumService.getForumThreads(objectType, objectId);
+		List<BoardThread> list = boardService.getForumThreads(objectType, objectId);
 		log.debug(" THREAD COUNT {}" , list.size() );		
 		if( list.size() == 0 ){
-			BoardMessage rootMessage = forumService.createMessage(objectType, objectId);
+			BoardMessage rootMessage = boardService.createMessage(objectType, objectId);
 			rootMessage.setSubject("인간이란 무엇인가?");
 			rootMessage.setBody("인간은 고기 덩어리 인가 아님 다른 존재이가?");
-			BoardThread thread = forumService.createThread(objectType, objectId, rootMessage);
-			forumService.addThread(objectType, objectId, thread);
+			BoardThread thread = boardService.createThread(objectType, objectId, rootMessage);
+			boardService.addThread(objectType, objectId, thread);
 		}
 		
 		for( BoardThread t : list ){
@@ -66,10 +66,10 @@ public class ForumTest {
 			
 			if( message.getMessageId() == 2 && message.getBody().length() < 20000 ){
 				message.setBody(getBodyText("text1.txt"));
-				forumService.updateMessage(message);				
+				boardService.updateMessage(message);				
 			}else if( message.getMessageId() == 4 && message.getBody().length() < 20000 ){
 				message.setBody(getBodyText("text2.txt"));
-				forumService.updateMessage(message);				
+				boardService.updateMessage(message);				
 			}
 			
 			log.debug(" FORUM THREAD : " + t );
@@ -86,15 +86,15 @@ public class ForumTest {
 		long objectId = 1L;
 		log.debug("replay ============ ");
 		try {
-			BoardThread thread = forumService.getForumThread(2);
+			BoardThread thread = boardService.getForumThread(2);
 			log.debug(thread.toString());
 			BoardMessage parentMessage = thread.getRootMessage();
 			
 			log.debug("Parent Message : {}", parentMessage.toString());
-			BoardMessage replayMessage =forumService.createMessage(objectType, objectId);			
+			BoardMessage replayMessage =boardService.createMessage(objectType, objectId);			
 			replayMessage.setSubject("RE:" + parentMessage.getSubject());
 			replayMessage.setBody("인간은 고기 덩어리가 맞다...." + new Date());			
-			forumService.addMessage(thread, parentMessage, replayMessage);
+			boardService.addMessage(thread, parentMessage, replayMessage);
 			
 		} catch (BoardThreadNotFoundException e) {
 			e.printStackTrace();

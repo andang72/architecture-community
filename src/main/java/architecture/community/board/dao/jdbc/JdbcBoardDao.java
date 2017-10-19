@@ -11,14 +11,22 @@ import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
 import architecture.community.board.Board;
+import architecture.community.board.BoardMessage;
+import architecture.community.board.BoardThread;
 import architecture.community.board.DefaultBoard;
+import architecture.community.board.DefaultBoardMessage;
+import architecture.community.board.DefaultBoardThread;
+import architecture.community.board.MessageTreeWalker;
 import architecture.community.board.dao.BoardDao;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.model.Models;
+import architecture.community.user.UserTemplate;
+import architecture.community.util.LongTree;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
@@ -103,6 +111,246 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 
 	public void deleteBoard(Board board) {
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.DELETE_BOARD").getSql(), new SqlParameterValue(Types.NUMERIC, board.getBoardId() ) );
+	}
+	
+
+	private final RowMapper<BoardThread> threadMapper = new RowMapper<BoardThread>() {	
+		
+		public BoardThread mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			DefaultBoardThread thread = new DefaultBoardThread(rs.getLong("THREAD_ID"));			
+			thread.setObjectType(rs.getInt("OBJECT_TYPE"));
+			thread.setObjectId(rs.getLong("OBJECT_ID"));
+			thread.setRootMessage(  new DefaultBoardMessage( rs.getLong("ROOT_MESSAGE_ID") ) );
+			thread.setCreationDate(rs.getTimestamp("CREATION_DATE"));
+			thread.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));		
+			return thread;
+		}
+		
+	};
+
+	private final RowMapper<BoardMessage> messageMapper = new RowMapper<BoardMessage>() {	
+
+		public BoardMessage mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			DefaultBoardMessage message = new DefaultBoardMessage(rs.getLong("MESSAGE_ID"));		
+			message.setParentMessageId(rs.getLong("PARENT_MESSAGE_ID"));
+			message.setThreadId(rs.getLong("THREAD_ID"));
+			message.setObjectType(rs.getInt("OBJECT_TYPE"));
+			message.setObjectId(rs.getLong("OBJECT_ID"));
+			message.setUser(new UserTemplate(rs.getLong("USER_ID")));
+			message.setSubject(rs.getString("SUBJECT"));
+			message.setBody(rs.getString("BODY"));
+			message.setCreationDate(rs.getTimestamp("CREATION_DATE"));
+			message.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));		
+			return message;
+		}
+		
+	};
+	
+	public long getNextThreadId(){
+		logger.debug("next id for {}, {}", Models.FORUM_THREAD.getObjectType(), Models.FORUM_THREAD.name() );
+		return sequencerFactory.getNextValue(Models.FORUM_THREAD.getObjectType(), Models.FORUM_THREAD.name());
+	}	
+	
+	public long getNextMessageId(){
+		logger.debug("next id for {}, {}", Models.FORUM_MESSAGE.getObjectType(), Models.FORUM_MESSAGE.name() );
+		return sequencerFactory.getNextValue(Models.FORUM_MESSAGE.getObjectType(), Models.FORUM_MESSAGE.name());
+	}	
+	
+	
+	public List<Long> getForumThreadIds(int objectType, long objectId, int startIndex, int numResults){
+		return getExtendedJdbcTemplate().query(
+				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				startIndex, 
+				numResults, 
+				Long.class, 
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+		);
+		/*return getExtendedJdbcTemplate().queryForList(
+				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Long.class,
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+				);*/
+	}
+	
+	public List<Long> getForumThreadIds(int objectType, long objectId){
+		return getExtendedJdbcTemplate().queryForList(
+				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Long.class,
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+				);
+	}
+	
+	public long getLatestMessageId(BoardThread thread){
+		try
+        {
+            return getExtendedJdbcTemplate().queryForObject(
+            		getBoundSql("COMMUNITY_BOARD.SELECT_LATEST_FORUM_MESSAGE_ID_BY_THREAD_ID").getSql(), 
+            		Long.class,
+            		new SqlParameterValue(Types.NUMERIC, thread.getThreadId() ) );
+        }
+        catch(IncorrectResultSizeDataAccessException e)
+        {
+            logger.error(CommunityLogLocalizer.format("013009", thread.getThreadId() ), e );
+        }
+        return -1L;		
+	}
+	
+	public List<Long> getAllMessageIdsInThread(BoardThread thread){
+		return getExtendedJdbcTemplate().queryForList(
+			getBoundSql("COMMUNITY_BOARD.SELECT_ALL_FORUM_MESSAGE_IDS_BY_THREAD_ID").getSql(), 
+			Long.class,
+			new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
+		);		
+	}
+	
+	public void createForumThread(BoardThread thread) {		
+		DefaultBoardThread threadToUse = (DefaultBoardThread)thread;		
+		threadToUse.setThreadId(getNextThreadId());		
+		
+		if( threadToUse.getRootMessage().getMessageId() <= 0 ){
+			DefaultBoardMessage messageToUse = (DefaultBoardMessage)thread.getRootMessage();		
+			messageToUse.setMessageId(getNextMessageId());		
+		}
+		
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.CREATE_FORUM_THREAD").getSql(),
+				new SqlParameterValue(Types.NUMERIC, threadToUse.getThreadId() ),
+				new SqlParameterValue(Types.NUMERIC, threadToUse.getObjectType()),
+				new SqlParameterValue(Types.NUMERIC, threadToUse.getObjectId()),				
+				new SqlParameterValue(Types.NUMERIC, threadToUse.getRootMessage().getMessageId()),				
+				new SqlParameterValue(Types.TIMESTAMP, threadToUse.getCreationDate() ),
+				new SqlParameterValue(Types.TIMESTAMP, threadToUse.getModifiedDate() )
+		);
+	}
+	
+	public void createForumMessage (BoardThread thread, BoardMessage message, long parentMessageId) {
+			
+		DefaultBoardMessage messageToUse = (DefaultBoardMessage) message;
+		if(messageToUse.getCreationDate() == null )
+		{
+			Date now = new Date();	
+			messageToUse.setCreationDate(now);
+			messageToUse.setModifiedDate(now);
+		}	
+		
+		if(messageToUse.getMessageId() == -1L){
+			messageToUse.setMessageId(getNextMessageId());
+		}
+		
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.CREATE_FORUM_MESSAGE").getSql(),
+				new SqlParameterValue(Types.NUMERIC, messageToUse.getMessageId() ),
+				new SqlParameterValue(Types.NUMERIC, parentMessageId),
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId()),
+				new SqlParameterValue(Types.NUMERIC, thread.getObjectType()),
+				new SqlParameterValue(Types.NUMERIC, thread.getObjectId()),
+				new SqlParameterValue(Types.NUMERIC, messageToUse.getUser().getUserId()),
+				new SqlParameterValue(Types.VARCHAR, messageToUse.getSubject()),
+				new SqlParameterValue(Types.VARCHAR, messageToUse.getBody()),
+				new SqlParameterValue(Types.TIMESTAMP, messageToUse.getCreationDate() ),
+				new SqlParameterValue(Types.TIMESTAMP, messageToUse.getModifiedDate() )
+		);	
+	}
+
+	public BoardThread getForumThreadById(long threadId) {
+		BoardThread thread = null;
+		if (threadId <= 0L) {
+			return thread;
+		}		
+		try {
+			thread = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_BY_ID").getSql(), 
+					threadMapper, 
+					new SqlParameterValue(Types.NUMERIC, threadId ));
+		} catch (DataAccessException e) {
+			logger.error(CommunityLogLocalizer.format("013005", threadId), e);
+		}
+		return thread;
+	}
+	
+	public BoardMessage getForumMessageById(long messageId) {
+		BoardMessage message = null;
+		if (messageId <= 0L) {
+			return message;
+		}		
+		try {
+			message = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_MESSAGE_BY_ID").getSql(), 
+					messageMapper, 
+					new SqlParameterValue(Types.NUMERIC, messageId ));
+		} catch (DataAccessException e) {
+			logger.error(CommunityLogLocalizer.format("013007", messageId), e);
+		}
+		return message;
+	}
+
+	public void updateForumThread(BoardThread thread) {
+		Date now = new Date();
+		thread.setModifiedDate(now);		
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_FORUM_THREAD").getSql(), 
+				new SqlParameterValue(Types.VARCHAR, thread.getRootMessage().getMessageId()),
+				new SqlParameterValue(Types.TIMESTAMP, thread.getModifiedDate() ),	
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId())
+		);
+	}
+	
+	public void updateForumMessage(BoardMessage message) {
+		Date now = new Date();
+		message.setModifiedDate(now);		
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_FORUM_MESSAGE").getSql(), 
+				new SqlParameterValue(Types.VARCHAR, message.getSubject() ),
+				new SqlParameterValue(Types.VARCHAR, message.getBody()),
+				new SqlParameterValue(Types.TIMESTAMP, message.getModifiedDate() ),	
+				new SqlParameterValue(Types.NUMERIC, message.getMessageId() )
+		);
+	}
+ 
+	public void updateModifiedDate(BoardThread thread, Date date) {
+		thread.setModifiedDate(date);	
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_FORUM_THREAD_MODIFIED_DATE").getSql(), 
+				new SqlParameterValue(Types.TIMESTAMP, date ),	
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
+		);
+	}
+
+	@Override
+	public int getForumThreadCount(int objectType, long objectId) {
+		return getExtendedJdbcTemplate().queryForObject(
+			getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_COUNT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+			Integer.class,
+			new SqlParameterValue(Types.NUMERIC, objectType ),
+			new SqlParameterValue(Types.NUMERIC, objectId )
+			);
+	}
+
+	@Override
+	public List<Long> getMessageIds(BoardThread thread) {
+		
+		return getExtendedJdbcTemplate().queryForList(
+				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_MESSAGE_IDS_BY_THREAD_ID").getSql(), Long.class,
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
+				);
+	}
+
+	@Override
+	public int getMessageCount(BoardThread thread) {
+		return getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_MESSAGE_COUNT_BY_THREAD_ID").getSql(), 
+				Integer.class,
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
+				);
+	}	
+	
+	public MessageTreeWalker getTreeWalker(BoardThread thread) {	
+		
+		final LongTree tree = new LongTree(thread.getRootMessage().getMessageId(), getMessageCount(thread));
+		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_MESSAGES_BY_THREAD_ID").getSql(), 
+				new RowCallbackHandler() {
+					public void processRow(ResultSet rs) throws SQLException {
+						long messageId = rs.getLong(1);
+						long parentMessageId = rs.getLong(2);
+						tree.addChild(parentMessageId, messageId);						
+					}}, 
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() ));
+		
+		return new MessageTreeWalker( thread.getThreadId(), tree);
 	}
 	
 }

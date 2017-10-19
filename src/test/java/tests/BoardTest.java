@@ -75,8 +75,10 @@ public class BoardTest {
 			if( count == 0){
 				File file = getRandomLogoFile();
 				log.debug("adding" );
+				if( file.exists() ) {
 				LogoImage img = imageService.createLogoImage( Models.BOARD.getObjectType(), board.getBoardId(), true, file.getName(), "image/png", file );
 				imageService.addLogoImage(img, file);
+				}
 			}else{
 				try {
 					log.debug("getting" );

@@ -18,7 +18,6 @@ import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
-import architecture.community.board.ForumService;
 import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.util.ServletUtils;
 
@@ -31,9 +30,6 @@ public class BoardPageController {
     @Qualifier("boardService")
     private BoardService boardService;
 
-	@Inject
-	@Qualifier("forumService")
-	private ForumService forumService;
 	
 	@Inject
 	@Qualifier("viewCountService")
@@ -64,7 +60,7 @@ public class BoardPageController {
 		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{
 		ServletUtils.setContentType(null, response);			
 		Board board = boardService.getBoard(boardId);
-		BoardThread thread = forumService.getForumThread(threadId);
+		BoardThread thread = boardService.getForumThread(threadId);
 
 		viewCountService.addViewCount(thread);
 		
@@ -83,7 +79,7 @@ public class BoardPageController {
 		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{
 		ServletUtils.setContentType(null, response);			
 		Board board = boardService.getBoard(boardId);
-		BoardThread thread = forumService.getForumThread(threadId);
+		BoardThread thread = boardService.getForumThread(threadId);
 
 		viewCountService.addViewCount(thread);
 		

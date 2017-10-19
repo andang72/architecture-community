@@ -157,12 +157,6 @@
 	
 	 <beans:bean id="boardService" class="architecture.community.board.DeafultBoardService"  />		
 	
-	<!-- ================================= -->
-    <!-- FORUM							   -->
-    <!-- ================================= -->
-    
-     <beans:bean id="forumDao" class="architecture.community.board.dao.jdbc.JdbcForumDao" 
-     	p:dataSource-ref="dataSource" />
     
      <beans:bean id="messageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
      	p:cacheName="messageCache"  
@@ -196,8 +190,6 @@
      	p:eternal="false"  
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />
-     			
-	 <beans:bean id="forumService" class="architecture.community.board.DefaultForumService"  />		
 	 
 	
 </beans:beans> 

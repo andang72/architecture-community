@@ -19,7 +19,6 @@ import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
-import architecture.community.board.ForumService;
 import architecture.community.model.Models;
 import architecture.community.web.model.ItemList;
 
@@ -32,10 +31,6 @@ public class BoardDataController {
 	@Inject
 	@Qualifier("boardService")
 	private BoardService boardService;
-	
-	@Inject
-	@Qualifier("forumService")
-	private ForumService forumService;
 	
 	
 	@RequestMapping(value = "/list.json", method = { RequestMethod.POST, RequestMethod.GET})
@@ -65,12 +60,12 @@ public class BoardDataController {
 		
 		Board board = boardService.getBoard(boardId);	
 		List<BoardThread> list;
-		int totalSize = forumService.getFourmThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
+		int totalSize = boardService.getFourmThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
 		
 		if( pageSize == 0 && page == 0){
-			list = forumService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId());
+			list = boardService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId());
 		}else{
-			list = forumService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId(), skip, pageSize);
+			list = boardService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId(), skip, pageSize);
 		}
 		
 		return new ItemList(list, totalSize);
