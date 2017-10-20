@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package architecture.community.link.dao.impl;
+package architecture.community.link.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

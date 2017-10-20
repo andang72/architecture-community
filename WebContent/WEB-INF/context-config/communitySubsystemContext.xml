@@ -14,114 +14,134 @@
 	<beans:description><![CDATA[
       Community 설정  
 	]]></beans:description>
-		
-	
-	<!-- ================================= -->
-    <!-- VIEW COUNT						   -->
-    <!-- ================================= -->
-	<beans:bean id="viewCountDao" class="architecture.community.viewcount.dao.jdbc.JdbcViewCountDao"  p:dataSource-ref="dataSource" />
-    
-    <beans:bean id="viewCountCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="viewCountCache"  
-     	p:maxElementsInMemory="20000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="600" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
-		
-	<beans:bean id="viewCountService" class="architecture.community.viewcount.DefaultVIewCountService"  />	
-
-	<!-- ================================= -->
-    <!-- COMMENT 						   -->
-    <!-- ================================= -->
-	<beans:bean id="commentDao" class="architecture.community.comment.dao.jdbc.JdbcCommentDao"  p:dataSource-ref="dataSource" />
-    
-    <beans:bean id="commentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="commentCache"  
-     	p:maxElementsInMemory="20000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="600" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
-     	
-    <beans:bean id="commentTreeWalkerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="commentTreeWalkerCache"  
-     	p:maxElementsInMemory="1000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="600" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />	
-     		
-	<beans:bean id="commentService" class="architecture.community.comment.DefaultCommentService"  />	
-		
-    
-	<!-- ================================= -->
-    <!-- FORUM							   -->
-    <!-- ================================= -->
-
-    <beans:bean id="messageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="messageCache"  
-     	p:maxElementsInMemory="5000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="600" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
-	
-    <beans:bean id="threadCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="threadCache"  
-     	p:maxElementsInMemory="5000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="600" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
-
-    <beans:bean id="messageTreeWalkerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="messageTreeWalkerCache"  
-     	p:maxElementsInMemory="5000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="600" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
-     		
-	<beans:bean id="forumDao" class="architecture.community.board.dao.jdbc.JdbcForumDao" p:dataSource-ref="dataSource" />
-    	
-	<beans:bean id="forumService" class="architecture.community.board.DefaultForumService"  />	
 
 
 	<!-- ================================= -->
-    <!-- BOARD							   -->
-    <!-- ================================= -->
-     <beans:bean id="boardDao" class="architecture.community.board.dao.jdbc.JdbcBoardDao" p:dataSource-ref="dataSource" />
-    
-     <beans:bean id="boardCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="boardCache"  
-     	p:maxElementsInMemory="5000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="60" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
-	
-	 <beans:bean id="boardService" class="architecture.community.board.DeafultBoardService"  />	
-	     
+	<!-- VIEW COUNT -->
+	<!-- ================================= -->
+	<beans:bean id="viewCountDao"
+		class="architecture.community.viewcount.dao.jdbc.JdbcViewCountDao"
+		p:dataSource-ref="dataSource" />
+
+	<beans:bean id="viewCountCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="viewCountCache" p:maxElementsInMemory="20000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="600" p:eternal="false"
+		p:diskExpiryThreadIntervalSeconds="0" p:statisticsEnabled="true" />
+
+	<beans:bean id="viewCountService"
+		class="architecture.community.viewcount.DefaultViewCountService" />
+
+	<!-- ================================= -->
+	<!-- COMMENT -->
+	<!-- ================================= -->
+	<beans:bean id="commentDao"
+		class="architecture.community.comment.dao.jdbc.JdbcCommentDao"
+		p:dataSource-ref="dataSource" />
+
+	<beans:bean id="commentCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="commentCache" p:maxElementsInMemory="20000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="600" p:eternal="false"
+		p:diskExpiryThreadIntervalSeconds="0" p:statisticsEnabled="true" />
+
+	<beans:bean id="commentTreeWalkerCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="commentTreeWalkerCache" p:maxElementsInMemory="1000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="600" p:eternal="false"
+		p:diskExpiryThreadIntervalSeconds="0" p:statisticsEnabled="true" />
+
+	<beans:bean id="commentService"
+		class="architecture.community.comment.DefaultCommentService" />
+
+
+	<!-- ================================= -->
+	<!-- BOARD -->
+	<!-- ================================= -->
+
+	<beans:bean id="messageCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="messageCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="600" p:eternal="false"
+		p:diskExpiryThreadIntervalSeconds="0" p:statisticsEnabled="true" />
+
+	<beans:bean id="threadCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="threadCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="600" p:eternal="false"
+		p:diskExpiryThreadIntervalSeconds="0" p:statisticsEnabled="true" />
+
+	<beans:bean id="messageTreeWalkerCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="messageTreeWalkerCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="600" p:eternal="false"
+		p:diskExpiryThreadIntervalSeconds="0" p:statisticsEnabled="true" />
+
+	<beans:bean id="boardDao"
+		class="architecture.community.board.dao.jdbc.JdbcBoardDao"
+		p:dataSource-ref="dataSource" />
+
+	<beans:bean id="boardCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="boardCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="60" p:eternal="false" p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />
+
+	<beans:bean id="boardService"
+		class="architecture.community.board.DeafultBoardService" />
+
+	<!-- ================================= -->
+	<!-- IMAGE -->
+	<!-- ================================= -->
+	<beans:bean id="imageDao"
+		class="architecture.community.image.dao.jdbc.JdbcImageDao"
+		p:dataSource-ref="dataSource" />
+
+	<beans:bean id="logoImageIdsCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="logoImageIdsCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="60" p:eternal="false" p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />
+
+	<beans:bean id="logoImageCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="logoImageCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="60" p:eternal="false" p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />
+
+	<beans:bean id="imageCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="imageCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="60" p:eternal="false" p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />
+
+	<beans:bean id="imageService"
+		class="architecture.community.image.DefaultImageService" />
+
+	<!-- ================================= -->
+	<!-- ATTACHMENT -->
+	<!-- ================================= -->
+	<beans:bean id="attachmentDao"
+		class="architecture.community.attachment.dao.impl.JdbcAttachmentDao"
+		p:dataSource-ref="dataSource" />
+
+	<beans:bean id="attachmentCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="attachmentCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="60" p:eternal="false" p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />
+
+	<beans:bean id="attachmentService"
+		class="architecture.community.attachment.DefaultAttachmentService" />
 </beans:beans> 

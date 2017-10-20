@@ -24,7 +24,7 @@
 
      <beans:bean id="eventBus" class="com.google.common.eventbus.AsyncEventBus">
      	<beans:constructor-arg index="0" ref="taskExecutor" />
-     </beans:bean>              
+     </beans:bean>          
                
      <beans:bean id="dataSource" class="architecture.ee.spring.jdbc.datasource.DataSourceFactoryBean" p:profileName="default" lazy-init="true"/>
      
@@ -44,8 +44,8 @@
      
      <bean id="sqlConfiguration" factory-bean="sqlQueryFactory" factory-method="getConfiguration" />
      
-     <bean id="sequencerFactory" class="architecture.ee.jdbc.sequencer.SequencerFactory.Builder" factory-method="build" />
-     
+      <bean id="sequencerFactory" class="architecture.ee.jdbc.sequencer.SequencerFactory.Builder" factory-method="build" />
+      
      <bean id="communityContextHelper" class="architecture.community.util.CommunityContextHelper"/>     
 
 </beans:beans> 

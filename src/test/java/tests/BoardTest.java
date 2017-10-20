@@ -55,10 +55,7 @@ public class BoardTest {
 	}
 	
 	@Test
-	public void testSelectOrCreateBoard(){
-		
-		
-		
+	public void testSelectOrCreateBoard(){ 
 		
 		List<Board> list = boardService.getAllBoards();
 		long boardId = -1L;

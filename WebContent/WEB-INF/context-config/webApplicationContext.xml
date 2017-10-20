@@ -14,11 +14,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
-	<import resource="classpath:context/community-bootstrap-context.xml"/>	
-	<import resource="classpath:context/community-components-context.xml"/>
-	<import resource="classpath:context/community-transaction-context.xml"/>
-	<import resource="classpath:context/community-freemarker-context.xml"/>
-	<import resource="classpath:context/community-ehcache-context.xml"/>
+	<import resource="classpath:context/default-bootstrap-context.xml"/>	
+	<import resource="classpath:context/default-components-context.xml"/>
+	<import resource="classpath:context/default-transaction-context.xml"/>
+	<import resource="classpath:context/default-freemarker-context.xml"/>
+	<import resource="classpath:context/default-ehcache-context.xml"/>
 	
 	<!-- to activate annotations in beans already registered in the application  context -->
 	

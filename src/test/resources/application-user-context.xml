@@ -11,11 +11,11 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-
-	<import resource="classpath:context/community-bootstrap-context.xml"/>	
-	<import resource="classpath:context/community-components-context.xml"/>
-	<import resource="classpath:context/community-transaction-context.xml"/>
-	<import resource="classpath:context/community-ehcache-context.xml"/>
+	<import resource="classpath:context/default-bootstrap-context.xml"/>	
+	<import resource="classpath:context/default-components-context.xml"/>
+	<import resource="classpath:context/default-transaction-context.xml"/>
+	<import resource="classpath:context/default-ehcache-context.xml"/>
+	<import resource="classpath:context/community-util-context.xml"/>
 	<import resource="classpath:context/community-user-context.xml"/>
 	<import resource="classpath:context/community-security-context.xml"/>
 	

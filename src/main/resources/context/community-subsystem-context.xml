@@ -18,23 +18,24 @@
 	<beans:bean id="propertyDao" class="architecture.ee.jdbc.property.dao.impl.JdbcPropertyDao"  p:dataSource-ref="dataSource" />
    
 	<!-- ================================= -->
-    <!-- VIEWCOUNT						   -->
+    <!-- VIEW COUNT						   -->
     <!-- ================================= -->
-	
-    <beans:bean id="viewCountDao" class="architecture.community.viewcount.dao.jdbc.JdbcViewCountDao"  p:dataSource-ref="dataSource" />
+	<beans:bean id="viewCountDao" class="architecture.community.viewcount.dao.jdbc.JdbcViewCountDao"  p:dataSource-ref="dataSource" />
+    
     <beans:bean id="viewCountCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
      	p:cacheName="viewCountCache"  
      	p:maxElementsInMemory="20000"  
      	p:diskPersistent="false" 
      	p:overflowToDisk="false"  
      	p:timeToIdle="30"  
-     	p:timeToLive="60" 
+     	p:timeToLive="600" 
      	p:eternal="false"  
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />
 		
 	<beans:bean id="viewCountService" class="architecture.community.viewcount.DefaultViewCountService"  />	
-	<!-- ================================= -->
+
+<!-- ================================= -->
     <!-- IMAGE							   -->
     <!-- ================================= -->
     <beans:bean id="imageDao" class="architecture.community.image.dao.jdbc.JdbcImageDao"  p:dataSource-ref="dataSource" />    
@@ -91,25 +92,7 @@
      	p:statisticsEnabled="true" />  
     
     <beans:bean id="attachmentService" class="architecture.community.attachment.DefaultAttachmentService"  />	
-	 	
-	<!-- ================================= -->
-    <!-- EXTERNALLINK					   -->
-    <!-- ================================= -->
-    <beans:bean id="externalLinkDao" class="architecture.community.link.dao.impl.JdbcExternalLinkDao"  p:dataSource-ref="dataSource" />
     
-    <beans:bean id="externalLinkCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="externalLinkCache"  
-     	p:maxElementsInMemory="5000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="60" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />  
-     	
-    <beans:bean id="externalLinkService" class="architecture.community.link.DefaultExternalLinkService"  /> 	
-     	            
 	<!-- ================================= -->
     <!-- COMMENT 						   -->
     <!-- ================================= -->
@@ -136,9 +119,48 @@
      	p:eternal="false"  
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />	
-  
+     		
 	<beans:bean id="commentService" class="architecture.community.comment.DefaultCommentService"  />	
-			
+		
+    
+	<!-- ================================= -->
+    <!-- FORUM							   -->
+    <!-- ================================= -->
+
+    <beans:bean id="messageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="messageCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="30"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+	
+    <beans:bean id="threadCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="threadCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="30"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+
+    <beans:bean id="messageTreeWalkerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="messageTreeWalkerCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="30"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+
+
 	<!-- ================================= -->
     <!-- BOARD							   -->
     <!-- ================================= -->
@@ -155,41 +177,7 @@
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />
 	
-	 <beans:bean id="boardService" class="architecture.community.board.DeafultBoardService"  />		
-	
-    
-     <beans:bean id="messageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="messageCache"  
-     	p:maxElementsInMemory="5000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="60" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
-	
-     <beans:bean id="threadCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="threadCache"  
-     	p:maxElementsInMemory="5000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="60" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
-	
-    <beans:bean id="messageTreeWalkerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
-     	p:cacheName="messageTreeWalkerCache"  
-     	p:maxElementsInMemory="5000"  
-     	p:diskPersistent="false" 
-     	p:overflowToDisk="false"  
-     	p:timeToIdle="30"  
-     	p:timeToLive="60" 
-     	p:eternal="false"  
-     	p:diskExpiryThreadIntervalSeconds="0"  
-     	p:statisticsEnabled="true" />
+	 <beans:bean id="boardService" class="architecture.community.board.DeafultBoardService"  />	
 	 
 	
 </beans:beans> 

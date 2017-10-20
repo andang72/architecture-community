@@ -12,10 +12,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
-	<import resource="classpath:context/community-bootstrap-context.xml"/>	
-	<import resource="classpath:context/community-components-context.xml"/>
-	<import resource="classpath:context/community-transaction-context.xml"/>
-	<import resource="classpath:context/community-ehcache-context.xml"/>
+	<import resource="classpath:context/default-bootstrap-context.xml"/>	
+	<import resource="classpath:context/default-components-context.xml"/>
+	<import resource="classpath:context/default-transaction-context.xml"/>
+	<import resource="classpath:context/default-ehcache-context.xml"/>
+	<import resource="classpath:context/community-util-context.xml"/>
 	<import resource="classpath:context/community-user-context.xml"/>
 	<import resource="classpath:context/community-security-context.xml"/>	
 	<import resource="classpath:context/community-subsystem-context.xml"/>
@@ -26,6 +27,8 @@
 	
 	<!-- scans packages to find and register beans within the application context -->
 	
-	<context:component-scan base-package="architecture.community" />
+	<context:component-scan base-package="architecture.community" >
+		<context:exclude-filter type="regex" expression="architecture.community.web.spring.controller.*"/>
+	</context:component-scan>
 
 </beans:beans> 
