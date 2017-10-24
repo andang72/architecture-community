@@ -45,7 +45,7 @@ public class BoardPageController {
 		    HttpServletResponse response, Model model) throws BoardNotFoundException{
 		ServletUtils.setContentType(null, response);	
 		
-		Board board = boardService.getBoard(boardId);
+		Board board = boardService.getBoardById(boardId);
 		model.addAttribute("board", board);
 		
 		return "/forums/list-thread" ;
@@ -59,7 +59,7 @@ public class BoardPageController {
 		    HttpServletResponse response, 
 		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{
 		ServletUtils.setContentType(null, response);			
-		Board board = boardService.getBoard(boardId);
+		Board board = boardService.getBoardById(boardId);
 		BoardThread thread = boardService.getForumThread(threadId);
 
 		viewCountService.addViewCount(thread);
@@ -78,7 +78,7 @@ public class BoardPageController {
 		    HttpServletResponse response, 
 		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{
 		ServletUtils.setContentType(null, response);			
-		Board board = boardService.getBoard(boardId);
+		Board board = boardService.getBoardById(boardId);
 		BoardThread thread = boardService.getForumThread(threadId);
 
 		viewCountService.addViewCount(thread);

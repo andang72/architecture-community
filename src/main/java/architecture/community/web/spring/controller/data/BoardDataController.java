@@ -58,9 +58,9 @@ public class BoardDataController {
 		
 		log.debug(" skip: {}, page: {}, pageSize: {}", skip, page, pageSize );
 		
-		Board board = boardService.getBoard(boardId);	
+		Board board = boardService.getBoardById(boardId);	
 		List<BoardThread> list;
-		int totalSize = boardService.getFourmThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
+		int totalSize = boardService.getBoardThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
 		
 		if( pageSize == 0 && page == 0){
 			list = boardService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId());

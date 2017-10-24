@@ -53,12 +53,17 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Board createBoard(String name, String displayName, String description) {				
+		
 		DefaultBoard newBoard = new DefaultBoard();		
+		
 		if(name == null || "".equals(name.trim()))
             throw new IllegalArgumentException("Board name must be specified.");
+		
 		newBoard.setName(name);		
-        if(displayName == null || "".equals(displayName.trim()))
+        
+		if(displayName == null || "".equals(displayName.trim()))
             throw new IllegalArgumentException("Board display name must be specified.");
+        
         newBoard.setDisplayName(displayName);        
         newBoard.setDescription(description);
         newBoard.setCreationDate(new Date());		
@@ -72,7 +77,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	}
 
  
-	public Board getBoard(long boardId) throws BoardNotFoundException {				
+	public Board getBoardById(long boardId) throws BoardNotFoundException {				
 		
 		Board board = getBoardInCache(boardId);		
 		if( board == null && boardId > 0L ){
@@ -93,7 +98,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		for( Long id : ids )
 		{
 			try {
-				boards.add(getBoard(id));
+				boards.add(getBoardById(id));
 			} catch (BoardNotFoundException e) {
 				logger.warn(e.getMessage(), e);
 			}
@@ -132,6 +137,8 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		DefaultBoardThread newThread = new DefaultBoardThread(objectType, objectId, rootMessage);
 		return newThread;
 	}
+	
+	
  
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void addThread(int objectType, long objectId, BoardThread thread) {		
@@ -345,7 +352,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 			return null;
 	}
 
-	public int getFourmThreadCount(int objectType, long objectId) {
+	public int getBoardThreadCount(int objectType, long objectId) {
 		return boardDao.getForumThreadCount(objectType, objectId);
 	}
 

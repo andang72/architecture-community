@@ -12,9 +12,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import architecture.ee.exception.RuntimeError;
 
 public class JsonDateDeserializer extends JsonDeserializer<Date> {
-
-	// private static final SimpleDateFormat format = new
-    // SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+ 
     private static final ISO8601DateFormat formatter = new ISO8601DateFormat();
 
     @Override

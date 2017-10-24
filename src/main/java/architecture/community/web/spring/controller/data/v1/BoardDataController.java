@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
+import architecture.community.board.DefaultBoard;
 import architecture.community.board.DefaultBoardMessage;
 import architecture.community.board.MessageTreeWalker;
 import architecture.community.comment.Comment;
@@ -46,8 +48,8 @@ import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
-import architecture.community.model.Models;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
+import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
@@ -74,14 +76,69 @@ public class BoardDataController {
 	@Qualifier("attachmentService")
 	private AttachmentService attachmentService;
 	
+	
+	/**
+	 * 게시판 목록 리턴 
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/boards/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public List<Board> getBoardList (NativeWebRequest request) {	
 		return boardService.getAllBoards();
 	}
+	
+	
+	/**
+	 * 게시판 정보 리턴 
+	 * @param request
+	 * @return
+	 * @throws BoardNotFoundException 
+	 */
+	@RequestMapping(value = "/boards/{boardId:[\\\\p{Digit}]+}/info.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public Board getBoard (@PathVariable Long boardId, NativeWebRequest request) throws BoardNotFoundException {	
+		return boardService.getBoardById(boardId);
+	}
+	
+	
+	/**
+	 * 게시판 정보 리턴 
+	 * @param request
+	 * @return
+	 * @throws BoardNotFoundException 
+	 */
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/boards/create-or-update.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public Board saveOrUpdate (@RequestBody DefaultBoard board, NativeWebRequest request) throws BoardNotFoundException {	
+		
+		DefaultBoard boardToUse = board ;
+		if(board.getBoardId() > 0 ) {
+			boardToUse = (DefaultBoard) boardService.getBoardById(board.getBoardId());
+			
+			if(!StringUtils.isNullOrEmpty(board.getName()))
+				boardToUse.setName(board.getName());
+			if(!StringUtils.isNullOrEmpty(board.getDisplayName()))
+				boardToUse.setDisplayName(board.getDisplayName());
+			if(!StringUtils.isNullOrEmpty(board.getDescription()))
+				boardToUse.setDescription(board.getDescription());
+			
+			Date modifiedDate = new Date();
+			boardToUse.setModifiedDate(modifiedDate);
+			
+			boardService.updateBoard(boardToUse);
+			
+		}else {
+			// create...
+			boardToUse = (DefaultBoard) boardService.createBoard(board.getName(), board.getDisplayName(), board.getDescription());
+		}
+		return boardService.getBoardById(boardToUse.getBoardId());
+	}
+	
 
 	/**
-	 * 
+	 * 특정 게시판 스레드(게시물) 목록
 	 * /data/boards/{boardId}/threads/list.json
 	 * 
 	 * @param boardId
@@ -97,9 +154,9 @@ public class BoardDataController {
 			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
 			NativeWebRequest request) throws BoardNotFoundException {	
 				
-		Board board = boardService.getBoard(boardId);	
+		Board board = boardService.getBoardById(boardId);	
 		List<BoardThread> list;
-		int totalSize = boardService.getFourmThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
+		int totalSize = boardService.getBoardThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
 		
 		if( pageSize == 0 && page == 0){
 			list = boardService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId());
@@ -108,6 +165,36 @@ public class BoardDataController {
 		}
 		return new ItemList(list, totalSize);
 	}
+	
+	
+
+	/**
+	 * 특정 스레드에 해당하는 게시물 목록 
+	 * 
+	 * @param threadId
+	 * @param request
+	 * @return
+	 * @throws BoardNotFoundException
+	 */
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/list.json", method = { RequestMethod.POST,
+			RequestMethod.GET })
+	@ResponseBody
+	public ItemList getMessages(@PathVariable Long threadId,
+			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
+			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
+			NativeWebRequest request) throws BoardThreadNotFoundException { 
+		BoardThread thread = boardService.getForumThread(threadId);
+		MessageTreeWalker walker = boardService.getTreeWalker(thread);
+		int totalSize = walker.getChildCount(thread.getRootMessage());
+		List<BoardMessage> list = getMessages(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));
+		return new ItemList(list, totalSize);
+	}	
+	
+	
+	
+	
+	
 	
 	
 	@Secured({ "ROLE_USER" })
@@ -165,8 +252,7 @@ public class BoardDataController {
 		BoardMessage message = boardService.getForumMessage(messageId);
 		BoardThread thread = boardService.getForumThread(message.getThreadId());
 
-		List<Attachment> attachments = attachmentService.getAttachments(Models.FORUM_MESSAGE.getObjectType(),
-				message.getMessageId());
+		List<Attachment> attachments = attachmentService.getAttachments(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId());
 		list.setItems(attachments);
 		list.setTotalCount(attachments.size());
 
@@ -250,8 +336,7 @@ public class BoardDataController {
 			String fileName = names.next();
 			MultipartFile mpf = request.getFile(fileName);
 			InputStream is = mpf.getInputStream();
-			log.debug("upload - file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize(),
-					mpf.getContentType());
+			log.debug("upload - file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize(), mpf.getContentType());
 			Attachment attachment = attachmentService.createAttachment(7, message.getMessageId(), mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
 			attachment.setUser(currentUser);
 			attachmentService.saveAttachment(attachment);
@@ -261,36 +346,6 @@ public class BoardDataController {
 
 	}
 
-	/**
-	 * /data/forums/threads/{threadId}/messages/list.json
-	 * 
-	 * @param boardId
-	 * @param threadId
-	 * @param request
-	 * @return
-	 * @throws BoardNotFoundException
-	 */
-	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/list.json", method = { RequestMethod.POST,
-			RequestMethod.GET })
-	@ResponseBody
-	public ItemList getMessages(@PathVariable Long threadId,
-			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
-			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
-			NativeWebRequest request) throws BoardThreadNotFoundException {
-
-		log.debug(" skip: {}, page: {}, pageSize: {}", skip, page, pageSize);
-
-		BoardThread thread = boardService.getForumThread(threadId);
-
-		MessageTreeWalker walker = boardService.getTreeWalker(thread);
-
-		int totalSize = walker.getChildCount(thread.getRootMessage());
-
-		List<BoardMessage> list = getMessages(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));
-
-		return new ItemList(list, totalSize);
-	}
 
 	/**
 	 * /data/forums/{threadId}/messages/{messageId}/list.json
@@ -339,8 +394,7 @@ public class BoardDataController {
 			String address = request.getRemoteAddr();
 
 			BoardMessage message = boardService.getForumMessage(messageId);
-			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(),
-					message.getMessageId(), user, text);
+			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId(), user, text);
 
 			newComment.setIPAddress(address);
 			if (!StringUtils.isNullOrEmpty(name))
@@ -396,14 +450,12 @@ public class BoardDataController {
 		return result;
 	}
 
-	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/list.json", method = {
-			RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request)
 			throws BoardMessageNotFoundException {
 		BoardMessage message = boardService.getForumMessage(messageId);
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(),
-				message.getMessageId());
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId());
 		long parentId = -1L;
 		int totalSize = walker.getChildCount(parentId);
 		List<Comment> list = walker.children(parentId, new ObjectLoader<Comment>() {
@@ -434,11 +486,29 @@ public class BoardDataController {
 		return new ItemList(list, totalSize);
 	}
 
+
+
+	/**
+	 * 메시지 아이디에 해당하는 메시지 객체를 리턴.
+	 * @param messageIds
+	 * @return
+	 */
+	protected List<BoardMessage> getMessages(long[] messageIds) {
+		List<BoardMessage> list = new ArrayList<BoardMessage>(messageIds.length);
+		for (long messageId : messageIds) {
+			try {
+				list.add(boardService.getForumMessage(messageId));
+			} catch (BoardMessageNotFoundException e) {
+				// ignore..
+			}
+		}
+		return list;
+	}
+		
 	protected List<BoardMessage> getMessages(int skip, int page, int pageSize, long[] messageIds) {
 		if (pageSize == 0 && page == 0) {
 			return getMessages(messageIds);
 		}
-
 		List<BoardMessage> list = new ArrayList<BoardMessage>();
 		for (int i = 0; i < pageSize * page; i++) {
 			log.debug("{} : {}", messageIds.length, i);
@@ -448,22 +518,9 @@ public class BoardDataController {
 			if (skip > 0 && i < skip) {
 				continue;
 			}
-
 			try {
 				list.add(boardService.getForumMessage(messageIds[i]));
 			} catch (BoardMessageNotFoundException e) {
-			}
-		}
-		return list;
-	}
-
-	protected List<BoardMessage> getMessages(long[] messageIds) {
-		List<BoardMessage> list = new ArrayList<BoardMessage>(messageIds.length);
-		for (long messageId : messageIds) {
-			try {
-				list.add(boardService.getForumMessage(messageId));
-			} catch (BoardMessageNotFoundException e) {
-				// ignore..
 			}
 		}
 		return list;

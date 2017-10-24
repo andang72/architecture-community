@@ -18,6 +18,10 @@ public interface Board extends ModelObjectAware {
 	
 	public abstract Date getCreationDate();
 
+	public abstract void setCreationDate(Date creationDate);
+	
 	public abstract Date getModifiedDate();
+	
+	public abstract void setModifiedDate(Date modifiedDate);
 	
 }

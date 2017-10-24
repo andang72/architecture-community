@@ -15,10 +15,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.StreamUtils;
 
+import architecture.community.board.Board;
 import architecture.community.board.BoardMessage;
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
+import architecture.community.model.Models;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
@@ -47,8 +49,18 @@ public class ForumTest {
 	
 	@Test
 	public void testCreateTheadIfNoExist(){
-		int objectType = 1;
-		long objectId = 1L;
+		
+		List<Board> boards = boardService.getAllBoards();
+		long boardId = 0 ;
+		if( boards.size() == 0 )
+		{
+			Board board = boardService.createBoard("질문답변게시판", "질문&답변 게시판", "");
+			boardId = board.getBoardId();
+		}else {
+			boardId = boards.get(0).getBoardId();
+		}
+		int objectType = Models.BOARD.getObjectType();
+		long objectId = boardId;
 		
 		List<BoardThread> list = boardService.getForumThreads(objectType, objectId);
 		log.debug(" THREAD COUNT {}" , list.size() );		
@@ -82,11 +94,14 @@ public class ForumTest {
 	
 	@Test
 	public void testReplayMessage(){
+		
 		int objectType = 1;
 		long objectId = 1L;
 		log.debug("replay ============ ");
 		try {
-			BoardThread thread = boardService.getForumThread(2);
+			BoardThread thread = boardService.getForumThread(1);
+			objectType = thread.getObjectType();
+			objectId = thread.getObjectId();
 			log.debug(thread.toString());
 			BoardMessage parentMessage = thread.getRootMessage();
 			

@@ -13,19 +13,12 @@ public interface BoardService {
 
 	public abstract void deleteBoard(Board board);
 	
-	public abstract Board getBoard(long boardId) throws BoardNotFoundException ;
+	public abstract Board getBoardById(long boardId) throws BoardNotFoundException ;
 	
 	public abstract List<Board> getAllBoards();	
 	
 	
-	/**
-	 * containerType, containerId 에 해당하는 메시지를 생성한다.
-	 * 
-	 * @param containerType
-	 * @param containerId
-	 * @return
-	 */
-	public abstract BoardMessage createMessage(int containerType, long containerId);
+ 	public abstract BoardMessage createMessage(int containerType, long containerId);
 	
 	public abstract BoardMessage createMessage(int containerType, long containerId, User user);
 	
@@ -56,8 +49,7 @@ public interface BoardService {
 	 * @param containerId
 	 * @return
 	 */
-	public abstract int getFourmThreadCount(int containerType, long containerId);	
-	
+	public abstract int getBoardThreadCount(int objectType, long objectId);		
 	
 	public abstract List<BoardThread> getForumThreads(int containerType, long containerId);
 	

@@ -95,7 +95,7 @@ public class BoardTest {
 			try {
 				
 				log.debug("add topic");
-				Board board = boardService.getBoard(boardId);		
+				Board board = boardService.getBoardById(boardId);		
 				
 				
 			} catch (BoardNotFoundException e) {
