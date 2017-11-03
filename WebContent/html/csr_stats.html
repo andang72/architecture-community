@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+
+    
+    
+    
+    <!--Jquery-->
+    <script src="/js/jquery/jquery-2.2.4.min.js" type="text/javascript"></script>
+
+
+    <!--Kendo-->
+    <link href="/css/kendo/2015.3.930/kendo.common.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/kendo/2015.3.930/kendo.common-bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/kendo/2015.3.930/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="/js/kendo/2015.3.930/kendo.web.min.js" type="text/javascript"></script>
+    <script src="/js/kendo/2015.3.930/cultures/kendo.culture.ko-KR.min.js" type="text/javascript"></script>
+
+    <script src="/js/podo.ui/podo.ui.core.min.js" type="text/javascript"></script>
+
+	<link href="/css/bootstrap/4.0.0-alpha.6/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    
+    <script src="/js/tether/1.3.3/tether.min.js" type="text/javascript"></script>
+
+    <script src="/js/bootstrap/4.0.0-alpha.6/bootstrap.min.js" type="text/javascript"></script>
+
+    <script>
+    
+    
+    
+    $( document ).ready(function() {
+    	
+    	var observable = new kendo.data.ObservableObject({ 
+    		TOTAL_CSR_CNT: 0,
+    		TOTAL_CSR_DONE_CNT: 0,
+    		TOTAL_CSR_LEFT_CNT: 0,
+    		TOTAL_CSR_DETAIL_CNT: 0,
+    		selectedSystem : "podo-csr-datasource",
+    		startDate : "",
+    		endDate: "",
+    		doSearch : function (){
+    			var $this = this;
+	    	    	createGrid1();
+	    	    	createGrid2();
+	    	    	createGrid3();
+	    	    	createGrid4();
+    		}
+    	}); 
+    	
+    	$("#content-body").data("model", observable);
+    	podo.ui.bind( $("#content-body"), observable );
+    	
+    });
+    
+    function getModelData () {
+    		return 	$("#content-body").data("model");
+    }
+    
+    function createGrid1( ){
+		var renderTo = $("#grid-1");			
+		if(podo.ui.exists(renderTo)){
+			podo.ui.grid(renderTo).destroy();
+		}
+		
+		//if(!podo.ui.exists(renderTo)){
+			
+			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem") +'/COMMUNITY_STATS.GET_CSR_CNT/list.json' ;
+			console.log( urlStr );
+			podo.ui.grid(renderTo, {
+				autoBind: true,
+				dataSource: {	 						
+					transport: { 	
+						read: { url: urlStr, 
+								type: 'POST', dataType: "json", contentType : 'application/json' },
+						parameterMap: function (options, operation){	          
+							return podo.ui.stringify(
+								[{
+									index: 1,								
+									name: "startDate",									
+									jdbcType : 12,									
+									valueText: getModelData().get("startDate")							
+								}, {
+									index: 2	,						
+									name:"endDate",									
+									jdbcType:12,									
+									valueText:getModelData().get("endDate")											
+								}]		
+							);
+						}
+					},
+					schema: {
+						total: "totalCount",
+						data: "items"
+					},
+					pageSize: 15,
+					serverPaging: false,
+					serverFiltering: false,
+					serverSorting : false,
+					error: podo.ui.handleAjaxError
+				},					
+				columns: [					
+					{ field: "CUSTOMER", title: "고객사", filterable:{extra: false}, width:150}, 
+					{ field: "CNT", title: "건수", filterable:{extra: false}, width:200}
+				],
+				filterable: true,
+				sortable: true,
+				selectable: false,				
+				batch: false,  
+				height: 200,
+				pageable: false,//{ refresh:true, pageSizes:true,  messages: { display: ' {1} / {2}' }  },					
+				change: function(e) {
+					// 1-1 SELECTED EVENT  
+					var selectedCells = this.select();
+					if( selectedCells.length === 0){								
+					}
+				},
+				cancel: function(e){	
+										
+				},
+				edit: function(e){	
+				},
+				dataBound: function(e){   
+					var $this = this;		
+					$.each( $this.dataSource.view(), function(index, value ){
+						getModelData().set("TOTAL_CSR_CNT", getModelData().get("TOTAL_CSR_CNT") + value.CNT );
+					} );
+					
+				}	   
+			});				
+		//}
+	}
+    
+    function createGrid2(){
+		var renderTo = $("#grid-2");			
+		if(podo.ui.exists(renderTo)){
+			podo.ui.grid(renderTo).destroy();
+		}
+		
+		//if(!podo.ui.exists(renderTo)){
+			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem") +'/COMMUNITY_STATS.GET_CSR_DONE_CNT/list.json' ;
+			podo.ui.grid(renderTo, {
+				autoBind: true,
+				dataSource: {	 						
+					transport: { 	
+						read: { url: urlStr, 
+								type: 'POST', dataType: "json", contentType : 'application/json' },
+						parameterMap: function (options, operation){	          
+							return podo.ui.stringify(
+									[{
+										index: 1,								
+										name: "startDate",									
+										jdbcType : 12,									
+										valueText: getModelData().get("startDate")							
+									}, {
+										index: 2	,						
+										name:"endDate",									
+										jdbcType:12,									
+										valueText:getModelData().get("endDate")											
+									}]		
+								);
+						}
+					},
+					schema: {
+						total: "totalCount",
+						data: "items"
+					},
+					pageSize: 15,
+					serverPaging: false,
+					serverFiltering: false,
+					serverSorting : false,
+					error: podo.ui.handleAjaxError
+				},					
+				columns: [					
+					{ field: "CUSTOMER", title: "고객사", filterable:{extra: false}, width:150}, 
+					{ field: "CNT", title: "건수", filterable:{extra: false}, width:200}
+				],
+				filterable: true,
+				sortable: true,
+				selectable: false,				
+				batch: false,  
+				height: 200,
+				pageable: false,//{ refresh:true, pageSizes:true,  messages: { display: ' {1} / {2}' }  },					
+				change: function(e) {
+					// 1-1 SELECTED EVENT  
+					var selectedCells = this.select();
+					if( selectedCells.length === 0){								
+					}
+				},
+				cancel: function(e){	
+										
+				},
+				edit: function(e){	
+				},
+				dataBound: function(e){   
+					var $this = this;	
+					$.each( $this.dataSource.view(), function(index, value ){
+						getModelData().set("TOTAL_CSR_DONE_CNT", getModelData().get("TOTAL_CSR_DONE_CNT") + value.CNT );
+					} );
+				}	   
+			});				
+		//}
+	} 
+    
+    function createGrid3(){
+		var renderTo = $("#grid-3");		
+		
+		if(podo.ui.exists(renderTo)){
+			podo.ui.grid(renderTo).destroy();
+		}
+		
+		//if(!podo.ui.exists(renderTo)){
+			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem") +'/COMMUNITY_STATS.GET_CSR_LEFT_CNT/list.json' ;
+			podo.ui.grid(renderTo, {
+				autoBind: true,
+				dataSource: {	 						
+					transport: { 	
+						read: { url: urlStr, 
+								type: 'POST', dataType: "json", contentType : 'application/json' },
+						parameterMap: function (options, operation){	          
+							return podo.ui.stringify(
+									[{
+										index: 1	,						
+										name:"endDate",									
+										jdbcType:12,									
+										valueText: getModelData().get("endDate")											
+									}]		
+								);
+						}
+					},
+					schema: {
+						total: "totalCount",
+						data: "items"
+					},
+					pageSize: 15,
+					serverPaging: false,
+					serverFiltering: false,
+					serverSorting : false,
+					error: podo.ui.handleAjaxError
+				},					
+				columns: [					
+					{ field: "CUSTOMER", title: "고객사", filterable:{extra: false}, width:150}, 
+					{ field: "CNT", title: "건수", filterable:{extra: false}, width:200}
+				],
+				filterable: true,
+				sortable: true,
+				selectable: false,				
+				batch: false,  
+				height: 200,
+				pageable: false, //{ refresh:true, pageSizes:true,  messages: { display: ' {1} / {2}' }  },					
+				change: function(e) {
+					// 1-1 SELECTED EVENT  
+					var selectedCells = this.select();
+					if( selectedCells.length === 0){								
+					}
+				},
+				cancel: function(e){	
+										
+				},
+				edit: function(e){	
+				},
+				filter: function(e){   
+					var $this = this;	
+					getModelData().set("TOTAL_CSR_LEFT_CNT", 0 );
+					$.each( $this.dataSource.view(), function(index, value ){
+						getModelData().set("TOTAL_CSR_LEFT_CNT", getModelData().get("TOTAL_CSR_LEFT_CNT") + value.CNT );
+					} );
+				},	   
+				dataBound: function(e){   
+					var $this = this;	
+					getModelData().set("TOTAL_CSR_LEFT_CNT", 0 );
+					$.each( $this.dataSource.view(), function(index, value ){
+						getModelData().set("TOTAL_CSR_LEFT_CNT", getModelData().get("TOTAL_CSR_LEFT_CNT") + value.CNT );
+					} );
+				}	   
+			});				
+		//}
+	} 
+    
+    function createGrid4(){
+		var renderTo = $("#grid-4");		
+		
+		if(podo.ui.exists(renderTo)){
+			podo.ui.grid(renderTo).destroy();
+		}
+		
+		//if(!podo.ui.exists(renderTo)){
+			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem") +'/COMMUNITY_STATS.GET_CSR_DETAILS/list.json' ;
+			podo.ui.grid(renderTo, {
+				autoBind: true,
+				dataSource: {	 						
+					transport: { 	
+						read: { url:urlStr, 
+								type: 'POST', dataType: "json", contentType : 'application/json' },
+						parameterMap: function (options, operation){	          
+							return podo.ui.stringify(
+									[{
+										index: 1,								
+										name: "startDate",									
+										jdbcType : 12,									
+										valueText: getModelData().get("startDate")							
+									}, {
+										index: 2	,						
+										name:"endDate",									
+										jdbcType:12,									
+										valueText:getModelData().get("endDate")											
+									}, {
+										index: 3,						
+										name:"endDate",									
+										jdbcType:12,									
+										valueText:getModelData().get("endDate")											
+									}]		
+								);
+						}
+					},
+					schema: {
+						total: "totalCount",
+						data: "items"
+					},
+					pageSize: 100,
+					serverPaging: false,
+					serverFiltering: false,
+					serverSorting : false,
+					error: podo.ui.handleAjaxError
+				},					
+				columns: [					
+					{ field: "CORP_NAME", title: "고객사", filterable:{extra: false}, width:150}, 
+					{ field: "REG_DATE", title: "일자", filterable:{extra: false}, width:100}, 
+					{ field: "CATEGORYNAME", title: "구분", filterable:{extra: false}, width:100}, 					
+					{ field: "BOARDTITLE", title: "내용", filterable:false, sortable: false },
+					{ field: "ADD_WORK_STATUS", title: "상태", filterable:{extra: false}, width:100 }					
+				],
+				filterable: true,
+				sortable: true,
+				selectable: false,				
+				batch: false,  
+				height: 600,
+				pageable: false,//{ refresh:true, pageSizes: false,  messages: { display: ' {1} / {2}' }  },					
+				change: function(e) {
+					// 1-1 SELECTED EVENT  
+					var selectedCells = this.select();
+					if( selectedCells.length === 0){								
+					}
+				},
+				cancel: function(e){	
+										
+				},
+				edit: function(e){	
+				},
+				filter: function(e){   
+					var $this = this;	
+					getModelData().set("TOTAL_CSR_DETAIL_CNT", 0 );
+					$.each( $this.dataSource.view(), function(index, value ){
+						getModelData().set("TOTAL_CSR_DETAIL_CNT", getModelData().get("TOTAL_CSR_DETAIL_CNT") + 1 );
+					} );
+				},	   
+				dataBound: function(e){   
+					var $this = this;	
+					getModelData().set("TOTAL_CSR_DETAIL_CNT", 0 );
+					$.each( $this.dataSource.view(), function(index, value ){
+						getModelData().set("TOTAL_CSR_DETAIL_CNT", getModelData().get("TOTAL_CSR_DETAIL_CNT") + 1 );
+					} );
+				}	   
+			});				
+		//}
+	}     
+    </script>
+    
+    <style>
+    	
+    	
+    </style>
+    
+    
+</head>
+<body>
+	<div class="container theme-showcase" role="main" id="content-body">
+      <div class="page-header">
+        <h1>유지보수 현황</h1>
+      </div>
+<form>
+  
+  <div class="form-row">
+      <div class="form-group col-md-6">
+	    <select class="form-control"  data-bind="value: selectedSystem" >
+	      <option value="podo-csr-datasource">포도소프트웨어</option>
+	      <option value="inkium-csr-datasource">인키움</option>
+	    </select>
+    </div>
+     
+     <div class="form-group col-md-6">
+      <input type="email" class="form-control"  placeholder="종료일자 YYYYMMDD" data-bind="value: startDate">
+    </div>
+    <div class="form-group col-md-6">
+      <input type="email" class="form-control"  placeholder="종료일자 YYYYMMDD" data-bind="value: endDate">
+    </div>
+  </div>
+ 
+  <button type="button" class="btn btn-primary" data-bind="events: { click: doSearch }">조회</button>
+  
+</form>
+
+      
+		<h4 class="mt-5">고객사별 요청 건수 <span class="text-danger" data-bind="text:TOTAL_CSR_CNT"></span></h4>
+		<div id="grid-1"></div>	
+		<h4 class="mt-5">고객사별 처리 건수 <span class="text-danger" data-bind="text:TOTAL_CSR_DONE_CNT"></span></h4>
+		<div id="grid-2"></div>	
+		<h4 class="mt-5">고객사별 누적 미처리 건수 <span class="text-danger" data-bind="text:TOTAL_CSR_LEFT_CNT"></span></h4>
+		<div id="grid-3"></div>	
+		<h4 class="mt-5">고객사별 상세 처리 / 미처리 내역 <span class="text-danger" data-bind="text: TOTAL_CSR_DETAIL_CNT"></span> </h4>
+		<div id="grid-4" class="mb-5"></div>							
+	</div> <!-- /container -->	
+</body>
+</html>

@@ -1,0 +1,9 @@
+@charset "UTF-8";
+.no-border{
+	border : 0;
+}
+
+
+.k-animation-container, .k-widget, .k-widget *, .k-animation-container *, .k-widget *:before, .k-animation-container *:after, .k-block .k-header, .k-list-container, .k-dialog .k-window-content {
+    -webkit-box-sizing: inherit;
+}
