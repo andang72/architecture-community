@@ -62,7 +62,7 @@ public class ForumTest {
 		int objectType = Models.BOARD.getObjectType();
 		long objectId = boardId;
 		
-		List<BoardThread> list = boardService.getForumThreads(objectType, objectId);
+		List<BoardThread> list = boardService.getBoardThreads(objectType, objectId);
 		log.debug(" THREAD COUNT {}" , list.size() );		
 		if( list.size() == 0 ){
 			BoardMessage rootMessage = boardService.createMessage(objectType, objectId);
@@ -99,7 +99,7 @@ public class ForumTest {
 		long objectId = 1L;
 		log.debug("replay ============ ");
 		try {
-			BoardThread thread = boardService.getForumThread(1);
+			BoardThread thread = boardService.getBoardThread(3);
 			objectType = thread.getObjectType();
 			objectId = thread.getObjectId();
 			log.debug(thread.toString());

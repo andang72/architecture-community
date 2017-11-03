@@ -13,15 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
-import architecture.community.board.BoardThread;
-import architecture.community.board.BoardThreadNotFoundException;
 import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.util.ServletUtils;
 
-@Controller("board-page-controller")
+@Controller("community-board-page-controller")
+@RequestMapping("/boards")
 public class BoardPageController {
 	
 	private static final Logger log = LoggerFactory.getLogger(BoardPageController.class);	
@@ -36,8 +34,49 @@ public class BoardPageController {
 	private ViewCountService viewCountService;
 	
 	public BoardPageController() {
+		
 	}
 	
+	@RequestMapping(value = {"/list"}, method = { RequestMethod.POST, RequestMethod.GET } )
+	public String displayBoardList(
+			HttpServletRequest request,
+		    HttpServletResponse response, Model model) {
+		
+		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
+		
+		return "/boards/list-board" ;
+	}
+	
+	@RequestMapping(value = {"/{boardId:[\\p{Digit}]+}/list"}, method = { RequestMethod.POST, RequestMethod.GET } )
+	public String displayThreadList (
+			@PathVariable Long boardId, 
+			HttpServletRequest request,
+		    HttpServletResponse response, 
+		    Model model) throws BoardNotFoundException{		
+		
+		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
+		
+		model.addAttribute("boardId", boardId);
+		return "/boards/list-thread" ;
+	}
+	
+	
+	@RequestMapping(value = {"/{boardId:[\\p{Digit}]+}/threads/{threadId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET } )
+	public String displayThread (
+			@PathVariable Long boardId, 
+			@PathVariable Long threadId, 
+			HttpServletRequest request,
+		    HttpServletResponse response, 
+		    Model model) throws BoardNotFoundException{		
+		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
+		
+		model.addAttribute("boardId", boardId);
+		model.addAttribute("threadId", threadId);
+		return "/boards/view-thread" ;
+	}
+	
+	
+	/**
 	@RequestMapping(value = {"/boards/{boardId:[\\p{Digit}]+}", "/board/{boardId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET })
 	public String displayBoardPage(
 			@PathVariable Long boardId, 
@@ -60,7 +99,7 @@ public class BoardPageController {
 		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{
 		ServletUtils.setContentType(null, response);			
 		Board board = boardService.getBoardById(boardId);
-		BoardThread thread = boardService.getForumThread(threadId);
+		BoardThread thread = boardService.getBoardThread(threadId);
 
 		viewCountService.addViewCount(thread);
 		
@@ -79,7 +118,7 @@ public class BoardPageController {
 		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{
 		ServletUtils.setContentType(null, response);			
 		Board board = boardService.getBoardById(boardId);
-		BoardThread thread = boardService.getForumThread(threadId);
+		BoardThread thread = boardService.getBoardThread(threadId);
 
 		viewCountService.addViewCount(thread);
 		
@@ -88,5 +127,6 @@ public class BoardPageController {
 		
 		return "/forums/view-thread" ;
 	}
+	*/
 	
 }

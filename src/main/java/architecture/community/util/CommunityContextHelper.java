@@ -58,7 +58,7 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 		}
 	}
 
-	public <T> T getComponent(String requiredName, Class<T> requiredType) {
+	public static <T> T getComponent(String requiredName, Class<T> requiredType) {
 		
 		if (applicationContext == null) {
 			throw new IllegalStateException(CommunityLogLocalizer.getMessage("012005"));

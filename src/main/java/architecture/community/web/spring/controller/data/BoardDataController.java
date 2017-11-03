@@ -63,9 +63,9 @@ public class BoardDataController {
 		int totalSize = boardService.getBoardThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
 		
 		if( pageSize == 0 && page == 0){
-			list = boardService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId());
+			list = boardService.getBoardThreads(Models.BOARD.getObjectType(), board.getBoardId());
 		}else{
-			list = boardService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId(), skip, pageSize);
+			list = boardService.getBoardThreads(Models.BOARD.getObjectType(), board.getBoardId(), skip, pageSize);
 		}
 		
 		return new ItemList(list, totalSize);

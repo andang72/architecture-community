@@ -144,7 +144,7 @@ public class DefaultBoardMessage implements BoardMessage {
 	public int getReplyCount (){
 		if( threadId > 0 ){
 			try {
-				return CommunityContextHelper.getBoardService().getTreeWalker(CommunityContextHelper.getBoardService().getForumThread(threadId)).getChildCount(this);
+				return CommunityContextHelper.getBoardService().getTreeWalker(CommunityContextHelper.getBoardService().getBoardThread(threadId)).getChildCount(this);
 			} catch (BoardThreadNotFoundException e) {
 				
 			}

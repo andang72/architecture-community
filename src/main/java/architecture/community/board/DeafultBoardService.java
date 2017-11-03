@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import architecture.community.board.dao.BoardDao;
 import architecture.community.board.event.BoardThreadEvent;
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.util.SecurityHelper;
@@ -165,13 +166,13 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		return newMessage;
 	}
 
-	public List<BoardThread> getForumThreads(int objectType, long objectId, int startIndex, int numResults){
+	public List<BoardThread> getBoardThreads(int objectType, long objectId, int startIndex, int numResults){
 		List<Long> threadIds = boardDao.getForumThreadIds(objectType, objectId, startIndex, numResults);
 		List<BoardThread> list = new ArrayList<BoardThread>(threadIds.size());
 		for( Long threadId : threadIds )
 		{
 			try {
-				list.add(getForumThread(threadId));
+				list.add(getBoardThread(threadId));
 			} catch (BoardThreadNotFoundException e) {
 				// ignore;
 				logger.warn(e.getMessage(), e);
@@ -180,13 +181,13 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		return list;
 	}
 	
-	public List<BoardThread> getForumThreads(int objectType, long objectId) {		
+	public List<BoardThread> getBoardThreads(int objectType, long objectId) {		
 		List<Long> threadIds = boardDao.getForumThreadIds(objectType, objectId);
 		List<BoardThread> list = new ArrayList<BoardThread>(threadIds.size());
 		for( Long threadId : threadIds )
 		{
 			try {
-				list.add(getForumThread(threadId));
+				list.add(getBoardThread(threadId));
 			} catch (BoardThreadNotFoundException e) {
 				// ignore;
 				logger.warn(e.getMessage(), e);
@@ -196,11 +197,11 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	}
 
 	
-	public List<BoardMessage> getForumMessages(int objectType, long objectId) {
+	public List<BoardMessage> getBoardMessages(int objectType, long objectId) {
 		return null;
 	}
 
-	public BoardThread getForumThread(long threadId) throws BoardThreadNotFoundException {		
+	public BoardThread getBoardThread(long threadId) throws BoardThreadNotFoundException {		
 		if(threadId < 0L)
             throw new BoardThreadNotFoundException(CommunityLogLocalizer.format("013004", threadId ));
 		
@@ -217,9 +218,9 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 			try {
 				BoardMessage rootMessage = threadToUse.getRootMessage();		
 				BoardMessage latestMessage = threadToUse.getLatestMessage();					
-				threadToUse.setRootMessage(getForumMessage(rootMessage.getMessageId()));					
+				threadToUse.setRootMessage(getBoardMessage(rootMessage.getMessageId()));					
 				if(latestMessage != null && latestMessage.getMessageId() > 0){
-					threadToUse.setLatestMessage(getForumMessage(latestMessage.getMessageId()));	
+					threadToUse.setLatestMessage(getBoardMessage(latestMessage.getMessageId()));	
 					threadToUse.setModifiedDate(threadToUse.getLatestMessage().getModifiedDate());
 				}						
 			} catch (Exception e) {
@@ -231,7 +232,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	}
 
 
-	public BoardMessage getForumMessage(long messageId) throws BoardMessageNotFoundException {
+	public BoardMessage getBoardMessage(long messageId) throws BoardMessageNotFoundException {
 		if(messageId < 0L)
             throw new BoardMessageNotFoundException(CommunityLogLocalizer.format("013006", messageId ));
 		
@@ -263,7 +264,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		
 		boardDao.updateForumMessage(message);		
 		try {
-			BoardThread thread = getForumThread(message.getThreadId());
+			BoardThread thread = getBoardThread(message.getThreadId());
 			boardDao.updateModifiedDate(thread, message.getModifiedDate() );
 			
 			evictCaches(message);
@@ -352,20 +353,26 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 			return null;
 	}
 
+
+	public int getMessageCount(BoardThread thread) {
+		return boardDao.getMessageCount(thread);
+	}
+	
 	public int getBoardThreadCount(int objectType, long objectId) {
 		return boardDao.getForumThreadCount(objectType, objectId);
 	}
 
-	public int getMessageCount(BoardThread thread) {		
-		return boardDao.getMessageCount(thread);
+	public int getBoardMessageCount(Board board) {		
+		return boardDao.getBoardMessageCount(Models.BOARD.getObjectType(), board.getBoardId() );
 	}
+	
 
 	public List<BoardMessage> getMessages(BoardThread thread) {		
 		List<Long> messageIds = boardDao.getMessageIds(thread);
 		List<BoardMessage> list = new ArrayList<BoardMessage>(messageIds.size());
 		for(Long messageId : messageIds){
 			try {
-				list.add(getForumMessage(messageId));
+				list.add(getBoardMessage(messageId));
 			} catch (BoardMessageNotFoundException e) {
 			}
 		}
@@ -380,6 +387,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		messageTreeWalkerCache.put(new Element(thread.getThreadId(), treeWalker ));
 		return treeWalker;
 	}
+
 
 
 }

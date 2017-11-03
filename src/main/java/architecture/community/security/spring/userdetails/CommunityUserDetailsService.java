@@ -55,6 +55,8 @@ public class CommunityUserDetailsService implements UserDetailsService {
 	protected List<GrantedAuthority> getFinalUserAuthority(User user) {		
 		
 		String authority = configService.getLocalProperty(CommunityConstants.SECURITY_AUTHENTICATION_AUTHORITY_PROP_NAME);
+	    if(logger.isDebugEnabled())
+	    	logger.debug("grant default authentication {}", authority );
 		List<String> roles = new ArrayList<String>();		
 		if(! StringUtils.isNullOrEmpty( authority ))
 		{

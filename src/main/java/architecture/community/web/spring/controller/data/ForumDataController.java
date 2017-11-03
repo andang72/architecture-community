@@ -114,8 +114,8 @@ public class ForumDataController {
 		if (messageId < 1) {
 			throw new BoardMessageNotFoundException();
 		}
-		BoardMessage message = boardService.getForumMessage(messageId);
-		BoardThread thread = boardService.getForumThread(message.getThreadId());
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		BoardThread thread = boardService.getBoardThread(message.getThreadId());
 
 		return message;
 	}
@@ -126,7 +126,7 @@ public class ForumDataController {
 		
 		User user = SecurityHelper.getUser();		
 		
-		BoardMessage message = boardService.getForumMessage(newMessage.getMessageId());
+		BoardMessage message = boardService.getBoardMessage(newMessage.getMessageId());
 		message.setSubject(newMessage.getSubject());
 		message.setBody(newMessage.getBody());
 		boardService.updateMessage(message);
@@ -143,10 +143,10 @@ public class ForumDataController {
 			return list;
 		}
 
-		BoardMessage message = boardService.getForumMessage(messageId);
-		BoardThread thread = boardService.getForumThread(message.getThreadId());
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		BoardThread thread = boardService.getBoardThread(message.getThreadId());
 
-		List<Attachment> attachments = attachmentService.getAttachments(Models.FORUM_MESSAGE.getObjectType(),
+		List<Attachment> attachments = attachmentService.getAttachments(Models.BOARD_MESSAGE.getObjectType(),
 				message.getMessageId());
 		list.setItems(attachments);
 		list.setTotalCount(attachments.size());
@@ -167,8 +167,8 @@ public class ForumDataController {
 		
 		if (messageId > 0 && attachmentId > 0 && !StringUtils.isNullOrEmpty(filename)) {
 			
-			BoardMessage message = boardService.getForumMessage(messageId);
-			BoardThread thread = boardService.getForumThread(message.getThreadId());
+			BoardMessage message = boardService.getBoardMessage(messageId);
+			BoardThread thread = boardService.getBoardThread(message.getThreadId());
 			Attachment attachment = attachmentService.getAttachment(attachmentId);
 			
 			if( thumbnail )
@@ -215,7 +215,7 @@ public class ForumDataController {
 			throws NotFoundException, UnAuthorizedException, IOException {
 
 		User currentUser = SecurityHelper.getUser();
-		BoardMessage message = boardService.getForumMessage(messageId);
+		BoardMessage message = boardService.getBoardMessage(messageId);
 
 		if (currentUser.isAnonymous() || message.getUser().getUserId() != currentUser.getUserId()) {
 			throw new UnAuthorizedException();
@@ -250,7 +250,7 @@ public class ForumDataController {
 			MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
 
 		User user = SecurityHelper.getUser();
-		BoardMessage message = boardService.getForumMessage(messageId);
+		BoardMessage message = boardService.getBoardMessage(messageId);
 		if (user.isAnonymous() || message.getUser().getUserId() != user.getUserId()) {
 			throw new UnAuthorizedException();
 		}
@@ -296,7 +296,7 @@ public class ForumDataController {
 
 		log.debug(" skip: {}, page: {}, pageSize: {}", skip, page, pageSize);
 
-		BoardThread thread = boardService.getForumThread(threadId);
+		BoardThread thread = boardService.getBoardThread(threadId);
 
 		MessageTreeWalker walker = boardService.getTreeWalker(thread);
 
@@ -323,8 +323,8 @@ public class ForumDataController {
 	public ItemList getChildMessages(@PathVariable Long threadId, @PathVariable Long parentId, NativeWebRequest request)
 			throws BoardThreadNotFoundException, BoardMessageNotFoundException {
 
-		BoardThread thread = boardService.getForumThread(threadId);
-		BoardMessage parent = boardService.getForumMessage(parentId);
+		BoardThread thread = boardService.getBoardThread(threadId);
+		BoardMessage parent = boardService.getBoardMessage(parentId);
 		MessageTreeWalker walker = boardService.getTreeWalker(thread);
 		int totalSize = walker.getChildCount(parent);
 		List<BoardMessage> list = getMessages(walker.getChildIds(parent));
@@ -353,8 +353,8 @@ public class ForumDataController {
 			User user = SecurityHelper.getUser();
 			String address = request.getRemoteAddr();
 
-			BoardMessage message = boardService.getForumMessage(messageId);
-			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(),
+			BoardMessage message = boardService.getBoardMessage(messageId);
+			Comment newComment = commentService.createComment(Models.BOARD_MESSAGE.getObjectType(),
 					message.getMessageId(), user, text);
 
 			newComment.setIPAddress(address);
@@ -387,8 +387,8 @@ public class ForumDataController {
 			String text = reqeustData.getDataAsString("text", null);
 			Long parentCommentId = reqeustData.getDataAsLong("parentCommentId", 0L);
 
-			BoardMessage message = boardService.getForumMessage(messageId);
-			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(),
+			BoardMessage message = boardService.getBoardMessage(messageId);
+			Comment newComment = commentService.createComment(Models.BOARD_MESSAGE.getObjectType(),
 					message.getMessageId(), user, text);
 
 			newComment.setIPAddress(address);
@@ -416,8 +416,8 @@ public class ForumDataController {
 	@ResponseBody
 	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request)
 			throws BoardMessageNotFoundException {
-		BoardMessage message = boardService.getForumMessage(messageId);
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(),
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.BOARD_MESSAGE.getObjectType(),
 				message.getMessageId());
 		long parentId = -1L;
 		int totalSize = walker.getChildCount(parentId);
@@ -436,8 +436,8 @@ public class ForumDataController {
 	public ItemList getChildComments(@PathVariable Long threadId, @PathVariable Long messageId,
 			@PathVariable Long commentId, NativeWebRequest request) throws BoardMessageNotFoundException {
 
-		BoardMessage message = boardService.getForumMessage(messageId);
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(),
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.BOARD_MESSAGE.getObjectType(),
 				message.getMessageId());
 
 		int totalSize = walker.getChildCount(commentId);
@@ -465,7 +465,7 @@ public class ForumDataController {
 			}
 
 			try {
-				list.add(boardService.getForumMessage(messageIds[i]));
+				list.add(boardService.getBoardMessage(messageIds[i]));
 			} catch (BoardMessageNotFoundException e) {
 			}
 		}
@@ -476,7 +476,7 @@ public class ForumDataController {
 		List<BoardMessage> list = new ArrayList<BoardMessage>(messageIds.length);
 		for (long messageId : messageIds) {
 			try {
-				list.add(boardService.getForumMessage(messageId));
+				list.add(boardService.getBoardMessage(messageId));
 			} catch (BoardMessageNotFoundException e) {
 				// ignore..
 			}

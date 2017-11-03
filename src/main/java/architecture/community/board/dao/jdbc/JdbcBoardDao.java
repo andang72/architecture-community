@@ -147,13 +147,13 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	};
 	
 	public long getNextThreadId(){
-		logger.debug("next id for {}, {}", Models.FORUM_THREAD.getObjectType(), Models.FORUM_THREAD.name() );
-		return sequencerFactory.getNextValue(Models.FORUM_THREAD.getObjectType(), Models.FORUM_THREAD.name());
+		logger.debug("next id for {}, {}", Models.BOARD_THREAD.getObjectType(), Models.BOARD_THREAD.name() );
+		return sequencerFactory.getNextValue(Models.BOARD_THREAD.getObjectType(), Models.BOARD_THREAD.name());
 	}	
 	
 	public long getNextMessageId(){
-		logger.debug("next id for {}, {}", Models.FORUM_MESSAGE.getObjectType(), Models.FORUM_MESSAGE.name() );
-		return sequencerFactory.getNextValue(Models.FORUM_MESSAGE.getObjectType(), Models.FORUM_MESSAGE.name());
+		logger.debug("next id for {}, {}", Models.BOARD_MESSAGE.getObjectType(), Models.BOARD_MESSAGE.name() );
+		return sequencerFactory.getNextValue(Models.BOARD_MESSAGE.getObjectType(), Models.BOARD_MESSAGE.name());
 	}	
 	
 	
@@ -335,8 +335,17 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_MESSAGE_COUNT_BY_THREAD_ID").getSql(), 
 				Integer.class,
 				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
-				);
+		);
 	}	
+	
+	public int getBoardMessageCount(int objectType, long objectId) {
+		return getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_MESSAGE_COUNT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				Integer.class,
+				new SqlParameterValue(Types.NUMERIC, objectType),
+				new SqlParameterValue(Types.NUMERIC, objectId)
+		);
+	}
 	
 	public MessageTreeWalker getTreeWalker(BoardThread thread) {	
 		

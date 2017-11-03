@@ -39,6 +39,7 @@ import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
+import architecture.community.board.BoardView;
 import architecture.community.board.DefaultBoard;
 import architecture.community.board.DefaultBoardMessage;
 import architecture.community.board.MessageTreeWalker;
@@ -52,12 +53,13 @@ import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
+import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.RequestData;
 import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
 
-@Controller("data-v1-boards-controller")
+@Controller("community-data-v1-boards-controller")
 @RequestMapping("/data/v1")
 public class BoardDataController {
 
@@ -76,6 +78,10 @@ public class BoardDataController {
 	@Qualifier("attachmentService")
 	private AttachmentService attachmentService;
 	
+	@Inject
+	@Qualifier("viewCountService")
+	private ViewCountService viewCountService
+	;
 	
 	/**
 	 * 게시판 목록 리턴 
@@ -84,8 +90,15 @@ public class BoardDataController {
 	 */
 	@RequestMapping(value = "/boards/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public List<Board> getBoardList (NativeWebRequest request) {	
-		return boardService.getAllBoards();
+	public ItemList getBoardList (NativeWebRequest request) {	
+		
+		List<Board> list = boardService.getAllBoards();
+		List<Board> list2 = new ArrayList<Board> (list.size());
+		for( Board board : list)
+		{	
+			list2.add(toBoardView(board));
+		}
+		return new ItemList(list2, list2.size());
 	}
 	
 	
@@ -95,10 +108,21 @@ public class BoardDataController {
 	 * @return
 	 * @throws BoardNotFoundException 
 	 */
-	@RequestMapping(value = "/boards/{boardId:[\\\\p{Digit}]+}/info.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "/boards/{boardId:[\\p{Digit}]+}/info.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public Board getBoard (@PathVariable Long boardId, NativeWebRequest request) throws BoardNotFoundException {	
-		return boardService.getBoardById(boardId);
+		Board board = boardService.getBoardById(boardId);
+		BoardView b = toBoardView(board);
+		return b;
+	}
+	
+	private BoardView toBoardView(Board board) {
+		BoardView b = new BoardView(board);
+		int totalThreadCount = boardService.getBoardThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
+		int totalMessageCount = boardService.getBoardMessageCount(board);
+		b.setTotalMessage(totalMessageCount);
+		b.setTotalThreadCount(totalThreadCount);
+		return b;
 	}
 	
 	
@@ -108,19 +132,22 @@ public class BoardDataController {
 	 * @return
 	 * @throws BoardNotFoundException 
 	 */
-	@Secured({ "ROLE_USER" })
-	@RequestMapping(value = "/boards/create-or-update.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@Secured({ "ROLE_USER" , "ROLE_ADMINISTRATOR"})
+	@RequestMapping(value = "/boards/save-or-update.json", method = { RequestMethod.POST })
 	@ResponseBody
 	public Board saveOrUpdate (@RequestBody DefaultBoard board, NativeWebRequest request) throws BoardNotFoundException {	
 		
 		DefaultBoard boardToUse = board ;
+		
 		if(board.getBoardId() > 0 ) {
 			boardToUse = (DefaultBoard) boardService.getBoardById(board.getBoardId());
 			
 			if(!StringUtils.isNullOrEmpty(board.getName()))
 				boardToUse.setName(board.getName());
+			
 			if(!StringUtils.isNullOrEmpty(board.getDisplayName()))
 				boardToUse.setDisplayName(board.getDisplayName());
+			
 			if(!StringUtils.isNullOrEmpty(board.getDescription()))
 				boardToUse.setDescription(board.getDescription());
 			
@@ -133,6 +160,7 @@ public class BoardDataController {
 			// create...
 			boardToUse = (DefaultBoard) boardService.createBoard(board.getName(), board.getDisplayName(), board.getDescription());
 		}
+		
 		return boardService.getBoardById(boardToUse.getBoardId());
 	}
 	
@@ -159,9 +187,9 @@ public class BoardDataController {
 		int totalSize = boardService.getBoardThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
 		
 		if( pageSize == 0 && page == 0){
-			list = boardService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId());
+			list = boardService.getBoardThreads(Models.BOARD.getObjectType(), board.getBoardId());
 		}else{
-			list = boardService.getForumThreads(Models.BOARD.getObjectType(), board.getBoardId(), skip, pageSize);
+			list = boardService.getBoardThreads(Models.BOARD.getObjectType(), board.getBoardId(), skip, pageSize);
 		}
 		return new ItemList(list, totalSize);
 	}
@@ -176,15 +204,16 @@ public class BoardDataController {
 	 * @return
 	 * @throws BoardNotFoundException
 	 */
-	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/list.json", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getMessages(@PathVariable Long threadId,
 			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
 			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
 			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
 			NativeWebRequest request) throws BoardThreadNotFoundException { 
-		BoardThread thread = boardService.getForumThread(threadId);
+		
+		BoardThread thread = boardService.getBoardThread(threadId);
+		
 		MessageTreeWalker walker = boardService.getTreeWalker(thread);
 		int totalSize = walker.getChildCount(thread.getRootMessage());
 		List<BoardMessage> list = getMessages(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));
@@ -221,8 +250,8 @@ public class BoardDataController {
 		if (messageId < 1) {
 			throw new BoardMessageNotFoundException();
 		}
-		BoardMessage message = boardService.getForumMessage(messageId);
-		BoardThread thread = boardService.getForumThread(message.getThreadId());
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		BoardThread thread = boardService.getBoardThread(message.getThreadId());
 
 		return message;
 	}
@@ -232,7 +261,7 @@ public class BoardDataController {
 	public BoardMessage updateMessage(@RequestBody DefaultBoardMessage newMessage, NativeWebRequest request) throws NotFoundException {
 		
 		User user = SecurityHelper.getUser();
-		BoardMessage message = boardService.getForumMessage(newMessage.getMessageId());
+		BoardMessage message = boardService.getBoardMessage(newMessage.getMessageId());
 		message.setSubject(newMessage.getSubject());
 		message.setBody(newMessage.getBody());
 		boardService.updateMessage(message);
@@ -249,10 +278,10 @@ public class BoardDataController {
 			return list;
 		}
 
-		BoardMessage message = boardService.getForumMessage(messageId);
-		BoardThread thread = boardService.getForumThread(message.getThreadId());
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		BoardThread thread = boardService.getBoardThread(message.getThreadId());
 
-		List<Attachment> attachments = attachmentService.getAttachments(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId());
+		List<Attachment> attachments = attachmentService.getAttachments(Models.BOARD_MESSAGE.getObjectType(), message.getMessageId());
 		list.setItems(attachments);
 		list.setTotalCount(attachments.size());
 
@@ -272,8 +301,8 @@ public class BoardDataController {
 		
 		if (messageId > 0 && attachmentId > 0 && !StringUtils.isNullOrEmpty(filename)) {
 			
-			BoardMessage message = boardService.getForumMessage(messageId);
-			BoardThread thread = boardService.getForumThread(message.getThreadId());
+			BoardMessage message = boardService.getBoardMessage(messageId);
+			BoardThread thread = boardService.getBoardThread(message.getThreadId());
 			Attachment attachment = attachmentService.getAttachment(attachmentId);
 			
 			if( thumbnail )
@@ -320,7 +349,7 @@ public class BoardDataController {
 			throws NotFoundException, UnAuthorizedException, IOException {
 
 		User currentUser = SecurityHelper.getUser();
-		BoardMessage message = boardService.getForumMessage(messageId);
+		BoardMessage message = boardService.getBoardMessage(messageId);
 
 		if (currentUser.isAnonymous() || message.getUser().getUserId() != currentUser.getUserId()) {
 			throw new UnAuthorizedException();
@@ -363,8 +392,8 @@ public class BoardDataController {
 	public ItemList getChildMessages(@PathVariable Long threadId, @PathVariable Long parentId, NativeWebRequest request)
 			throws BoardThreadNotFoundException, BoardMessageNotFoundException {
 
-		BoardThread thread = boardService.getForumThread(threadId);
-		BoardMessage parent = boardService.getForumMessage(parentId);
+		BoardThread thread = boardService.getBoardThread(threadId);
+		BoardMessage parent = boardService.getBoardMessage(parentId);
 		MessageTreeWalker walker = boardService.getTreeWalker(thread);
 		int totalSize = walker.getChildCount(parent);
 		List<BoardMessage> list = getMessages(walker.getChildIds(parent));
@@ -393,8 +422,8 @@ public class BoardDataController {
 			User user = SecurityHelper.getUser();
 			String address = request.getRemoteAddr();
 
-			BoardMessage message = boardService.getForumMessage(messageId);
-			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId(), user, text);
+			BoardMessage message = boardService.getBoardMessage(messageId);
+			Comment newComment = commentService.createComment(Models.BOARD_MESSAGE.getObjectType(), message.getMessageId(), user, text);
 
 			newComment.setIPAddress(address);
 			if (!StringUtils.isNullOrEmpty(name))
@@ -426,8 +455,8 @@ public class BoardDataController {
 			String text = reqeustData.getDataAsString("text", null);
 			Long parentCommentId = reqeustData.getDataAsLong("parentCommentId", 0L);
 
-			BoardMessage message = boardService.getForumMessage(messageId);
-			Comment newComment = commentService.createComment(Models.FORUM_MESSAGE.getObjectType(),
+			BoardMessage message = boardService.getBoardMessage(messageId);
+			Comment newComment = commentService.createComment(Models.BOARD_MESSAGE.getObjectType(),
 					message.getMessageId(), user, text);
 
 			newComment.setIPAddress(address);
@@ -454,8 +483,8 @@ public class BoardDataController {
 	@ResponseBody
 	public ItemList getComments(@PathVariable Long threadId, @PathVariable Long messageId, NativeWebRequest request)
 			throws BoardMessageNotFoundException {
-		BoardMessage message = boardService.getForumMessage(messageId);
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(), message.getMessageId());
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.BOARD_MESSAGE.getObjectType(), message.getMessageId());
 		long parentId = -1L;
 		int totalSize = walker.getChildCount(parentId);
 		List<Comment> list = walker.children(parentId, new ObjectLoader<Comment>() {
@@ -473,8 +502,8 @@ public class BoardDataController {
 	public ItemList getChildComments(@PathVariable Long threadId, @PathVariable Long messageId,
 			@PathVariable Long commentId, NativeWebRequest request) throws BoardMessageNotFoundException {
 
-		BoardMessage message = boardService.getForumMessage(messageId);
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.FORUM_MESSAGE.getObjectType(),
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.BOARD_MESSAGE.getObjectType(),
 				message.getMessageId());
 
 		int totalSize = walker.getChildCount(commentId);
@@ -497,7 +526,7 @@ public class BoardDataController {
 		List<BoardMessage> list = new ArrayList<BoardMessage>(messageIds.length);
 		for (long messageId : messageIds) {
 			try {
-				list.add(boardService.getForumMessage(messageId));
+				list.add(boardService.getBoardMessage(messageId));
 			} catch (BoardMessageNotFoundException e) {
 				// ignore..
 			}
@@ -519,10 +548,11 @@ public class BoardDataController {
 				continue;
 			}
 			try {
-				list.add(boardService.getForumMessage(messageIds[i]));
+				list.add(boardService.getBoardMessage(messageIds[i]));
 			} catch (BoardMessageNotFoundException e) {
 			}
 		}
 		return list;
 	}
+	
 }

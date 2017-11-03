@@ -91,14 +91,14 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void addViewCount(BoardThread thread) {
 		if (viewCountsEnabled) {
-			addCount(Models.FORUM_THREAD.getObjectType(), thread.getThreadId(), viewCountCache, 1);
+			addCount(Models.BOARD_THREAD.getObjectType(), thread.getThreadId(), viewCountCache, 1);
 		}
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public int getViewCount(BoardThread thread) {
 		if (viewCountsEnabled) {
-			return getCachedCount(Models.FORUM_THREAD.getObjectType(), thread.getThreadId());
+			return getCachedCount(Models.BOARD_THREAD.getObjectType(), thread.getThreadId());
 		} else {
 			return -1;
 		}
@@ -107,9 +107,9 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void clearCount(BoardThread thread){
 		if (viewCountsEnabled) {
-			String key = getCacheKey(Models.FORUM_THREAD.getObjectType(), thread.getThreadId());
+			String key = getCacheKey(Models.BOARD_THREAD.getObjectType(), thread.getThreadId());
 			queue.remove(key);
-			clearCount(Models.FORUM_THREAD.getObjectType(), thread.getThreadId());
+			clearCount(Models.BOARD_THREAD.getObjectType(), thread.getThreadId());
 		}
 	}
 	
@@ -120,7 +120,7 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 		logger.debug("forum thread event : " + e.getType().name());
 		BoardThread thread = (BoardThread) e.getSource();
 		
-		int entityType = Models.FORUM_THREAD.getObjectType();
+		int entityType = Models.BOARD_THREAD.getObjectType();
 		long entityId = thread.getThreadId();	
 		String key = getCacheKey(entityType, entityId);
 		if(e.getType() == BoardThreadEvent.Type.CREATED )

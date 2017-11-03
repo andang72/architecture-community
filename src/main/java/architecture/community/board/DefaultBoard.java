@@ -131,6 +131,7 @@ public class DefaultBoard implements Board , Serializable {
             this.modifiedDate = creationDate;
 	}
 	
+
 	public boolean equals(Object o)
     {
         if(this == o)
@@ -149,8 +150,23 @@ public class DefaultBoard implements Board , Serializable {
 
 	@Override
 	public String toString() {
-		return "Board [boardId=" + boardId + ", objectType=" + objectType + ", objectId=" + objectId + ", name="
-				+ name + ", displayName=" + displayName + ", description=" + description + ", creationDate="
-				+ creationDate + ", modifiedDate=" + modifiedDate + "]";
-	}	
+		StringBuilder builder = new StringBuilder();
+		builder.append("DefaultBoard [boardId=").append(boardId).append(", objectType=").append(objectType)
+				.append(", objectId=").append(objectId).append(", ");
+		if (name != null)
+			builder.append("name=").append(name).append(", ");
+		if (displayName != null)
+			builder.append("displayName=").append(displayName).append(", ");
+		if (description != null)
+			builder.append("description=").append(description).append(", ");
+		if (creationDate != null)
+			builder.append("creationDate=").append(creationDate).append(", ");
+		if (modifiedDate != null)
+			builder.append("modifiedDate=").append(modifiedDate);
+		builder.append("]");
+		return builder.toString();
+	}
+
+	 
+
 }

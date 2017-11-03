@@ -235,8 +235,7 @@ public class ImageDataController {
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
 			response.setStatus(301);
-			String url = configService.getApplicationProperty("components.download.images.no-logo-url",
-					"/images/common/what-to-know-before-getting-logo-design.png");
+			String url = configService.getApplicationProperty("components.download.images.no-logo-url", "/images/no-image.jpg");
 			response.addHeader("Location", url);
 		}
 	}

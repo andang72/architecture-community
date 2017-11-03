@@ -51,15 +51,18 @@ public interface BoardService {
 	 */
 	public abstract int getBoardThreadCount(int objectType, long objectId);		
 	
-	public abstract List<BoardThread> getForumThreads(int containerType, long containerId);
+	public abstract int getBoardMessageCount(Board board) ;
 	
-	public abstract List<BoardThread> getForumThreads(int objectType, long objectId, int startIndex, int numResults);
 	
-	public abstract List<BoardMessage> getForumMessages(int containerType, long containerId);
+	public abstract List<BoardThread> getBoardThreads(int containerType, long containerId);
+	
+	public abstract List<BoardThread> getBoardThreads(int objectType, long objectId, int startIndex, int numResults);
+	
+	public abstract List<BoardMessage> getBoardMessages(int containerType, long containerId);
 			
-	public abstract BoardThread getForumThread(long threadId) throws BoardThreadNotFoundException ;
+	public abstract BoardThread getBoardThread(long threadId) throws BoardThreadNotFoundException ;
 	
-	public abstract BoardMessage getForumMessage(long messageId) throws BoardMessageNotFoundException ;
+	public abstract BoardMessage getBoardMessage(long messageId) throws BoardMessageNotFoundException ;
 	
 	public abstract void updateThread(BoardThread thread);
 		

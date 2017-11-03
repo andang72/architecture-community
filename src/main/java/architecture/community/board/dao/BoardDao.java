@@ -38,6 +38,9 @@ public interface BoardDao {
 	public abstract List<Long> getAllMessageIdsInThread(BoardThread thread);
 	
 	public abstract BoardThread getForumThreadById(long threadId);
+		
+	public abstract int getBoardMessageCount(int objectType, long objectId);
+	
 	
 	public abstract BoardMessage getForumMessageById(long messageId) ;
 	
@@ -49,7 +52,7 @@ public interface BoardDao {
 	
 	public abstract List<Long> getMessageIds(BoardThread thread);
 	
-	public abstract int getMessageCount(BoardThread thread);
+	public abstract int getMessageCount(BoardThread thread);	
 	
 	public abstract MessageTreeWalker getTreeWalker(BoardThread thread) ;
 	
