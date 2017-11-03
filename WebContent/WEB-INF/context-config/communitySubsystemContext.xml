@@ -15,6 +15,9 @@
       Community 설정  
 	]]></beans:description>
 
+	<beans:bean id="propertyDao"
+		class="architecture.ee.jdbc.property.dao.impl.JdbcPropertyDao"
+		p:dataSource-ref="dataSource" />
 
 	<!-- ================================= -->
 	<!-- VIEW COUNT -->
@@ -144,4 +147,24 @@
 
 	<beans:bean id="attachmentService"
 		class="architecture.community.attachment.DefaultAttachmentService" />
+		
+	<!-- ================================= -->
+	<!-- LINK -->
+	<!-- ================================= -->
+	<beans:bean id="externalLinkDao"
+		class="architecture.community.link.dao.jdbc.JdbcExternalLinkDao"
+		p:dataSource-ref="dataSource" />	
+	
+	<beans:bean id="externalLinkCache"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="externalLinkCache" p:maxElementsInMemory="5000"
+		p:diskPersistent="false" p:overflowToDisk="false" p:timeToIdle="30"
+		p:timeToLive="60" p:eternal="false" p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />
+			
+	<beans:bean id="externalLinkService"
+		class="architecture.community.link.DefaultExternalLinkService" />		
+		
+		
+			
 </beans:beans> 
