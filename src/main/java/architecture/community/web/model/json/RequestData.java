@@ -23,14 +23,27 @@ public class RequestData {
     
     public String getDataAsString(String key, String defaultValue){
     	if( data.containsKey(key)){
-    		return data.get(key).toString();
+    		try {
+    			return data.get(key).toString();
+    		} catch (Exception ignore) {	}
     	}
     	return defaultValue;
     }
     
     public Long getDataAsLong(String key, Long defaultValue){
     	if( data.containsKey(key)){
-    		return Long.parseLong( data.get(key).toString() );
+    		try {
+    			return Long.parseLong( data.get(key).toString() );
+    		} catch (Exception ignore) {	}
+    	}
+    	return defaultValue;
+    }
+    
+    public Boolean getDataAsBoolean(String key, Boolean defaultValue){
+    	if( data.containsKey(key)){
+    		try {
+			return Boolean.parseBoolean( data.get(key).toString() );
+		} catch (Exception ignore) {	}
     	}
     	return defaultValue;
     }
