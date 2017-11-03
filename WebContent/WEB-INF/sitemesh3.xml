@@ -1,4 +1,9 @@
 <sitemesh>
-  <mapping path="/*" 		decorator="/WEB-INF/decorators/main.jsp"/>
+  <!-- <mapping path="/*" 		decorator="/WEB-INF/decorators/main.jsp"/> -->
   <mapping path="/admin/*" 	decorator="/admin-decorator.html"/>
+  
+  <!-- Exclude path from decoration. -->
+  <mapping path="/html/*" exclue="true"/>
+  
+  
 </sitemesh>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlset>
+	<name>COMMUNITY_STATS</name>
+	<description>COMMUNITY STATS 쿼리</description>	
+	
+ 	<sql-query name="GET_CSR_CNT" description="GET_CSR_CNT"><![CDATA[
+SELECT CORP_TYPE  AS "CENTER"
+     , BOARDNAME AS "CUSTOMER"
+     , COUNT(ADD_WORK_STATUS) AS "CNT"
+  FROM (
+        SELECT A.BOARDID, A.BOARDNAME
+             , B.BOARDNO, B.USERNICK
+             , B.BOARDTITLE
+             , B.TAGNAME
+             , B.ADD_WORK_STATUS
+             , TO_CHAR(B.BOARDREGISTER_DT,'YYYYMMDD') REG_DATE
+             , TO_CHAR(B.BOARDMODIFY_DT,'YYYYMMDD') MOD_DATE
+             , B.ADD_COMPLETED_DT
+             , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
+             , CASE A.BOARDID 
+             	WHEN 'mpva'         THEN 'PODO'       -- 국가보훈처
+             	WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
+                WHEN 'knu'          THEN 'PODO'       -- 강남대학교 
+                WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
+                WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
+                WHEN 'mke'          THEN 'PODO'       -- 우정공무원교육원   
+               ELSE ''
+               END CORP_TYPE
+          FROM BOARD_TYPE_T A,
+               BOARD_T B,
+               BOARD_CATEGORY_T C
+         WHERE A.BOARDID = B.BOARDID
+           AND B.CATEGORYID = C.CATEGORYID(+)
+           AND B.BOARDREF = 0
+           AND BOARDDELETE_FG = 'N'
+          -- AND B.ADD_WORK_STATUS NOT IN ('완료','보류중','처리완료')
+        )
+ WHERE Corp_Type IS NOT NULL
+ AND REG_DATE BETWEEN ? AND ?
+ GROUP BY CORP_TYPE, BOARDNAME
+ ORDER BY Corp_Type, Boardname  
+    ]]></sql-query>	
+
+ 	<sql-query name="GET_CSR_DONE_CNT" description="GET_CSR_CNT"><![CDATA[
+SELECT CORP_TYPE  AS "CENTER"
+     , BOARDNAME AS "CUSTOMER"
+     , COUNT(ADD_WORK_STATUS) AS "CNT"
+     --, BOARDNO
+  FROM (
+        SELECT A.BOARDID, A.BOARDNAME
+             , B.BOARDNO, B.USERNICK
+             , B.BOARDTITLE
+             , B.TAGNAME
+             , B.ADD_WORK_STATUS
+             , TO_CHAR(B.BOARDREGISTER_DT,'YYYYMMDD') REG_DATE
+             , TO_CHAR(B.BOARDMODIFY_DT,'YYYYMMDD') MOD_DATE
+             , B.ADD_COMPLETED_DT
+             , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
+             , CASE A.BOARDID 
+             	WHEN 'mpva'         THEN 'PODO'       -- 국가보훈처
+             	WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
+                WHEN 'knu'          THEN 'PODO'       -- 강남대학교 
+                WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
+                WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
+                WHEN 'mke'          THEN 'PODO'       -- 우정공무원교육원   
+                ELSE ''
+                END CORP_TYPE
+          FROM BOARD_TYPE_T A,
+               BOARD_T B,
+               BOARD_CATEGORY_T C
+         WHERE A.BOARDID = B.BOARDID
+           AND B.CATEGORYID = C.CATEGORYID(+)
+           AND B.BOARDREF = 0
+           AND BOARDDELETE_FG = 'N'
+           AND trim(B.ADD_WORK_STATUS) IN ('처리완료', '확인완료')           
+        )
+ WHERE Corp_Type IS NOT NULL
+   AND MOD_DATE BETWEEN  ? AND ?
+ GROUP BY CORP_TYPE, BOARDNAME
+ ORDER BY CORP_TYPE, BOARDNAME
+
+ ]]></sql-query>	     
+ 
+	<sql-query name="GET_CSR_LEFT_CNT" description="GET_CSR_LEFT_CNT"><![CDATA[
+	
+SELECT CORP_TYPE  AS "CENTER"
+     , BOARDNAME AS "CUSTOMER"
+     , COUNT(ADD_WORK_STATUS) AS "CNT"
+     --, BOARDNO
+  FROM (
+        SELECT A.BOARDID, A.BOARDNAME
+             , B.BOARDNO, B.USERNICK
+             , B.BOARDTITLE
+             , B.TAGNAME
+             , B.ADD_WORK_STATUS
+             , TO_CHAR(B.BOARDREGISTER_DT,'YYYYMMDD') REG_DATE
+             , TO_CHAR(B.BOARDMODIFY_DT,'YYYYMMDD') MOD_DATE
+             , B.ADD_COMPLETED_DT
+             , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
+             , CASE A.BOARDID 
+             	WHEN 'mpva'         THEN 'PODO'       -- 국가보훈처
+             	WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
+                WHEN 'knu'          THEN 'PODO'       -- 강남대학교 
+                WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
+                WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
+                WHEN 'mke'          THEN 'PODO'       -- 우정공무원교육원   
+               ELSE ''
+               END CORP_TYPE
+          FROM BOARD_TYPE_T A,
+               BOARD_T B,
+               BOARD_CATEGORY_T C
+         WHERE A.BOARDID = B.BOARDID
+           AND B.CATEGORYID = C.CATEGORYID(+)
+           AND B.BOARDREF = 0
+           AND BOARDDELETE_FG = 'N'
+           AND trim(B.ADD_WORK_STATUS) NOT IN ('완료','보류중','처리완료', '확인완료')
+        )
+ 	WHERE Corp_Type IS NOT NULL
+   	AND REG_DATE <= ?
+ 	GROUP BY CORP_TYPE, BOARDNAME
+ 	ORDER BY CORP_TYPE, BOARDNAME
+	
+	 ]]></sql-query> 	
+	 
+	 <sql-query name="GET_CSR_DETAILS" description="GET_CSR_LEFT_CNT"><![CDATA[
+
+
+SELECT ROWNUM NUM, F.* FROM (  
+SELECT CORP_NAME,
+       BOARDTITLE,
+       REG_DATE,
+       TAGNAME,
+       ADD_WORK_STATUS,
+       CATEGORYNAME,       
+       CASE WHEN trim(ADD_WORK_STATUS) = '처리완료' THEN MOD_DATE ELSE ''
+       END MOD_DATE     
+  FROM (
+SELECT BOARDID,
+       CASE BOARDID 
+             	WHEN 'mpva'         THEN '국가보훈처'      
+             	WHEN 'sangji'       THEN '상지대학교'      
+                WHEN 'knu'          THEN '강남대학교'     
+                WHEN 'kai'          THEN '한국항공우주산업'   
+                WHEN 'kwu'          THEN '강원대학교'      
+                WHEN 'mke'          THEN '우정공무원교육원'  
+                ELSE ''
+        END CORP_NAME,
+       BOARDTITLE,
+       REG_DATE,
+       TAGNAME,
+       ADD_WORK_STATUS,       
+       MOD_DATE,
+       CORP_TYPE
+       ,CATEGORYNAME       
+  FROM (
+SELECT C.*
+  FROM (SELECT * 
+          FROM (
+                SELECT A.BOARDID, A.BOARDNAME
+                     , B.BOARDNO, B.USERNICK
+                     , B.BOARDTITLE
+                     , B.TAGNAME
+                     , B.ADD_WORK_STATUS
+                     , TO_CHAR(B.BOARDREGISTER_DT,'YYYYMMDD') REG_DATE
+                     , TO_CHAR(B.BOARDMODIFY_DT,'YYYYMMDD') MOD_DATE
+                     , B.ADD_COMPLETED_DT
+                     , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
+                     , CASE A.BOARDID 
+             	
+             	WHEN 'mpva'         THEN '국가보훈처'      
+             	WHEN 'sangji'       THEN '상지대학교'      
+                WHEN 'knu'          THEN '강남대학교'     
+                WHEN 'kai'          THEN '한국항공우주산업'   
+                WHEN 'kwu'          THEN '강원대학교'      
+                WHEN 'mke'          THEN '우정공무원교육원'  
+                ELSE ''
+                                     
+                        END CORP_TYPE
+                  FROM BOARD_TYPE_T A,
+                       BOARD_T B,
+                       BOARD_CATEGORY_T C
+                 WHERE A.BOARDID = B.BOARDID
+                   AND B.CATEGORYID = C.CATEGORYID(+)
+                   AND B.BOARDREF = 0
+                   AND BOARDDELETE_FG = 'N'
+                   AND trim(B.ADD_WORK_STATUS) IN ('처리완료')          
+                )
+         WHERE Corp_Type IS NOT NULL
+           AND MOD_DATE BETWEEN ? AND ?
+         ORDER BY CORP_TYPE, BOARDNAME
+       ) C
+ WHERE Corp_Type IS NOT NULL)
+ UNION ALL  
+SELECT BOARDID,
+                CASE BOARDID  
+             	WHEN 'mpva'         THEN '국가보훈처'      
+             	WHEN 'sangji'       THEN '상지대학교'      
+                WHEN 'knu'          THEN '강남대학교'     
+                WHEN 'kai'          THEN '한국항공우주산업'   
+                WHEN 'kwu'          THEN '강원대학교'      
+                WHEN 'mke'          THEN '우정공무원교육원'  
+                ELSE ''
+        END CORP_NAME,
+       BOARDTITLE,
+       REG_DATE,
+       TAGNAME,
+       ADD_WORK_STATUS,       
+       MOD_DATE,
+       CORP_TYPE   
+       ,CATEGORYNAME           
+  FROM (
+SELECT C.*
+  FROM (SELECT * 
+          FROM (
+                SELECT A.BOARDID, A.BOARDNAME
+                     , B.BOARDNO, B.USERNICK
+                     , B.BOARDTITLE
+                     , B.TAGNAME
+                     , B.ADD_WORK_STATUS
+                     , TO_CHAR(B.BOARDREGISTER_DT,'YYYYMMDD') REG_DATE
+                     , TO_CHAR(B.BOARDMODIFY_DT,'YYYYMMDD') MOD_DATE
+                     , B.ADD_COMPLETED_DT
+                     , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
+                     , CASE A.BOARDID 
+             	WHEN 'mpva'         THEN '국가보훈처'      
+             	WHEN 'sangji'       THEN '상지대학교'      
+                WHEN 'knu'          THEN '강남대학교'     
+                WHEN 'kai'          THEN '한국항공우주산업'   
+                WHEN 'kwu'          THEN '강원대학교'      
+                WHEN 'mke'          THEN '우정공무원교육원'  
+                ELSE ''
+                        END CORP_TYPE
+                  FROM BOARD_TYPE_T A,
+                       BOARD_T B,
+                       BOARD_CATEGORY_T C
+                 WHERE A.BOARDID = B.BOARDID
+                   AND B.CATEGORYID = C.CATEGORYID(+)
+                   AND B.BOARDREF = 0
+                   AND BOARDDELETE_FG = 'N'
+                   AND trim(B.ADD_WORK_STATUS) NOT IN ('완료','보류중','처리완료')
+                )
+         WHERE Corp_Type IS NOT NULL
+           AND REG_DATE <= ?
+       ) C
+ WHERE Corp_Type IS NOT NULL)
+ ) D ORDER BY 
+          CASE WHEN trim(ADD_WORK_STATUS) = '요청' THEN 1--CORP_TYPE,ADD_WORK_STATUS,BOARDID,MOD_DATE
+                             WHEN ADD_WORK_STATUS = '확인중' THEN 1
+                             WHEN ADD_WORK_STATUS = '처리중' THEN 3 
+                             WHEN ADD_WORK_STATUS = '확인완료' THEN 2
+                             WHEN ADD_WORK_STATUS = '처리완료' THEN 6
+                             WHEN ADD_WORK_STATUS = '대기' THEN 4 
+                             WHEN ADD_WORK_STATUS = '보류' THEN 5 
+                             ELSE 7 END
+                             , CORP_NAME, REG_DATE
+ ) F
+ 
+ WHERE CORP_NAME <> '스터디마트' AND corp_name <> 'ETC' 
+ ORDER BY CORP_NAME
+  	 
+	 ]]></sql-query> 	 	
+</sqlset>
