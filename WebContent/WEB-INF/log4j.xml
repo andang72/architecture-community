@@ -70,7 +70,7 @@
 	</category>
 	
 	<category name="com">
-		<priority value="DEBUG" />
+		<priority value="TRACE" />
 	</category>
 
 	<category name="org.springframework">
