@@ -26,7 +26,6 @@ public class AccountsDataController {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());	
 	
-	
 	@Inject
 	@Qualifier("userManager")
 	private UserManager userManager;
