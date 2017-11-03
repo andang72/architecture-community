@@ -3,6 +3,7 @@ package architecture.community.web.spring.controller.data;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,12 +35,14 @@ public class AccountsDataController {
 	@RequestMapping(value = "/signup.json", method = { RequestMethod.POST})
 	@ResponseBody
 	public Object signupByJson(@RequestBody RequestData data, NativeWebRequest request) {		
-		String nameToUse = (String)data.getData().getOrDefault("name", null);
-		String emailToUse = (String)data.getData().getOrDefault("email", null);
+		
+		
+		String nameToUse =  data.getDataAsString("name", null);
+		String emailToUse =  data.getDataAsString("email", null);
 		String usernameToUse = extractUsernameFromEmail(emailToUse);
-		String passwordToUse = (String)data.getData().getOrDefault("password", null);
-		boolean mameVisible = (Boolean)data.getData().getOrDefault("nameVisible", false);
-		boolean emailVisible = (Boolean) data.getData().getOrDefault("emailVisible", false);		
+		String passwordToUse =  data.getDataAsString("password", null);
+		boolean mameVisible =  data.getDataAsBoolean("nameVisible", false);
+		boolean emailVisible =  data.getDataAsBoolean("emailVisible", false);		
 		String ipAddress = request.getNativeRequest(HttpServletRequest.class).getRemoteAddr();		
 		User newUser = new UserTemplate(usernameToUse, passwordToUse, nameToUse, mameVisible, emailToUse, emailVisible);		
 		
