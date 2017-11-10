@@ -37,7 +37,7 @@
     		TOTAL_CSR_DONE_CNT: 0,
     		TOTAL_CSR_LEFT_CNT: 0,
     		TOTAL_CSR_DETAIL_CNT: 0,
-    		selectedSystem : "podo-csr-datasource",
+    		selectedSystem :null,
     		startDate : "",
     		endDate: "",
     		targetSystems : [
@@ -290,6 +290,8 @@
 		}
 		
 		//if(!podo.ui.exists(renderTo)){
+			
+			console.log( podo.ui.stringify(getModelData().get("selectedSystem")) );
 			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem") +'/COMMUNITY_STATS.GET_CSR_DETAILS/list.json' ;
 			podo.ui.grid(renderTo, {
 				autoBind: true,
