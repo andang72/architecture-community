@@ -41,8 +41,8 @@
     		startDate : "",
     		endDate: "",
     		targetSystems : [
-                { text: "포도소스트웨어", value: "podo-csr-datasource" },
-                { text: "인키움", value: "inkium-csr-datasource" }
+                { text: "포도소스트웨어", value: "podo-csr-datasource", prefix: "PODO_" },
+                { text: "인키움", value: "inkium-csr-datasource", prefix: "INKIUM_" }
     		],
     		doSearch : function (){
     			var $this = this;
@@ -295,7 +295,7 @@
 			console.log( podo.ui.stringify(getModelData().get("selectedSystem").value) );
 			
 			
-			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem").get("value") +'/COMMUNITY_STATS.GET_CSR_DETAILS/list.json' ;
+			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem").value +'/COMMUNITY_STATS.'+ getModelData().get("selectedSystem").prefix +'GET_CSR_DETAILS/list.json' ;
 			podo.ui.grid(renderTo, {
 				autoBind: true,
 				dataSource: {	 						
