@@ -69,8 +69,8 @@
 		}
 		
 		//if(!podo.ui.exists(renderTo)){
-			
-			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem") +'/COMMUNITY_STATS.GET_CSR_CNT/list.json' ;
+			var selectedSystem = getModelData().get("selectedSystem");
+			var urlStr = '/data/v1/stats/'+ selectedSystem.value +'/COMMUNITY_STATS.'+ selectedSystem.prefix +'GET_CSR_CNT/list.json' ;
 			console.log( urlStr );
 			podo.ui.grid(renderTo, {
 				autoBind: true,
@@ -143,7 +143,8 @@
 		}
 		
 		//if(!podo.ui.exists(renderTo)){
-			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem") +'/COMMUNITY_STATS.GET_CSR_DONE_CNT/list.json' ;
+			var selectedSystem = getModelData().get("selectedSystem");
+			var urlStr = '/data/v1/stats/'+ selectedSystem.value +'/COMMUNITY_STATS.'+ selectedSystem.prefix +'GET_CSR_DONE_CNT/list.json' ;
 			podo.ui.grid(renderTo, {
 				autoBind: true,
 				dataSource: {	 						
@@ -215,7 +216,9 @@
 		}
 		
 		//if(!podo.ui.exists(renderTo)){
-			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem") +'/COMMUNITY_STATS.GET_CSR_LEFT_CNT/list.json' ;
+			var selectedSystem = getModelData().get("selectedSystem");
+			
+			var urlStr = '/data/v1/stats/'+ selectedSystem.value +'/COMMUNITY_STATS.'+ selectedSystem.prefix +'GET_CSR_LEFT_CNT/list.json' ;
 			podo.ui.grid(renderTo, {
 				autoBind: true,
 				dataSource: {	 						
