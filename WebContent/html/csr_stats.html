@@ -292,6 +292,9 @@
 		//if(!podo.ui.exists(renderTo)){
 			
 			console.log( podo.ui.stringify(getModelData().get("selectedSystem")) );
+			console.log( podo.ui.stringify(getModelData().get("selectedSystem").value) );
+			
+			
 			var urlStr = '/data/v1/stats/'+ getModelData().get("selectedSystem").get("value") +'/COMMUNITY_STATS.GET_CSR_DETAILS/list.json' ;
 			podo.ui.grid(renderTo, {
 				autoBind: true,
