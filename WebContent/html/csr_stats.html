@@ -40,6 +40,10 @@
     		selectedSystem : "podo-csr-datasource",
     		startDate : "",
     		endDate: "",
+    		targetSystems : [
+                { text: "포도소스트웨어", value: "podo-csr-datasource" },
+                { text: "인키움", value: "inkium-csr-datasource" }
+    		],
     		doSearch : function (){
     			var $this = this;
 	    	    	createGrid1();
@@ -383,10 +387,20 @@
   
   <div class="form-row">
       <div class="form-group col-md-6">
-	    <select class="form-control"  data-bind="value: selectedSystem" >
+	    <!-- <select class="form-control"  data-bind="value: selectedSystem" >
 	      <option value="podo-csr-datasource">포도소프트웨어</option>
 	      <option value="inkium-csr-datasource">인키움</option>
-	    </select>
+	    </select>-->
+
+		<input data-role="dropdownlist"
+                   data-auto-bind="false"
+                   data-value-primitive="true"
+                   data-text-field="text"
+                   data-value-field="value"
+                   data-bind="value: selectedSystem, source: targetSystems"
+                   style="width: 100%;"
+            />
+
     </div>
      
      <div class="form-group col-md-6">
