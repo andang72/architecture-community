@@ -11,7 +11,7 @@
     <title></title>
     
 	<!-- Bootstrap core CSS -->
-	<link href="/css/kendo.ui.core/web/kendo.common.core.css" rel="stylesheet" type="text/css" />
+	<link href="/css/kendo.ui.core/web/kendo.default.css" rel="stylesheet" type="text/css" />
 	
 	<link href="/css/bootstrap/3.3.7/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
 	<link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet" type="text/css" />

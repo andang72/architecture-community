@@ -11,14 +11,15 @@
     <title></title>
     
 	<!-- Bootstrap core CSS -->
-	<link href="/css/kendo.ui.core/web/kendo.common.core.css" rel="stylesheet" type="text/css" />
-	
-	<link href="/css/bootstrap/3.3.7/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+	<link href="/fonts/font-awesome.css" rel="stylesheet" type="text/css" />
 	<link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	
+	<link href="/css/bootstrap.theme/unify/unify-glogals.css" rel="stylesheet" type="text/css" />
 	<link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet" type="text/css" />
 	
-	<link href="/fonts/font-awesome.css" rel="stylesheet" type="text/css" />
-	
+	<link href="/css/kendo.ui.core/web/kendo.common-bootstrap.core.css" rel="stylesheet" type="text/css" />
+	<link href="/css/kendo.ui.core/web/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+		
 	<!-- Requirejs for js loading -->
 	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
 
@@ -30,18 +31,20 @@
 	        "bootstrap" : { "deps" :['jquery'] },
 	        "kendo.ui.core.min" : { "deps" :['jquery'] },
 	        "kendo.culture.ko-KR.min" : { "deps" :['kendo.ui.core.min'] },
-	        "podo.ui.core" : { "deps" :['kendo.culture.ko-KR.min'] }
+	        "podo.ui.core" : { "deps" :['kendo.culture.ko-KR.min'] },
+	        "community.models" : { "deps" :['kendo.ui.core.min'] }
 	    },
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-2.2.4.min",
 			"bootstrap" 					: "/js/bootstrap/3.3.7/bootstrap.min",
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
-			"podo.ui.core" 				: "/js/podo.ui/podo.ui.core"
+			"podo.ui.core" 				: "/js/podo.ui/podo.ui.core",
+			"community.models" 			: "/js/community/community-models"	
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min", "podo.ui.core", "kendo.culture.ko-KR.min", "bootstrap"], function($, kendo ) {
+	require([ "jquery", "kendo.ui.core.min", "podo.ui.core", "community.models", "kendo.culture.ko-KR.min", "bootstrap"], function($, kendo ) {
 		console.log("hello");
 		kendo.culture("ko-KR");
 		var renderTo = $('#board-listview');
@@ -66,7 +69,8 @@
 			dataSource: podo.ui.datasource('/data/v1/boards/'+ observable.get('boardId') +'/threads/list.json', {
 				schema: {
 					total: "totalCount",
-					data: "items"
+					data: "items",
+					model: community.model.Thread
 				}
 			}),
 			template: podo.ui.template($("#template").html())
@@ -96,7 +100,7 @@
 		                            <div class="ibox-tools">
 		                                <a href="" class="btn btn-primary">새로운 글 게시하기</a>
 		                            </div>
-									<div id="board-listview" class="no-border"></div>
+									<div id="board-listview" class="no-border" style="border-style:none;"></div>
 	                            </div>
                         		</div>
                     		</div>
@@ -125,7 +129,7 @@
 						<a href="/boards/${boardId}/threads/#=threadId#" class="forum-item-title">#: rootMessage.subject #</a>
 						
 						<ul class="forum-list-item-info">
-                            <li><i class="icon fa fa-reply small"></i> #: latestMessage.subject # #: latestMessage.modifiedDate #</li>
+                            <li><i class="icon fa fa-reply small"></i>  #: latestMessage.subject # , #: kendo.toString(latestMessage.modifiedDate, "g")  #</li>
                             <li>#: latestMessage.body #</li>                            
                         </ul>
 					</div>
