@@ -92,7 +92,7 @@ public class ForumTest {
 		
 	}
 	
-	@Test
+
 	public void testReplayMessage(){
 		
 		int objectType = 1;

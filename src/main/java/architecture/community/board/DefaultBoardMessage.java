@@ -27,7 +27,6 @@ public class DefaultBoardMessage implements BoardMessage {
 	private String subject;
 	
 	private String body;
-	
 
 	private Date creationDate;
 

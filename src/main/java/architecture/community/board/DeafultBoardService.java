@@ -277,22 +277,21 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void addMessage(BoardThread forumthread, BoardMessage parentMessage, BoardMessage newMessage) {
+	public void addMessage(BoardThread thread, BoardMessage parentMessage, BoardMessage newMessage) {
 		
 		DefaultBoardMessage newMessageToUse = (DefaultBoardMessage)newMessage;
 		if(newMessageToUse.getCreationDate().getTime() < parentMessage.getCreationDate().getTime() ){
-			logger.warn(CommunityLogLocalizer.getMessage("013008"));
-			
+			logger.warn(CommunityLogLocalizer.getMessage("013008"));			
 			Date newDate = new Date(parentMessage.getCreationDate().getTime() + 1L);
 			newMessageToUse.setCreationDate(newDate);
 			newMessageToUse.setModifiedDate(newDate);
 		}		
-		if(forumthread.getThreadId() != -1L){
-			newMessageToUse.setThreadId(forumthread.getThreadId());
+		if(thread.getThreadId() != -1L){
+			newMessageToUse.setThreadId(thread.getThreadId());
 		}		
-		boardDao.createForumMessage(forumthread, newMessageToUse, parentMessage.getMessageId());
-		updateThreadModifiedDate(forumthread, newMessageToUse);		
-		evictCaches(forumthread);
+		boardDao.createForumMessage(thread, newMessageToUse, parentMessage.getMessageId());
+		updateThreadModifiedDate(thread, newMessageToUse);		
+		evictCaches(thread);
 		
 	}
 	
@@ -300,7 +299,11 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		if (threadCache != null && threadCache.get( thread.getThreadId() ) != null)
 		{
 			threadCache.remove(thread.getThreadId());
-		}			
+		}		
+		if (messageTreeWalkerCache != null && messageTreeWalkerCache.get( thread.getThreadId() ) != null)
+		{
+			messageTreeWalkerCache.remove(thread.getThreadId());
+		}
 	}
 	
 	protected void evictCaches(BoardMessage message){				

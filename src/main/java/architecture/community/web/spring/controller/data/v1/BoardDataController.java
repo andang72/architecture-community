@@ -108,7 +108,7 @@ public class BoardDataController {
 	 * @return
 	 * @throws BoardNotFoundException 
 	 */
-	@RequestMapping(value = "/boards/{boardId:[\\p{Digit}]+}/info.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = { "/boards/{boardId:[\\p{Digit}]+}/info.json",  "/boards/{boardId:[\\p{Digit}]+}/get.json" }, method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public Board getBoard (@PathVariable Long boardId, NativeWebRequest request) throws BoardNotFoundException {	
 		Board board = boardService.getBoardById(boardId);
@@ -194,6 +194,24 @@ public class BoardDataController {
 		return new ItemList(list, totalSize);
 	}
 	
+
+	/**
+	 * 특정 스레드에 해당하는 게시물 목록 
+	 * 
+	 * @param threadId
+	 * @param request
+	 * @return
+	 * @throws BoardNotFoundException
+	 */
+	@RequestMapping(value = { "/threads/{threadId:[\\p{Digit}]+}/info.json", "/threads/{threadId:[\\p{Digit}]+}/get.json" }, method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BoardThread getThread(@PathVariable Long threadId,
+			NativeWebRequest request) throws BoardThreadNotFoundException { 
+		
+		BoardThread thread = boardService.getBoardThread(threadId);
+		return thread ;
+	}	
+	
 	
 
 	/**
@@ -223,7 +241,37 @@ public class BoardDataController {
 	
 	
 	
-	
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/messages/save-or-update.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public BoardMessage saveOrUpdate(@RequestBody DefaultBoardMessage newMessage, NativeWebRequest request) throws BoardThreadNotFoundException {
+
+		User user = SecurityHelper.getUser();
+		newMessage.setUser(user);
+		log.debug("MESSAGE : " + newMessage.toString() );
+		// NEW THREAD MESSAGE...	
+		if ( newMessage.getThreadId() > 0) {
+			BoardThread thread = boardService.getBoardThread(newMessage.getThreadId());
+			if( newMessage.getMessageId() > 0 ) {
+				// UPDATE MESSAGE...	
+				boardService.updateMessage(newMessage);
+			}else {
+				// NEW MESSAGE...							
+				boardService.addMessage(thread, thread.getRootMessage(), newMessage);				
+			}		
+		}else {
+			if( newMessage.getMessageId() < 1 ) {
+				// NEW MESSAGE...
+				BoardMessage rootMessage = boardService.createMessage(newMessage.getObjectType(), newMessage.getObjectId(), user);
+				rootMessage.setSubject(newMessage.getSubject());
+				rootMessage.setBody(newMessage.getBody());
+				BoardThread thread = boardService.createThread(rootMessage.getObjectType(), rootMessage.getObjectId(), rootMessage);
+				boardService.addThread(rootMessage.getObjectType(), rootMessage.getObjectId(), thread);
+				return thread.getRootMessage();				
+			}
+		}		
+		return newMessage;
+	}	
 	
 	
 	@Secured({ "ROLE_USER" })
@@ -540,7 +588,6 @@ public class BoardDataController {
 		}
 		List<BoardMessage> list = new ArrayList<BoardMessage>();
 		for (int i = 0; i < pageSize * page; i++) {
-			log.debug("{} : {}", messageIds.length, i);
 			if (i >= messageIds.length)
 				break;
 

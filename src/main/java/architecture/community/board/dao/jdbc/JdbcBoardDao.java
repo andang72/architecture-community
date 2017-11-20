@@ -233,7 +233,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 			messageToUse.setModifiedDate(now);
 		}	
 		
-		if(messageToUse.getMessageId() == -1L){
+		if(messageToUse.getMessageId() == -1L || messageToUse.getMessageId() == 0L){
 			messageToUse.setMessageId(getNextMessageId());
 		}
 		

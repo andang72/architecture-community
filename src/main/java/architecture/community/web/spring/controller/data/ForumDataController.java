@@ -373,11 +373,9 @@ public class ForumDataController {
 		return result;
 	}
 
-	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = {
-			RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public Result addMessageComment(@PathVariable Long threadId, @PathVariable Long messageId,
-			@RequestBody RequestData reqeustData, HttpServletRequest request, ModelMap model) {
+	public Result addMessageComment(@PathVariable Long threadId, @PathVariable Long messageId, @RequestBody RequestData reqeustData, HttpServletRequest request, ModelMap model) {
 		Result result = Result.newResult();
 		try {
 			User user = SecurityHelper.getUser();
@@ -388,9 +386,8 @@ public class ForumDataController {
 			Long parentCommentId = reqeustData.getDataAsLong("parentCommentId", 0L);
 
 			BoardMessage message = boardService.getBoardMessage(messageId);
-			Comment newComment = commentService.createComment(Models.BOARD_MESSAGE.getObjectType(),
-					message.getMessageId(), user, text);
-
+			Comment newComment = commentService.createComment(Models.BOARD_MESSAGE.getObjectType(), message.getMessageId(), user, text);
+			
 			newComment.setIPAddress(address);
 			if (!StringUtils.isNullOrEmpty(name))
 				newComment.setName(name);

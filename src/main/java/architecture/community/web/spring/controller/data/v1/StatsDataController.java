@@ -1,6 +1,5 @@
 package architecture.community.web.spring.controller.data.v1;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,12 +34,12 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@ResponseBody
 	public ItemList getStats(
 			@PathVariable String target, 
-			@PathVariable String name, 
+			@PathVariable String statement, 
 			@RequestBody List<ParameterValue> params,
 			NativeWebRequest request)
 			throws BoardThreadNotFoundException, BoardMessageNotFoundException {
 
-		List list = statsService.stat(target, name, params );
+		List list = statsService.stat(target, statement, params );		
 		return new ItemList(list, list.size());
 		
 	}

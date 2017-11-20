@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
+import architecture.community.board.BoardThread;
+import architecture.community.board.BoardThreadNotFoundException;
 import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.util.ServletUtils;
 
@@ -56,7 +59,10 @@ public class BoardPageController {
 		
 		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
 		
+		Board board = boardService.getBoardById(boardId);
+		model.addAttribute("currentBoard", board);		
 		model.addAttribute("boardId", boardId);
+		
 		return "/boards/list-thread" ;
 	}
 	
@@ -67,11 +73,18 @@ public class BoardPageController {
 			@PathVariable Long threadId, 
 			HttpServletRequest request,
 		    HttpServletResponse response, 
-		    Model model) throws BoardNotFoundException{		
+		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{		
 		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
 		
-		model.addAttribute("boardId", boardId);
-		model.addAttribute("threadId", threadId);
+		Board board = boardService.getBoardById(boardId);
+		BoardThread thread = boardService.getBoardThread(threadId);
+
+		model.addAttribute("currentBoard", board);
+		model.addAttribute("currentThread", thread);
+		
+		if(viewCountService!=null)
+			viewCountService.addViewCount(thread);
+		
 		return "/boards/view-thread" ;
 	}
 	
