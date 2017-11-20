@@ -13,6 +13,8 @@ How to install and start
 4. deploy WebContent as web application .
 
 
+** SERVER API 
+
 /data/v1/boards/list.json
 /data/v1/boards/create.json
 
