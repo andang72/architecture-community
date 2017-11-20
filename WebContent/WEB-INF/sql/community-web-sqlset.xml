@@ -3,7 +3,7 @@
 	<name>COMMUNITY_WEB</name>
 	<description>VIEWCOUNT, IMAGE, ATTACHMENT 쿼리</description>
 	<!-- ==================== -->
-	<!--  VIEW  COUNT -->
+	<!--  VIEW  COUNT 		 -->
 	<!-- ==================== -->
 	<sql-query name="VIEW_COUNT_BY_ENTITY_TYPE_AND_ENTITY_ID" description="VIEW_COUNT_BY_ENTITY_TYPE_AND_ENTITY_ID"><![CDATA[
 	SELECT 
@@ -27,7 +27,7 @@
 	]]></sql-query>	
 	
 	<!-- ==================== -->
-	<!--  COMMENT -->
+	<!--  COMMENT 			  -->
 	<!-- ==================== -->
 	<sql-query name="SELECT_COMMENT_BY_ID" description="SELECT_COMMENT_BY_ID"><![CDATA[
 	SELECT

@@ -174,7 +174,7 @@
     ]]></sql-query>
                    	
     <!-- REMEMBER_USER_TOKEN  -->    
-    <sql-query name="CREATE_REMEMBER_USER_TOKEN" description="CREATE_REMEMBER_USER_TOKEN"><![CDATA[
+    <sql-query name="CREATE_REMEMBER_USER_TOKEN" description="REMEMBER_USER_TOKEN"><![CDATA[
      INSERT INTO MUSI_USER_LOGIN_TOKEN ( 
     	UUID, 
     	USERNAME,
