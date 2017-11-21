@@ -29,6 +29,7 @@ SELECT CORP_TYPE  AS "CENTER"
                 WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
                 WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
                 WHEN 'mke'          THEN 'PODO'       -- 우정공무원교육원   
+                WHEN 'hansei'       THEN 'PODO'       -- 한세대학교   
                ELSE ''
                END CORP_TYPE
           FROM BOARD_TYPE_T A,
@@ -116,6 +117,7 @@ SELECT CORP_TYPE  AS "CENTER"
                 WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
                 WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
                 WHEN 'mke'          THEN 'PODO'       -- 우정공무원교육원   
+                WHEN 'hansei'       THEN 'PODO'       -- 한세대학교
                 ELSE ''
                 END CORP_TYPE
           FROM BOARD_TYPE_T A,
@@ -209,6 +211,7 @@ SELECT CORP_TYPE  AS "CENTER"
                 WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
                 WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
                 WHEN 'mke'          THEN 'PODO'       -- 우정공무원교육원   
+                WHEN 'hansei'       THEN 'PODO'       -- 한세대학교
                ELSE ''
                END CORP_TYPE
           FROM BOARD_TYPE_T A,
@@ -299,6 +302,7 @@ SELECT BOARDID,
                 WHEN 'kai'          THEN '한국항공우주산업'   
                 WHEN 'kwu'          THEN '강원대학교'      
                 WHEN 'mke'          THEN '우정공무원교육원'  
+                WHEN 'hansei'       THEN '한세대학교'
                 ELSE ''
         END CORP_NAME,
        BOARDTITLE,
@@ -329,6 +333,8 @@ SELECT C.*
                 WHEN 'kai'          THEN '한국항공우주산업'   
                 WHEN 'kwu'          THEN '강원대학교'      
                 WHEN 'mke'          THEN '우정공무원교육원'  
+                WHEN 'hansei'       THEN '한세대학교'
+                
                 ELSE ''
                                      
                         END CORP_TYPE
@@ -355,6 +361,7 @@ SELECT BOARDID,
                 WHEN 'kai'          THEN '한국항공우주산업'   
                 WHEN 'kwu'          THEN '강원대학교'      
                 WHEN 'mke'          THEN '우정공무원교육원'  
+                WHEN 'hansei'       THEN '한세대학교'
                 ELSE ''
         END CORP_NAME,
        BOARDTITLE,
@@ -384,6 +391,7 @@ SELECT C.*
                 WHEN 'kai'          THEN '한국항공우주산업'   
                 WHEN 'kwu'          THEN '강원대학교'      
                 WHEN 'mke'          THEN '우정공무원교육원'  
+                WHEN 'hansei'       THEN '한세대학교'
                 ELSE ''
                         END CORP_TYPE
                   FROM BOARD_TYPE_T A,
