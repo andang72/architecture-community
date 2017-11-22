@@ -3,7 +3,6 @@
  * dependency : jquery, kendo
  */
 
-    
     (function (window, $, undefined) {
 
 		
