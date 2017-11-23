@@ -28,7 +28,7 @@ public enum Models {
 	ATTACHMENT(10),
 	IMAGE(11),
 	LOGO_IMAGE(12),
-	PROFILE_IMAGE(13);
+	AVATAR_IMAGE(13);
 	
 	private int objectType;
 	

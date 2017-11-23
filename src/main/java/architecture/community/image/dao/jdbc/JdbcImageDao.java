@@ -98,11 +98,6 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 		return sequencerFactory.getNextValue(Models.LOGO_IMAGE.getObjectType(), Models.LOGO_IMAGE.name());
 	}
 	
-	public long getNextProfileId(){
-		return sequencerFactory.getNextValue(Models.PROFILE_IMAGE.getObjectType(), Models.PROFILE_IMAGE.name());
-	}
-	
-	
 	
 
 	public Image createImage(Image image) {

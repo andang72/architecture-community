@@ -588,8 +588,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				imageDao.saveImageInputStream(image, image.getInputStream());
 			}
 
-			Collection<File> files = FileUtils.listFiles(getImageCacheDir(),
-					FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
+			Collection<File> files = FileUtils.listFiles(getImageCacheDir(), FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
 			for (File file : files) {
 				FileUtils.deleteQuietly(file);
 			}
@@ -615,8 +614,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				imageDao.saveImageInputStream(image, image.getInputStream());
 			}
 
-			Collection<File> files = FileUtils.listFiles(getImageCacheDir(),
-					FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
+			Collection<File> files = FileUtils.listFiles(getImageCacheDir(), FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
 			for (File file : files) {
 				FileUtils.deleteQuietly(file);
 			}

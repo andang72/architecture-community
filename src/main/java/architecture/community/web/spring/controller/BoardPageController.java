@@ -40,7 +40,7 @@ public class BoardPageController {
 		
 	}
 	
-	@RequestMapping(value = {"/list"}, method = { RequestMethod.POST, RequestMethod.GET } )
+	@RequestMapping(value = {"/", "/list"}, method = { RequestMethod.POST, RequestMethod.GET } )
 	public String displayBoardList(
 			HttpServletRequest request,
 		    HttpServletResponse response, Model model) {

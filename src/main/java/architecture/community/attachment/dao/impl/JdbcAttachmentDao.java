@@ -201,8 +201,8 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 
 	public void deleteAttachmentData(Attachment attachment) {		
 		getJdbcTemplate().update(
-				getBoundSql("COMMUNITY_WEB.DELETE_ATTACHMENT_DATA_BY_ID" ).getSql(),
-				new SqlParameterValue (Types.NUMERIC, attachment.getAttachmentId())
+			getBoundSql("COMMUNITY_WEB.DELETE_ATTACHMENT_DATA_BY_ID" ).getSql(),
+			new SqlParameterValue (Types.NUMERIC, attachment.getAttachmentId())
 		);
 	}
 	

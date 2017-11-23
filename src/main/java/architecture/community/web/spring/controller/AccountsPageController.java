@@ -43,16 +43,14 @@ public class AccountsPageController {
         return "/accounts/login";        
     }
 
-	@RequestMapping(value={"/join","/signup"}, method = { RequestMethod.POST, RequestMethod.GET } )
+	@RequestMapping(value={"/join","/signup", "/register"}, method = { RequestMethod.POST, RequestMethod.GET } )
     public String displaySignupPage(@RequestParam(value="url", defaultValue="/", required=false ) String returnUrl,
     		HttpServletRequest request, 
     		HttpServletResponse response, 
     		Model model) {		
-		
 		ServletUtils.setContentType(null, response);		
-		model.addAttribute("returnUrl", returnUrl);	
-		
-        return "/accounts/signup";        
+		model.addAttribute("returnUrl", returnUrl);			
+        return "/accounts/register";        
     }
 	
 	private String getRememberMeTargetUrlFromSession(HttpServletRequest request){

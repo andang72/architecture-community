@@ -16,7 +16,6 @@
 
 package architecture.community.web.spring.controller;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
@@ -26,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,11 +33,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import architecture.community.image.Image;
 import architecture.community.image.ImageService;
-import architecture.community.image.LogoImage;
-import architecture.community.link.ExternalLink;
 import architecture.community.link.ExternalLinkService;
+import architecture.community.user.AvatarImage;
+import architecture.community.user.UserAvatarService;
 import architecture.community.web.spring.controller.data.ImageDataController;
 import architecture.ee.service.ConfigService;
 
@@ -59,11 +58,53 @@ public class DownloadController {
 	@Qualifier("externalLinkService")
 	private ExternalLinkService externalLinkService;
 	
+	@Inject
+	@Qualifier("userAvatarService")
+	private UserAvatarService userAvatarService;
+	
 	public DownloadController() {
 		
 	}
 
+	@PreAuthorize("permitAll")
+	@RequestMapping(value = "/avatar/{username}", method = RequestMethod.GET)
+	@ResponseBody
+	public void getUserAvatarImage (
+			@PathVariable("username") String username, 
+			@RequestParam(value = "width", defaultValue = "0", required = false) Integer width,
+		    @RequestParam(value = "height", defaultValue = "0", required = false) Integer height,
+		    HttpServletResponse response) {
+		
+		try {
+			AvatarImage image = userAvatarService.getAvatareImageByUsername(username);
+			if (image != null) {
+				InputStream input;
+				String contentType;
+				int contentLength;				
+				if (width > 0 && width > 0) {
+					input = userAvatarService.getImageThumbnailInputStream(image, width, height);
+					contentType = image.getThumbnailContentType();
+					contentLength = image.getThumbnailSize();
+				} else {
+					input = userAvatarService.getImageInputStream(image);
+					contentType = image.getImageContentType();
+					contentLength = image.getImageSize();
+				}				
+				response.setContentType(contentType);
+				response.setContentLength(contentLength);
+				IOUtils.copy(input, response.getOutputStream());
+				response.flushBuffer();
+			}
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
+			response.setStatus(301);
+			String url = configService.getApplicationProperty("components.download.images.no-avatar-url", "/images/no-avatar.png");
+			response.addHeader("Location", url);
+		}
+	}
 
+	
+	/**
 	@RequestMapping(value = "/images/{externalId}", method = RequestMethod.GET)
 	@ResponseBody
 	public void downloadImage(
@@ -139,6 +180,6 @@ public class DownloadController {
 			response.addHeader("Location", url);
 		}
 	}
-
+**/
 	
 }

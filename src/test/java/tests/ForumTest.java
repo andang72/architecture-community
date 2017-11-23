@@ -59,6 +59,7 @@ public class ForumTest {
 		}else {
 			boardId = boards.get(0).getBoardId();
 		}
+		/**
 		int objectType = Models.BOARD.getObjectType();
 		long objectId = boardId;
 		
@@ -88,7 +89,7 @@ public class ForumTest {
 			log.debug( message.getSubject() );
 			log.debug( "UPDATE : {} \n {} ", message.getModifiedDate(), message.getBody() );
 		}
-
+		**/
 		
 	}
 	
