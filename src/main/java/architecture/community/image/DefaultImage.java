@@ -24,12 +24,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateDeserializer;
 import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 
-public class DefaultImage implements Image {
+public class DefaultImage extends PropertyAwareSupport implements Image {
 	
 	private Long imageId;
 	

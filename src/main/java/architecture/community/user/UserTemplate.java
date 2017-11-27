@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.model.json.JsonDateDeserializer;
+import architecture.community.model.json.JsonDateSerializer;
 import architecture.ee.util.StringUtils;
 
 public class UserTemplate implements User, Serializable {
@@ -87,18 +91,22 @@ public class UserTemplate implements User, Serializable {
 		this.username = username;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
 
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getModifiedDate() {
 		return modifiedDate;
 	}
-
+	
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}

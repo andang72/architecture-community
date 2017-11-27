@@ -10,8 +10,6 @@ import architecture.community.board.MessageTreeWalker;
 
 public interface BoardDao {
 	
-	
-	
 	public abstract void createBoard(Board board);
 	
 	public abstract Board getBoardById(long boardId);
@@ -19,6 +17,8 @@ public interface BoardDao {
 	public abstract List<Long> getAllBoardIds();
 	
 	public void deleteBoard(Board board);
+	
+	public void saveOrUpdate( Board board );
 	
 	
 
@@ -55,5 +55,6 @@ public interface BoardDao {
 	public abstract int getMessageCount(BoardThread thread);	
 	
 	public abstract MessageTreeWalker getTreeWalker(BoardThread thread) ;
+	
 	
 }

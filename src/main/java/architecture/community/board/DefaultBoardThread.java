@@ -6,11 +6,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.model.json.JsonForumMessageDeserializer;
 import architecture.community.util.CommunityContextHelper;
 
-public class DefaultBoardThread implements BoardThread {
+public class DefaultBoardThread extends PropertyAwareSupport implements BoardThread {
 
 	private long threadId;
 	

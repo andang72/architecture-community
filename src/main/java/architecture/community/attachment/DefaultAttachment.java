@@ -24,10 +24,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import architecture.community.model.PropertyAwareSupport;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
 
-public class DefaultAttachment implements Attachment {
+public class DefaultAttachment extends PropertyAwareSupport implements Attachment {
 
 	private User user ;
 	

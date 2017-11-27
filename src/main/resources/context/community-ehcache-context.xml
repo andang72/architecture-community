@@ -13,7 +13,7 @@
 
     <beans:bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" 
         p:acceptExisting="true"
-    	p:shared="false" 
-    	p:cacheManagerName="ehCacheManager"></beans:bean>
+    		p:shared="false" 
+    		p:cacheManagerName="ehCacheManager"></beans:bean>
     
 </beans:beans> 

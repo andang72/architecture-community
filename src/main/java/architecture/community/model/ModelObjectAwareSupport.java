@@ -16,9 +16,10 @@
 
 package architecture.community.model;
 
-public class ModelObjectAwareSupport implements ModelObjectAware {
+public class ModelObjectAwareSupport extends PropertyAwareSupport implements ModelObjectAware {
 
 	int objectType = Models.UNKNOWN.getObjectType();
+	
 	long objectId = UNKNOWN_OBJECT_ID ;
 	
 	public ModelObjectAwareSupport(int objectType, long objectId) {

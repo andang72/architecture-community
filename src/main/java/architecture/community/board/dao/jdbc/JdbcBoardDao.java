@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.model.Models;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.LongTree;
+import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
@@ -44,6 +46,13 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	@Qualifier("sequencerFactory")
 	private SequencerFactory sequencerFactory;
 
+	@Inject
+	@Qualifier("propertyDao")
+	private PropertyDao propertyDao;
+	
+	private String boardPropertyTableName = "MUSI_BOARD_PROPERTY";
+	private String boardPropertyPrimaryColumnName = "BOARD_ID";
+	
 	
 	private final RowMapper<Board> boardMapper = new RowMapper<Board>() {		
 		public Board mapRow(ResultSet rs, int rowNum) throws SQLException {			
@@ -67,32 +76,64 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		Date now = new Date();		
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.CREATE_BOARD").getSql(),
 				new SqlParameterValue(Types.NUMERIC, board.getBoardId()),
-				//new SqlParameterValue(Types.NUMERIC, board.getObjectType()),
-				//new SqlParameterValue(Types.NUMERIC, board.getObjectId()),
 				new SqlParameterValue(Types.VARCHAR, board.getName()),
 				new SqlParameterValue(Types.VARCHAR, StringUtils.isNullOrEmpty(board.getDisplayName()) ? board.getName() : board.getDisplayName()),
 				new SqlParameterValue(Types.VARCHAR, board.getDescription()),
 				new SqlParameterValue(Types.TIMESTAMP, board.getCreationDate() != null ? board.getCreationDate() : now ),
 				new SqlParameterValue(Types.TIMESTAMP, board.getModifiedDate() != null ? board.getModifiedDate() : now )
 		);
+		setBoardProperties(board.getBoardId(), board.getProperties());	
 	}
 	
+	public Map<String, String> getBoardProperties(long boardId) {
+		return propertyDao.getProperties(boardPropertyTableName, boardPropertyPrimaryColumnName, boardId);
+	}
+
+	public void deleteBoardProperties(long boardId) {
+		propertyDao.deleteProperties(boardPropertyTableName, boardPropertyPrimaryColumnName, boardId);
+	}
 	
+	public void setBoardProperties(long boardId, Map<String, String> props) {
+		propertyDao.updateProperties(boardPropertyTableName, boardPropertyPrimaryColumnName, boardId, props);
+	}
+
+		
 	public long getNextBoardId(){		
 		return sequencerFactory.getNextValue(Models.BOARD.getObjectType(), Models.BOARD.name());
 	}
 	
+	@Override
+	public void saveOrUpdate(Board board) {
+		if( board.getBoardId() > 0 ) {
+			// update 	
+			Date now = new Date();
+			board.setModifiedDate(now);		
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_BOARD").getSql(), 
+					new SqlParameterValue(Types.VARCHAR, 	board.getName() ),
+					new SqlParameterValue(Types.VARCHAR, 	StringUtils.isNullOrEmpty(board.getDisplayName()) ? board.getName() : board.getDisplayName()),
+					new SqlParameterValue(Types.VARCHAR, 	board.getDescription()),
+					new SqlParameterValue(Types.TIMESTAMP, 	board.getModifiedDate() ),	
+					new SqlParameterValue(Types.NUMERIC, 	board.getBoardId() )
+			);
+			if(!board.getProperties().isEmpty())
+				setBoardProperties(board.getBoardId(), board.getProperties());
+			
+		}else {
+			// insert	
+			createBoard(board);
+		}
+	}
+	
+	
+
+	
 	public Board getBoardById(long boardId) {
 		if (boardId <= 0L) {
 			return null;
-		}
-		
+		}		
 		Board board = null;
 		try {
-			board = getExtendedJdbcTemplate().queryForObject(
-					getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_BY_ID").getSql(), 
-					boardMapper, 
-					new SqlParameterValue(Types.NUMERIC, boardId));
+			board = getExtendedJdbcTemplate().queryForObject( getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_BY_ID").getSql(),  boardMapper,  new SqlParameterValue(Types.NUMERIC, boardId));
 		} catch (IncorrectResultSizeDataAccessException e) {
 			if (e.getActualSize() > 1) {
 				logger.warn(CommunityLogLocalizer.format("013002", boardId));
@@ -166,11 +207,6 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 				new SqlParameterValue(Types.NUMERIC, objectType ),
 				new SqlParameterValue(Types.NUMERIC, objectId )
 		);
-		/*return getExtendedJdbcTemplate().queryForList(
-				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Long.class,
-				new SqlParameterValue(Types.NUMERIC, objectType ),
-				new SqlParameterValue(Types.NUMERIC, objectId )
-				);*/
 	}
 	
 	public List<Long> getForumThreadIds(int objectType, long objectId){
@@ -361,5 +397,6 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		
 		return new MessageTreeWalker( thread.getThreadId(), tree);
 	}
+
 	
 }

@@ -5,12 +5,13 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.model.json.JsonUserDeserializer;
 import architecture.community.user.User;
 import architecture.community.util.CommunityContextHelper;
 
-public class DefaultBoardMessage implements BoardMessage {
+public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMessage {
 	
 	private User user;
 	

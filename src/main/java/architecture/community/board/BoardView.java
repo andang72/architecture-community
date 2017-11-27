@@ -2,13 +2,19 @@ package architecture.community.board;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.model.json.JsonPropertyDeserializer;
+import architecture.community.model.json.JsonPropertySerializer;
 
 public class BoardView implements Board , Serializable {
 	
+	@JsonIgnore
 	private Board board;
 	
 	private int totalThreadCount = 0;
@@ -66,14 +72,6 @@ public class BoardView implements Board , Serializable {
 		
 	}
 
-	public Board getBoard() {
-		return board;
-	}
-
-	public void setBoard(Board board) {
-		this.board = board;
-	}
-
 	public int getTotalThreadCount() {
 		return totalThreadCount;
 	}
@@ -96,6 +94,36 @@ public class BoardView implements Board , Serializable {
 
 	public void setTotalMessage(int totalMessage) {
 		this.totalMessage = totalMessage;
+	}
+ 
+	 
+	public void setProperties(Map<String, String> properties) {
+		board.setProperties(properties);
+	}
+ 
+	public Map<String, String> getProperties() {
+		return board.getProperties();
+	}
+
+
+	public boolean getBooleanProperty(String name, boolean defaultValue) {
+		return board.getBooleanProperty(name, defaultValue);
+	}
+
+ 
+	public long getLongProperty(String name, long defaultValue) {
+		 
+		return board.getLongProperty(name, defaultValue);
+	}
+
+	 
+	public int getIntProperty(String name, int defaultValue) {
+		return 0;
+	}
+
+	 
+	public String getProperty(String name, String defaultValue) {
+		return null;
 	}
 
 }

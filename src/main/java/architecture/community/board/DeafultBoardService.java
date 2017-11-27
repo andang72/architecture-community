@@ -75,6 +75,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void updateBoard(Board board) {	
 		evictCaches(board);
+		boardDao.saveOrUpdate(board);
 	}
 
  

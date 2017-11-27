@@ -2,12 +2,17 @@ package architecture.community.board;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.model.json.JsonPropertyDeserializer;
+import architecture.community.model.json.JsonPropertySerializer;
 
-public class DefaultBoard implements Board , Serializable {
+public class DefaultBoard extends PropertyAwareSupport implements Board , Serializable {
 
 	private long boardId;
 	
@@ -18,7 +23,7 @@ public class DefaultBoard implements Board , Serializable {
 	private String name;
 	
 	private String displayName;
-	
+			
 	private String description;
 	
 	private Date creationDate;
@@ -130,7 +135,6 @@ public class DefaultBoard implements Board , Serializable {
         if(this.modifiedDate.compareTo(creationDate) == -1)
             this.modifiedDate = creationDate;
 	}
-	
 
 	public boolean equals(Object o)
     {
@@ -151,8 +155,7 @@ public class DefaultBoard implements Board , Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("DefaultBoard [boardId=").append(boardId).append(", objectType=").append(objectType)
-				.append(", objectId=").append(objectId).append(", ");
+		builder.append("DefaultBoard [boardId=").append(boardId).append(", objectType=").append(objectType).append(", objectId=").append(objectId).append(", ");
 		if (name != null)
 			builder.append("name=").append(name).append(", ");
 		if (displayName != null)
@@ -166,7 +169,5 @@ public class DefaultBoard implements Board , Serializable {
 		builder.append("]");
 		return builder.toString();
 	}
-
-	 
 
 }

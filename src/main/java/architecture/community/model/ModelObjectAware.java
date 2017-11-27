@@ -1,6 +1,6 @@
 package architecture.community.model;
 
-public interface ModelObjectAware {
+public interface ModelObjectAware extends PropertyAware {
 	
 	public static final int UNKNOWN_OBJECT_TYPE = Models.UNKNOWN.getObjectType() ;
 	
@@ -8,6 +8,6 @@ public interface ModelObjectAware {
 	
 	public abstract int getObjectType();
 	
-	public abstract long getObjectId();
+	public abstract long getObjectId();	
 	
 }

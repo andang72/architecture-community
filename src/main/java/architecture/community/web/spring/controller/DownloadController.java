@@ -67,7 +67,7 @@ public class DownloadController {
 	}
 
 	@PreAuthorize("permitAll")
-	@RequestMapping(value = "/avatar/{username}", method = RequestMethod.GET)
+	@RequestMapping(value = "/avatar/{username:.+}", method = RequestMethod.GET)
 	@ResponseBody
 	public void getUserAvatarImage (
 			@PathVariable("username") String username, 

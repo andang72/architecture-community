@@ -61,7 +61,7 @@ import architecture.ee.util.StringUtils;
 
 @Controller("community-data-v1-boards-controller")
 @RequestMapping("/data/v1")
-public class BoardDataController {
+public class BoardDataController extends AbstractCommunityDateController {
 
 	
 	private Logger log = LoggerFactory.getLogger(getClass());	
@@ -81,7 +81,12 @@ public class BoardDataController {
 	@Inject
 	@Qualifier("viewCountService")
 	private ViewCountService viewCountService
-	;
+	;	
+	
+	protected BoardService getBoardService () {
+		return boardService;
+	}
+	
 	
 	/**
 	 * 게시판 목록 리턴 
@@ -116,55 +121,7 @@ public class BoardDataController {
 		return b;
 	}
 	
-	private BoardView toBoardView(Board board) {
-		BoardView b = new BoardView(board);
-		int totalThreadCount = boardService.getBoardThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
-		int totalMessageCount = boardService.getBoardMessageCount(board);
-		b.setTotalMessage(totalMessageCount);
-		b.setTotalThreadCount(totalThreadCount);
-		return b;
-	}
 	
-	
-	/**
-	 * 게시판 정보 리턴 
-	 * @param request
-	 * @return
-	 * @throws BoardNotFoundException 
-	 */
-	@Secured({ "ROLE_USER" , "ROLE_ADMINISTRATOR"})
-	@RequestMapping(value = "/boards/save-or-update.json", method = { RequestMethod.POST })
-	@ResponseBody
-	public Board saveOrUpdate (@RequestBody DefaultBoard board, NativeWebRequest request) throws BoardNotFoundException {	
-		
-		DefaultBoard boardToUse = board ;
-		
-		if(board.getBoardId() > 0 ) {
-			boardToUse = (DefaultBoard) boardService.getBoardById(board.getBoardId());
-			
-			if(!StringUtils.isNullOrEmpty(board.getName()))
-				boardToUse.setName(board.getName());
-			
-			if(!StringUtils.isNullOrEmpty(board.getDisplayName()))
-				boardToUse.setDisplayName(board.getDisplayName());
-			
-			if(!StringUtils.isNullOrEmpty(board.getDescription()))
-				boardToUse.setDescription(board.getDescription());
-			
-			Date modifiedDate = new Date();
-			boardToUse.setModifiedDate(modifiedDate);
-			
-			boardService.updateBoard(boardToUse);
-			
-		}else {
-			// create...
-			boardToUse = (DefaultBoard) boardService.createBoard(board.getName(), board.getDisplayName(), board.getDescription());
-		}
-		
-		return boardService.getBoardById(boardToUse.getBoardId());
-	}
-	
-
 	/**
 	 * 특정 게시판 스레드(게시물) 목록
 	 * /data/boards/{boardId}/threads/list.json
@@ -382,13 +339,6 @@ public class BoardDataController {
 		throw new NotFoundException();
 	}
 	
-    protected String getEncodedFileName(Attachment attachment) {
-		try {
-		    return URLEncoder.encode(attachment.getName(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-		    return attachment.getName();
-		}
-    }
 
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/messages/{messageId:[\\p{Digit}]+}/attachments/upload.json", method = RequestMethod.POST)
@@ -456,8 +406,7 @@ public class BoardDataController {
 	 * @throws BoardMessageNotFoundException
 	 * @throws BoardNotFoundException
 	 */
-	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add_simple.json", method = {
-			RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add_simple.json", method = {RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Result addComment(@PathVariable Long threadId, @PathVariable Long messageId,
 			@RequestParam(value = "name", defaultValue = "", required = false) String name,
@@ -489,8 +438,7 @@ public class BoardDataController {
 		return result;
 	}
 
-	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = {
-			RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Result addMessageComment(@PathVariable Long threadId, @PathVariable Long messageId,
 			@RequestBody RequestData reqeustData, HttpServletRequest request, ModelMap model) {
@@ -544,8 +492,7 @@ public class BoardDataController {
 		return new ItemList(list, totalSize);
 	}
 
-	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/{commentId:[\\p{Digit}]+}/list.json", method = {
-			RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/{commentId:[\\p{Digit}]+}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getChildComments(@PathVariable Long threadId, @PathVariable Long messageId,
 			@PathVariable Long commentId, NativeWebRequest request) throws BoardMessageNotFoundException {
