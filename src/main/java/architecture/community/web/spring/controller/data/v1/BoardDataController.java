@@ -2,10 +2,7 @@ package architecture.community.web.spring.controller.data.v1;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,7 +37,6 @@ import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
 import architecture.community.board.BoardView;
-import architecture.community.board.DefaultBoard;
 import architecture.community.board.DefaultBoardMessage;
 import architecture.community.board.MessageTreeWalker;
 import architecture.community.comment.Comment;

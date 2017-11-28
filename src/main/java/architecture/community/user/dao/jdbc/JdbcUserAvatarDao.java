@@ -26,8 +26,8 @@ import architecture.community.user.dao.UserAvatarDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
-import architecture.ee.spring.jdbc.InputStreamRowMapper;
 import architecture.ee.spring.jdbc.ExtendedJdbcUtils.DB;
+import architecture.ee.spring.jdbc.InputStreamRowMapper;
 
 public class JdbcUserAvatarDao extends ExtendedJdbcDaoSupport implements UserAvatarDao {
 

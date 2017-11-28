@@ -1,11 +1,8 @@
 package architecture.community.web.spring.controller.data;
 
-import java.util.Date;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,12 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import architecture.community.user.EmailAlreadyExistsException;
 import architecture.community.user.User;
-import architecture.community.user.UserAlreadyExistsException;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserTemplate;
-import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.json.RequestData;
 import architecture.community.web.model.json.Result;
 
