@@ -1,6 +1,4 @@
-
-
-
+	
 		drop table MUSI_USER cascade constraints PURGE ;
 		drop table MUSI_ROLE cascade constraints PURGE ;
 		drop table MUSI_USER_ROLES cascade constraints PURGE ;
@@ -15,16 +13,13 @@
 		drop table MUSI_ATTACHMENT_DATA cascade constraints PURGE ;
 		drop table MUSI_IMAGE cascade constraints PURGE ;
 		drop table MUSI_IMAGE_DATA cascade constraints PURGE ;
-		drop table MUSI_AVATARE_IMAGE cascade constraints PURGE ;
-		drop table MUSI_AVATARE_IMAGE_DATA cascade constraints PURGE ;
+		drop table MUSI_PROFILE_IMAGE cascade constraints PURGE ;
+		drop table MUSI_PROFILE_IMAGE_DATA cascade constraints PURGE ;
 		drop table MUSI_LOGO cascade constraints PURGE ;
 		drop table MUSI_LOGO_DATA cascade constraints PURGE ;
 		drop table MUSI_EXTERNAL_LINK cascade constraints PURGE ;
 		
-	-- =================================================  
-	--   USER	
-	-- =================================================	
-			
+		
 		-- User
 		CREATE TABLE MUSI_USER (
 		  USER_ID                INTEGER NOT NULL,
@@ -106,7 +101,7 @@
 		COMMENT ON COLUMN "MUSI_USER_LOGIN_TOKEN"."LAST_USE_DATE" IS '마지막 사용일자'; 	
 		
 	-- =================================================  
-	--  BOARD	
+	--  FORUM	
 	-- =================================================	
 		CREATE TABLE MUSI_BOARD_THREAD (
 			THREAD_ID			INTEGER NOT NULL,
@@ -182,21 +177,7 @@
 		
 		
 		CREATE INDEX MUSI_BOARD_NAME_IDX ON MUSI_BOARD (NAME);
-
 		
-	CREATE TABLE MUSI_BOARD_PROPERTY (
-	  BOARD_ID               INTEGER NOT NULL,
-	  PROPERTY_NAME          VARCHAR2(100)   NOT NULL,
-	  PROPERTY_VALUE         VARCHAR2(1024)  NOT NULL,
-	  CONSTRAINT MUSI_BOARD_PROPERTY_PK PRIMARY KEY (BOARD_ID, PROPERTY_NAME)
-	);	
-	
-	COMMENT ON TABLE  "MUSI_BOARD_PROPERTY"  IS 'BOARD 프로퍼티 테이블';
-	COMMENT ON COLUMN "MUSI_BOARD_PROPERTY"."BOARD_ID" IS 'BOARD ID'; 
-	COMMENT ON COLUMN "MUSI_BOARD_PROPERTY"."PROPERTY_NAME" IS '프로퍼티 이름'; 
-	COMMENT ON COLUMN "MUSI_BOARD_PROPERTY"."PROPERTY_VALUE" IS '프로퍼티 값'; 		
-	
-	
 	-- =================================================  
 	--  VIEWCOUNT	
 	-- =================================================	
@@ -343,49 +324,41 @@
 		COMMENT ON COLUMN "MUSI_IMAGE_DATA"."IMAGE_ID" IS 'ID'; 
 		COMMENT ON COLUMN "MUSI_IMAGE_DATA"."IMAGE_DATA" IS '이미지 데이터'; 		
 		
-
-		
-	-- =================================================  
-	--  AVATAR IMAGE	
-	-- =================================================	
-			
-		CREATE TABLE MUSI_AVATAR_IMAGE (
-			  AVATAR_IMAGE_ID          INTEGER NOT NULL,
-			  USER_ID                  INTEGER NOT NULL,
-			  PRIMARY_IMAGE            NUMBER(1, 0)  DEFAULT 1,
-			  FILE_NAME                VARCHAR2(255)   NOT NULL,
-			  FILE_SIZE                INTEGER   NOT NULL,
+				
+		CREATE TABLE MUSI_PROFILE_IMAGE (
+			  PROFILE_IMAGE_ID         INTEGER NOT NULL,
+			  USER_ID                       INTEGER NOT NULL,
+			  PRIMARY_IMAGE           NUMBER(1, 0)  DEFAULT 1,
+			  FILE_NAME                   VARCHAR2(255)   NOT NULL,
+			  FILE_SIZE                      INTEGER   NOT NULL,
 			  CONTENT_TYPE             VARCHAR2(50)  NOT NULL,			  
 			  CREATION_DATE            DATE DEFAULT  SYSDATE NOT NULL,
 			  MODIFIED_DATE            DATE DEFAULT  SYSDATE NOT NULL,	
-			  CONSTRAINT MUSI_AVATAR_IMAGE_PK PRIMARY KEY (AVATAR_IMAGE_ID)
+			  CONSTRAINT MUSI_PROFILE_IMAGE_PK PRIMARY KEY (PROFILE_IMAGE_ID)
 		);		        
-				
-		CREATE INDEX MUSI_AVATAR_IMAGE_IDX1 ON MUSI_AVATAR_IMAGE( USER_ID ) ;	
 		
-		COMMENT ON TABLE "MUSI_AVATAR_IMAGE"  IS '아바타 이미지 테이블';
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE"."AVATAR_IMAGE_ID" IS 'ID'; 
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE"."USER_ID" IS '사용자 ID';
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE"."PRIMARY_IMAGE" IS '주 이미지 여부'; 
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE"."FILE_NAME" IS '이미지 파일 이름'; 
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE"."FILE_SIZE" IS '이미지 파일 크기';        
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE"."CONTENT_TYPE" IS 'CONTENT TYPE 값'; 
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE"."CREATION_DATE" IS '생성일'; 
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE"."MODIFIED_DATE" IS '수정일';
+		
+		CREATE INDEX MUSI_PROFILE_IMAGE_IDX1 ON V2_IMAGE( USER_ID ) ;	
+		COMMENT ON TABLE "MUSI_PROFILE_IMAGE"  IS '이미지 테이블';
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE"."PROFILE_IMAGE_ID" IS 'ID'; 
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE"."USER_ID" IS '사용자  ID';
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE"."FILE_NAME" IS '이미지 파일 이름'; 
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE"."FILE_SIZE" IS '이미지 파일 크기';        
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE"."CONTENT_TYPE" IS 'CONTENT TYPE 값'; 
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE"."CREATION_DATE" IS '생성일'; 
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE"."MODIFIED_DATE" IS '수정일';
         
-		CREATE TABLE MUSI_AVATAR_IMAGE_DATA (
-			AVATAR_IMAGE_ID         INTEGER NOT NULL,
-			AVATAR_IMAGE_DATA       BLOB,
-			CONSTRAINT MUSI_AVATAR_IMAGE_DATA_PK PRIMARY KEY (AVATAR_IMAGE_ID)
+		CREATE TABLE MUSI_PROFILE_IMAGE_DATA (
+			PROFILE_IMAGE_ID         INTEGER NOT NULL,
+			PROFILE_IMAGE_DATA               BLOB,
+			CONSTRAINT MUSI_PROFILE_IMAGE_DATA_PK PRIMARY KEY (PROFILE_IMAGE_ID)
 		);		        
 		
-		COMMENT ON TABLE "MUSI_AVATAR_IMAGE_DATA"  IS '아바타 이미지 데이터 테이블';
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE_DATA"."AVATAR_IMAGE_ID" IS 'ID'; 
-		COMMENT ON COLUMN "MUSI_AVATAR_IMAGE_DATA"."AVATAR_IMAGE_DATA" IS '이미지 데이터'; 		
+		COMMENT ON TABLE "MUSI_PROFILE_IMAGE_DATA"  IS '프로파일 이미지 데이터 테이블';
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE_DATA"."PROFILE_IMAGE_ID" IS 'ID'; 
+		COMMENT ON COLUMN "MUSI_PROFILE_IMAGE_DATA"."PROFILE_IMAGE_DATA" IS '이미지 데이터'; 		
 		
 
-		
-		
 		CREATE TABLE MUSI_LOGO (
 			  LOGO_ID                    INTEGER NOT NULL,
 			  OBJECT_TYPE                INTEGER NOT NULL,
