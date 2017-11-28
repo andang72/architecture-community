@@ -5,6 +5,8 @@ CREATE TABLE acl_sid (
     CONSTRAINT unique_acl_sid UNIQUE (sid, principal)
 );
 
+
+
 CREATE SEQUENCE acl_sid_sequence START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 
 CREATE OR REPLACE TRIGGER acl_sid_id_trigger
