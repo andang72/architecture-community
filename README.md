@@ -12,6 +12,15 @@ How to install and start
 
 4. deploy WebContent as web application .
 
+** PAGE API 
+
+/display/
+/display/
+
+
+/issues/
+/boards/
+
 
 ** SERVER API 
 
