@@ -48,27 +48,31 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		this.setSidIdentityQuery("sidIdentityQuery");
 		this.setSidPrimaryKeyQuery("selectSidPrimaryKey");
 		this.setUpdateObjectIdentity("updateObjectIdentity");
-
+		
 	}
 
+	public <T> List<AccessControlEntry> getAsignedPermissions(Class<T> clazz, Serializable identifier) {
+		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
+		MutableAcl acl = (MutableAcl) readAclById(identity);			
+		List<AccessControlEntry> entries = acl.getEntries();
+		return entries;
+	}
 	
-	public <T> boolean isPermissionGranted(Class<T> clazz, Serializable identifier, UserDetails user, Permission permission) {
-		
+	public <T> boolean isPermissionGranted(Class<T> clazz, Serializable identifier, UserDetails user, Permission... permissions) {		
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
 		MutableAcl acl = (MutableAcl) readAclById(identity);		
-
-		boolean isGranted = false;
-		
+		boolean isGranted = false;		
 		List<Sid> list = new ArrayList<Sid>();
 		list.add(new PrincipalSid(user.getUsername()));
+		
 		for( GrantedAuthority authority : user.getAuthorities() ) {
 			list.add(new GrantedAuthoritySid(authority.getAuthority()));
-		}
-		
+		}		
+
 		try {
-			isGranted = acl.isGranted(Arrays.asList(permission), list, false);
+			isGranted = acl.isGranted(Arrays.asList(permissions), list, false);
 		} catch (NotFoundException e) {
-			log.info("Unable to find an ACE for the given object", e);
+			log.warn("Unable to find an ACE for the given object", e);
 		} catch (UnloadedSidException e) {
 			log.error("Unloaded Sid", e);
 		}
@@ -85,14 +89,14 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 	}
 
 
-	public <T> boolean isPermissionGranted(Class<T> clazz, Serializable identifier, User user, Permission permission) {
+	public <T> boolean isPermissionGranted(Class<T> clazz, Serializable identifier, User user, Permission... permissions) {
 		Sid sid = new PrincipalSid(user.getUsername());
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
 		MutableAcl acl = (MutableAcl) readAclById(identity);		
 
 		boolean isGranted = false;
 		try {
-			isGranted = acl.isGranted(Arrays.asList(permission), Arrays.asList(sid), false);
+			isGranted = acl.isGranted(Arrays.asList(permissions), Arrays.asList(sid), false);
 		} catch (NotFoundException e) {
 			log.info("Unable to find an ACE for the given object", e);
 		} catch (UnloadedSidException e) {
@@ -123,13 +127,13 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 	}
 
 
-	public <T> boolean isPermissionGranted(Class<T> clazz, Serializable identifier, Role role, Permission permission) {
+	public <T> boolean isPermissionGranted(Class<T> clazz, Serializable identifier, Role role, Permission... permissions) {
 		Sid sid = new GrantedAuthoritySid(role.getName());
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
 		MutableAcl acl = (MutableAcl) readAclById(identity);		
 		boolean isGranted = false;
 		try {
-			isGranted = acl.isGranted(Arrays.asList(permission), Arrays.asList(sid), false);
+			isGranted = acl.isGranted(Arrays.asList(permissions), Arrays.asList(sid), false);
 		} catch (NotFoundException e) {
 			log.info("Unable to find an ACE for the given object", e);
 		} catch (UnloadedSidException e) {

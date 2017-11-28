@@ -1,6 +1,8 @@
 package tests;
 
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,43 +61,33 @@ public class SecurityTest {
 		
 		
 		setAuthentication("king");
-		Role role = roleManager.getRole("ROLE_ADMINISTRATOR");
-		
-		CommuintyUserDetails details = (CommuintyUserDetails)userDetailsManager.loadUserByUsername("king");
-		
-		
-		aclService.addPermission(Board.class, 1, role, BasePermission.READ);
-		
-		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, details.getUser(), BasePermission.READ);
-		
-		log.debug("============== {} isGranted:{}", details.getUsername(),  isGranted);
-		
+		Role role = roleManager.getRole("ROLE_ADMINISTRATOR");		
+		CommuintyUserDetails details = (CommuintyUserDetails)userDetailsManager.loadUserByUsername("king");		
+		aclService.addPermission(Board.class, 1, role, BasePermission.READ);		
+		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, details.getUser(), BasePermission.READ);		
+		log.debug("============== FINAL USER {} isGranted:{}", details.getUsername(),  isGranted);		
 		aclService.removePermission(Board.class, 1, role, BasePermission.READ);
+		
 	}
 	
 
 	@Test
-	public void testGrantedPermission() throws UserNotFoundException {
-		
+	public void testGrantedPermission() throws UserNotFoundException {		
 		setAuthentication("dhson@podosw.com");
 		User user = userManager.getUser("dhson@podosw.com");
 		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, user, BasePermission.READ);
-		log.debug("============== isGranted:{}", isGranted);
+		log.debug("============== ROLE USER {} isGranted:{}", user.getUsername(), isGranted);
+		
 	}
 	
 	
 	@Test
-	public void testPermission() throws UserNotFoundException {
-		
-		
+	public void testPermission() throws UserNotFoundException {		
 		setAuthentication("king");
-		User user = userManager.getUser("king");
-		
+		User user = userManager.getUser("king");		
 		aclService.addPermission(Board.class, 1, user, BasePermission.READ);
-		
 		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, user, BasePermission.READ);
-		log.debug("============== isGranted:{}", isGranted);
-		
+		log.debug("==============USER {} isGranted:{}", user.getUsername(),  isGranted);	
 		aclService.removePermission(Board.class, 1, user, BasePermission.READ);
 	}
 	
@@ -104,9 +97,29 @@ public class SecurityTest {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 	
+	@Test
+	public void testFinalPermission() throws UserNotFoundException, RoleNotFoundException {
+		
+		log.debug("=============== testFinalPermission =============");
+		setAuthentication("king");
+		Role role = roleManager.getRole("ROLE_ADMINISTRATOR");		
+		User user = userManager.getUser("dhson@podosw.com");
+		aclService.addPermission(Board.class, 1, role, BasePermission.READ);	
+		aclService.addPermission(Board.class, 1, user, BasePermission.READ);
+		
+		List<AccessControlEntry> list = aclService.getAsignedPermissions(Board.class, 1);		
+		for(AccessControlEntry entry : list ) {
+			log.debug("Assigned Permissioin target {} perms {}", entry.getSid().toString(), entry.getPermission().toString());		
+		}
+		
+		aclService.removePermission(Board.class, 1, user, BasePermission.READ);
+		aclService.removePermission(Board.class, 1, role, BasePermission.READ);
+	}
+	
+	
 	
 	@After
 	public void tearDown() {
-
+	
 	}
 }

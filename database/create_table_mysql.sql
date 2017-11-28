@@ -1,6 +1,4 @@
 
-
-
 		drop table MUSI_USER cascade constraints PURGE ;
 		drop table MUSI_ROLE cascade constraints PURGE ;
 		drop table MUSI_USER_ROLES cascade constraints PURGE ;
