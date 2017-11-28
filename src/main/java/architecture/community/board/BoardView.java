@@ -5,12 +5,9 @@ import java.util.Date;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.model.json.JsonDateSerializer;
-import architecture.community.model.json.JsonPropertyDeserializer;
-import architecture.community.model.json.JsonPropertySerializer;
 
 public class BoardView implements Board , Serializable {
 	

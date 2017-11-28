@@ -2,15 +2,11 @@ package architecture.community.board;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateSerializer;
-import architecture.community.model.json.JsonPropertyDeserializer;
-import architecture.community.model.json.JsonPropertySerializer;
 
 public class DefaultBoard extends PropertyAwareSupport implements Board , Serializable {
 

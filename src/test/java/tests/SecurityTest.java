@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +21,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import architecture.community.board.Board;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
+import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.security.spring.userdetails.CommunityUserDetailsService;
+import architecture.community.user.Role;
+import architecture.community.user.RoleManager;
+import architecture.community.user.RoleNotFoundException;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
@@ -35,7 +37,11 @@ public class SecurityTest {
 
 	
 	@Autowired private UserManager userManager;
+	
+	@Autowired private RoleManager roleManager;
+	
 	@Autowired private CommunityUserDetailsService userDetailsManager;
+	
 	@Autowired private JdbcCommunityAclService aclService;
 	
 	@Rule public ExpectedException exception = ExpectedException.none();
@@ -46,6 +52,26 @@ public class SecurityTest {
 	public void setup() {
 		
 	}
+	
+	@Test
+	public void testRolePermission() throws UserNotFoundException, RoleNotFoundException {
+		
+		
+		setAuthentication("king");
+		Role role = roleManager.getRole("ROLE_ADMINISTRATOR");
+		
+		CommuintyUserDetails details = (CommuintyUserDetails)userDetailsManager.loadUserByUsername("king");
+		
+		
+		aclService.addPermission(Board.class, 1, role, BasePermission.READ);
+		
+		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, details.getUser(), BasePermission.READ);
+		
+		log.debug("============== {} isGranted:{}", details.getUsername(),  isGranted);
+		
+		aclService.removePermission(Board.class, 1, role, BasePermission.READ);
+	}
+	
 
 	@Test
 	public void testGrantedPermission() throws UserNotFoundException {
