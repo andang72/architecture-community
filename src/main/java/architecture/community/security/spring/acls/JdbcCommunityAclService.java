@@ -32,6 +32,10 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		super(dataSource, lookupStrategy, aclCache);
 	}
 
+	
+	/**
+	 * 
+	 */
 	public void initialzie() {
 
 		this.setClassIdentityQuery("classIdentityQuery");
@@ -51,6 +55,13 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		
 	}
 
+	/**
+	 * 지정된 객체에 대하여 부여된 모든 권한 정보를 리턴한다.
+	 * 
+	 * @param clazz
+	 * @param identifier
+	 * @return
+	 */
 	public <T> List<AccessControlEntry> getAsignedPermissions(Class<T> clazz, Serializable identifier) {
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
 		MutableAcl acl = (MutableAcl) readAclById(identity);			
@@ -58,6 +69,16 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		return entries;
 	}
 	
+	/**
+	 * 지정된 객체에 대한 권한이 있는가를 리턴한다.
+	 * 사용자에게 부여된 롤에 대한 권한 역시 동시에 검사하여 결과에 반영한다.
+	 * 
+	 * @param clazz
+	 * @param identifier
+	 * @param user
+	 * @param permissions
+	 * @return
+	 */
 	public <T> boolean isPermissionGranted(Class<T> clazz, Serializable identifier, UserDetails user, Permission... permissions) {		
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
 		MutableAcl acl = (MutableAcl) readAclById(identity);		
