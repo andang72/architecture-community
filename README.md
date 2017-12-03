@@ -12,6 +12,12 @@ How to install and start
 
 4. deploy WebContent as web application .
 
+** OPENSOURE for UI 
+
+Kendoui Core
+Summernote
+
+
 ** PAGE API 
 
 /display/
