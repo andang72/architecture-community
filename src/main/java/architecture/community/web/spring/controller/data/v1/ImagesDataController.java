@@ -55,9 +55,9 @@ import architecture.ee.util.StringUtils;
 @Controller("images-data-controller")
 @RequestMapping("/data/images")
 
-public class ImageDataController {
+public class ImagesDataController {
 
-	private Logger log = LoggerFactory.getLogger(ImageDataController.class);
+	private Logger log = LoggerFactory.getLogger(ImagesDataController.class);
 
 	@Inject
 	@Qualifier("imageService")
@@ -72,7 +72,7 @@ public class ImageDataController {
 	private ExternalLinkService externalLinkService;
 	
 	
-	public ImageDataController() {
+	public ImagesDataController() {
 	}
 
 	@Secured({ "ROLE_USER" })

@@ -32,7 +32,7 @@ import architecture.community.web.spring.controller.data.ImageDataController;
 @RequestMapping("/data/v1/me")
 public class MeDataController {
 
-	private Logger log = LoggerFactory.getLogger(ImageDataController.class);
+	private Logger log = LoggerFactory.getLogger(ImagesDataController.class);
 	
 	@Inject
 	@Qualifier("userAvatarService")
