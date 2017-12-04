@@ -30,16 +30,16 @@ public abstract class AbstractCommunityDateController {
 	
 	protected abstract BoardService getBoardService();
 	
-	protected abstract JdbcCommunityAclService getCommunityAclService (); 
+	protected abstract JdbcCommunityAclService getCommunityAclService (); 	
 	
-	protected BoardView toBoardView(Board board) {
-		
-		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();		
-		
-		log.debug("Board View : {} {} for {}.", board.getBoardId(),  board.getName(), userDetails.getUsername() );
-		
-		PermissionsBundle bundle = getPermissionBundle(Board.class, board.getBoardId());		
-		
+	protected boolean hasPermission ( int objectType , long objectId,  CommunityPermissions permission ) {	
+		return getCommunityAclService().isPermissionGrantedFinally(SecurityHelper.getAuthentication(), Models.valueOf(objectType).getObjectClass(), objectId, Arrays.asList( (Permission) permission));
+	}
+	
+	protected BoardView toBoardView(Board board) {		
+		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();
+		log.debug("Board View : {} {} for {}.", board.getBoardId(),  board.getName(), userDetails.getUsername() );		
+		PermissionsBundle bundle = getPermissionBundle(Board.class, board.getBoardId());				
 		BoardView boardView = new BoardView(board);
 		boardView.setWritable(bundle.write);
 		boardView.setReadable(bundle.read);

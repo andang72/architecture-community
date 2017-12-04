@@ -41,13 +41,10 @@ import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
-import architecture.community.image.Image;
-import architecture.community.user.User;
-import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
 
 @Controller("attachments-data-controller")
-@RequestMapping("/data/attachments")
+@RequestMapping("/data/api/v1/attachments")
 public class AttachmentsDataController {
 
 	
@@ -67,12 +64,6 @@ public class AttachmentsDataController {
     		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
     		MultipartHttpServletRequest request ) throws NotFoundException, IOException, UnAuthorizedException {
 
-		User user = SecurityHelper.getUser();
-		if( user.isAnonymous() )
-		    throw new UnAuthorizedException();
-	
-		Image imageToUse = null ;		
-		
 		List<Attachment> list = new ArrayList<Attachment>();
 		Iterator<String> names = request.getFileNames();		
 		while (names.hasNext()) {
@@ -84,9 +75,9 @@ public class AttachmentsDataController {
 		    attachmentService.saveAttachment(attachment);
 		    list.add(attachment);
 		}			
-		//return new ExternalLink( "", objectType, objectId, true);
 		return list;
     }
+	
 	
 	@RequestMapping(value = "/list.json", method = RequestMethod.POST)
 	@ResponseBody
@@ -96,10 +87,11 @@ public class AttachmentsDataController {
     		NativeWebRequest request) throws NotFoundException {
 
 		ItemList list = new ItemList();
+		
 		if( objectType > 0 && objectId > 0 ){
-		List<Attachment> attachments = attachmentService.getAttachments(objectType, objectId);
-		list.setItems(attachments);
-		list.setTotalCount(attachments.size());
+			List<Attachment> attachments = attachmentService.getAttachments(objectType, objectId);
+			list.setItems(attachments);
+			list.setTotalCount(attachments.size());
 		}
 		return list;
 

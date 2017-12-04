@@ -18,18 +18,17 @@ package architecture.community.web.spring.controller.data.v1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,21 +38,15 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
-import architecture.community.image.DefaultImage;
 import architecture.community.image.Image;
 import architecture.community.image.ImageService;
-import architecture.community.image.LogoImage;
-import architecture.community.link.ExternalLink;
 import architecture.community.link.ExternalLinkService;
-import architecture.community.model.ModelObjectAwareSupport;
-import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.ee.service.ConfigService;
-import architecture.ee.util.StringUtils;
 
 @Controller("images-data-controller")
-@RequestMapping("/data/images")
+@RequestMapping("/data/api/v1/images")
 
 public class ImagesDataController {
 
@@ -75,6 +68,32 @@ public class ImagesDataController {
 	public ImagesDataController() {
 	}
 
+	@Secured({ "ROLE_USER" })
+    @RequestMapping(value = "/upload.json", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Image> uploadImage(
+    		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
+    		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
+    		MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
+
+		User user = SecurityHelper.getUser();
+		List<Image> list = new ArrayList<Image>();
+		Iterator<String> names = request.getFileNames();		
+		while (names.hasNext()) {
+		    String fileName = names.next();
+		    MultipartFile mpf = request.getFile(fileName);
+		    InputStream is = mpf.getInputStream();
+		    log.debug("upload file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
+		    Image image = imageService.createImage(objectType, objectId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+    			image.setUser(user);		    
+		    imageService.saveImage(image);
+		    list.add(image);
+		}			
+		return list;
+    }
+
+	
+	/**
 	@Secured({ "ROLE_USER" })
     @RequestMapping(value = "/upload_image_and_link.json", method = RequestMethod.POST)
     @ResponseBody
@@ -239,5 +258,5 @@ public class ImagesDataController {
 			response.addHeader("Location", url);
 		}
 	}
-
+**/
 }

@@ -37,14 +37,14 @@ import architecture.community.image.ImageService;
 import architecture.community.link.ExternalLinkService;
 import architecture.community.user.AvatarImage;
 import architecture.community.user.UserAvatarService;
-import architecture.community.web.spring.controller.data.v1.ImageDataController;
+import architecture.community.web.spring.controller.data.v1.ImagesDataController;
 import architecture.ee.service.ConfigService;
 
 @Controller("download-controller")
 @RequestMapping("/download")
 public class DownloadController {
 
-	private Logger log = LoggerFactory.getLogger(ImageDataController.class);
+	private Logger log = LoggerFactory.getLogger(ImagesDataController.class);
 
 	@Inject
 	@Qualifier("imageService")

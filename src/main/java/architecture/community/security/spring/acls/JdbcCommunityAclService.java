@@ -89,6 +89,13 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		setter.execute( sids, acl);	
 	}
 	
+	
+	
+	public <T> boolean isPermissionGrantedFinally(Authentication authentication, Class<T> clazz, Serializable identifier, List<Permission> permissions) {		
+		
+		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
+		return isPermissionGrantedFinally(authentication, identity, permissions);
+	}
 	/**
 	 * 
 	 * @param authentication

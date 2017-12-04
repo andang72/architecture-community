@@ -26,7 +26,6 @@ import architecture.community.user.User;
 import architecture.community.user.UserAvatarService;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.json.Result;
-import architecture.community.web.spring.controller.data.ImageDataController;
 
 @Controller("community-data-v1-me-controller")
 @RequestMapping("/data/v1/me")
