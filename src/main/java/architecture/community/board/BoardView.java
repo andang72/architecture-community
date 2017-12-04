@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -20,10 +21,118 @@ public class BoardView implements Board , Serializable {
 	
 	private int totalMessage = 0;
 	
+	
+	private boolean writable = false ;	
+	private boolean readable = false ;
+	private boolean createThreadMessage = false;
+	private boolean createThread = false;
+	private boolean createAttachement = false ;
+	private boolean readComment = false;
+	private boolean createComment = false;
+	private boolean createImage = false;
+	
 	public BoardView(Board board) {
 		this.board = board;
 	}
- 
+	
+	
+	@JsonGetter
+	public boolean isWritable() {
+		return writable;
+	}
+
+
+	@JsonIgnore
+	public void setWritable(boolean writable) {
+		this.writable = writable;
+	}
+
+
+	@JsonGetter
+	public boolean isReadable() {
+		return readable;
+	}
+
+
+	@JsonIgnore
+	public void setReadable(boolean readable) {
+		this.readable = readable;
+	}
+
+
+	@JsonGetter
+	public boolean isCreateAttachement() {
+		return createAttachement;
+	}
+
+
+	@JsonIgnore
+	public void setCreateAttachement(boolean createAttachement) {
+		this.createAttachement = createAttachement;
+	}
+
+
+	@JsonGetter
+	public boolean isReadComment() {
+		return readComment;
+	}
+
+
+	@JsonIgnore
+	public void setReadComment(boolean readComment) {
+		this.readComment = readComment;
+	}
+
+
+	@JsonGetter
+	public boolean isCreateComment() {
+		return createComment;
+	}
+
+
+	@JsonIgnore
+	public void setCreateComment(boolean createComment) {
+		this.createComment = createComment;
+	}
+
+
+	@JsonGetter
+	public boolean isCreateThreadMessage() {
+		return createThreadMessage;
+	}
+
+
+	@JsonIgnore
+	public void setCreateThreadMessage(boolean createThreadMessage) {
+		this.createThreadMessage = createThreadMessage;
+	}
+
+
+	@JsonGetter
+	public boolean isCreateThread() {
+		return createThread;
+	}
+
+
+	@JsonIgnore
+	public void setCreateThread(boolean createThread) {
+		this.createThread = createThread;
+	}
+
+
+	@JsonGetter
+	public boolean isCreateImage() {
+		return createImage;
+	}
+
+
+	@JsonIgnore
+	public void setCreateImage(boolean createImage) {
+		this.createImage = createImage;
+	}
+
+
+
 	public int getObjectType() {
 		return board.getObjectType();
 	}
@@ -115,12 +224,12 @@ public class BoardView implements Board , Serializable {
 
 	 
 	public int getIntProperty(String name, int defaultValue) {
-		return 0;
+		return board.getIntProperty(name, defaultValue);
 	}
 
 	 
 	public String getProperty(String name, String defaultValue) {
-		return null;
+		return board.getProperty(name, defaultValue);
 	}
 
 }
