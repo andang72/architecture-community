@@ -45,24 +45,16 @@
 	<!-- ================ -->
 
 	<!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
-	<category name="architecture.common">
-		<priority value="DEBUG" />
-	</category>
-		
 	<category name="architecture.ee">
 		<priority value="DEBUG" />
 	</category>
-
-	<category name="architecture.security">
+		
+	<category name="architecture.community">
 		<priority value="DEBUG" />
 	</category>
 
-	<category name="architecture.user">
-		<priority value="DEBUG" />
-	</category>
-
-	<category name="architecture.web">
-		<priority value="DEBUG" />
+	<category name="architecture.community.security">
+		<priority value="TRACE" />
 	</category>
 				
 	<category name="org.apache">
@@ -78,7 +70,7 @@
 	</category>
 	
 	<category name="org.springframework.security">
-		<priority value="DEBUG" />
+		<priority value="TRACE" />
 	</category>
 
 	<category name="org.springframework.web">
