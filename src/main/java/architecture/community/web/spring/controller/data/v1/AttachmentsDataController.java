@@ -48,7 +48,7 @@ import architecture.community.web.model.ItemList;
 
 @Controller("attachments-data-controller")
 @RequestMapping("/data/attachments")
-public class AttachmentDataController {
+public class AttachmentsDataController {
 
 	
 	@Inject
@@ -56,7 +56,7 @@ public class AttachmentDataController {
 	private AttachmentService attachmentService;
 	
 	
-	private Logger log = LoggerFactory.getLogger(AttachmentDataController.class);
+	private Logger log = LoggerFactory.getLogger(AttachmentsDataController.class);
 	
 
 	@Secured({ "ROLE_USER" })
