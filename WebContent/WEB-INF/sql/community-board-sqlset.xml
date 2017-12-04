@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqlset>
 	<name>COMMUNITY_BOARD</name>
-	<description>COMMUNITY BOARD 쿼리</description>	
+	<description>COMMUNITY BOARD SUBSYSTEM QUERIES</description>	
 	
+	<!-- BOARD  -->  
  	<sql-query name="CREATE_BOARD" description="BOARD 생성"><![CDATA[
-		INSERT INTO MUSI_BOARD (
-		  BOARD_ID,
-		  NAME,
-		  DISPLAY_NAME,
-		  DESCRIPTION,
-		  CREATION_DATE,
-		  MODIFIED_DATE
-		) VALUES ( ?, ?, ?, ?, ?, ? )
+	INSERT INTO MUSI_BOARD (
+		BOARD_ID,
+		NAME,
+		DISPLAY_NAME,
+		DESCRIPTION,
+		CREATION_DATE,
+		MODIFIED_DATE
+	) VALUES ( ?, ?, ?, ?, ?, ? )
     ]]></sql-query>	
-
+	<sql-query name="UPDATE_BOARD" description="BOARD 업데이트"><![CDATA[    
+	UPDATE MUSI_BOARD SET 
+		NAME = ?,
+		DISPLAY_NAME = ?,
+		DESCRIPTION = ?,
+		MODIFIED_DATE = ?		 
+	WHERE BOARD_ID = ?
+ 	]]></sql-query> 
 	<sql-query name="SELECT_ALL_BOARD_IDS" description="모든 BOARD 아이디 조회"><![CDATA[
 		SELECT BOARD_ID FROM MUSI_BOARD
     ]]></sql-query>	
@@ -34,6 +42,7 @@
     ]]></sql-query>		
 
 
+	<!-- THREAD  --> 
  	<sql-query name="CREATE_FORUM_THREAD" description="FORUM THREAD 생성"><![CDATA[
 		INSERT INTO MUSI_BOARD_THREAD (
 		  THREAD_ID,
@@ -80,7 +89,9 @@
 		WHERE OBJECT_TYPE = ? AND OBJECT_ID = ?
     ]]></sql-query>	        
         
-        
+    
+    
+    <!-- MESSAGE  -->     
     <sql-query name="UPDATE_FORUM_THREAD_MODIFIED_DATE"  description="FORUM THREAD MODIFIED_DATE UPDATE"><![CDATA[
 		UPDATE MUSI_BOARD_MESSAGE SET MODIFIED_DATE = ? WHERE THREAD_ID = ?
     ]]></sql-query>	  

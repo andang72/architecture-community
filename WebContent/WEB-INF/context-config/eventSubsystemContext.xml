@@ -16,9 +16,5 @@
 	]]></beans:description>
 		
 	<beans:bean id="userActivityEventListener" class="architecture.community.user.event.listener.UserActivityEventListener"  />		
-		
-	
-		
-    
-    
+  
 </beans:beans> 

@@ -51,9 +51,15 @@
 		                </ul>
 		                <ul class="nav navbar-top-links navbar-right">
 		                    <li>
-		                        <a href="login.html">
-		                            <i class="fa fa-sign-out"></i> Log out
+		                    		<#if user.anonymous >
+		                        <a href="/accounts/login">
+		                            <i class="fa fa-sign-out"></i> 로그인
 		                        </a>
+		                        <#else>
+		                        <a href="/accounts/logout">
+		                            <i class="fa fa-sign-out"></i> 로그아웃
+		                        </a>		                        
+		                        </#if>
 		                    </li>
 		                </ul>
 		            </div>

@@ -11,7 +11,7 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="communityContextHelper" class="architecture.community.util.CommunityContextHelper" />
+	<beans:bean id="communityContextHelper" class="architecture.community.util.CommunityContextHelper" />
 	
 	<beans:bean id="statsService" class="architecture.community.stats.DefaultStatisticsService" />
 	

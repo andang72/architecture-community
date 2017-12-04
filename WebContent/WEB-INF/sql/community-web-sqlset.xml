@@ -2,6 +2,7 @@
 <sqlset>
 	<name>COMMUNITY_WEB</name>
 	<description>VIEWCOUNT, IMAGE, ATTACHMENT 쿼리</description>
+	
 	<!-- ==================== -->
 	<!--  VIEW  COUNT 		 -->
 	<!-- ==================== -->
@@ -161,6 +162,85 @@
 		COMMENT_ID ASC	
 	]]></sql-query>	
 	
+
+	
+	<!-- USER AVATAR PHOTO -->
+	
+	<sql-query name="DELETE_AVATAR_IMAGE_BY_ID" description=""><![CDATA[
+	DELETE FROM MUSI_AVATAR_IMAGE  
+	WHERE AVATAR_IMAGE_ID = ?
+	]]></sql-query>       
+
+	<sql-query name="DELETE_AVATAR_IMAGE_DATA_BY_ID" description=""><![CDATA[
+	DELETE FROM MUSI_AVATAR_IMAGE_DATA  
+	WHERE AVATAR_IMAGE_ID = ?	
+	]]></sql-query>
+	
+	<sql-query name="INSERT_AVATAR_IMAGE" description=""><![CDATA[
+	INSERT INTO MUSI_AVATAR_IMAGE (
+		AVATAR_IMAGE_ID,
+		USER_ID,
+		FILE_NAME,
+		FILE_SIZE,
+		CONTENT_TYPE,
+		CREATION_DATE,
+		MODIFIED_DATE
+	) VALUES ( ?,?,?,?,?,?,? )
+		
+	]]></sql-query>
+	
+	<sql-query name="INSERT_EMPTY_AVATAR_IMAGE_DATA" description=""><![CDATA[
+	INSERT INTO MUSI_AVATAR_IMAGE_DATA (AVATAR_IMAGE_ID, AVATAR_IMAGE_DATA) VALUES (?, EMPTY_BLOB())
+	]]></sql-query>
+	
+	<sql-query name="INSERT_AVATAR_IMAGE_DATA" description=""><![CDATA[
+	INSERT MUSI_AVATAR_IMAGE_DATA  (AVATAR_IMAGE_ID, AVATAR_IMAGE_DATA) VALUES (?, ?)
+	]]></sql-query>
+	
+	<sql-query name="UPDATE_AVATAR_IMAGE_DATA" description=""><![CDATA[
+	UPDATE MUSI_AVATAR_IMAGE_DATA SET AVATAR_IMAGE_DATA = ? WHERE AVATAR_IMAGE_ID = ?
+	]]></sql-query>
+	
+	<sql-query name="SELECT_PRIMARY_AVATAR_IMAGE_ID_BY_USER" description=""><![CDATA[
+	SELECT 
+		AVATAR_IMAGE_ID
+	FROM MUSI_AVATAR_IMAGE 
+	WHERE 
+		PRIMARY_IMAGE = 1 AND
+		USER_ID = ?			
+	]]></sql-query>	
+			
+	<sql-query name="SELECT_AVATAR_IMAGE_BY_ID" description=""><![CDATA[
+	SELECT 
+		AVATAR_IMAGE_ID,
+		USER_ID,
+		PRIMARY_IMAGE,
+		FILE_NAME,
+		FILE_SIZE,
+		CONTENT_TYPE,
+		CREATION_DATE,
+		MODIFIED_DATE	
+	FROM MUSI_AVATAR_IMAGE WHERE AVATAR_IMAGE_ID = ?	
+	]]></sql-query>						
+
+	<sql-query name="SELECT_AVATAR_IMAGE_IDS_BY_USER" description=""><![CDATA[
+	SELECT AVATAR_IMAGE_ID FROM MUSI_AVATAR_IMAGE WHERE USER_ID = ?
+	]]></sql-query>		
+	
+	<sql-query name="COUNT_AVATAR_IMAGE_BY_USER" description=""><![CDATA[
+	SELECT COUNT(AVATAR_IMAGE_ID) FROM MUSI_AVATAR_IMAGE WHERE USER_ID = ?
+	]]></sql-query>			
+
+	<sql-query name="SELECT_AVATAR_IMAGE_DATA_BY_ID" description=""><![CDATA[
+	SELECT AVATAR_IMAGE_DATA FROM MUSI_AVATAR_IMAGE_DATA WHERE AVATAR_IMAGE_ID = ?
+	]]></sql-query>		
+
+	<sql-query name="RESET_AVATAR_IMAGE_BY_USER" description=""><![CDATA[
+	UPDATE MUSI_AVATAR_IMAGE 
+	SET PRIMARY_IMAGE = 0  
+	WHERE USER_ID = ?
+	]]></sql-query>	
+	
 	
 	<!-- ==================== -->
 	<!-- ATTACHMENT -->
@@ -195,8 +275,7 @@
     WHERE 
     	ATTACHMENT_ID = ?	    
     ]]></sql-query>
-	<sql-query name="SELECT_ATTACHMENT_BY_OBJECT_TYPE_AND_OBJECT_ID"
-		description="OBJECT_TYPE 와 OBJECT_ID 값으로 첨부파일  조회"><![CDATA[    
+	<sql-query name="SELECT_ATTACHMENT_BY_OBJECT_TYPE_AND_OBJECT_ID" description="OBJECT_TYPE 와 OBJECT_ID 값으로 첨부파일  조회"><![CDATA[    
     SELECT 
 		ATTACHMENT_ID,
 		OBJECT_TYPE,
@@ -297,7 +376,7 @@
 	]]></sql-query>
 	
 	<!-- ==================== -->
-	<!-- IMAGE -->
+	<!-- IMAGE 				 -->
 	<!-- ==================== -->
 	<sql-query name="SELECT_IMAGE_LINK_BY_LINK_ID" description="SELECT_IMAGE_LINK_BY_LINK_ID"><![CDATA[    
 	SELECT 
@@ -443,7 +522,7 @@
 	]]></sql-query>
 	
 	<!-- ==================== -->
-	<!-- LOGO -->
+	<!-- LOGO 				  -->
 	<!-- ==================== -->
 	<sql-query name="RESET_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID"
 		description="RESET_LOGO_IMAGE_BY_OBJECT_TYPE_AND_OBJECT_ID"><![CDATA[    	
@@ -538,4 +617,6 @@
 	FROM V2_LOGO 
 	WHERE OBJECT_TYPE = ? AND OBJECT_ID = ?
 	]]></sql-query>
+
+		
 </sqlset>

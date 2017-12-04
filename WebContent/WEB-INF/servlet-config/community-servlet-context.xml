@@ -20,7 +20,9 @@
 	<mvc:resources mapping="/css/**" 		location="/css/" />
 	<mvc:resources mapping="/html/**" 		location="/html/" />
 	
-		
+	<!-- 첨부파일 업로드를 위한 MultipartResolver 정의  -->
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></beans:bean>
+			
 	<!-- 뷰처리 위한 ViewResolver 정의  -->
 	<beans:bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
 		<beans:property name="order" value="0"/>

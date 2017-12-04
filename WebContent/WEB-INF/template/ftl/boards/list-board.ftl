@@ -9,19 +9,28 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title></title>
-    
+ 	<!-- Kendoui with bootstrap theme CSS -->			
+	<!--<link href="/css/kendo.ui.core/web/kendo.common-bootstrap.core.css" rel="stylesheet" type="text/css" />-->
+	<link href="/css/kendo.ui.core/web/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+	    
 	<!-- Bootstrap core CSS -->
-	<link href="/css/kendo.ui.core/web/kendo.default.css" rel="stylesheet" type="text/css" />
-	
-	<link href="/css/bootstrap/3.3.7/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
 	<link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="/fonts/font-awesome.css" rel="stylesheet" type="text/css" />
+	
+	<!-- Bootstrap Theme CSS -->
+	<!--<link href="/fonts/simple-line-icons.css" rel="stylesheet" type="text/css" />	-->
 	<link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet" type="text/css" />
 	
-	<link href="/fonts/font-awesome.css" rel="stylesheet" type="text/css" />	
-	
+	<!-- Community CSS -->
+  	<link href="/css/community.ui/community.ui.style.css" rel="stylesheet" type="text/css" />	
+	<link href="/js/summernote/summernote.css" rel="stylesheet" type="text/css" />
+	<link href="/css/animate/animate.css" rel="stylesheet" type="text/css" />
+	   	
+	   	
+	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script>   	
 	<!-- Requirejs for js loading -->
 	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
-	
+		
 	<!-- Application JavaScript
     		================================================== -->    
 	<script>
@@ -30,31 +39,63 @@
 	        "bootstrap" : { "deps" :['jquery'] },
 	        "kendo.ui.core.min" : { "deps" :['jquery'] },
 	        "kendo.culture.ko-KR.min" : { "deps" :['kendo.ui.core.min'] },
-	        "podo.ui.core" : { "deps" :['kendo.culture.ko-KR.min'] }
+	        "community.ui.core" : { "deps" :['kendo.culture.ko-KR.min'] },
+	        "community.data" : { "deps" :['community.ui.core'] },	        
+	        "summernote-ko-KR" : { "deps" :['summernote.min'] }
 	    },
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-2.2.4.min",
 			"bootstrap" 					: "/js/bootstrap/3.3.7/bootstrap.min",
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
-			"podo.ui.core" 				: "/js/podo.ui/podo.ui.core"
+			"community.ui.core" 			: "/js/community.ui/community.ui.core",
+			"community.data" 			: "/js/community.ui/community.data",
+			"summernote.min"             : "/js/summernote/summernote.min",
+			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"		
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min", "podo.ui.core", "kendo.culture.ko-KR.min", "bootstrap"], function($, kendo ) {
- 
-		kendo.culture("ko-KR");		
-		var renderTo = $('#thread-listview');		
-		podo.ui.listview( renderTo , {
-			dataSource: podo.ui.datasource('/data/v1/boards/list.json', {
+	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap"], function($, kendo ) {
+		
+		community.ui.setup({
+		  	features : {
+				accounts: true
+		  	},
+		  	'features.accounts.authenticate' :function(e){
+		  		if( !e.token.anonymous ){
+		  			observable.setUser(e.token);
+		    		}
+		  	}
+		});
+		
+			
+		
+		
+		var observable = new community.ui.observable({ 
+			currentUser : new community.model.User(),
+			setUser : function( data ){
+				var $this = this;
+				data.copy($this.currentUser)
+				if(!$this.currentUser.anonymous){
+					$this.set('writable',true);
+				}
+			},
+			dataSource: community.ui.datasource('/data/api/v1/boards/list.json', {
 				schema: {
 					total: "totalCount",
-					data: "items"
+					data: "items",
+					model: community.model.Board
 				}
-			}),
-			template: podo.ui.template($("#template").html())
+			})
+    		});     
+    		
+    		var renderTo = $('#thread-listview');	    		
+		community.ui.listview( renderTo , {
+			dataSource: observable.dataSource,
+			template: community.ui.template($("#template").html())
 		}); 
 	});
+	
 	
 	</script>	
 </head>
@@ -98,7 +139,8 @@
 				<div class="row">
 					<div class="col-md-9">
 						<div class="forum-icon">
-							<i class="fa fa-ambulance"></i>
+							<!--<i class="fa fa-ambulance"></i>-->
+							<i class="icon-svg icon-svg-sm icon-svg-ios-discuss-forum"></i>
 						</div>
 						<a href="/boards/#=boardId#/list" class="forum-item-title">#:displayName#</a>
 						<div class="forum-sub-title">#if(description != null ){# #:description # #}#</div>

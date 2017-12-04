@@ -17,7 +17,9 @@
        Spring Security 설정  
 	]]></beans:description>
 
-	<global-method-security secured-annotations="enabled" pre-post-annotations="enabled" />
+	<global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
+		<expression-handler ref="expressionHandler"/>
+	</global-method-security>
 	
 	<http pattern="/js/**" security="none" />
 	<http pattern="/images/**" security="none" />
@@ -27,7 +29,9 @@
 
 		<intercept-url pattern="/*"						access="permitAll"/>
 		<intercept-url pattern="/error/*"				access="permitAll"/>
-		<intercept-url pattern="/data/*"				access="permitAll"/> 
+		<intercept-url pattern="/data/*"					access="permitAll"/> 
+		<intercept-url pattern="/secure/display/**" 		access="hasRole('ROLE_ADMINISTRATOR')" /> 
+		<!-- <intercept-url pattern="/secure/display/**" 		access="hasRole('ROLE_ADMINISTRATOR') and hasIpAddress('192.168.1.0/24')" />  -->
 		<intercept-url pattern="/secure/data/**" 		access="hasRole('ROLE_USER')" /> 
 		
 		<!-- 로그인 페이지 지정 -->
@@ -44,19 +48,16 @@
 		<!-- 로그아웃 설정  -->
         <logout invalidate-session="true" logout-url="/accounts/logout" logout-success-url="/" delete-cookies="JSESSIONID" />
 
-        <remember-me 
-        	token-repository-ref="rememberMeDao"
-        	user-service-ref="userDetailsService" 
-        	token-validity-seconds="1209600" />
+        <remember-me  token-repository-ref="rememberMeDao" user-service-ref="userDetailsService" token-validity-seconds="1209600" />
+        
         <!-- CSRF ATTACK  -->
 		<csrf disabled="true" />
-
 
 		<anonymous enabled="true" username="ANONYMOUS" />        
         
         <!-- 중복 로그인 방지 설정 -->
         <session-management session-fixation-protection="newSession" >
-        	<concurrency-control max-sessions="1" expired-url="/error/login_duplicate"/>
+        		<concurrency-control max-sessions="1" expired-url="/error/login_duplicate"/>
         </session-management>
         
         <!-- 접근 불허시 보여줄 페이지 설정 -->         
@@ -69,15 +70,9 @@
 	</authentication-manager>
 
 	
-	<beans:bean 
-		id="authenticationProvider" 
-		class="architecture.community.security.spring.authentication.CommunityAuthenticationProvider" 
-		p:passwordEncoder-ref="passwordEncoder" p:userDetailsService-ref="userDetailsService" />
+	<beans:bean id="authenticationProvider" class="architecture.community.security.spring.authentication.CommunityAuthenticationProvider" p:passwordEncoder-ref="passwordEncoder" p:userDetailsService-ref="userDetailsService" />
 	
-	<beans:bean 
-		id="authenticationSuccessHandler" 
-		class="architecture.community.security.spring.authentication.CommunityAuthenticationSuccessHandler" 
-		p:targetUrlParameter="targetUrl" />
+	<beans:bean id="authenticationSuccessHandler" class="architecture.community.security.spring.authentication.CommunityAuthenticationSuccessHandler" p:targetUrlParameter="targetUrl" />
 	
 	<beans:bean id="userDetailsService" class="architecture.community.security.spring.userdetails.CommunityUserDetailsService" />
 	

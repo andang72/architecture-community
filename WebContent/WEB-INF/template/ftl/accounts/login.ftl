@@ -1,66 +1,83 @@
 <#ftl encoding="UTF-8"/>
+<#compress>
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Expires" content="-1">
-    <!-- Custom styles for this template -->
-    <style>
- 
-	.form-signin {
-	  max-width: 330px;
-	  padding: 15px;
-	  margin: 0 auto;
-	}
-	.form-signin .form-signin-heading,
-	.form-signin .checkbox {
-	  margin-bottom: 10px;
-	}
-	.form-signin .checkbox {
-	  font-weight: normal;
-	}
-	.form-signin .form-control {
-	  position: relative;
-	  height: auto;
-	  -webkit-box-sizing: border-box;
-	          box-sizing: border-box;
-	  padding: 10px;
-	  font-size: 16px;
-	}
-	.form-signin .form-control:focus {
-	  z-index: 2;
-	}
-	.form-signin input[type="email"] {
-	  margin-bottom: -1px;
-	  border-bottom-right-radius: 0;
-	  border-bottom-left-radius: 0;
-	}
-	.form-signin input[type="password"] {
-	  margin-bottom: 10px;
-	  border-top-left-radius: 0;
-	  border-top-right-radius: 0;
-	}   
-    
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">    
+    <title>Login</title>
+
+	<!-- Bootstrap CSS -->
+	<link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="/fonts/font-awesome.css" rel="stylesheet" type="text/css" />
+
+	<!-- Bootstrap Inspinia Theme CSS -->
+	<link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet" type="text/css" />
+		
+	<!-- Depends CSS -->
+	<link href="/css/animate/animate.css" rel="stylesheet"/>
 </head>
-<body>
-	<div class="container">
-      <form class="form-signin" method="post" action="/accounts/auth/login_check">
-        <h2 class="form-signin-heading">로그인</h2>
-        <label for="uername" class="sr-only">아이디</label>
-        <input type="text" id="usrname" name="username" class="form-control" placeholder="아이디 입력" required autofocus>
-        <label for="password" class="sr-only">비밀번호</label>
-        <input type="password" id="password" name="password" class="form-control" placeholder="비밀번호 입력" required>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" value="remember-me"> 로그인상태유지
-          </label>
+<body class="gray-bg skin-2">
+    <div class="loginColumns animated fadeInDown">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="font-bold">Welcome to MUSI +</h2>
+                <p>
+                    Perfectly designed and precisely prepared admin theme with over 50 pages with extra new web app views.
+                </p>
+                <p>
+                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                </p>
+                <p>
+                    When an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                </p>
+                <p>
+                    <small>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</small>
+                </p>
+            </div>
+            <div class="col-md-6">
+                <div class="ibox-content">
+                    <form class="m-t" role="form" method="post" action="/accounts/auth/login_check" >
+                        <div class="form-group">
+                            <input type="text" id="usrname" name="username"  type="text" class="form-control" placeholder="아이디" required="" autofocus >
+                        </div>
+                        <div class="form-group">
+                            <input id="password" name="password" type="password" class="form-control" placeholder="비밀번호" required="">
+                        </div>
+                        <div class="form-group"> 
+					        <div class="checkbox">
+					          <label>
+					            <input type="checkbox" value="remember-me"> 로그인상태유지
+					          </label>
+					        </div>
+                        </div>                        
+                        <button type="submit" class="btn btn-success block full-width m-b">로그인</button>
+                        <a href="#">
+                            <small>계정찾기</small>
+                        </a>
+                        <p class="text-muted text-center">
+                            <small>아직 회원이 아니신가요?</small>
+                        </p>
+                        <a class="btn btn-sm btn-white btn-block" href="join">회원가입</a>
+                    </form>
+                    <p class="m-t">
+                        <small>Inspinia we app framework base on Bootstrap 3 &copy; 2014</small>
+                    </p>
+                </div>
+            </div>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">로그인</button>
-      </form>
-    </div> <!-- /container -->
-</body>
+        <hr/>
+        <div class="row">
+            <div class="col-md-6">
+                Copyright Example Company
+            </div>
+            <div class="col-md-6 text-right">
+               <small>© 2017 - 2018 </small>
+            </div>
+        </div>
+    </div>
+</body>	
 </html>
+</#compress>
