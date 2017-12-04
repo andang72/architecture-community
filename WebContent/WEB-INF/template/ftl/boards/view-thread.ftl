@@ -49,11 +49,12 @@
 			"community.ui.core" 			: "/js/community.ui/community.ui.core",
 			"community.data" 			: "/js/community.ui/community.data",
 			"summernote.min"             : "/js/summernote/summernote.min",
-			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"		
+			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"	,
+			"dropzone"					: "/js/dropzone/dropzone"
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR" ], function($, kendo ) {
+	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR", "dropzone" ], function($, kendo ) {
 		
 		community.ui.setup({
 		  	features : {
@@ -349,12 +350,64 @@
 	
 		var renderTo = $("#message-editor-modal");
 		if( !renderTo.data("model") ){	
+		
 			var editorTenderTo = $('#editable-message-body');
+			
+			var editorBody = renderTo.find('.message-editor');
+			var attachmentsBody = renderTo.find('.message-attachments');
+			var imagesBody = renderTo.find('.message-images');	
+						
 			editorTenderTo.summernote({
 				dialogsInBody: true,
 				height: 300,
 				lang: 'ko-KR'
 			});
+			
+			// attachment dorpzone
+			var myDropzone = new Dropzone('#message-attachments-dropzone', {
+				url: '/data/api/v1/attachments/upload.json',
+				paramName: 'file',
+				maxFilesize: 1,
+				previewsContainer: '#message-attachments-dropzone .dropzone-previews'	,
+				previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div></div>'
+			});	
+			myDropzone.on("sending", function(file, xhr, formData) {
+			  formData.append("objectType", 7);
+			  formData.append("objectId", observable.message.messageId);
+			});			
+			myDropzone.on("success", function(file, response) {
+			  file.previewElement.innerHTML = "";
+			});
+			myDropzone.on("addedfile", function(file) {
+			  community.ui.progress(attachmentsBody, true);
+			});		
+			myDropzone.on("complete", function() {
+			  community.ui.progress(attachmentsBody, false);
+			});
+			
+			// images dropzone
+			var myDropzone2 = new Dropzone('#message-images-dropzone', {
+				url: '/data/api/v1/images/upload.json',
+				paramName: 'file',
+				maxFilesize: 1,
+				acceptedFiles: 'image/*'	,
+				previewsContainer: '#message-images-dropzone .dropzone-previews'	,
+				previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div></div>'
+			});			
+			myDropzone2.on("sending", function(file, xhr, formData) {
+			  formData.append("objectType", 7);
+			  formData.append("objectId", observable.message.messageId);
+			});			
+			myDropzone2.on("success", function(file, response) {
+			  file.previewElement.innerHTML = "";
+			});
+			myDropzone2.on("addedfile", function(file) {
+			  community.ui.progress(imagesBody, true);
+			});		
+			myDropzone2.on("complete", function() {
+			  community.ui.progress(imagesBody, false);
+			});
+					
 			var observable = new community.ui.observable({ 
 				mode : 0,
 				board : board,
@@ -379,9 +432,9 @@
 					if($this.get('mode') != 0)
 					{
 						$this.set('mode', 0);
-						renderTo.find('.message-editor').show();
-						renderTo.find('.message-attachments').hide();
-						renderTo.find('.message-images').hide();		
+						editorBody.show();
+						attachmentsBody.hide();
+						imagesBody.hide();		
 					}
 				},
 				setParentMessage: function(data){
@@ -400,24 +453,24 @@
 				showImageUploader : function (e){
 					var $this = this;
 					$this.set('mode', 1);
-					renderTo.find('.message-editor').hide();
-					renderTo.find('.message-images').show();				
+					editorBody.hide();
+					imagesBody.show();				
 				},
 				showAttachmentUploader : function (e){
 					var $this = this;
 					$this.set('mode', 2);
-					renderTo.find('.message-editor').hide();
-					renderTo.find('.message-attachments').show();
+					editorBody.hide();
+					attachmentsBody.show();
 				},
 				hideUploader: function(e){
 					var $this = this;
 					if( $this.get('mode') === 1 ){
-						renderTo.find('.message-images').hide();		
-						renderTo.find('.message-editor').show();
+						imagesBody.hide();		
+						editorBody.show();
 						$this.set('mode', 0);
 					}else if($this.get('mode') === 2 ){
-						renderTo.find('.message-attachments').hide();
-						renderTo.find('.message-editor').show();
+						attachmentsBody.hide();
+						editorBody.show();
 						$this.set('mode', 0);
 					}
 				
@@ -630,7 +683,17 @@
 				        </button>
 			      	</div><!-- /.modal-content -->
 		    			<div class="modal-body">
-		    			파일 업로드 ...
+						<form action="" method="post" enctype="multipart/form-data" id="message-attachments-dropzone" class="u-dropzone">
+                       	 <div class="dz-default dz-message">
+                       	 	<i class="icon-svg icon-svg-dusk-upload"></i>
+                       	 	<span class="note">업로드를 위하여 파일을 이곳에 드레그하여 놓아주세요.</span>
+                       	 </div>       
+                       	 <div class="dropzone-previews">                       	 
+                       	 </div>                 
+						 <div class="fallback">
+						     <input name="file" type="file" multiple style="display:none;"/>
+						 </div>
+						</form> 
 		    			</div>
 	    			</div>
 	    			<div class="message-images"  style="display:none;">
@@ -639,8 +702,18 @@
 				          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close-pane m-t-xs"></i>
 				        </button>
 			      	</div><!-- /.modal-content -->	    			
-					<div class="modal-body">
-					이미지 업로드 ..
+					<div class="modal-body">					
+						<form action="" method="post" enctype="multipart/form-data" id="message-images-dropzone" class="u-dropzone">
+                       	 <div class="dz-default dz-message">
+                       	 	<i class="icon-svg icon-svg-dusk-upload"></i>
+                       	 	<span class="note">업로드를 위하여 이미지를 이곳에 드레그하여 놓아주세요.</span>
+                       	 </div>       
+                       	 <div class="dropzone-previews">                       	 
+                       	 </div>                 
+						 <div class="fallback">
+						     <input name="file" type="file" multiple style="display:none;"/>
+						 </div>
+						</form> 
 		    			</div>	    			
 	    			</div>	    			
 	    		</div><!-- /.modal-content -->	    		

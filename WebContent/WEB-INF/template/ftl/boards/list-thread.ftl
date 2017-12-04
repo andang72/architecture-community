@@ -11,7 +11,7 @@
     <meta name="author" content="">
     <title>${currentBoard.displayName}</title>    
 	<!-- Kendoui with bootstrap theme CSS -->			
-	<!--<link href="/css/kendo.ui.core/web/kendo.common-bootstrap.core.css" rel="stylesheet" type="text/css" />-->
+	<link href="/css/kendo.ui.core/web/kendo.common.core.min.css" rel="stylesheet" type="text/css" />
 	<link href="/css/kendo.ui.core/web/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
 	    
 	<!-- Bootstrap core CSS -->

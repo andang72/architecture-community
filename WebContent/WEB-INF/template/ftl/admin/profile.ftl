@@ -82,21 +82,6 @@
                 fillColor: "transparent"
             });
                         
-        /**                
-        var avatarDropzoneRenderTo = $('#dropzoneForm');                
-		Dropzone.options.dropzoneForm = {
-			url: '/data/v1/me/upload_avatar_image.json',
-		  	paramName: "file", 					// The name that will be used to transfer the file
-		  	maxFilesize: 2, 						// MB
-		  	accept: function(file, done) {
-		  		community.ui.progress($('#dropzoneForm'), true);
-		  		console.log( file.name );
-		  		done();
-		  	}
-		};		
-		**/
-		
-		
 		var myDropzone = new Dropzone('#dropzoneForm', {
 			url: '/data/v1/me/upload_avatar_image.json',
 			paramName: 'file',

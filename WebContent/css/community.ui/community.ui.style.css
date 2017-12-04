@@ -67,10 +67,36 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
     background: #3498db;
 }
 
+/*------------------------------------
+  dropzone
+------------------------------------*/
+.u-dropzone {
+	padding: 15px 15px;
+}
+
+.u-dropzone:hover{
+	background: #f5f5f5;
+    border-radius: 15px;
+}
+
+
+.u-dropzone.dz-clickable {
+	cursor: pointer;
+} 
+
+.u-dropzone .dz-message .note {
+      font-size: 1.1em;
+      font-weight: 100;
+      display: block;
+      margin-top: 1.4rem; 
+}
+
+	
 
 /*------------------------------------
   ibox
 ------------------------------------*/
+
 
 .ibox.bordered {
     border: solid 1px rgb(221, 221, 221);

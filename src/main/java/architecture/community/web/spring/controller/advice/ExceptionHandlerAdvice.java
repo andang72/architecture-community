@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import architecture.community.web.model.json.Result;
 
-@ControllerAdvice("architecture.community.web.spring.controller.data")
+@ControllerAdvice("basePackages={'architecture.community.web.spring.controller.data'}")
 public class ExceptionHandlerAdvice {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerAdvice.class);
@@ -47,19 +47,5 @@ public class ExceptionHandlerAdvice {
 		Result r = Result.newResult(e);			
 		return r;
 	}
-	/**
-	private String getExceptionMessage(Throwable e) {        
-		StringBuilder builder = new StringBuilder();
-        while( e != null ) {
-            builder.append( e.getMessage() ).append("\n");
-            e = e.getCause();
-        }
-        return builder.toString();
-    }
-	
-	private boolean isAjax(HttpServletRequest request) {        
-		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
-        
-    }
-	*/
+
 }
