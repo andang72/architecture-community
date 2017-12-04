@@ -104,7 +104,7 @@ public class BoardDataController extends AbstractCommunityDateController {
 		
 		for( Board board : list)
 		{	
-			BoardView v = toBoardView(board);
+			BoardView v = getBoardView(board);
 			if(v.isReadable())
 				list2.add(v);
 		}
@@ -122,7 +122,7 @@ public class BoardDataController extends AbstractCommunityDateController {
 	@ResponseBody
 	public Board getBoard (@PathVariable Long boardId, NativeWebRequest request) throws BoardNotFoundException {	
 		Board board = boardService.getBoardById(boardId);
-		BoardView b = toBoardView(board);
+		BoardView b = getBoardView(board);
 		return b;
 	}
 	

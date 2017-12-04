@@ -58,7 +58,7 @@ public class BoardMgmtDataController extends AbstractCommunityDateController {
 		List<Board> list2 = new ArrayList<Board> (list.size());
 		for( Board board : list)
 		{	
-			list2.add(toBoardView(board));
+			list2.add(getBoardView(board));
 		}
 		return new ItemList(list2, list2.size());
 	}

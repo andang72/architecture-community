@@ -36,7 +36,7 @@ public abstract class AbstractCommunityDateController {
 		return getCommunityAclService().isPermissionGrantedFinally(SecurityHelper.getAuthentication(), Models.valueOf(objectType).getObjectClass(), objectId, Arrays.asList( (Permission) permission));
 	}
 	
-	protected BoardView toBoardView(Board board) {		
+	protected BoardView getBoardView(Board board) {		
 		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();
 		log.debug("Board View : {} {} for {}.", board.getBoardId(),  board.getName(), userDetails.getUsername() );		
 		PermissionsBundle bundle = getPermissionBundle(Board.class, board.getBoardId());				
