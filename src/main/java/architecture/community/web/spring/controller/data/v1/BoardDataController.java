@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -45,7 +47,6 @@ import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.model.Models;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.community.viewcount.ViewCountService;
@@ -55,11 +56,11 @@ import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
 
 @Controller("community-data-v1-boards-controller")
-@RequestMapping("/data/api/v1")
+@RequestMapping("/data/v1")
 public class BoardDataController extends AbstractCommunityDateController {
 
 	
-	
+	private Logger log = LoggerFactory.getLogger(getClass());	
 	
 	@Inject
 	@Qualifier("boardService")
@@ -78,19 +79,11 @@ public class BoardDataController extends AbstractCommunityDateController {
 	private ViewCountService viewCountService
 	;	
 	
-	@Inject
-	@Qualifier("communityAclService")
-	private JdbcCommunityAclService communityAclService;
-	
-	
 	protected BoardService getBoardService () {
 		return boardService;
 	}
-
-	protected JdbcCommunityAclService getCommunityAclService () {
-		return communityAclService;
-	}
-		
+	
+	
 	/**
 	 * 게시판 목록 리턴 
 	 * @param request
@@ -98,15 +91,13 @@ public class BoardDataController extends AbstractCommunityDateController {
 	 */
 	@RequestMapping(value = "/boards/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public ItemList getBoardList (NativeWebRequest request) {			
-		List<Board> list = boardService.getAllBoards();
-		List<Board> list2 = new ArrayList<Board> ();		
+	public ItemList getBoardList (NativeWebRequest request) {	
 		
+		List<Board> list = boardService.getAllBoards();
+		List<Board> list2 = new ArrayList<Board> (list.size());
 		for( Board board : list)
 		{	
-			BoardView v = toBoardView(board);
-			if(v.isReadable())
-				list2.add(v);
+			list2.add(toBoardView(board));
 		}
 		return new ItemList(list2, list2.size());
 	}
@@ -167,7 +158,8 @@ public class BoardDataController extends AbstractCommunityDateController {
 	 */
 	@RequestMapping(value = { "/threads/{threadId:[\\p{Digit}]+}/info.json", "/threads/{threadId:[\\p{Digit}]+}/get.json" }, method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BoardThread getThread(@PathVariable Long threadId, NativeWebRequest request) throws BoardThreadNotFoundException { 
+	public BoardThread getThread(@PathVariable Long threadId,
+			NativeWebRequest request) throws BoardThreadNotFoundException { 
 		
 		BoardThread thread = boardService.getBoardThread(threadId);
 		return thread ;

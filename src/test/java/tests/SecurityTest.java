@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,9 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import architecture.community.board.Board;
-import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
-import architecture.community.security.spring.acls.ObjectAccessControlEntry;
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.security.spring.userdetails.CommunityUserDetailsService;
 import architecture.community.user.Role;
@@ -64,10 +63,10 @@ public class SecurityTest {
 		setAuthentication("king");
 		Role role = roleManager.getRole("ROLE_ADMINISTRATOR");		
 		CommuintyUserDetails details = (CommuintyUserDetails)userDetailsManager.loadUserByUsername("king");		
-		aclService.addPermission(Board.class, 1, role, CommunityPermissions.READ);		
-		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, details.getUser(), CommunityPermissions.READ);		
+		aclService.addPermission(Board.class, 1, role, BasePermission.READ);		
+		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, details.getUser(), BasePermission.READ);		
 		log.debug("============== FINAL USER {} isGranted:{}", details.getUsername(),  isGranted);		
-		aclService.removePermission(Board.class, 1, role, CommunityPermissions.READ);
+		aclService.removePermission(Board.class, 1, role, BasePermission.READ);
 		
 	}
 	
@@ -76,7 +75,7 @@ public class SecurityTest {
 	public void testGrantedPermission() throws UserNotFoundException {		
 		setAuthentication("dhson@podosw.com");
 		User user = userManager.getUser("dhson@podosw.com");
-		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, user, CommunityPermissions.READ);
+		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, user, BasePermission.READ);
 		log.debug("============== ROLE USER {} isGranted:{}", user.getUsername(), isGranted);
 		
 	}
@@ -86,10 +85,10 @@ public class SecurityTest {
 	public void testPermission() throws UserNotFoundException {		
 		setAuthentication("king");
 		User user = userManager.getUser("king");		
-		aclService.addPermission(Board.class, 1, user, CommunityPermissions.READ);
-		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, user, CommunityPermissions.READ);
+		aclService.addPermission(Board.class, 1, user, BasePermission.READ);
+		boolean isGranted = aclService.isPermissionGranted(Board.class, 1, user, BasePermission.READ);
 		log.debug("==============USER {} isGranted:{}", user.getUsername(),  isGranted);	
-		aclService.removePermission(Board.class, 1, user, CommunityPermissions.READ);
+		aclService.removePermission(Board.class, 1, user, BasePermission.READ);
 	}
 	
 	private  void setAuthentication(String username) {
@@ -105,23 +104,19 @@ public class SecurityTest {
 		setAuthentication("king");
 		Role role = roleManager.getRole("ROLE_ADMINISTRATOR");		
 		User user = userManager.getUser("dhson@podosw.com");
-		aclService.addPermission(Board.class, 1, role, CommunityPermissions.READ);	
-		aclService.addPermission(Board.class, 1, role, CommunityPermissions.WRITE);	
-		aclService.addPermission(Board.class, 1, role, CommunityPermissions.ADMINISTRATION);	
-		aclService.addPermission(Board.class, 1, role, CommunityPermissions.CREATE_ATTACHMENT);	
-		aclService.addPermission(Board.class, 1, user, CommunityPermissions.READ);
+		aclService.addPermission(Board.class, 1, role, BasePermission.READ);	
+		aclService.addPermission(Board.class, 1, user, BasePermission.READ);
 		
 		List<AccessControlEntry> list = aclService.getAsignedPermissions(Board.class, 1);		
 		for(AccessControlEntry entry : list ) {
-			log.debug("Assigned Permissioin Entry : {}", new ObjectAccessControlEntry(entry) );		
+			log.debug("Assigned Permissioin target {} perms {}", entry.getSid().toString(), entry.getPermission().toString());		
 		}
 		
-		log.debug("=============== getAsignedPermissions =============");
-		aclService.getAsignedPermissions(Board.class, 1);
-		
-		aclService.removePermission(Board.class, 1, user, CommunityPermissions.READ);
-		//aclService.removePermission(Board.class, 1, role, BasePermission.READ);
+		aclService.removePermission(Board.class, 1, user, BasePermission.READ);
+		aclService.removePermission(Board.class, 1, role, BasePermission.READ);
 	}
+	
+	
 	
 	@After
 	public void tearDown() {

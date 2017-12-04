@@ -37,7 +37,7 @@
 		<beans:property name="sidIdentityQuery" value="SELECT @@IDENTITY"/>
 	</beans:bean>
 	
-	<beans:bean id="lookupStrategy" class="architecture.community.security.spring.acls.CommunityLookupStrategy">
+	<beans:bean id="lookupStrategy" class="org.springframework.security.acls.jdbc.BasicLookupStrategy">
 		<beans:constructor-arg ref="dataSource" />
 		<beans:constructor-arg ref="aclCache" />
 		<beans:constructor-arg ref="aclAuthzStrategy" />

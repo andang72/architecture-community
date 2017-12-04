@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,8 +48,6 @@ public class BoardDataController {
 	 * @return
 	 * @throws BoardNotFoundException
 	 */
-	
-	@PreAuthorize("hasPermission(#boardId, 'architecture.community.board.Board', 'READ')")
 	@RequestMapping(value = "/{boardId:[\\p{Digit}]+}/threads/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public ItemList listThread (@PathVariable Long boardId, 

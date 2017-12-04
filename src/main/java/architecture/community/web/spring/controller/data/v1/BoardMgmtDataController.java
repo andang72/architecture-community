@@ -21,12 +21,11 @@ import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.DefaultBoard;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.web.model.ItemList;
 import architecture.ee.util.StringUtils;
 
 @Controller("community-data-v1-mgmt-boards-controller")
-@RequestMapping("/data/api/mgmt/v1")
+@RequestMapping("/data/v1/mgmt")
 public class BoardMgmtDataController extends AbstractCommunityDateController {
 
 	private Logger log = LoggerFactory.getLogger(getClass());	
@@ -35,17 +34,8 @@ public class BoardMgmtDataController extends AbstractCommunityDateController {
 	@Qualifier("boardService")
 	private BoardService boardService;
 	
-	@Inject
-	@Qualifier("communityAclService")
-	private JdbcCommunityAclService communityAclService;
-	
-	
 	protected BoardService getBoardService () {
 		return boardService;
-	}
-
-	protected JdbcCommunityAclService getCommunityAclService () {
-		return communityAclService;
 	}
 	
  

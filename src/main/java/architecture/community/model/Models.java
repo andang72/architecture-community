@@ -16,49 +16,30 @@
 
 package architecture.community.model;
 
-import architecture.community.attachment.Attachment;
-import architecture.community.board.Board;
-import architecture.community.board.BoardMessage;
-import architecture.community.board.BoardThread;
-import architecture.community.comment.Comment;
-import architecture.community.image.Image;
-import architecture.community.image.LogoImage;
-import architecture.community.user.AvatarImage;
-import architecture.community.user.Role;
-import architecture.community.user.User;
-
 public enum Models {
 	
-	UNKNOWN(-1, null), 
-	USER(1, User.class), 
-	ROLE(3, Role.class),
-	BOARD(5, Board.class),
-	BOARD_THREAD(6, BoardThread.class),
-	BOARD_MESSAGE(7, BoardMessage.class),
-	COMMENT(8, Comment.class),
-	ATTACHMENT(10, Attachment.class),
-	IMAGE(11, Image.class),
-	LOGO_IMAGE(12, LogoImage.class),
-	AVATAR_IMAGE(13, AvatarImage.class);
+	UNKNOWN(-1), 
+	USER(1), 
+	ROLE(3),
+	BOARD(5),
+	BOARD_THREAD(6),
+	BOARD_MESSAGE(7),
+	COMMENT(8),
+	ATTACHMENT(10),
+	IMAGE(11),
+	LOGO_IMAGE(12),
+	AVATAR_IMAGE(13);
 	
 	private int objectType;
 	
-	private Class objectClass;
-	
-	private Models(int objectType, Class clazz) {
+	private Models(int objectType) {
 		this.objectType = objectType;
-		this.objectClass = clazz;
 	}
 	
-	public Class getObjectClass() {
-		return objectClass;
-	}
-
 	public int getObjectType()
 	{
 		return objectType;
 	}
-
 	
 	public static Models valueOf(int objectType){
 		Models selected = Models.UNKNOWN ;
