@@ -22,7 +22,7 @@ import architecture.community.stats.StatisticsService;
 import architecture.community.web.model.ItemList;
 
 @Controller("community-data-v1-stats-controller")
-@RequestMapping("/data/v1")
+@RequestMapping("/data/api/v1")
 public class StatsDataController {
 private Logger log = LoggerFactory.getLogger(getClass());	
 	

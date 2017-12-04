@@ -1,4 +1,4 @@
-package architecture.community.web.spring.controller;
+package architecture.community.web.spring.controller.page;
 
 import java.io.IOException;
 

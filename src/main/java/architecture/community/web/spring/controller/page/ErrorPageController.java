@@ -1,4 +1,4 @@
-package architecture.community.web.spring.controller;
+package architecture.community.web.spring.controller.page;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

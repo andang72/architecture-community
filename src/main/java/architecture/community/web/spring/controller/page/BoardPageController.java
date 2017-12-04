@@ -1,4 +1,4 @@
-package architecture.community.web.spring.controller;
+package architecture.community.web.spring.controller.page;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +51,8 @@ public class BoardPageController {
 		return "/boards/list-board" ;
 	}
 	
+	 
+	@PreAuthorize("hasPermission(#boardId, 'architecture.community.board.Board', 'READ')")
 	@RequestMapping(value = {"/{boardId:[\\p{Digit}]+}/list"}, method = { RequestMethod.POST, RequestMethod.GET } )
 	public String displayThreadList (
 			@PathVariable Long boardId, 
@@ -66,7 +69,8 @@ public class BoardPageController {
 		return "/boards/list-thread" ;
 	}
 	
-	
+	 
+	@PreAuthorize("hasPermission(#boardId, 'architecture.community.board.Board', 'READ')")
 	@RequestMapping(value = {"/{boardId:[\\p{Digit}]+}/threads/{threadId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET } )
 	public String displayThread (
 			@PathVariable Long boardId, 
@@ -87,59 +91,5 @@ public class BoardPageController {
 		
 		return "/boards/view-thread" ;
 	}
-	
-	
-	/**
-	@RequestMapping(value = {"/boards/{boardId:[\\p{Digit}]+}", "/board/{boardId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET })
-	public String displayBoardPage(
-			@PathVariable Long boardId, 
-			HttpServletRequest request,
-		    HttpServletResponse response, Model model) throws BoardNotFoundException{
-		ServletUtils.setContentType(null, response);	
-		
-		Board board = boardService.getBoardById(boardId);
-		model.addAttribute("board", board);
-		
-		return "/forums/list-thread" ;
-	}
-	
-	@RequestMapping(value = {"/boards/{boardId:[\\p{Digit}]+}/threads/{threadId:[\\p{Digit}]+}", "/board/{boardId:[\\p{Digit}]+}/thread/{threadId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET })
-	public String displayForumThreadPage(
-			@PathVariable Long boardId, 
-			@PathVariable Long threadId, 
-			HttpServletRequest request,
-		    HttpServletResponse response, 
-		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{
-		ServletUtils.setContentType(null, response);			
-		Board board = boardService.getBoardById(boardId);
-		BoardThread thread = boardService.getBoardThread(threadId);
-
-		viewCountService.addViewCount(thread);
-		
-		model.addAttribute("board", board);
-		model.addAttribute("thread", thread);
-		
-		return "/forums/view-thread" ;
-	}
-
-	@RequestMapping(value = { "/board/{boardId:[\\p{Digit}]+}/message/{messageId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET })
-	public String displayForumMessagePage(
-			@PathVariable Long boardId, 
-			@PathVariable Long threadId, 
-			HttpServletRequest request,
-		    HttpServletResponse response, 
-		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{
-		ServletUtils.setContentType(null, response);			
-		Board board = boardService.getBoardById(boardId);
-		BoardThread thread = boardService.getBoardThread(threadId);
-
-		viewCountService.addViewCount(thread);
-		
-		model.addAttribute("board", board);
-		model.addAttribute("thread", thread);
-		
-		return "/forums/view-thread" ;
-	}
-	*/
 	
 }

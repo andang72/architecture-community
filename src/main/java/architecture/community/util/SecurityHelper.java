@@ -19,10 +19,24 @@ public class SecurityHelper {
 
 	public static final User ANONYMOUS = new UserTemplate(-1L, "ANONYMOUS");
 	
+	public static final CommuintyUserDetails ANONYMOUS_USER_DETAILS = new CommuintyUserDetails(ANONYMOUS);
+	
 	public static Authentication getAuthentication() {
 		return SecurityContextHolder.getContext().getAuthentication();
 	}
 
+	public static CommuintyUserDetails getUserDetails() {
+		try {
+		    Authentication authen = getAuthentication();
+		    Object obj = authen.getPrincipal();
+		    if (obj instanceof CommuintyUserDetails)
+			return ((CommuintyUserDetails) obj);
+		} catch (Exception ignore) {
+			
+		}
+		return ANONYMOUS_USER_DETAILS ;
+	}
+	
 	public static User getUser() {
 		try {
 		    Authentication authen = getAuthentication();
@@ -96,6 +110,12 @@ public class SecurityHelper {
 			return true;
 	}
 	
+	
+	
+	/**
+	 * 인증 토큰 정보를 새롭게 갱신한다.
+	 * 
+	 */
 	public static void refreshUserToken(){
 		
 		User user = getUser();

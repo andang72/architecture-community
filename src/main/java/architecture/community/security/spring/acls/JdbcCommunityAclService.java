@@ -3,13 +3,17 @@ package architecture.community.security.spring.acls;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.domain.SidRetrievalStrategyImpl;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
 import org.springframework.security.acls.model.AccessControlEntry;
@@ -19,15 +23,23 @@ import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
+import org.springframework.security.acls.model.SidRetrievalStrategy;
 import org.springframework.security.acls.model.UnloadedSidException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.user.Role;
 import architecture.community.user.User;
+import architecture.community.util.SecurityHelper;
 
 public class JdbcCommunityAclService extends JdbcMutableAclService {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
+	
+	private SidRetrievalStrategy sidRetrievalStrategy = new SidRetrievalStrategyImpl();
+	
 	public JdbcCommunityAclService(DataSource dataSource, LookupStrategy lookupStrategy, AclCache aclCache) {
 		super(dataSource, lookupStrategy, aclCache);
 	}
@@ -54,6 +66,78 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		this.setUpdateObjectIdentity("updateObjectIdentity");
 		
 	}
+	
+	public <T> void getFinalGrantedPermissions(  Authentication authentication, Class<T> clazz, Serializable identifier, PermissionsSetter setter ) {	
+		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
+		
+		log.debug("final granted permission for {}({})" ,  clazz.getCanonicalName() ,  identifier );
+		MutableAcl acl = (MutableAcl) readAclById(identity);
+		log.debug("final granted permission entries: {}" , acl.getEntries() );
+		
+		List<Sid> sids = sidRetrievalStrategy.getSids(authentication);	
+		
+		// checking anonymous !!
+		boolean isAnonymous = false;
+		if (authentication.getPrincipal() instanceof CommuintyUserDetails ){
+			isAnonymous = ((CommuintyUserDetails) authentication.getPrincipal()).getUser().isAnonymous() ;
+		}
+		
+		if( ! isAnonymous ) {
+			sids.add(new PrincipalSid(SecurityHelper.ANONYMOUS_USER_DETAILS.getUser().getUsername()));
+		}
+		
+		setter.execute( sids, acl);	
+	}
+	
+	/**
+	 * 
+	 * @param authentication
+	 * @param identity
+	 * @param permissions
+	 * @return
+	 */
+	public <T> boolean isPermissionGrantedFinally(Authentication authentication, ObjectIdentity identity, List<Permission> permissions) {		
+			
+		boolean isGranted = false;			
+		MutableAcl acl;
+		
+		try {
+			acl = (MutableAcl) readAclById(identity);
+		} catch (NotFoundException e1) {
+			return isGranted ;
+		}
+		
+		List<Sid> sids = sidRetrievalStrategy.getSids(authentication);
+		boolean isAnonymous = false;
+		List<Permission> permissionsToUse = permissions;
+		// checking anonymous !!
+		if (authentication.getPrincipal() instanceof CommuintyUserDetails ){
+			isAnonymous = ((CommuintyUserDetails) authentication.getPrincipal()).getUser().isAnonymous() ;
+		}
+		if( !isAnonymous ) {
+			sids.add(new PrincipalSid(SecurityHelper.ANONYMOUS_USER_DETAILS.getUser().getUsername()));
+		}
+					
+		try {
+			
+			if (!permissions.contains(CommunityPermissions.ADMIN) ) {
+				isGranted = acl.isGranted(Arrays.asList( (Permission)CommunityPermissions.ADMIN) , sids, false);				
+			}
+			
+			log.debug( "Checking permissions {} for {}", permissionsToUse, sids );
+			if( isGranted ) {
+				isGranted = acl.isGranted(permissionsToUse, sids, false);
+			}
+			
+		} catch (NotFoundException e) {
+			log.warn("Unable to find an ACE for the given object", e);
+		} catch (UnloadedSidException e) {
+			log.error("Unloaded Sid", e);
+		}
+
+		return isGranted;
+	}
+	
 
 	/**
 	 * 지정된 객체에 대하여 부여된 모든 권한 정보를 리턴한다.
@@ -63,10 +147,14 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 	 * @return
 	 */
 	public <T> List<AccessControlEntry> getAsignedPermissions(Class<T> clazz, Serializable identifier) {
-		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
-		MutableAcl acl = (MutableAcl) readAclById(identity);			
-		List<AccessControlEntry> entries = acl.getEntries();
-		return entries;
+		try {
+			ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
+			MutableAcl acl = (MutableAcl) readAclById(identity);		
+			List<AccessControlEntry> entries = acl.getEntries();
+			return entries;
+		} catch (NotFoundException e) {
+			return Collections.EMPTY_LIST;
+		}
 	}
 	
 	/**
@@ -81,15 +169,21 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 	 */
 	public <T> boolean isPermissionGranted(Class<T> clazz, Serializable identifier, UserDetails user, Permission... permissions) {		
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
-		MutableAcl acl = (MutableAcl) readAclById(identity);		
-		boolean isGranted = false;		
+		boolean isGranted = false;			
+		MutableAcl acl;
+		try {
+			acl = (MutableAcl) readAclById(identity);
+		} catch (NotFoundException e1) {
+			return isGranted ;
+		}		
+
 		List<Sid> list = new ArrayList<Sid>();
 		list.add(new PrincipalSid(user.getUsername()));
 		
 		for( GrantedAuthority authority : user.getAuthorities() ) {
 			list.add(new GrantedAuthoritySid(authority.getAuthority()));
 		}		
-
+				
 		try {
 			isGranted = acl.isGranted(Arrays.asList(permissions), list, false);
 		} catch (NotFoundException e) {
@@ -101,6 +195,17 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		return isGranted;
 	}
 	
+	public <T> boolean isPermissionGrantedToAnonymous(Class<T> clazz, Serializable identifier, Permission... permissions) {	
+		return isPermissionGranted(clazz, identifier, SecurityHelper.ANONYMOUS_USER_DETAILS , permissions);
+	}
+	
+	public <T> void addAnonymousPermission(Class<T> clazz, Serializable identifier, Permission permission) {	
+		 addPermission(clazz, identifier, SecurityHelper.ANONYMOUS_USER_DETAILS.getUser() , permission);
+	}
+
+	public <T> void removeAnonymousPermission(Class<T> clazz, Serializable identifier, Permission permission) {	
+		removePermission(clazz, identifier, SecurityHelper.ANONYMOUS_USER_DETAILS.getUser() , permission);
+	}
 	
 	public <T> void addPermission(Class<T> clazz, Serializable identifier, User user, Permission permission) {
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz, identifier);
