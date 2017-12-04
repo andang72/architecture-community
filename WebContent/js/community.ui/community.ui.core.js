@@ -108,7 +108,7 @@
 				}
 				if(defined(features.accounts)){
 					that.token = new community.model.User();
-					ajax( that.options.url || '/data/v1/users/me.json' , {
+					ajax( that.options.url || '/data/api/v1/users/me.json' , {
 						success : function(response){
 							var token = new community.model.User(extend( response.user, { roles : response.roles }));
 							token.copy(that.token);	
@@ -170,6 +170,7 @@
 		function defined(x) {
 			return (typeof x != UNDEFINED);
 		};
+		
 			
 		function grid(renderTo, options){
 			options = options || {};		
@@ -421,6 +422,7 @@
 		}
 		
 		extend( community.ui , {	
+			guid : kendo.guid,
 			setup : setup,
 			handleAjaxError : handleAjaxError,
 			error : error,
