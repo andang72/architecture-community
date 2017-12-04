@@ -3,6 +3,19 @@
 	var community = window.community = window.community || { model : {} , data : {}},
 	extend = $.extend,
 	Model = kendo.data.Model;
+
+	community.model.ObjectAccessControlEntry = Model.define({ 		
+		id: "id",
+		fields: { 	
+			id: { type: "number", defaultValue: 0 },			
+			granting: { type: "boolean", defaultValue: false },			
+			domainObjectClass: { type: "string", defaultValue: "" },			
+			domainObjectId: { type: "number", defaultValue: 0 },			
+			grantedAuthority: { type: "string", defaultValue: "" },			
+			grantedAuthorityOwner:{ type: "string", defaultValue: "" },
+			permission:{ type: "string", defaultValue: "" }
+		}
+	});
 	
 	community.model.User = Model.define({ 
 		id : "userId",
@@ -33,8 +46,11 @@
 		    	target.set("username", this.get("username"));
 		    	target.set("name", this.get("name"));
 		    	target.set("email", this.get("email"));
-		    	target.set("creationDate", this.get("creationDate"));
-		    	target.set("modifiedDate", this.get("modifiedDate"));
+		    			    	
+		    	if(this.get("creationDate") != null )
+		    		target.set("creationDate", this.get("creationDate"));
+		    	if(this.get("modifiedDate") != null )
+		    		target.set("modifiedDate", this.get("modifiedDate"));
 		    	target.set("enabled", this.get("enabled"));
 		    	target.set("nameVisible", this.get("nameVisible"));
 		    	target.set("emailVisible", this.get("emailVisible"));
@@ -46,8 +62,56 @@
 		}
 	});
 	
-	
-	community.model.Board = Model.define({ });
+	community.model.Board = Model.define({ 
+		id : "boardId",
+		fields: { 			
+			boardId: { type: "number", defaultValue: 0 },			
+			objectType: { type: "number", defaultValue: 0 },			
+			objectId: { type: "number", defaultValue: 0},			
+			name: { type: "string", defaultValue: "" },	
+			displayName: { type: "string", defaultValue: "" },
+			description: { type: "string", defaultValue: "" },
+			properties: { type: "object", defaultValue : {} },
+			totalMessage: { type: "number", defaultValue: 0},
+			totalViewCount: { type: "number", defaultValue: 0},
+			totalThreadCount: { type: "number", defaultValue: 0},
+			createThread: { type: "boolean", defaultValue: false },
+			createThreadMessage: { type: "boolean", defaultValue: false },
+			createAttachement: { type: "boolean", defaultValue: false },
+			createComment: { type: "boolean", defaultValue: false },
+			createImage: { type: "boolean", defaultValue: false },
+			readComment: { type: "boolean", defaultValue: false },
+			readable: { type: "boolean", defaultValue: false },
+			writable: { type: "boolean", defaultValue: false },
+			creationDate:{ type: "date" },
+			modifiedDate:{ type: "date"}
+		},
+		copy : function ( target ){
+		    	target.boardId = this.get("boardId");
+		    	target.set("objectType", this.get("objectType"));
+		    	target.set("objectId", this.get("objectId"));
+		    	target.set("name", this.get("name"));
+		    	target.set("displayName", this.get("displayName"));
+		    	target.set("description", this.get("description"));
+		    	target.set("totalMessage", this.get("totalMessage"));
+		    	target.set("totalViewCount", this.get("totalViewCount"));
+		    	target.set("totalThreadCount", this.get("totalThreadCount"));
+		    	target.set("writable", this.get("writable"));
+		    	target.set("readable", this.get("readable"));
+		    	target.set("createImage", this.get("createImage"));
+		    	target.set("createComment", this.get("createComment"));
+		    	target.set("createAttachement", this.get("createAttachement"));
+		    	target.set("createThread", this.get("createThread"));
+		    	target.set("createThreadMessage", this.get("createThreadMessage"));
+		    	if( typeof this.get("properties") === 'object' )
+		    		target.set("properties", this.get("properties"));	  
+		    	if(this.get("creationDate") != null )
+		    		target.set("creationDate", this.get("creationDate"));
+		    if(this.get("modifiedDate") != null )
+		    		target.set("modifiedDate", this.get("modifiedDate"));
+		}
+		
+	});
 
 	
 	community.model.Message = Model.define({ 		
@@ -62,6 +126,7 @@
 			subject:{ type: "string", defaultValue: "" },			
 			body:{type: "string", defaultValue: "" },			
 			replyCount:{ type: "number", defaultValue: 0 },	
+			properties: { type: "object", defaultValue : {} },
 			creationDate:{ type: "date" },			
 			modifiedDate:{ type: "date" }
 		}
@@ -77,6 +142,7 @@
 			rootMessage	: { type: "object", defaultValue: new community.model.Message() },	
 			messageCount: { type: "number", defaultValue: 0 },	
 			viewCount: { type: "number", defaultValue: 0 },	
+			properties: { type: "object", defaultValue : {} },
 			creationDate: { type: "date" },			
 			modifiedDate: { type: "date" }
 		}
@@ -84,8 +150,10 @@
 	
 	
 	function getUserProfileImage ( user ) {
-		var imageSrc = "/images/no-avatar.png";
-		return imageSrc;
+		if( user != null && user.username != null &&  user.username.length > 0 )
+			return encodeURI ('/download/avatar/' + user.username + '?height=96&width=96&time=' + kendo.guid() );
+		else
+			return "/images/no-avatar.png";
 	}
 	
 	
