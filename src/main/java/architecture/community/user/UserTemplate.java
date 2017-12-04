@@ -89,7 +89,16 @@ public class UserTemplate implements User, Serializable {
 	public UserTemplate(String username) {
 		this.userId = -2L;
 		this.username = username;
+		this.enabled = true;
+		status = Status.NONE;
 	}
+	
+	public UserTemplate(long userId, String username) {
+		this.userId = userId;
+		this.username = username;
+		this.password = "";
+	}
+	
 
 	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
@@ -115,10 +124,6 @@ public class UserTemplate implements User, Serializable {
 		this.userId = userId;
 	}
 
-	public UserTemplate(long userId, String username) {
-		this.userId = userId;
-		this.username = username;
-	}
 
 	public long getUserId() {
 		return userId;
