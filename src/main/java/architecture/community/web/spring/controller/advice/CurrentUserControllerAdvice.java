@@ -13,15 +13,7 @@ public class CurrentUserControllerAdvice {
 
 	@ModelAttribute("currentUser")
     public User getCurrentUser(Authentication authentication) {
-		
-		if( authentication != null && authentication.getPrincipal() != null) {
-			Object obj = authentication.getPrincipal() ;
-			if( obj instanceof CommuintyUserDetails ) {
-				return (( CommuintyUserDetails ) obj ).getUser();
-			}
-		}
-        return SecurityHelper.ANONYMOUS ;
-    
-	}
+        return (authentication == null) ? SecurityHelper.ANONYMOUS : ((CommuintyUserDetails)authentication.getPrincipal()).getUser();
+    }
 	
 }
