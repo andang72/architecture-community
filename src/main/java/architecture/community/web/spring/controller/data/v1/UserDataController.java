@@ -19,18 +19,19 @@ import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 
 @Controller("community-data-v1-user-controller")
-@RequestMapping("/data/v1/users")
+@RequestMapping("/data/api/v1/users")
 public class UserDataController {
 		
 	@PreAuthorize("permitAll")
     @RequestMapping(value = "/me.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
-    public UserDetails getUserDetails(Authentication authentication, NativeWebRequest request) {		
-		if( authentication != null ) {
+    public UserDetails getUserDetails(Authentication authentication, NativeWebRequest request) {	
+		
+		if( authentication != null && authentication.getPrincipal() != null) {
 			CommuintyUserDetails userDetails = (CommuintyUserDetails) authentication.getPrincipal();
 			return new UserDetails(userDetails.getUser(), getRoles(userDetails.getAuthorities()));
-		}else {
-			return new UserDetails(SecurityHelper.ANONYMOUS, Collections.EMPTY_LIST);
+		}else {		
+			return new UserDetails(SecurityHelper.ANONYMOUS, Collections.EMPTY_LIST);		
 		}
 	}
 	

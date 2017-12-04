@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package architecture.community.web.spring.controller.data;
+package architecture.community.web.spring.controller.data.v1;
 
 import java.io.IOException;
 import java.io.InputStream;
