@@ -22,6 +22,7 @@ import architecture.community.util.SecurityHelper;
 @RequestMapping("/data/api/v1/users")
 public class UserDataController {
 		
+	
 	@PreAuthorize("permitAll")
     @RequestMapping(value = "/me.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
