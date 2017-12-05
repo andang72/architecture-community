@@ -33,7 +33,7 @@
      <beans:bean id="sqlQueryFactory" class="architecture.ee.jdbc.sqlquery.factory.SqlQueryFactoryBuilder" init-method="initialize" factory-method="build" >
      	<beans:property name="resourceLocations">
      		<beans:list>
-     			<value>sql/default-framework-sqlset.xml</value>     			
+     			<value>sql/community-framework-sqlset.xml</value>     			
      		</beans:list>
      	</beans:property>
      </beans:bean>
