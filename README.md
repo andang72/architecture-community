@@ -2,7 +2,10 @@
 
 오픈소스 게시판 ... 
 
-How to install and start 
+
+
+------
+## How to install and start 
 
 1. creat tables using database/create_table_oracle.sql
 
@@ -12,12 +15,25 @@ How to install and start
 
 4. deploy WebContent as web application .
 
+------
 ** OPENSOURE for UI 
 
-Kendoui Core
-Summernote
+오픈소스 | 버전 | 라이선스 
+JQuery | 2.2.4 | MIT
+JQuery ICheck | 1.0.2 | MIT
+JQuery metismenu | 2.7.1 | MIT
+JQuery Slim Scroll | 1.3.8 | MIT, GPL
+Pace  | 1.0.2 | 
+Require JS  | 2.3.5 | MIT
 
 
+Kendoui Core | | Apache LICENSE 2.0 
+Bootstrap  | 3.3.7 | MIT
+Summernote | 0.8.8 | MIT
+Dropzone | | 
+
+
+------
 ** PAGE API 
 
 /display/
@@ -27,7 +43,7 @@ Summernote
 /issues/
 /boards/
 
-
+------
 ** SERVER API 
 
 /data/v1/boards/list.json

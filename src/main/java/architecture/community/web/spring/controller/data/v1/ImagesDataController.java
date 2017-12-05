@@ -45,7 +45,7 @@ import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.ee.service.ConfigService;
 
-@Controller("images-data-controller")
+@Controller("community-api-v1-images-data-controller")
 @RequestMapping("/data/api/v1/images")
 
 public class ImagesDataController {

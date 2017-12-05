@@ -43,7 +43,7 @@ import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
 import architecture.community.web.model.ItemList;
 
-@Controller("attachments-data-controller")
+@Controller("community-api-v1-attachments-data-controller")
 @RequestMapping("/data/api/v1/attachments")
 public class AttachmentsDataController {
 
