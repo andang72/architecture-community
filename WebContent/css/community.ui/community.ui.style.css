@@ -275,12 +275,52 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
     height: auto;
 }
 
-/* text.
+/*------------------------------------
+ global style .
 ------------------------------------*/
-.v-a-m {
-	vertical-align: middle!important;
+
+.align-middle {
+    vertical-align: middle!important;
 }
 
+/*------------------------------------
+  Tables
+------------------------------------*/
+
+[class*="text"][class*="center"] td,
+[class*="text"][class*="center"] th {
+  text-align: center;
+}
+
+.u-table--v1 td,
+.u-table--v1 th {
+  padding: 8px;
+}
+
+.u-table--v1 thead th {
+  border-bottom-width: 1px;
+}
+
+.u-table--v2 td,
+.u-table--v2 th {
+  padding: 15px;
+}
+
+.u-table--v2 thead th {
+  background-color: inherit;
+  border-bottom-width: 1px;
+}
+
+.g-col-border-top-0 td,
+.g-col-border-top-0 th {
+  border-top-width: 0;
+}
+
+.g-col-border-side-0 td,
+.g-col-border-side-0 th {
+  border-left-width: 0;
+  border-right-width: 0;
+}
 
 
 /* Button Styles
