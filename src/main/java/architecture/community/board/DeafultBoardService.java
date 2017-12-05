@@ -151,9 +151,9 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 			// get exist old value..			
 		}				
 		// insert thread ..
-		boardDao.createForumThread(threadToUse);
+		boardDao.createBoardThread(threadToUse);
 		// insert message ..
-		boardDao.createForumMessage(threadToUse, rootMessage, -1L );				
+		boardDao.createBoardMessage(threadToUse, rootMessage, -1L );				
 		fireEvent(new BoardThreadEvent(threadToUse, BoardThreadEvent.Type.CREATED));		
 	}
 
@@ -168,7 +168,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	}
 
 	public List<BoardThread> getBoardThreads(int objectType, long objectId, int startIndex, int numResults){
-		List<Long> threadIds = boardDao.getForumThreadIds(objectType, objectId, startIndex, numResults);
+		List<Long> threadIds = boardDao.getBoardThreadIds(objectType, objectId, startIndex, numResults);
 		List<BoardThread> list = new ArrayList<BoardThread>(threadIds.size());
 		for( Long threadId : threadIds )
 		{
@@ -183,7 +183,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	}
 	
 	public List<BoardThread> getBoardThreads(int objectType, long objectId) {		
-		List<Long> threadIds = boardDao.getForumThreadIds(objectType, objectId);
+		List<Long> threadIds = boardDao.getBoardThreadIds(objectType, objectId);
 		List<BoardThread> list = new ArrayList<BoardThread>(threadIds.size());
 		for( Long threadId : threadIds )
 		{
@@ -210,7 +210,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		if( threadToUse == null){
 			
 			try {
-				threadToUse = boardDao.getForumThreadById(threadId);
+				threadToUse = boardDao.getBoardThreadById(threadId);
 				threadToUse.setLatestMessage(new DefaultBoardMessage(boardDao.getLatestMessageId(threadToUse)));	
 				((DefaultBoardThread)threadToUse).setMessageCount(boardDao.getAllMessageIdsInThread(threadToUse).size());
 			} catch (Exception e) {
@@ -240,7 +240,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		BoardMessage messageToUse = getForumMessageInCache(messageId);
 		if( messageToUse == null){
 			try {
-				messageToUse = boardDao.getForumMessageById(messageId);			
+				messageToUse = boardDao.getBoardMessageById(messageId);			
 				if( messageToUse.getUser().getUserId() > 0){
 					((DefaultBoardMessage)messageToUse).setUser(userManager.getUser(messageToUse.getUser()));
 				}	
@@ -256,14 +256,14 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void updateThread(BoardThread thread) {		
-		boardDao.updateForumThread(thread);
+		boardDao.updateBoardThread(thread);
 		evictCaches(thread);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void updateMessage(BoardMessage message) {
 		
-		boardDao.updateForumMessage(message);		
+		boardDao.updateBoardMessage(message);		
 		try {
 			BoardThread thread = getBoardThread(message.getThreadId());
 			boardDao.updateModifiedDate(thread, message.getModifiedDate() );
@@ -290,7 +290,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		if(thread.getThreadId() != -1L){
 			newMessageToUse.setThreadId(thread.getThreadId());
 		}		
-		boardDao.createForumMessage(thread, newMessageToUse, parentMessage.getMessageId());
+		boardDao.createBoardMessage(thread, newMessageToUse, parentMessage.getMessageId());
 		updateThreadModifiedDate(thread, newMessageToUse);		
 		evictCaches(thread);
 		
@@ -363,7 +363,7 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	}
 	
 	public int getBoardThreadCount(int objectType, long objectId) {
-		return boardDao.getForumThreadCount(objectType, objectId);
+		return boardDao.getBoardThreadCount(objectType, objectId);
 	}
 
 	public int getBoardMessageCount(Board board) {		

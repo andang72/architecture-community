@@ -244,7 +244,14 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 				new SqlParameterValue (Types.NUMERIC, objectType ), new SqlParameterValue (Types.NUMERIC, objectId ));		
 	}
 
-
+	public int getAttachmentCount(int objectType, long objectId) {
+		return getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("ARCHITECTURE_WEB.COUNT_ATTACHMENT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				Integer.class,
+				new SqlParameterValue(Types.NUMERIC, objectType ), 
+				new SqlParameterValue(Types.NUMERIC, objectId ));
+	}
+	
 	public List<Long> getAttachmentIds(int objectType, long objectId) {		
 		return getExtendedJdbcTemplate().queryForList(
 				getBoundSql("COMMUNITY_WEB.SELECT_ATTACHMENT_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
@@ -254,6 +261,18 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 			);
 	}
 
+ 
+	public List<Long> getAttachmentIds(int objectType, long objectId, int startIndex, int maxResults) {
+		return getExtendedJdbcTemplate().query(
+				getBoundSql("COMMUNITY_WEB.SELECT_ATTACHMENT_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				startIndex, 
+				maxResults, 
+				Long.class, 
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+		);
+	}
+	
 
 	public void move(int objectType, long objectId, int targetObjectType, long targetObjectId) {
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.MOVE_ATTACHMENTS").getSql(), 	
@@ -263,5 +282,6 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 				new SqlParameterValue (Types.NUMERIC, objectId )
 				);
 	}
+
 
 }

@@ -62,7 +62,7 @@ public class AttachmentsDataController {
     public List<Attachment> uploadFiles(
     		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
     		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
-    		MultipartHttpServletRequest request ) throws NotFoundException, IOException, UnAuthorizedException {
+    	    MultipartHttpServletRequest request ) throws NotFoundException, IOException, UnAuthorizedException {
 
 		List<Attachment> list = new ArrayList<Attachment>();
 		Iterator<String> names = request.getFileNames();		
@@ -84,14 +84,22 @@ public class AttachmentsDataController {
 	public ItemList listMessageFile(
     		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
     		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
+    	    @RequestParam(value = "startIndex", defaultValue = "0", required = false) Integer startIndex,
+    	    @RequestParam(value = "pageSize", defaultValue = "0", required = false) Integer pageSize,
     		NativeWebRequest request) throws NotFoundException {
 
 		ItemList list = new ItemList();
 		
 		if( objectType > 0 && objectId > 0 ){
-			List<Attachment> attachments = attachmentService.getAttachments(objectType, objectId);
-			list.setItems(attachments);
-			list.setTotalCount(attachments.size());
+			if( pageSize > 0) {
+				List<Attachment> attachments = attachmentService.getAttachments(objectType, objectId, startIndex, pageSize);
+				list.setItems(attachments);
+				list.setTotalCount(attachmentService.getAttachmentCount(objectType, objectId));
+			}else {
+				List<Attachment> attachments = attachmentService.getAttachments(objectType, objectId);
+				list.setItems(attachments);
+				list.setTotalCount(attachments.size());				
+			}
 		}
 		return list;
 

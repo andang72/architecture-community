@@ -19,34 +19,30 @@ public interface BoardDao {
 	public void deleteBoard(Board board);
 	
 	public void saveOrUpdate( Board board );
-	
-	
 
-	public abstract void createForumThread( BoardThread thread );
+	public abstract void createBoardThread( BoardThread thread );
 	
-	public abstract void createForumMessage (BoardThread thread, BoardMessage message, long parentMessageId);
+	public abstract void createBoardMessage (BoardThread thread, BoardMessage message, long parentMessageId);
 	
-	public abstract int getForumThreadCount(int objectType, long objectId);
+	public abstract int getBoardThreadCount(int objectType, long objectId);	
 	
+	public abstract List<Long> getBoardThreadIds(int objectType, long objectId);
 	
-	public abstract List<Long> getForumThreadIds(int objectType, long objectId);
-	
-	public abstract List<Long> getForumThreadIds(int objectType, long objectId, int startIndex, int numResults);
+	public abstract List<Long> getBoardThreadIds(int objectType, long objectId, int startIndex, int numResults);
 	
 	public abstract long getLatestMessageId(BoardThread thread);
 	
 	public abstract List<Long> getAllMessageIdsInThread(BoardThread thread);
 	
-	public abstract BoardThread getForumThreadById(long threadId);
+	public abstract BoardThread getBoardThreadById(long threadId);
 		
-	public abstract int getBoardMessageCount(int objectType, long objectId);
+	public abstract int getBoardMessageCount(int objectType, long objectId);	
 	
+	public abstract BoardMessage getBoardMessageById(long messageId) ;
 	
-	public abstract BoardMessage getForumMessageById(long messageId) ;
+	public abstract void updateBoardMessage(BoardMessage message);
 	
-	public abstract void updateForumMessage(BoardMessage message);
-	
-	public abstract void updateForumThread(BoardThread thread);
+	public abstract void updateBoardThread(BoardThread thread);
 	
 	public abstract void updateModifiedDate(BoardThread thread, Date date);
 	

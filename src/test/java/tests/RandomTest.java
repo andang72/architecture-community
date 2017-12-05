@@ -17,7 +17,7 @@ public class RandomTest {
 		for( int i = 0 ; i < 100 ; i++ ){
 			double random = Math.random();
 			
-			if( random < 0.6 ){
+			if( random < 0.2 ){
 				success = false;
 				failCount ++;
 			}else{

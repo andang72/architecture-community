@@ -27,7 +27,11 @@ public interface AttachmentService {
 	
 	public abstract Attachment getAttachment(long attachmentId) throws NotFoundException ;
 	
+	public abstract int getAttachmentCount(int objectType, long objectId);
+	
 	public abstract List<Attachment> getAttachments(int objectType, long objectId);
+	
+	public abstract List<Attachment> getAttachments(int objectType, long objectId, int startIndex, int maxResults );
 	
 	public abstract void move(int objectType, long objectId, int targetObjectType, long targetObjectId);
 	

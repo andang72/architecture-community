@@ -24,6 +24,7 @@ import architecture.community.attachment.Attachment;
 import architecture.community.util.DateUtils;
 
 public interface AttachmentDao {
+	
 	public static class AttachmentDownloadItem
     {
         private long attachmentId;
@@ -74,6 +75,10 @@ public interface AttachmentDao {
     public abstract Attachment getByAttachmentId(long attachmentId);
 
     public abstract List<Long> getAttachmentIds(int objectType, long objectId);
+    
+    public abstract List<Long> getAttachmentIds(int objectType, long objectId, int startIndex, int maxResults);
+    
+    public abstract int getAttachmentCount(int objectType, long objectId);
     
     public abstract void move(int objectType, long objectId, int targetObjectType, long targetObjectId);
     

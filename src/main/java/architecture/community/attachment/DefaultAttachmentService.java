@@ -115,8 +115,7 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 		return attachment;
 	}
 
-	public List<Attachment> getAttachments(int objectType, long objectId) {
-		
+	public List<Attachment> getAttachments(int objectType, long objectId) {		
 		List<Long> ids = attachmentDao.getAttachmentIds(objectType, objectId);		
 		List<Attachment> list = new ArrayList<Attachment>(ids.size());
 		for( Long id : ids){
@@ -127,10 +126,22 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 			}
 		}		
 		return list;
-		
-		//return attachmentDao.getByObjectTypeAndObjectId(objectType, objectId);
-	
 	}
+	
+
+	public List<Attachment> getAttachments(int objectType, long objectId, int startIndex, int maxResults) {
+		List<Long> ids = attachmentDao.getAttachmentIds(objectType, objectId, startIndex, maxResults);
+		List<Attachment> list = new ArrayList<Attachment>(ids.size());
+		for( Long id : ids){
+			try {
+				list.add(getAttachment(id));
+			} catch (NotFoundException e) {
+				log.error(e.getMessage(), e);
+			}
+		}		
+		return list;
+	}
+	
 	
 	protected Attachment getAttachmentInCache(long attachmentId){
 		if( attachmentCache.get(attachmentId) != null && attachmentId > 0L )
@@ -363,5 +374,15 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 			attachmentDao.move(objectType, objectId, targetObjectType, targetObjectId);
 		}
 	}
+
+
+
+	@Override
+	public int getAttachmentCount(int objectType, long objectId) {
+		
+		return attachmentDao.getAttachmentCount(objectType, objectId);
+	}
+
+
 
 }

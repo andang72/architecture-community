@@ -198,9 +198,9 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	}	
 	
 	
-	public List<Long> getForumThreadIds(int objectType, long objectId, int startIndex, int numResults){
+	public List<Long> getBoardThreadIds(int objectType, long objectId, int startIndex, int numResults){
 		return getExtendedJdbcTemplate().query(
-				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
 				startIndex, 
 				numResults, 
 				Long.class, 
@@ -209,9 +209,9 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		);
 	}
 	
-	public List<Long> getForumThreadIds(int objectType, long objectId){
+	public List<Long> getBoardThreadIds(int objectType, long objectId){
 		return getExtendedJdbcTemplate().queryForList(
-				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Long.class,
+				getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_THREAD_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Long.class,
 				new SqlParameterValue(Types.NUMERIC, objectType ),
 				new SqlParameterValue(Types.NUMERIC, objectId )
 				);
@@ -221,7 +221,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		try
         {
             return getExtendedJdbcTemplate().queryForObject(
-            		getBoundSql("COMMUNITY_BOARD.SELECT_LATEST_FORUM_MESSAGE_ID_BY_THREAD_ID").getSql(), 
+            		getBoundSql("COMMUNITY_BOARD.SELECT_LATEST_BOARD_MESSAGE_ID_BY_THREAD_ID").getSql(), 
             		Long.class,
             		new SqlParameterValue(Types.NUMERIC, thread.getThreadId() ) );
         }
@@ -234,13 +234,13 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	
 	public List<Long> getAllMessageIdsInThread(BoardThread thread){
 		return getExtendedJdbcTemplate().queryForList(
-			getBoundSql("COMMUNITY_BOARD.SELECT_ALL_FORUM_MESSAGE_IDS_BY_THREAD_ID").getSql(), 
+			getBoundSql("COMMUNITY_BOARD.SELECT_ALL_BOARD_MESSAGE_IDS_BY_THREAD_ID").getSql(), 
 			Long.class,
 			new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
 		);		
 	}
 	
-	public void createForumThread(BoardThread thread) {		
+	public void createBoardThread(BoardThread thread) {		
 		DefaultBoardThread threadToUse = (DefaultBoardThread)thread;		
 		threadToUse.setThreadId(getNextThreadId());		
 		
@@ -249,7 +249,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 			messageToUse.setMessageId(getNextMessageId());		
 		}
 		
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.CREATE_FORUM_THREAD").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.CREATE_BOARD_THREAD").getSql(),
 				new SqlParameterValue(Types.NUMERIC, threadToUse.getThreadId() ),
 				new SqlParameterValue(Types.NUMERIC, threadToUse.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, threadToUse.getObjectId()),				
@@ -259,7 +259,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		);
 	}
 	
-	public void createForumMessage (BoardThread thread, BoardMessage message, long parentMessageId) {
+	public void createBoardMessage (BoardThread thread, BoardMessage message, long parentMessageId) {
 			
 		DefaultBoardMessage messageToUse = (DefaultBoardMessage) message;
 		if(messageToUse.getCreationDate() == null )
@@ -273,7 +273,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 			messageToUse.setMessageId(getNextMessageId());
 		}
 		
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.CREATE_FORUM_MESSAGE").getSql(),
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.CREATE_BOARD_MESSAGE").getSql(),
 				new SqlParameterValue(Types.NUMERIC, messageToUse.getMessageId() ),
 				new SqlParameterValue(Types.NUMERIC, parentMessageId),
 				new SqlParameterValue(Types.NUMERIC, thread.getThreadId()),
@@ -287,13 +287,13 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		);	
 	}
 
-	public BoardThread getForumThreadById(long threadId) {
+	public BoardThread getBoardThreadById(long threadId) {
 		BoardThread thread = null;
 		if (threadId <= 0L) {
 			return thread;
 		}		
 		try {
-			thread = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_BY_ID").getSql(), 
+			thread = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_THREAD_BY_ID").getSql(), 
 					threadMapper, 
 					new SqlParameterValue(Types.NUMERIC, threadId ));
 		} catch (DataAccessException e) {
@@ -302,13 +302,13 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		return thread;
 	}
 	
-	public BoardMessage getForumMessageById(long messageId) {
+	public BoardMessage getBoardMessageById(long messageId) {
 		BoardMessage message = null;
 		if (messageId <= 0L) {
 			return message;
 		}		
 		try {
-			message = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_MESSAGE_BY_ID").getSql(), 
+			message = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_MESSAGE_BY_ID").getSql(), 
 					messageMapper, 
 					new SqlParameterValue(Types.NUMERIC, messageId ));
 		} catch (DataAccessException e) {
@@ -317,20 +317,20 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		return message;
 	}
 
-	public void updateForumThread(BoardThread thread) {
+	public void updateBoardThread(BoardThread thread) {
 		Date now = new Date();
 		thread.setModifiedDate(now);		
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_FORUM_THREAD").getSql(), 
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_BOARD_THREAD").getSql(), 
 				new SqlParameterValue(Types.VARCHAR, thread.getRootMessage().getMessageId()),
 				new SqlParameterValue(Types.TIMESTAMP, thread.getModifiedDate() ),	
 				new SqlParameterValue(Types.NUMERIC, thread.getThreadId())
 		);
 	}
 	
-	public void updateForumMessage(BoardMessage message) {
+	public void updateBoardMessage(BoardMessage message) {
 		Date now = new Date();
 		message.setModifiedDate(now);		
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_FORUM_MESSAGE").getSql(), 
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_BOARD_MESSAGE").getSql(), 
 				new SqlParameterValue(Types.VARCHAR, message.getSubject() ),
 				new SqlParameterValue(Types.VARCHAR, message.getBody()),
 				new SqlParameterValue(Types.TIMESTAMP, message.getModifiedDate() ),	
@@ -340,16 +340,16 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
  
 	public void updateModifiedDate(BoardThread thread, Date date) {
 		thread.setModifiedDate(date);	
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_FORUM_THREAD_MODIFIED_DATE").getSql(), 
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_BOARD_THREAD_MODIFIED_DATE").getSql(), 
 				new SqlParameterValue(Types.TIMESTAMP, date ),	
 				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
 		);
 	}
 
 	@Override
-	public int getForumThreadCount(int objectType, long objectId) {
+	public int getBoardThreadCount(int objectType, long objectId) {
 		return getExtendedJdbcTemplate().queryForObject(
-			getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_COUNT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+			getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_THREAD_COUNT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
 			Integer.class,
 			new SqlParameterValue(Types.NUMERIC, objectType ),
 			new SqlParameterValue(Types.NUMERIC, objectId )
@@ -360,7 +360,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	public List<Long> getMessageIds(BoardThread thread) {
 		
 		return getExtendedJdbcTemplate().queryForList(
-				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_MESSAGE_IDS_BY_THREAD_ID").getSql(), Long.class,
+				getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_THREAD_MESSAGE_IDS_BY_THREAD_ID").getSql(), Long.class,
 				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
 				);
 	}
@@ -368,7 +368,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	@Override
 	public int getMessageCount(BoardThread thread) {
 		return getExtendedJdbcTemplate().queryForObject(
-				getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_MESSAGE_COUNT_BY_THREAD_ID").getSql(), 
+				getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_THREAD_MESSAGE_COUNT_BY_THREAD_ID").getSql(), 
 				Integer.class,
 				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() )
 		);
@@ -386,7 +386,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	public MessageTreeWalker getTreeWalker(BoardThread thread) {	
 		
 		final LongTree tree = new LongTree(thread.getRootMessage().getMessageId(), getMessageCount(thread));
-		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_BOARD.SELECT_FORUM_THREAD_MESSAGES_BY_THREAD_ID").getSql(), 
+		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_BOARD.SELECT_BOARD_THREAD_MESSAGES_BY_THREAD_ID").getSql(), 
 				new RowCallbackHandler() {
 					public void processRow(ResultSet rs) throws SQLException {
 						long messageId = rs.getLong(1);

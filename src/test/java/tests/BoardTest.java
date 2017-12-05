@@ -54,7 +54,7 @@ public class BoardTest {
 		return img;
 	}
 	
-	@Test
+	@Test  
 	public void testSelectOrCreateBoard(){ 
 		
 		List<Board> list = boardService.getAllBoards();
@@ -64,7 +64,7 @@ public class BoardTest {
 				boardId = board.getBoardId();
 			log.debug("===================");
 			log.debug("BOARD {}, {}, {}", board.getBoardId(), board.getName(), board.getDisplayName() );
-			
+			/**
 			int count = imageService.getLogoImageCount(Models.BOARD.getObjectType(), board.getBoardId());
 			
 			log.debug("logo image count : {}, {}, {}", Models.BOARD.getObjectType(), board.getBoardId(), count);
@@ -86,6 +86,7 @@ public class BoardTest {
 					e.printStackTrace();
 				}
 			}
+			*/
 		}
 		
 		if( list.size() == 0)
