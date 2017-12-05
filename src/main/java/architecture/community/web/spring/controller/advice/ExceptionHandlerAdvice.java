@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import architecture.community.web.model.json.Result;
 
 @ControllerAdvice("basePackages={'architecture.community.web.spring.controller.data', 'architecture.community.web.spring.controller.data.v1' }")
+
 public class ExceptionHandlerAdvice {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerAdvice.class);
