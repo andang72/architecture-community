@@ -59,6 +59,9 @@ i.icon-svg {
 .icon-svg-ios-close-pane {
 	background-image: url("/images/icons/ios/close-pane.svg");
 }
+.icon-svg-ios-trash {
+	background-image: url("/images/icons/ios/trash.svg");
+}
 
 /* Dusk Icons */
 
@@ -89,4 +92,9 @@ i.icon-svg {
 
 .icon-svg-dusk-gallery {
 	background-image: url("/images/icons/dusk/picture.svg");
+}
+
+
+.icon-svg-dusk-attach {
+	background-image: url("/images/icons/dusk/attach.svg");
 }
