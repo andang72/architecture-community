@@ -276,11 +276,15 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
 }
 
 /*------------------------------------
- global style .
+ bootstrap fix...
 ------------------------------------*/
 
 .align-middle {
     vertical-align: middle!important;
+}
+
+.rounded-circle {
+    border-radius: 50%!important;
 }
 
 /*------------------------------------
