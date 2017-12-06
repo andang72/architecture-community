@@ -23,8 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.model.PropertyAwareSupport;
+import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
 
@@ -140,15 +142,18 @@ public class DefaultAttachment extends PropertyAwareSupport implements Attachmen
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
 	}
-
+	
+	 @JsonIgnore
 	public InputStream getInputStream() {
 		return inputStream;
 	}
-
+	 
+	 @JsonIgnore
 	public void setInputStream(InputStream inputStream) {
 		this.inputStream = inputStream;
 	}
 
+	 @JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -157,6 +162,7 @@ public class DefaultAttachment extends PropertyAwareSupport implements Attachmen
 		this.creationDate = creationDate;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getModifiedDate() {
 		return modifiedDate;
 	}

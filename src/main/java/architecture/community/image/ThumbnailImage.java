@@ -29,7 +29,7 @@ public class ThumbnailImage implements Serializable {
 	private int height;
 	
 	private String contentType;
-	
+		
 	public ThumbnailImage() {
 		size = 0;
 		contentType = DEFAULT_THUMBNAIL_CONTENT_TYPE;

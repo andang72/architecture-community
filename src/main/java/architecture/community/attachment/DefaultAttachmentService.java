@@ -297,7 +297,7 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 		return false;
 	}
 	
-	public InputStream getAttachmentImageThumbnailInputStream(Attachment image, ThumbnailImage thumbnail) {
+	public InputStream getAttachmentThumbnailInputStream(Attachment image, ThumbnailImage thumbnail) {
 		try {
 		    File file = getThumbnailFromCacheIfExist(image, thumbnail);
 		    return FileUtils.openInputStream(file);
@@ -341,15 +341,16 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 	}
 	
     protected String toThumbnailFilename(Attachment image, int width, int height) {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append(image.getAttachmentId()).append("_").append(width).append("_").append(height).append(".bin");
-    	return sb.toString();
+    		StringBuilder sb = new StringBuilder();
+    		sb.append(image.getAttachmentId()).append("_").append(width).append("_").append(height).append(".bin");
+    		return sb.toString();
     }
 	
 	public void  initialize() {		
 		log.debug( "initializing attachement manager" );		
 		getAttachmentDir();
 	}	
+	
 	public void destroy(){
 		
 	}

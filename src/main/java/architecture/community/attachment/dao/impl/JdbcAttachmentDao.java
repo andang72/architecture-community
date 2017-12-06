@@ -246,7 +246,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 
 	public int getAttachmentCount(int objectType, long objectId) {
 		return getExtendedJdbcTemplate().queryForObject(
-				getBoundSql("ARCHITECTURE_WEB.COUNT_ATTACHMENT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				getBoundSql("COMMUNITY_WEB.COUNT_ATTACHMENT_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
 				Integer.class,
 				new SqlParameterValue(Types.NUMERIC, objectType ), 
 				new SqlParameterValue(Types.NUMERIC, objectId ));

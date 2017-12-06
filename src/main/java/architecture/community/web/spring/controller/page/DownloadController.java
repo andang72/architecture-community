@@ -16,6 +16,7 @@
 
 package architecture.community.web.spring.controller.page;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
@@ -33,12 +34,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import architecture.community.attachment.Attachment;
+import architecture.community.attachment.AttachmentService;
+import architecture.community.exception.NotFoundException;
 import architecture.community.image.ImageService;
+import architecture.community.image.ThumbnailImage;
 import architecture.community.link.ExternalLinkService;
 import architecture.community.user.AvatarImage;
 import architecture.community.user.UserAvatarService;
 import architecture.community.web.spring.controller.data.v1.ImagesDataController;
+import architecture.community.web.util.ServletUtils;
 import architecture.ee.service.ConfigService;
+import architecture.ee.util.StringUtils;
 
 @Controller("download-controller")
 @RequestMapping("/download")
@@ -49,6 +56,10 @@ public class DownloadController {
 	@Inject
 	@Qualifier("imageService")
 	private ImageService imageService;
+	
+	@Inject
+	@Qualifier("attachmentService")
+	private AttachmentService attachmentService;
 
 	@Inject
 	@Qualifier("configService")
@@ -103,6 +114,63 @@ public class DownloadController {
 		}
 	}
 
+	
+	
+	@RequestMapping(value = "/files/{fileId:[\\p{Digit}]+}/{filename:.+}", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public void getAttachmentFile(
+			@PathVariable("fileId") Long fileId, 
+			@PathVariable("filename") String filename,
+		    @RequestParam(value = "thumbnail", defaultValue = "false", required = false) boolean thumbnail,
+		    @RequestParam(value = "width", defaultValue = "150", required = false) Integer width,
+		    @RequestParam(value = "height", defaultValue = "150", required = false) Integer height,
+		    HttpServletResponse response) throws IOException {
+
+		try {
+		    if (fileId > 0 && !StringUtils.isNullOrEmpty(filename)) {		    	
+		    		Attachment attachment = 	attachmentService.getAttachment(fileId);
+		    		if (org.apache.commons.lang3.StringUtils.equals(filename, attachment.getName())) {
+		    			if ( thumbnail ) {		    	
+		    				boolean noThumbnail = false;		    				
+		    				if(attachmentService.hasThumbnail(attachment)) {
+			    		    		ThumbnailImage thumbnailImage = new ThumbnailImage();			
+			    		    		thumbnailImage.setWidth(width);
+			    		    		thumbnailImage.setHeight(height);		    		    		
+		    				    try {
+									InputStream input = attachmentService.getAttachmentThumbnailInputStream( attachment, thumbnailImage );
+									response.setContentType(thumbnailImage.getContentType());
+									response.setContentLength( (int) thumbnailImage.getSize() );
+									IOUtils.copy(input, response.getOutputStream());
+									response.flushBuffer();
+								} catch (Exception e) {
+									log.warn(e.getMessage(), e);
+									noThumbnail = true;
+								}
+			    			}		    				
+		    				if(noThumbnail) {
+			    				response.setStatus(301);
+			    				String url = configService.getApplicationProperty("components.download.images.no-avatar-url", "/images/no-avatar.png");
+			    				response.addHeader("Location", url);
+			    			}		    				
+		    			} else {
+						InputStream input = attachmentService.getAttachmentInputStream(attachment);
+						response.setContentType(attachment.getContentType());
+						response.setContentLength(attachment.getSize());
+						IOUtils.copy(input, response.getOutputStream());
+						response.setHeader("contentDisposition", "attachment;filename=" + ServletUtils.getEncodedFileName(attachment.getName()));
+						response.flushBuffer();
+		    			}
+			} else {
+			    throw new NotFoundException();
+			}
+		    } else {
+			throw new NotFoundException();
+		    }
+		} catch (NotFoundException e) {
+		    response.sendError(404);
+		}
+
+	    }
 	
 	/**
 	@RequestMapping(value = "/images/{externalId}", method = RequestMethod.GET)

@@ -49,5 +49,5 @@ public interface AttachmentService {
 	
 	public abstract boolean hasThumbnail(Attachment attachment);
 	
-	public abstract InputStream getAttachmentImageThumbnailInputStream(Attachment image, ThumbnailImage thumbnail);
+	public abstract InputStream getAttachmentThumbnailInputStream(Attachment image, ThumbnailImage thumbnail);
 }
