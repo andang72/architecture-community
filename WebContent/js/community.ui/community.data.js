@@ -148,6 +148,33 @@
 		}
 	});
 	
+	community.model.Attachment = Model.define({ 
+		id : "attachmentId",
+		fields: { 	
+			attachmentId:{ type: "number", defaultValue: 0 },		
+			objectType:{ type: "number", defaultValue: 0 },		
+			objectId:{ type: "number", defaultValue: 0 },		
+			name:{ type: "string", defaultValue: "" },
+			contentType:{ type: "string", defaultValue: "" },
+			downloadCount:{ type: "number", defaultValue: 0 },	
+			size: { type: "number", defaultValue: 0 },	
+			user: { type: "object" , defaultValue : new community.model.User()},
+			properties: { type: "object", defaultValue : {} },
+			creationDate: { type: "date" },			
+			modifiedDate: { type: "date" }
+		},
+		formattedSize : function(){
+			return kendo.toString(this.get("size"), "##,###");
+		},	
+		formattedCreationDate : function(){
+	    	return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    	return kendo.toString(this.get("modifiedDate"), "g");
+	    }
+	});
+	
+	
 	
 	function getUserProfileImage ( user ) {
 		if( user != null && user.username != null &&  user.username.length > 0 )
@@ -156,6 +183,16 @@
 			return "/images/no-avatar.png";
 	}
 	
+	function getAttachmentThumbnailUrl ( attachment , thumbnail ){	
+		if( attachment.attachmentId > 0 ){
+			var _photoUrl = "/download/files/" + attachment.attachmentId + "/" + attachment.name ;	
+			if( thumbnail ){
+				_photoUrl = _photoUrl + '?thumbnail=true&height=120&width=120' ;
+			}
+			return encodeURI( _photoUrl + '&time=' + kendo.guid() );
+		}
+		return "/images/no-image.jpg";
+	} 
 	
 	function getUserDisplayName (user){
 		var displayName = "익명";
@@ -171,6 +208,7 @@
 	}
 	
 	extend(community.data, {	
+		getAttachmentThumbnailUrl :getAttachmentThumbnailUrl,
 		getUserDisplayName : getUserDisplayName ,
 		getUserProfileImage : getUserProfileImage
 	});
