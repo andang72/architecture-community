@@ -62,7 +62,12 @@ i.icon-svg {
 .icon-svg-ios-trash {
 	background-image: url("/images/icons/ios/trash.svg");
 }
-
+.icon-svg-ios-send-comment {
+	background-image: url("/images/icons/ios/send-comment.svg");
+}
+.icon-svg-ios-attach {
+	background-image: url("/images/icons/ios/attach.svg");
+}
 /* Dusk Icons */
 
 .icon-svg-dusk-edit {
@@ -93,8 +98,6 @@ i.icon-svg {
 .icon-svg-dusk-gallery {
 	background-image: url("/images/icons/dusk/picture.svg");
 }
-
-
 .icon-svg-dusk-attach {
 	background-image: url("/images/icons/dusk/attach.svg");
 }

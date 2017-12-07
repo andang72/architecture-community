@@ -275,6 +275,7 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
     height: auto;
 }
 
+
 /*------------------------------------
  bootstrap fix...
 ------------------------------------*/
@@ -286,6 +287,650 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
 .rounded-circle {
     border-radius: 50%!important;
 }
+
+
+/*-------------------------------------------------------------------------------
+  Components
+-------------------------------------------------------------------------------*/
+
+
+/*------------------------------------
+  Heading-v1
+------------------------------------*/
+[class*="u-heading-v1-"] {
+  position: relative;
+}
+
+[class*="u-heading-v1-"]::before, [class*="u-heading-v1-"]::after {
+  content: "";
+  position: absolute;
+  left: auto;
+  right: 0;
+  width: 100%;
+  height: 0;
+  border-top-width: 1px;
+  border-color: inherit;
+}
+
+[class*="u-heading-v1-"].text-center::before, [class*="u-heading-v1-"].text-center::after {
+  left: 0;
+  right: 0;
+}
+
+[class*="u-heading-v1-"].text-right::before, [class*="u-heading-v1-"].text-right::after {
+  left: 0;
+  right: auto;
+}
+
+.u-heading-v1__title {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0;
+  padding-right: 1.07143rem;
+  background-color: inherit;
+  z-index: 2;
+}
+
+.text-right .u-heading-v1__title {
+  padding-left: 1.07143rem;
+  padding-right: 0;
+}
+
+.text-center .u-heading-v1__title {
+  padding-left: 1.07143rem;
+  padding-right: 1.07143rem;
+}
+
+/*------------------------------------
+  Heading-v1-1
+------------------------------------*/
+.u-heading-v1-1::before {
+  top: 48%;
+  border-top-style: solid;
+}
+
+.u-heading-v1-1::after {
+  top: 58%;
+  border-top-style: solid;
+}
+
+/*------------------------------------
+  Heading-v1-2
+------------------------------------*/
+.u-heading-v1-2::before {
+  top: 48%;
+  border-top-style: dashed;
+}
+
+.u-heading-v1-2::after {
+  top: 58%;
+  border-top-style: dashed;
+}
+
+/*------------------------------------
+  Heading-v1-3
+------------------------------------*/
+.u-heading-v1-3::before {
+  top: 48%;
+  border-top-style: dotted;
+}
+
+.u-heading-v1-3::after {
+  top: 58%;
+  border-top-style: dotted;
+}
+
+/*------------------------------------
+  Heading-v1-4
+------------------------------------*/
+.u-heading-v1-4::before {
+  top: 50%;
+  border-top-style: solid;
+}
+
+/*------------------------------------
+  Heading-v1-5
+------------------------------------*/
+.u-heading-v1-5::before {
+  top: 50%;
+  border-top-style: dashed;
+}
+
+/*------------------------------------
+  Heading-v1-6
+------------------------------------*/
+.u-heading-v1-6::before {
+  top: 50%;
+  border-top-style: dotted;
+}
+
+/*------------------------------------
+  Heading-v1-7
+------------------------------------*/
+.u-heading-v1-7 {
+  background: url('data:image/svg+xml,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="9px" height="6px"><polygon opacity="0.2" points="4.5,4.5 0,0 0,1.208 4.5,5.708 9,1.208 9,0 "/></svg>') 0 50% repeat-x;
+}
+
+/*------------------------------------
+  Heading-v2
+------------------------------------*/
+.u-heading-v2-1--bottom::after, .u-heading-v2-1--top::before, .u-heading-v2-2--bottom::after, .u-heading-v2-2--top::before, .u-heading-v2-3--bottom::after, .u-heading-v2-3--top::before, .u-heading-v2-4--bottom::after, .u-heading-v2-4--top::before, .u-heading-v2-5--bottom::after, .u-heading-v2-5--top::before, .u-heading-v2-6--bottom::after, .u-heading-v2-6--top::before, .u-heading-v2-7--bottom::after, .u-heading-v2-7--top::before {
+  content: "";
+  display: inline-block;
+  border-top-style: solid;
+  border-color: inherit;
+}
+
+/*------------------------------------
+  Heading-v2-1
+------------------------------------*/
+.u-heading-v2-1--bottom::after, .u-heading-v2-1--top::before {
+  width: 3.14286rem;
+  border-top-width: 2px;
+}
+
+.u-heading-v2-1--bottom::after {
+  margin-top: 1.78571rem;
+}
+
+.u-heading-v2-1--top::before {
+  margin-bottom: 1.78571rem;
+}
+
+/*------------------------------------
+  Heading-v2-2
+------------------------------------*/
+.u-heading-v2-2--bottom::after, .u-heading-v2-2--top::before {
+  width: 2.71429rem;
+  border-top-width: 5px;
+}
+
+.u-heading-v2-2--bottom::after {
+  margin-top: 1.78571rem;
+}
+
+.u-heading-v2-2--top::before {
+  margin-bottom: 1.78571rem;
+}
+
+/*------------------------------------
+  Heading-v2-3
+------------------------------------*/
+.u-heading-v2-3--bottom::after, .u-heading-v2-3--top::before {
+  width: 5rem;
+  border-top-width: 1px;
+}
+
+.u-heading-v2-3--bottom::after {
+  margin-top: 1.07143rem;
+}
+
+.u-heading-v2-3--top::before {
+  margin-bottom: 1.07143rem;
+}
+
+/*------------------------------------
+  Heading-v2-4
+------------------------------------*/
+.u-heading-v2-4--bottom::after, .u-heading-v2-4--top::before {
+  width: 5rem;
+  border-top-width: 10px;
+}
+
+.u-heading-v2-4--bottom::after {
+  margin-top: 2.14286rem;
+}
+
+.u-heading-v2-4--top::before {
+  margin-bottom: 2.14286rem;
+}
+
+/*------------------------------------
+  Heading-v2-5
+------------------------------------*/
+.u-heading-v2-5--bottom::after, .u-heading-v2-5--top::before {
+  width: 5rem;
+  border-top-width: 2px;
+}
+
+.u-heading-v2-5--bottom::after {
+  margin-top: 1.42857rem;
+}
+
+.u-heading-v2-5--top::before {
+  margin-bottom: 1.42857rem;
+}
+
+/*------------------------------------
+  Heading-v2-6
+------------------------------------*/
+.u-heading-v2-6--bottom::after, .u-heading-v2-6--top::before {
+  width: 2.14286rem;
+  border-top-width: 1px;
+}
+
+.u-heading-v2-6--bottom::after {
+  margin-top: 0.71429rem;
+}
+
+.u-heading-v2-6--top::before {
+  margin-bottom: 0.71429rem;
+}
+
+/*------------------------------------
+  Heading-v2-7
+------------------------------------*/
+.u-heading-v2-7--bottom::after, .u-heading-v2-7--top::before {
+  width: 12rem;
+  border-top-width: 10px;
+}
+
+.u-heading-v2-7--bottom::after {
+  margin-top: 2.85714rem;
+}
+
+.u-heading-v2-7--top::before {
+  margin-bottom: 2.85714rem;
+}
+
+/*------------------------------------
+  Heading-v3
+------------------------------------*/
+[class*="u-heading-v3-"] {
+  border-bottom: 1px dotted #ccc;
+}
+
+.u-heading-v3__title {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  margin: 0;
+  padding-bottom: 0.71429rem;
+  border-bottom: 1px solid #555;
+}
+
+/*------------------------------------
+  Heading-v4
+------------------------------------*/
+[class*="u-heading-v4-"] {
+  padding: 0.14286rem 0 0.21429rem 1.42857rem;
+  border-left-width: 4px;
+  border-left-style: solid;
+  border-color: inherit;
+}
+
+[class*="u-heading-v4-"].text-right {
+  padding: 0.14286rem 1.42857rem 0.21429rem 0;
+  border-left-width: 0;
+  border-right-width: 4px;
+  border-right-style: solid;
+}
+
+/*------------------------------------
+  Heading-v5
+------------------------------------*/
+.u-heading-v5__title {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.u-heading-v5__title::before {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  width: 0.85714rem;
+  height: 0.85714rem;
+  background: #555;
+}
+
+.u-heading-v5-color-primary .u-heading-v5__title::before {
+  background: #72c02c;
+}
+
+.u-heading-v5-color-gray-light-v2 .u-heading-v5__title::before {
+  background: #ccc;
+}
+
+.u-heading-v5-color-white .u-heading-v5__title::before {
+  background: #fff;
+}
+
+.u-heading-v5-rounded-50x .u-heading-v5__title::before {
+  border-radius: 50%;
+}
+
+/*------------------------------------
+  Heading-v5-1
+------------------------------------*/
+.u-heading-v5-1 .u-heading-v5__title {
+  padding-top: 1.78571rem;
+}
+
+.u-heading-v5-1 .u-heading-v5__title::before {
+  top: 0;
+  left: 2px;
+}
+
+.u-heading-v5-1.text-center .u-heading-v5__title::before {
+  left: 50%;
+  margin-left: -6px;
+}
+
+.u-heading-v5-1.text-right .u-heading-v5__title::before {
+  left: auto;
+  right: 2px;
+}
+
+/*------------------------------------
+  Heading-v5-2
+------------------------------------*/
+.u-heading-v5-2 .u-heading-v5__title::before {
+  left: 0;
+  bottom: 3px;
+}
+
+.u-heading-v5-2.text-right .u-heading-v5__title::before {
+  left: auto;
+  right: 0;
+}
+
+.u-heading-v5-2 .u-heading-v5__title {
+  padding-left: 1.78571rem;
+}
+
+.u-heading-v5-2.text-right .u-heading-v5__title {
+  padding-right: 1.78571rem;
+}
+
+/*------------------------------------
+  Heading-v5-3
+------------------------------------*/
+.u-heading-v5-3 .u-heading-v5__title::before {
+  left: 2px;
+  bottom: 0;
+}
+
+.u-heading-v5-3.text-center .u-heading-v5__title::before {
+  left: 50%;
+  margin-left: -6px;
+}
+
+.u-heading-v5-3.text-right .u-heading-v5__title::before {
+  left: auto;
+  right: 2px;
+}
+
+.u-heading-v5-3 .u-heading-v5__title {
+  padding-bottom: 1.78571rem;
+}
+
+/*------------------------------------
+  Heading-v6
+------------------------------------*/
+.u-heading-v6__title {
+  display: inline-block;
+  position: relative;
+}
+
+.u-heading-v6-1 .u-heading-v6__title::after, .u-heading-v6-1.text-center .u-heading-v6__title::before, .u-heading-v6-1.text-right .u-heading-v6__title::before, .u-heading-v6-2 .u-heading-v6__title::after, .u-heading-v6-2.text-center .u-heading-v6__title::before, .u-heading-v6-2.text-right .u-heading-v6__title::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  display: inline-block;
+  width: 5rem;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-color: inherit;
+}
+
+/*------------------------------------
+  Heading-v6-1
+------------------------------------*/
+.u-heading-v6-1 .u-heading-v6__title,
+.u-heading-v6-1 .u-heading-v6__subtitle {
+  padding-right: 6.42857rem;
+}
+
+.u-heading-v6-1.text-center .u-heading-v6__title,
+.u-heading-v6-1.text-right .u-heading-v6__title,
+.u-heading-v6-1.text-center .u-heading-v6__subtitle,
+.u-heading-v6-1.text-right .u-heading-v6__subtitle {
+  padding-left: 6.42857rem;
+}
+
+.u-heading-v6-1.text-right .u-heading-v6__title,
+.u-heading-v6-1.text-right .u-heading-v6__subtitle {
+  padding-right: 0;
+}
+
+.u-heading-v6-1 .u-heading-v6__title::after {
+  right: 0;
+}
+
+.u-heading-v6-1.text-center .u-heading-v6__title::before {
+  left: 0;
+}
+
+.u-heading-v6-1.text-right .u-heading-v6__title::before {
+  left: 0;
+}
+
+.u-heading-v6-1.text-right .u-heading-v6__title::after {
+  display: none;
+}
+
+/*------------------------------------
+  Heading-v6-1
+------------------------------------*/
+.u-heading-v6-2 .u-heading-v6__title,
+.u-heading-v6-2 .u-heading-v6__subtitle {
+  padding-left: 6.42857rem;
+}
+
+.u-heading-v6-2.text-center .u-heading-v6__title,
+.u-heading-v6-2.text-right .u-heading-v6__title,
+.u-heading-v6-2.text-center .u-heading-v6__subtitle,
+.u-heading-v6-2.text-right .u-heading-v6__subtitle {
+  padding-right: 6.42857rem;
+}
+
+.u-heading-v6-2.text-right .u-heading-v6__title,
+.u-heading-v6-2.text-right .u-heading-v6__subtitle {
+  padding-left: 0;
+}
+
+.u-heading-v6-2 .u-heading-v6__title::after {
+  left: 0;
+}
+
+.u-heading-v6-2.text-center .u-heading-v6__title::before {
+  right: 0;
+}
+
+.u-heading-v6-2.text-right .u-heading-v6__title::before {
+  right: 0;
+}
+
+.u-heading-v6-2.text-right .u-heading-v6__title::after {
+  display: none;
+}
+
+/*------------------------------------
+  Heading-v7
+------------------------------------*/
+.u-heading-v7-divider::after, .text-center .u-heading-v7-divider::before, .text-right .u-heading-v7-divider::before {
+  content: "";
+  position: absolute;
+  top: 52%;
+  display: inline-block;
+  width: 2.85714rem;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-color: inherit;
+}
+
+.u-heading-v7-divider {
+  position: relative;
+  display: inline-block;
+}
+
+.u-heading-v7-divider::after {
+  right: -3.92857rem;
+}
+
+.text-center .u-heading-v7-divider::before {
+  left: -3.92857rem;
+}
+
+.text-right .u-heading-v7-divider::before {
+  left: -3.92857rem;
+}
+
+.text-right .u-heading-v7-divider::after {
+  display: none;
+}
+
+.u-heading-v7-divider__icon {
+  display: inline-block;
+  font-size: 1.4rem;
+}
+
+/*------------------------------------
+  Heading-v7-1
+------------------------------------*/
+.u-heading-v7-1 .u-heading-v7-divider__icon {
+  font-size: .6rem;
+}
+
+/*------------------------------------
+  Heading-v7-3
+------------------------------------*/
+.u-heading-v7-3 .u-heading-v7-divider::after,
+.u-heading-v7-3 .u-heading-v7-divider::before {
+  display: none;
+}
+
+/*------------------------------------
+  Heading-v8
+------------------------------------*/
+.u-heading-v8-1 .u-heading-v8__title strong, .u-heading-v8-2 .u-heading-v8__title strong {
+  display: inline-block;
+  font-weight: inherit;
+}
+
+/*------------------------------------
+  Heading-v8-1
+------------------------------------*/
+.u-heading-v8-1 .u-heading-v8__title strong {
+  padding: 0.07143rem 0.5rem;
+}
+
+/*------------------------------------
+  Heading-v8-2
+------------------------------------*/
+.u-heading-v8-2 .u-heading-v8__title strong {
+  padding: 0.71429rem 1.07143rem;
+}
+
+/*------------------------------------
+  Heading-v9
+------------------------------------*/
+.u-heading-v9 {
+  position: relative;
+  text-align: center;
+}
+
+.u-heading-v9::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  display: block;
+  margin-left: -35px;
+  width: 70px;
+  height: 96px;
+  border: 2px solid #72c02c;
+}
+
+.u-heading-v9--left {
+  padding-left: 35px;
+  text-align: left;
+}
+
+.u-heading-v9--left::before {
+  left: 0;
+  margin-left: 0;
+}
+
+.u-heading-v9--right {
+  padding-right: 35px;
+  text-align: right;
+}
+
+.u-heading-v9--right::before {
+  left: auto;
+  right: 0;
+  margin-left: 0;
+}
+
+.u-heading-v9 * {
+  position: relative;
+  z-index: 3;
+}
+
+/*------------------------------------
+  Heading-v10
+------------------------------------*/
+.u-heading-v10 {
+  position: relative;
+  text-align: center;
+}
+
+.u-heading-v10__downer {
+  font-size: 115px;
+  line-height: 1;
+  opacity: .04;
+}
+
+.u-heading-v10__upper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  font-size: 34px;
+  color: #72c02c;
+}
+
+/*------------------------------------
+  Headings
+------------------------------------*/
+/* Massive Underline */
+.u-heading-massive-underline {
+  position: relative;
+}
+
+.u-heading-massive-underline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: .2em;
+  height: .3em;
+  background-color: rgba(114, 192, 44, 0.8);
+  z-index: -1;
+}
+
+/* Heading With Dot */
+.u-header-title-dot::after {
+  content: ".";
+  color: #72c02c;
+  display: inline-block;
+  font-size: 35px;
+}
+
+
 
 /*------------------------------------
   Tables
