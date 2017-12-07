@@ -106,13 +106,13 @@
 				if(features.lightbox){				
  
 				}
+				
 				if(defined(features.accounts)){
 					that.token = new community.model.User();
 					ajax( that.options.url || '/data/api/v1/users/me.json' , {
 						success : function(response){
 							var token = new community.model.User(extend( response.user, { roles : response.roles }));
 							token.copy(that.token);	
-							//console.log ("response:" + response ); 
 							that.trigger(AUTHENTICATE,{ token : that.token });
 						}
 					});			

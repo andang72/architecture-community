@@ -35,6 +35,15 @@
 			properties: { type: "object", defaultValue : {} },
 			roles: { type: "object", defaultValue: [] }
 		},
+		formattedCreationDate : function(){		
+			return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    		return kendo.toString(this.get("modifiedDate"), "g");
+	    },
+		getUserProfileImage : function (){
+			return getUserProfileImage(this);			
+		},
 		hasRole : function ( role ) {
 			if( typeof( this.roles ) != "undefined" && $.inArray( role, this.roles ) >= 0 )
 				return true
@@ -86,6 +95,12 @@
 			creationDate:{ type: "date" },
 			modifiedDate:{ type: "date"}
 		},
+		formattedCreationDate : function(){		
+			return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    		return kendo.toString(this.get("modifiedDate"), "g");
+	    },
 		copy : function ( target ){
 		    	target.boardId = this.get("boardId");
 		    	target.set("objectType", this.get("objectType"));
@@ -129,7 +144,13 @@
 			properties: { type: "object", defaultValue : {} },
 			creationDate:{ type: "date" },			
 			modifiedDate:{ type: "date" }
-		}
+		},
+		formattedCreationDate : function(){		
+			return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    		return kendo.toString(this.get("modifiedDate"), "g");
+	    }
 	});
 	
 	community.model.Thread = Model.define({ 
@@ -145,6 +166,28 @@
 			properties: { type: "object", defaultValue : {} },
 			creationDate: { type: "date" },			
 			modifiedDate: { type: "date" }
+		},
+		formattedCreationDate : function(){		
+			return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    		return kendo.toString(this.get("modifiedDate"), "g");
+	    },
+		copy: function ( target ){
+			target.threadId = this.get("threadId");
+		    	target.set("objectType",this.get("objectType") );
+		    	target.set("objectId", this.get("objectId"));
+		    	target.set("messageCount",this.get("messageCount") );
+		    	target.set("viewCount", this.get("viewCount"));
+		    	target.set("modifiedDate",this.get("modifiedDate") );
+		    	target.set("creationDate", this.get("creationDate") )
+		    	if( typeof this.get("properties") === 'object' )
+		    		target.set("properties", this.get("properties") );
+		    	if( typeof this.get("latestMessage") === 'object' )
+		    		target.set("latestMessage", this.get("latestMessage") );
+		    	if( typeof this.get("rootMessage") === 'object' )
+		    		target.set("rootMessage", this.get("rootMessage") );
+		    	
 		}
 	});
 	
@@ -167,10 +210,10 @@
 			return kendo.toString(this.get("size"), "##,###");
 		},	
 		formattedCreationDate : function(){
-	    	return kendo.toString(this.get("creationDate"), "g");
+			return kendo.toString(this.get("creationDate"), "g");
 	    },
 	    formattedModifiedDate : function(){
-	    	return kendo.toString(this.get("modifiedDate"), "g");
+	    		return kendo.toString(this.get("modifiedDate"), "g");
 	    }
 	});
 	
@@ -201,13 +244,20 @@
 			{
 				displayName = user.name;
 			}else{
-				displayName = "**";
+				displayName = user.username;
 			}
 		}
 		return displayName ;
 	}
 	
+	function getFormattedDate(date){
+		if( typeof(date) == 'string')			
+			return kendo.toString(new Date( date ) , "g");
+		return kendo.toString(date, "g");
+    }
+	
 	extend(community.data, {	
+		getFormattedDate : getFormattedDate,
 		getAttachmentThumbnailUrl :getAttachmentThumbnailUrl,
 		getUserDisplayName : getUserDisplayName ,
 		getUserProfileImage : getUserProfileImage
