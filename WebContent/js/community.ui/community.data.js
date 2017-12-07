@@ -141,6 +141,7 @@
 			subject:{ type: "string", defaultValue: "" },			
 			body:{type: "string", defaultValue: "" },			
 			replyCount:{ type: "number", defaultValue: 0 },	
+			attachmentsCount:{ type: "number", defaultValue: 0 },	
 			properties: { type: "object", defaultValue : {} },
 			creationDate:{ type: "date" },			
 			modifiedDate:{ type: "date" }
