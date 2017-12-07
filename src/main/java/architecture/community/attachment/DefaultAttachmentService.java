@@ -379,8 +379,7 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 
 
 	@Override
-	public int getAttachmentCount(int objectType, long objectId) {
-		
+	public int getAttachmentCount(int objectType, long objectId) {		
 		return attachmentDao.getAttachmentCount(objectType, objectId);
 	}
 

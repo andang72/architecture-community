@@ -7,6 +7,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import architecture.community.attachment.AttachmentService;
 import architecture.community.board.BoardService;
 import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
@@ -40,6 +41,10 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 	
 	public static ViewCountService getViewCountServive(){
 		return getComponent(ViewCountService.class);
+	}
+	
+	public static AttachmentService getAttachmentService(){
+		return getComponent(AttachmentService.class);
 	}
 	
 	public static <T> T getComponent(Class<T> requiredType) {

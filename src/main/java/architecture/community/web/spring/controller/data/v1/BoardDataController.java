@@ -321,7 +321,7 @@ public class BoardDataController extends AbstractCommunityDateController {
 					thumbnailImage.setWidth(width);
 					thumbnailImage.setHeight(height);
 					
-					InputStream input = attachmentService.getAttachmentImageThumbnailInputStream(attachment, thumbnailImage );
+					InputStream input = attachmentService.getAttachmentThumbnailInputStream(attachment, thumbnailImage );
 					response.setContentType(thumbnailImage.getContentType());
 				    response.setContentLength((int)thumbnailImage.getSize());
 				    IOUtils.copy(input, response.getOutputStream());

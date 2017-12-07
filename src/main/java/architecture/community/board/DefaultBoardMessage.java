@@ -5,6 +5,7 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import architecture.community.model.Models;
 import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.model.json.JsonUserDeserializer;
@@ -139,6 +140,13 @@ public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMe
 
 	public void setObjectId(long objectId) {
 		this.objectId = objectId;
+	}
+	
+	public int getAttachmentsCount() {
+		if( threadId > 0 ){
+			CommunityContextHelper.getAttachmentService().getAttachmentCount(Models.BOARD_MESSAGE.getObjectType(), messageId);
+		}
+		return 0;		
 	}
 	
 	public int getReplyCount (){
