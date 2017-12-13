@@ -17,6 +17,7 @@
 package architecture.community.viewcount;
 
 import architecture.community.board.BoardThread;
+import architecture.community.page.Page;
 
 public interface ViewCountService {
 
@@ -26,5 +27,14 @@ public interface ViewCountService {
 	
 	public abstract void clearCount(BoardThread thread);
 	
+	public abstract void addViewCount(Page page);
+
+	public abstract int getViewCount(Page page);
+	
+	public abstract void clearCount(Page page);
+	
+	
 	public abstract void updateViewCounts();
+	
+	public abstract boolean isViewCountsEnabled() ;
 }

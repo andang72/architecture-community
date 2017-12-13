@@ -1,0 +1,293 @@
+package architecture.community.page;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import architecture.community.model.ModelObjectAwareSupport;
+import architecture.community.model.Models;
+import architecture.community.model.json.BodyContentDeserializer;
+import architecture.community.model.json.JsonDateDeserializer;
+import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.model.json.JsonUserDeserializer;
+import architecture.community.model.json.PageStateDeserializer;
+import architecture.community.tag.DefaultTagDelegator;
+import architecture.community.tag.TagDelegator;
+import architecture.community.tag.TagManager;
+import architecture.community.user.User;
+import architecture.community.user.UserTemplate;
+import architecture.community.util.CommunityContextHelper;
+import architecture.community.viewcount.ViewCountService;
+import architecture.ee.exception.ComponentNotFoundException;
+import architecture.ee.spring.util.ApplicationHelper;
+
+public class DefaultPage extends ModelObjectAwareSupport implements Page {
+
+	private long pageId;
+	private String name;
+	private Integer versionId;
+	private PageState pageState;
+	private String title;
+	private String summary;
+	private BodyContent bodyContent;
+	private Date creationDate;
+	private Date modifiedDate;
+	private User user;
+
+	public DefaultPage() {
+		super(-1, -1L);
+		this.name = null;
+		this.pageId = -1L;
+		this.versionId = -1;
+		this.pageState = PageState.INCOMPLETE;
+		this.user = new UserTemplate(-1L);
+		this.title = "";
+		this.creationDate = Calendar.getInstance().getTime();
+		this.modifiedDate = creationDate;
+	}
+
+	public DefaultPage(Long pageId) {
+		super(-1, -1L);
+		this.pageId = pageId;
+	}
+
+	public DefaultPage(int objectType, long objectId) {
+		super(objectType, objectId);
+	}
+
+ 
+	public void setPageId(long pageId) {
+		this.pageId = pageId;
+	}
+
+	/**
+	 * @return pageId
+	 */
+	public long getPageId() {
+		return pageId;
+	}
+
+	/**
+	 * @param pageId
+	 *            설정할 pageId
+	 */
+	public void setPageId(Long pageId) {
+		this.pageId = pageId;
+	}
+
+	/**
+	 * @return name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name
+	 *            설정할 name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return versionId
+	 */
+	public Integer getVersionId() {
+		return versionId;
+	}
+
+	/**
+	 * @param versionId
+	 *            설정할 versionId
+	 */
+	public void setVersionId(Integer versionId) {
+		this.versionId = versionId;
+	}
+
+	/**
+	 * @return pageState
+	 */
+	public PageState getPageState() {
+		return pageState;
+	}
+
+	/**
+	 * @param pageState
+	 *            설정할 pageState
+	 */
+
+	@JsonDeserialize(using = PageStateDeserializer.class)
+	public void setPageState(PageState pageState) {
+		this.pageState = pageState;
+	}
+
+	/**
+	 * @return title
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * @param title
+	 *            설정할 title
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	/**
+	 * @return summary
+	 */
+	public String getSummary() {
+		return summary;
+	}
+
+	/**
+	 * @param summary
+	 *            설정할 summary
+	 */
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	/**
+	 * @return bodyContent
+	 */
+	public BodyContent getBodyContent() {
+		return bodyContent;
+	}
+
+	/**
+	 * @param bodyContent
+	 *            설정할 bodyContent
+	 */
+	@JsonDeserialize(using = BodyContentDeserializer.class)
+	public void setBodyContent(BodyContent bodyContent) {
+		this.bodyContent = bodyContent;
+	}
+
+	@JsonProperty
+	public int getViewCount() {
+		if (ApplicationHelper.getComponent(ViewCountService.class).isViewCountsEnabled())
+			return ApplicationHelper.getComponent(ViewCountService.class).getViewCount(this);
+		else
+			return -1;
+	}
+
+	@JsonIgnore
+	public void setViewCount(int viewCount) {
+
+	}
+
+	@JsonIgnore
+	public void setCommentCount(int commentCount) {
+
+	}
+
+	/**
+	 * @return creationDate
+	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	/**
+	 * @param creationDate
+	 *            설정할 creationDate
+	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	/**
+	 * @return modifiedDate
+	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	/**
+	 * @param modifiedDate
+	 *            설정할 modifiedDate
+	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+
+	/**
+	 * @return user
+	 */
+	public User getUser() {
+		return user;
+	}
+
+	/**
+	 * @param user
+	 *            설정할 user
+	 */
+	@JsonDeserialize(using = JsonUserDeserializer.class)
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	@JsonIgnore
+	public int getCachedSize() {
+		return 0;
+	}
+
+	@JsonIgnore
+	public String getBodyText() {
+		if (bodyContent == null)
+			return null;
+		else
+			return bodyContent.getBodyText();
+	}
+
+	@JsonIgnore
+	public void setBodyText(String body) {
+		bodyContent.setBodyText(body);
+	}
+
+	@JsonProperty
+	@Override
+	public int getCommentCount() {
+		try {
+			return CommunityContextHelper.getCommentService().getCommentTreeWalker(Models.PAGE.getObjectType(), pageId).getRecursiveChildCount(-1L);			
+		} catch (ComponentNotFoundException e) {
+			return 0;
+		}
+	}
+
+	@JsonIgnore
+	public TagDelegator getTagDelegator() {
+		if (this.getPageId() == -1L)
+			throw new IllegalStateException("Cannot retrieve tag manager prior to document being saved.");
+		else {
+			return new DefaultTagDelegator(Models.PAGE.getObjectType(), this.getPageId(), CommunityContextHelper.getComponent(TagManager.class) );
+		}
+	}
+
+	@JsonIgnore
+	public void setTagsString(String tagsString) {
+	}
+
+	@JsonProperty
+	public String getTagsString() {
+		if (this.getPageId() > 0)
+			return getTagDelegator().getTagsAsString();
+		return null;
+	}
+
+
+}

@@ -144,7 +144,7 @@ public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMe
 	
 	public int getAttachmentsCount() {
 		if( threadId > 0 ){
-			CommunityContextHelper.getAttachmentService().getAttachmentCount(Models.BOARD_MESSAGE.getObjectType(), messageId);
+			return CommunityContextHelper.getAttachmentService().getAttachmentCount(Models.BOARD_MESSAGE.getObjectType(), messageId);
 		}
 		return 0;		
 	}
@@ -166,9 +166,7 @@ public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMe
 		builder.append("BoardMessage [");
 		if (user != null)
 			builder.append("user=").append(user).append(", ");
-		builder.append("objectType=").append(objectType).append(", objectId=").append(objectId).append(", threadId=")
-				.append(threadId).append(", messageId=").append(messageId).append(", parentMessageId=")
-				.append(parentMessageId).append(", ");
+		builder.append("objectType=").append(objectType).append(", objectId=").append(objectId).append(", threadId=").append(threadId).append(", messageId=").append(messageId).append(", parentMessageId=").append(parentMessageId).append(", ");
 		if (subject != null)
 			builder.append("subject=").append(subject).append(", ");
 		if (body != null)
@@ -177,6 +175,7 @@ public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMe
 			builder.append("creationDate=").append(creationDate).append(", ");
 		if (modifiedDate != null)
 			builder.append("modifiedDate=").append(modifiedDate);
+		
 		builder.append("]");
 		return builder.toString();
 	}

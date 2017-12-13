@@ -39,6 +39,7 @@ import com.google.common.eventbus.Subscribe;
 import architecture.community.board.BoardThread;
 import architecture.community.board.event.BoardThreadEvent;
 import architecture.community.model.Models;
+import architecture.community.page.Page;
 import architecture.community.viewcount.dao.ViewCountDao;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.event.EventSupport;
@@ -73,6 +74,10 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 		this.viewCountsEnabled = true;
 	}
 
+	public boolean isViewCountsEnabled() {
+		return viewCountsEnabled;
+	}
+
 	@PostConstruct
 	public void initialize() throws Exception {
 		logger.debug("initialize queue");
@@ -87,6 +92,34 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 		logger.debug("unregister event listener");
 		unregisterEventListener(this);
 	}
+	
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void addViewCount(Page page) {
+		if (viewCountsEnabled) {
+			addCount(Models.PAGE.getObjectType(), page.getPageId(), viewCountCache, 1);
+		}
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public int getViewCount(Page page) {
+		if (viewCountsEnabled) {
+			return getCachedCount(Models.PAGE.getObjectType(), page.getPageId());
+		} else {
+			return -1;
+		}
+	}
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void clearCount(Page page){
+		if (viewCountsEnabled) {
+			String key = getCacheKey(Models.PAGE.getObjectType(), page.getPageId());
+			queue.remove(key);
+			clearCount(Models.PAGE.getObjectType(), page.getPageId());
+		}
+	}
+	
+	
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void addViewCount(BoardThread thread) {
@@ -119,7 +152,6 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 	public void onForumThreadEvent(BoardThreadEvent e) {		
 		logger.debug("forum thread event : " + e.getType().name());
 		BoardThread thread = (BoardThread) e.getSource();
-		
 		int entityType = Models.BOARD_THREAD.getObjectType();
 		long entityId = thread.getThreadId();	
 		String key = getCacheKey(entityType, entityId);

@@ -97,7 +97,7 @@ public class ModelObjectTreeWalker {
 		return list;
 	}		
 	
-	protected int getRecursiveChildCount(long parentId) {
+	public int getRecursiveChildCount(long parentId) {
 		int numChildren = 0;
 		int num = tree.getChildCount(parentId);
 		numChildren += num;
