@@ -4,7 +4,7 @@ import java.util.List;
 
 import architecture.community.user.User;
 
-public interface PageManager {
+public interface PageService {
 
 	public abstract Page createPage(User user, BodyType bodyType, String name, String title, String body);
 

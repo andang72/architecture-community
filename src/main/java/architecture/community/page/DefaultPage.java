@@ -17,7 +17,7 @@ import architecture.community.model.json.JsonUserDeserializer;
 import architecture.community.model.json.PageStateDeserializer;
 import architecture.community.tag.DefaultTagDelegator;
 import architecture.community.tag.TagDelegator;
-import architecture.community.tag.TagManager;
+import architecture.community.tag.TagService;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.CommunityContextHelper;
@@ -274,7 +274,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		if (this.getPageId() == -1L)
 			throw new IllegalStateException("Cannot retrieve tag manager prior to document being saved.");
 		else {
-			return new DefaultTagDelegator(Models.PAGE.getObjectType(), this.getPageId(), CommunityContextHelper.getComponent(TagManager.class) );
+			return new DefaultTagDelegator(Models.PAGE.getObjectType(), this.getPageId(), CommunityContextHelper.getComponent(TagService.class) );
 		}
 	}
 

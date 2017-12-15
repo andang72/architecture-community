@@ -21,7 +21,7 @@ import architecture.ee.spring.event.EventSupport;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
-public class DefaultPageManager extends EventSupport implements PageManager {
+public class DefaultPageService extends EventSupport implements PageService {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -53,7 +53,7 @@ public class DefaultPageManager extends EventSupport implements PageManager {
 	@Qualifier("pageVersionsCache")
 	private Cache pageVersionsCache;
 
-	public DefaultPageManager() {
+	public DefaultPageService() {
 
 	}
 
@@ -115,7 +115,7 @@ public class DefaultPageManager extends EventSupport implements PageManager {
 
 		Page page = null;
 		if (pageCache.get(pageId) != null) {
-			page = (Page) pageCache.get(pageId).getValue();
+			page = (Page) pageCache.get(pageId).getObjectValue();
 		}
 
 		if (page == null) {
@@ -170,7 +170,7 @@ public class DefaultPageManager extends EventSupport implements PageManager {
 	public Page findInLocalCache(long pageId, int versionNumber) {
 
 		if (pageCache.get(pageId) != null) {
-			Page page = (Page) pageCache.get(pageId).getValue();
+			Page page = (Page) pageCache.get(pageId).getObjectValue();
 			if (page.getVersionId() == versionNumber)
 				return page;
 		}
@@ -180,7 +180,7 @@ public class DefaultPageManager extends EventSupport implements PageManager {
 	public Page getPage(String name) throws PageNotFoundException {
 		Page pageToUse = null;
 		if (pageIdCache.get(name) != null) {
-			Long pageId = (Long) pageIdCache.get(name).getValue();
+			Long pageId = (Long) pageIdCache.get(name).getObjectValue();
 			log.debug("using cached pageId : " + pageId);
 			pageToUse = getPage(pageId);
 		}
@@ -241,72 +241,13 @@ public class DefaultPageManager extends EventSupport implements PageManager {
 	public int getPageCount(int objectType, long objectId) {
 		return pageDao.getPageCount(objectType, objectId);
 	}
-
-	/**
-	 * @return userManager
-	 */
-	public UserManager getUserManager() {
-		return userManager;
-	}
-
-	/**
-	 * @param userManager
-	 *            설정할 userManager
-	 */
-	public void setUserManager(UserManager userManager) {
-		this.userManager = userManager;
-	}
-
-	/**
-	 * @return pageDao
-	 */
-	public PageDao getPageDao() {
-		return pageDao;
-	}
-
-	/**
-	 * @param pageDao
-	 *            설정할 pageDao
-	 */
-	public void setPageDao(PageDao pageDao) {
-		this.pageDao = pageDao;
-	}
-
-	/**
-	 * @return pageCache
-	 */
-	public Cache getPageCache() {
-		return pageCache;
-	}
-
-	/**
-	 * @param pageCache
-	 *            설정할 pageCache
-	 */
-	public void setPageCache(Cache pageCache) {
-		this.pageCache = pageCache;
-	}
-
-	/**
-	 * @return pageIdCache
-	 */
-	public Cache getPageIdCache() {
-		return pageIdCache;
-	}
-
-	/**
-	 * @param pageIdCache
-	 *            설정할 pageIdCache
-	 */
-	public void setPageIdCache(Cache pageIdCache) {
-		this.pageIdCache = pageIdCache;
-	}
+ 
 
 	public List<PageVersion> getPageVersions(long pageId) {
 		String key = getVersionListCacheKey(pageId);
 		List<Integer> versions;
 		if (pageVersionsCache.get(key) != null) {
-			versions = (List<Integer>) pageVersionsCache.get(key).getValue();
+			versions = (List<Integer>) pageVersionsCache.get(key).getObjectValue();
 		} else {
 			versions = this.pageVersionDao.getPageVersionIds(pageId);
 			pageVersionsCache.put(new Element(key, versions));

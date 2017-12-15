@@ -5,7 +5,7 @@ import java.util.Map;
 
 import architecture.community.exception.UnAuthorizedException;
 
-public interface TagManager {
+public interface TagService {
 
     public abstract ContentTag createTag(String name);
 

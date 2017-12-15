@@ -149,8 +149,8 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 
 	@Subscribe 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void onForumThreadEvent(BoardThreadEvent e) {		
-		logger.debug("forum thread event : " + e.getType().name());
+	public void onBoardThreadEvent(BoardThreadEvent e) {		
+		logger.debug("board thread event : " + e.getType().name());
 		BoardThread thread = (BoardThread) e.getSource();
 		int entityType = Models.BOARD_THREAD.getObjectType();
 		long entityId = thread.getThreadId();	

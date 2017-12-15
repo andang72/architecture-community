@@ -8,47 +8,47 @@ public class DefaultTagDelegator implements TagDelegator {
 
 	private int objectType = -1;
 	private long objectId = -1L;
-	private TagManager tagManager;
+	private TagService tagService;
 
-	public DefaultTagDelegator(int objectType, long objectId, TagManager tagManager) {
+	public DefaultTagDelegator(int objectType, long objectId, TagService tagService) {
 		this.objectType = objectType;
 		this.objectId = objectId;
-		this.tagManager = tagManager;
+		this.tagService = tagService;
 	}
 
 	public ContentTag createTag(String tagname) {
-		return tagManager.createTag(tagname);
+		return tagService.createTag(tagname);
 	}
 
 	public ContentTag getTag(String tagname) throws TagNotFoundException {
-		return tagManager.getTag(tagname);
+		return tagService.getTag(tagname);
 	}
 
 	public ContentTag getTag(long tagId) throws TagNotFoundException {
-		return tagManager.getTag(tagId);
+		return tagService.getTag(tagId);
 	}
 
 	public void setTags(String tags) {
-		tagManager.setTags(tags, objectType, objectId);
+		tagService.setTags(tags, objectType, objectId);
 	}
 
 	public String getTagsAsString() {
-		return tagManager.getTagsAsString(objectType, objectId);
+		return tagService.getTagsAsString(objectType, objectId);
 	}
 
 	public void addTag(ContentTag tag) throws UnAuthorizedException {
-		tagManager.addTag(tag, objectType, objectId);
+		tagService.addTag(tag, objectType, objectId);
 	}
 
 	public List<ContentTag> getTags() {
-		return tagManager.getTags(objectType, objectId);
+		return tagService.getTags(objectType, objectId);
 	}
 
 	public void removeTag(ContentTag tag) throws UnAuthorizedException {
-		tagManager.removeTag(tag, objectType, objectId);
+		tagService.removeTag(tag, objectType, objectId);
 	}
 
 	public void removeAllTags() throws UnAuthorizedException {
-		tagManager.removeAllTags(objectType, objectId);
+		tagService.removeAllTags(objectType, objectId);
 	}
 }

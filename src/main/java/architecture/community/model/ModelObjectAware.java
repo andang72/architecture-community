@@ -8,6 +8,6 @@ public interface ModelObjectAware extends PropertyAware {
 	
 	public abstract int getObjectType();
 	
-	public abstract long getObjectId();	
+	public abstract long getObjectId();
 	
 }

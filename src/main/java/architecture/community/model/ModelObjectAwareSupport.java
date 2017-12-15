@@ -33,5 +33,11 @@ public class ModelObjectAwareSupport extends PropertyAwareSupport implements Mod
 	public long getObjectId() {
 		return objectId;
 	}
+	public void setObjectType(int objectType) {
+		this.objectType = objectType;
+	}
+	public void setObjectId(long objectId) {
+		this.objectId = objectId;
+	}
 	
 }

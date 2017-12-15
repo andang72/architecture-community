@@ -10,7 +10,7 @@ public class PageVersionHelper {
 	}
 
 	public static List<PageVersion> getPageVersions(long pageId) {
-		return CommunityContextHelper.getComponent(PageManager.class).getPageVersions(pageId);
+		return CommunityContextHelper.getComponent(PageService.class).getPageVersions(pageId);
 	}
 
 	public static PageVersion getPublishedPageVersion(long pageId) {
