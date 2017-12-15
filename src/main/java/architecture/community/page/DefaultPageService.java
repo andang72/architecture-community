@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,8 +63,12 @@ public class DefaultPageService extends EventSupport implements PageService {
 		if (bodyType == null)
 			throw new IllegalArgumentException("A page content type is required to create a page.");
 		DefaultPage page = new DefaultPage();
-
-		page.setName(name);
+		
+		if( StringUtils.isNotEmpty( name ))
+			page.setName(name);
+		else 
+			page.setName(RandomStringUtils.random(64, true, true));
+		
 		page.setBodyContent(new DefaultBodyContent(-1L, -1L, bodyType, body));
 		page.setTitle(title);
 		page.setUser(user);
@@ -70,12 +76,12 @@ public class DefaultPageService extends EventSupport implements PageService {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void updatePage(Page page) {
-		updatePage(page, false);
+	public void saveOrUpdatePage(Page page) {
+		saveOrUpdatePage(page, false);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void updatePage(Page page, boolean forceNewVersion) {
+	public void saveOrUpdatePage(Page page, boolean forceNewVersion) {
 		boolean isNewPage = page.getPageId() == -1L;
 		boolean isNewVersionRequired = isNewVersionRequired(forceNewVersion, isNewPage);
 		if (isNewPage) {
@@ -88,7 +94,6 @@ public class DefaultPageService extends EventSupport implements PageService {
 			} else {
 				fireEvent(new PageEvent(page, PageEvent.Type.UPDATED));
 			}
-
 		}
 
 		if (pageCache.get(page.getPageId()) != null) {

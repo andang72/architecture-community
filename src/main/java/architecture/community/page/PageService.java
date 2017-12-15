@@ -8,9 +8,9 @@ public interface PageService {
 
 	public abstract Page createPage(User user, BodyType bodyType, String name, String title, String body);
 
-	public abstract void updatePage(Page page);
+	public abstract void saveOrUpdatePage(Page page);
 
-	public abstract void updatePage(Page page, boolean forceNewVersion);
+	public abstract void saveOrUpdatePage(Page page, boolean forceNewVersion);
 
 	public abstract Page getPage(long pageId) throws PageNotFoundException;
 

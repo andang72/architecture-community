@@ -13,7 +13,7 @@
 
 
 	<import resource="classpath:context/default-bootstrap-context.xml"/>	
-	<import resource="classpath:context/default-components-context.xml"/>
+	<import resource="classpath:context/community-components-context.xml"/>
 	<import resource="classpath:context/default-transaction-context.xml"/>
 	<import resource="classpath:context/default-ehcache-context.xml"/>
 	<import resource="classpath:context/community-util-context.xml"/>

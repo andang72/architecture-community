@@ -508,23 +508,19 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 					new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
 			page.setBodyContent(bodyContent);
 		} catch (EmptyResultDataAccessException e) {
-			
+			page.setBodyContent(new DefaultBodyContent(-1L, page.getPageId(), BodyType.FREEMARKER, null ));
 		}
 
-		if (page.getBodyText() == null) {
-			long bodyId = -1L;
-			try {
-				bodyId = getExtendedJdbcTemplate().queryForObject(
-						getBoundSql("COMMUNITY_PAGE.DELETE_PAGE_BODY_VERSION").getSql(), 
-						Long.class,
-						new SqlParameterValue(Types.NUMERIC, page.getPageId()),
-						new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
-			} catch (EmptyResultDataAccessException e) {
-			}
+		if (StringUtils.isEmpty( page.getBodyText() ) ) {
+			getExtendedJdbcTemplate().update(
+				getBoundSql("COMMUNITY_PAGE.DELETE_PAGE_BODY_VERSION").getSql(), 
+				new SqlParameterValue(Types.NUMERIC, page.getPageId()),
+				new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
 		}
 
 		Map<String, String> properties = loadProperties(page);
 		page.getProperties().putAll(properties);
+		
 		return page;
 	}
 
