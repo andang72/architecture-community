@@ -4,6 +4,14 @@
 	extend = $.extend,
 	Model = kendo.data.Model;
 
+	community.model.Property = Model.define({ 		
+		id: "name",
+		fields: { 			
+			name: { type: "string", defaultValue: "" },			
+			value: { type: "string", defaultValue: "" }
+		}
+	});
+	
 	community.model.ObjectAccessControlEntry = Model.define({ 		
 		id: "id",
 		fields: { 	
@@ -219,6 +227,65 @@
 	});
 	
 	
+	community.model.BodyContent = Model.define({ 		
+		id: "bodyId",
+		fields: { 	
+			bodyId: { type: "number", defaultValue: 0 },			
+			bodyText: { type: "string", defaultValue: "" },			
+			bodyType:{ type: "string", defaultValue: "" },
+			pageId: { type: "number", defaultValue: 0 }	
+		}
+	});	
+	
+	
+	community.model.Page = Model.define({ 		
+		id: "pageId",
+		fields: { 	
+			objectType: { type: "number", defaultValue: 0 },			
+			objectId: { type: "number", defaultValue: 0},				
+			pageId: { type: "number", defaultValue: 0 },			
+			name: { type: "string", defaultValue: "" },	
+			versionId: { type: "number", defaultValue: 0 },	
+			pageState: { type: "string", defaultValue: "" },	
+			commentCount: { type: "number", defaultValue: 0 },		
+			viewCount: { type: "number", defaultValue: 0 },		
+			summary: { type: "string", defaultValue: "" },	
+			tagsString: { type: "string", defaultValue: "" },	
+			title: { type: "string", defaultValue: "" },
+			template: { type: "string", defaultValue: "" },
+			properties: { type: "object", defaultValue : {} },
+			bodyText: { type: "string", defaultValue: "" },	
+			bodyContent : { type: "object", defaultValue : new community.model.BodyContent() },
+			user: { type: "object" , defaultValue : new community.model.User() },
+			creationDate:{ type: "date" },			
+			modifiedDate:{ type: "date"}	
+		},
+		copy: function ( target ){
+			target.pageId = this.get("pageId");
+		    	target.set("objectType",this.get("objectType") );
+		    	target.set("objectId", this.get("objectId"));
+		    	target.set("name",this.get("name") );
+		    	target.set("versionId", this.get("versionId"));
+		    	target.set("pageState", this.get("pageState"));
+		    	target.set("commentCount", this.get("commentCount"));
+		    	target.set("viewCount", this.get("viewCount"));
+		    	target.set("summary", this.get("summary"));
+		    	target.set("tagsString", this.get("tagsString"));
+		    	target.set("title", this.get("title"));
+		    	target.set("template", this.get("template"));
+		    	target.set("bodyText", this.get("bodyText"));
+		    	target.set("modifiedDate",this.get("modifiedDate") );
+		    	target.set("creationDate", this.get("creationDate") )
+		    	if( typeof this.get("properties") === 'object' )
+		    		target.set("properties", this.get("properties") );
+		    	if( typeof this.get("user") === 'object' )
+		    		target.set("user", this.get("user") );
+		    	if( typeof this.get("bodyContent") === 'object' )
+		    		target.set("bodyContent", this.get("bodyContent") );
+		    	
+		}
+	});
+	
 	
 	function getUserProfileImage ( user ) {
 		if( user != null && user.username != null &&  user.username.length > 0 )
@@ -227,13 +294,19 @@
 			return "/images/no-avatar.png";
 	}
 	
+	function getAttachmentUrl ( attachment ){	
+		return getAttachmentThumbnailUrl(attachment, false);
+	}
+	
 	function getAttachmentThumbnailUrl ( attachment , thumbnail ){	
 		if( attachment.attachmentId > 0 ){
-			var _photoUrl = "/download/files/" + attachment.attachmentId + "/" + attachment.name ;	
+			var _photoUrl = '/download/files/' + attachment.attachmentId + '/' + attachment.name + '?time=' + kendo.guid() ;	
+			
 			if( thumbnail ){
-				_photoUrl = _photoUrl + '?thumbnail=true&height=120&width=120' ;
+				_photoUrl = _photoUrl + '&thumbnail=true&height=120&width=120&time=' ;
 			}
-			return encodeURI( _photoUrl + '&time=' + kendo.guid() );
+			
+			return encodeURI( _photoUrl );
 		}
 		return "/images/no-image.jpg";
 	} 
@@ -257,11 +330,22 @@
 		return kendo.toString(date, "g");
     }
 	
+	
+	function bytesToSize(bytes) {
+		var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+		    if (bytes == 0) return 'n/a';
+		    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+		    if (i == 0) return bytes + ' ' + sizes[i]; 
+		    return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+	}
+	
 	extend(community.data, {	
 		getFormattedDate : getFormattedDate,
+		getAttachmentUrl : getAttachmentThumbnailUrl,
 		getAttachmentThumbnailUrl :getAttachmentThumbnailUrl,
 		getUserDisplayName : getUserDisplayName ,
-		getUserProfileImage : getUserProfileImage
+		getUserProfileImage : getUserProfileImage,
+		bytesToSize : bytesToSize
 	});
 	
 	console.log("community.data initialized.");

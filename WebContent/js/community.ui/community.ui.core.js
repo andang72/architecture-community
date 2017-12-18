@@ -321,14 +321,7 @@
 				locale = "ko-KR";
 			kendo.culture(locale);		
 		}
-		
-		function bytesToSize(bytes) {
-			var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-			    if (bytes == 0) return 'n/a';
-			    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-			    if (i == 0) return bytes + ' ' + sizes[i]; 
-			    return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
-		}
+
 		
 		function redirect (target, values, method ){
 			method = method || POST ;
@@ -421,6 +414,10 @@
 			});
 		}
 		
+		function tooltip (renderTo){
+			renderTo.find('[data-toggle="tooltip"]').tooltip();
+		}
+		
 		extend( community.ui , {	
 			guid : kendo.guid,
 			setup : setup,
@@ -442,7 +439,7 @@
 			observable : kendo.observable,
 			exists : exists,
 			notification : notification,
-			bytesToSize : bytesToSize
+			tooltip: tooltip
 		});		
     	
 		console.log("community.ui.core initialized.");
