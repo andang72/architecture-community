@@ -20,7 +20,6 @@ import architecture.community.board.BoardMessage;
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
-import architecture.community.model.Models;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")

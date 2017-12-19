@@ -212,24 +212,5 @@ public class BoardView implements Board , Serializable {
 	}
 
 
-	public boolean getBooleanProperty(String name, boolean defaultValue) {
-		return board.getBooleanProperty(name, defaultValue);
-	}
-
- 
-	public long getLongProperty(String name, long defaultValue) {
-		 
-		return board.getLongProperty(name, defaultValue);
-	}
-
-	 
-	public int getIntProperty(String name, int defaultValue) {
-		return board.getIntProperty(name, defaultValue);
-	}
-
-	 
-	public String getProperty(String name, String defaultValue) {
-		return board.getProperty(name, defaultValue);
-	}
 
 }

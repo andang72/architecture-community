@@ -36,6 +36,7 @@ public class JdbcPageVersionDao extends ExtendedJdbcDaoSupport implements PageVe
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_PAGE.UPDATE_PAGE_STATE_TO_ARCHIVED").getSql(),
 					new SqlParameterValue(Types.NUMERIC, pageVersion.getPage().getPageId()),
 					new SqlParameterValue(Types.NUMERIC, pageVersion.getVersionNumber()));
+			
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_PAGE.UPDATE_PAGE_STATE").getSql(),
 					new SqlParameterValue(Types.NUMERIC, pageVersion.getAuthor()),
 					new SqlParameterValue(Types.DATE, pageVersion.getCreationDate()),

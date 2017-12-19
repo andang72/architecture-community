@@ -181,7 +181,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 							ps.setLong(1, page.getPageId());
 							ps.setLong(2, page.getVersionId());
 							String key = addedKeys.get(i);
-							String value = page.getProperty(key, null);
+							String value = page.getProperties().get(key);
 							logger.debug("batch[" + key + "=" + value + "]");
 							ps.setString(3, key);
 							ps.setString(4, value);
@@ -269,11 +269,10 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.NUMERIC, page.getPageId()),
 				new SqlParameterValue(Types.NUMERIC, page.getVersionId()),
 				new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
-				new SqlParameterValue(Types.VARCHAR, page.getTitle()),
-				page.getSummary() == null ? new SqlParameterValue(Types.NULL, null)
-						: new SqlParameterValue(Types.VARCHAR, page.getSummary()),
-				new SqlParameterValue(Types.NUMERIC,
-						page.getVersionId() <= 1 ? page.getUser().getUserId() : SecurityHelper.getUser().getUserId()),
+				new SqlParameterValue(Types.VARCHAR, page.getTitle()), 
+				page.getSummary() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getSummary()),
+				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()),
+				new SqlParameterValue(Types.NUMERIC, page.getVersionId() <= 1 ? page.getUser().getUserId() : SecurityHelper.getUser().getUserId()),
 				new SqlParameterValue(Types.DATE, page.getCreationDate()),
 				new SqlParameterValue(Types.DATE, page.getModifiedDate()));
 	}
@@ -404,6 +403,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 					new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
 					new SqlParameterValue(Types.VARCHAR, page.getTitle()),
 					new SqlParameterValue(Types.VARCHAR, page.getSummary()),
+					page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()),
 					new SqlParameterValue(Types.NUMERIC, modifierId),
 					new SqlParameterValue(Types.DATE, page.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, page.getPageId()),
@@ -485,11 +485,14 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 						page.setObjectType(rs.getInt("OBJECT_TYPE"));
 						page.setObjectId(rs.getLong("OBJECT_ID"));
 						page.setPageState(PageState.valueOf(rs.getString("STATE").toUpperCase()));
+						
 						page.setUser(new UserTemplate(rs.getLong("USER_ID")));
 						if (rs.wasNull())
 							page.setUser(new UserTemplate(-1L));
+						
 						page.setTitle(rs.getString("TITLE"));
 						page.setSummary(rs.getString("SUMMARY"));
+						page.setTemplate(rs.getString("TEMPLATE"));
 						page.setCreationDate(rs.getTimestamp("CREATION_DATE"));
 						page.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));
 						return page;

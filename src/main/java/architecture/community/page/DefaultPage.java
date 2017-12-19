@@ -33,6 +33,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 	private PageState pageState;
 	private String title;
 	private String summary;
+	private String template;
 	private BodyContent bodyContent;
 	private Date creationDate;
 	private Date modifiedDate;
@@ -46,6 +47,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.pageState = PageState.INCOMPLETE;
 		this.user = new UserTemplate(-1L);
 		this.title = "";
+		this.template = "";
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
 	}
@@ -174,10 +176,9 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 
 	@JsonProperty
 	public int getViewCount() {
-		if (ApplicationHelper.getComponent(ViewCountService.class).isViewCountsEnabled())
-			return ApplicationHelper.getComponent(ViewCountService.class).getViewCount(this);
-		else
+		if( pageId < 1)
 			return -1;
+		return CommunityContextHelper.getViewCountServive().getViewCount(this);		
 	}
 
 	@JsonIgnore
@@ -241,10 +242,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.user = user;
 	}
 
-	@JsonIgnore
-	public int getCachedSize() {
-		return 0;
-	}
+ 
 
 	@JsonIgnore
 	public String getBodyText() {
@@ -278,16 +276,25 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		}
 	}
 
+	@JsonProperty
+	public String getTemplate() {
+		return template;
+	}
+
+	@JsonProperty
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+
 	@JsonIgnore
 	public void setTagsString(String tagsString) {
 	}
 
+	
 	@JsonProperty
 	public String getTagsString() {
 		if (this.getPageId() > 0)
 			return getTagDelegator().getTagsAsString();
 		return null;
-	}
-
-
+	} 
 }

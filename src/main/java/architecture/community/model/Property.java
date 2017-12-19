@@ -8,6 +8,9 @@ public class Property implements Serializable {
 	
 	private String value;
 
+	public Property() {
+	}
+
 	public Property(String name, String value) {
 		super();
 		this.name = name;
