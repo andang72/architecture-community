@@ -1,5 +1,7 @@
 package architecture.community.web.spring.freemarker;
 
+import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -7,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 
 import freemarker.ext.beans.BeansWrapper;
+import freemarker.template.Template;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModelException;
 
@@ -47,13 +50,16 @@ public class CommunityFreeMarkerView extends FreeMarkerView {
 		TemplateHashModel staticModels = wrapper.getStaticModels();
 		try {	
 			model.put("SecurityHelper",	staticModels.get("architecture.community.util.SecurityHelper"));
-			model.put("ApplicationHelper",	staticModels.get("architecture.community.util.ApplicationHelper"));
 			model.put("WebApplicationContextUtils",	staticModels.get("org.springframework.web.context.support.WebApplicationContextUtils"));			
 		} catch (TemplateModelException e) {
 			
-		}	
-		
-		model.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());		
-		
+		}			
+		model.put("statics", wrapper.getStaticModels());			
+	}
+
+
+	@Override
+	protected Template getTemplate(String name, Locale locale) throws IOException {
+		return super.getTemplate(name, locale);
 	}
 }

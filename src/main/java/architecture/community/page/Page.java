@@ -60,4 +60,8 @@ public interface Page extends ModelObjectAware {
 
     public abstract String getTagsString();
     
+    public abstract String getTemplate();
+    
+    public abstract void setTemplate(String template);
+    
 }

@@ -23,6 +23,8 @@ import architecture.community.board.BoardThread;
 import architecture.community.comment.Comment;
 import architecture.community.image.Image;
 import architecture.community.image.LogoImage;
+import architecture.community.issue.Issue;
+import architecture.community.issue.Project;
 import architecture.community.page.Page;
 import architecture.community.tag.ContentTag;
 import architecture.community.user.AvatarImage;
@@ -43,7 +45,11 @@ public enum Models {
 	LOGO_IMAGE(12, LogoImage.class),
 	AVATAR_IMAGE(13, AvatarImage.class),
 	PAGE(14, Page.class),
-	TAG(15, ContentTag.class);
+	TAG(15, ContentTag.class),
+	
+	ISSUE(18, Issue.class),
+	PROJECT(19, Project.class)
+	;
 	
 	
 	

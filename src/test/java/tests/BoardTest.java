@@ -17,10 +17,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
-import architecture.community.image.ImageNotFoundException;
 import architecture.community.image.ImageService;
-import architecture.community.image.LogoImage;
-import architecture.community.model.Models;
 import architecture.ee.service.Repository;
 
 @RunWith(SpringJUnit4ClassRunner.class)

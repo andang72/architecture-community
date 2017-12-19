@@ -1,3 +1,4 @@
+
 package architecture.community.board;
 
 import java.util.Date;

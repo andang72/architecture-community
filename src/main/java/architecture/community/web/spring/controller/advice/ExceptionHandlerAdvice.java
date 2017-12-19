@@ -37,8 +37,9 @@ public class ExceptionHandlerAdvice {
 	@ExceptionHandler
 	@ResponseBody
 	public Result handleExceptioin(HttpServletRequest request, HttpServletResponse response, Exception e){
-		logger.info("Exception Occured:: URL="+request.getRequestURL());
 		
+		logger.info("Exception Occured:: URL="+request.getRequestURL());
+		logger.debug("Details ---" , e);
 		if( e instanceof org.springframework.security.access.AccessDeniedException ){
 			response.setStatus(HttpStatus.FORBIDDEN.value());
 		}else{
