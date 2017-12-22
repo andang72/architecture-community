@@ -14,13 +14,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
-import architecture.community.board.Board;
-import architecture.community.board.DefaultBoard;
 import architecture.community.model.Models;
 import architecture.community.projects.Project;
 import architecture.community.projects.dao.ProjectDao;
-import architecture.community.user.AvatarImage;
-import architecture.community.user.AvatarImageNotFoundException;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;

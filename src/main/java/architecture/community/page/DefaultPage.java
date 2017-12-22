@@ -21,9 +21,7 @@ import architecture.community.tag.TagService;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.CommunityContextHelper;
-import architecture.community.viewcount.ViewCountService;
 import architecture.ee.exception.ComponentNotFoundException;
-import architecture.ee.spring.util.ApplicationHelper;
 
 public class DefaultPage extends ModelObjectAwareSupport implements Page {
 

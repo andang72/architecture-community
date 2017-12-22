@@ -1,7 +1,5 @@
 package architecture.community.web.spring.controller.view;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +22,6 @@ import architecture.community.exception.UnAuthorizedException;
 import architecture.community.model.Models;
 import architecture.community.page.Page;
 import architecture.community.page.PageService;
-import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
 import architecture.community.util.SecurityHelper;

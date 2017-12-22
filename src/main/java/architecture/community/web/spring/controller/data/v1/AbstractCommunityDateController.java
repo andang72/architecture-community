@@ -3,15 +3,10 @@ package architecture.community.web.spring.controller.data.v1;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.acls.model.MutableAcl;
-import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
-import org.springframework.security.core.Authentication;
 
 import architecture.community.attachment.Attachment;
 import architecture.community.board.Board;
@@ -21,7 +16,6 @@ import architecture.community.model.Models;
 import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
-import architecture.community.security.spring.acls.PermissionsSetter;
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.util.SecurityHelper;
 
