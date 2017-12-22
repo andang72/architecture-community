@@ -167,7 +167,6 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 							ps.setLong(3, page.getVersionId());
 							ps.setString(4, key);
 						}
-
 						public int getBatchSize() {
 							return modifiedKeys.size();
 						}
@@ -186,7 +185,6 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 							ps.setString(3, key);
 							ps.setString(4, value);
 						}
-
 						public int getBatchSize() {
 							return addedKeys.size();
 						}
@@ -271,7 +269,8 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
 				new SqlParameterValue(Types.VARCHAR, page.getTitle()), 
 				page.getSummary() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getSummary()),
-				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()),
+				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()),				
+				new SqlParameterValue(Types.NUMERIC, page.isSecured() ? 1 : 0 ),								
 				new SqlParameterValue(Types.NUMERIC, page.getVersionId() <= 1 ? page.getUser().getUserId() : SecurityHelper.getUser().getUserId()),
 				new SqlParameterValue(Types.DATE, page.getCreationDate()),
 				new SqlParameterValue(Types.DATE, page.getModifiedDate()));
@@ -281,13 +280,13 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 		if (page.getVersionId() > 0) {
 			try {
 				int pubishedVersion = getExtendedJdbcTemplate().queryForObject(
-						getBoundSql("COMMUNITY_PAGE.SELECT_PUBLISHED_PAGE_VERSION_NUMBER").getSql(), Integer.class,
-						new SqlParameterValue(Types.NUMERIC, page.getPageId()));
+					getBoundSql("COMMUNITY_PAGE.SELECT_PUBLISHED_PAGE_VERSION_NUMBER").getSql(), Integer.class,
+					new SqlParameterValue(Types.NUMERIC, page.getPageId()));
 				page.setVersionId(pubishedVersion + 1);
 			} catch (EmptyResultDataAccessException e) {
 				int maxArchiveId = getExtendedJdbcTemplate().queryForObject(
-						getBoundSql("COMMUNITY_PAGE.SELECT_MAX_ARCHIVED_PAGE_VERSION_NUMBER").getSql(), Integer.class,
-						new SqlParameterValue(Types.NUMERIC, page.getPageId()));
+					getBoundSql("COMMUNITY_PAGE.SELECT_MAX_ARCHIVED_PAGE_VERSION_NUMBER").getSql(), Integer.class,
+					new SqlParameterValue(Types.NUMERIC, page.getPageId()));
 				if (maxArchiveId > 0)
 					page.setVersionId(maxArchiveId + 1);
 				else
@@ -400,14 +399,15 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 					: page.getUser().getUserId();
 			// update page version
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_PAGE.UPDATE_PAGE_VERSION").getSql(),
-					new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
-					new SqlParameterValue(Types.VARCHAR, page.getTitle()),
-					new SqlParameterValue(Types.VARCHAR, page.getSummary()),
-					page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()),
-					new SqlParameterValue(Types.NUMERIC, modifierId),
-					new SqlParameterValue(Types.DATE, page.getModifiedDate()),
-					new SqlParameterValue(Types.NUMERIC, page.getPageId()),
-					new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
+				new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
+				new SqlParameterValue(Types.VARCHAR, page.getTitle()),
+				new SqlParameterValue(Types.VARCHAR, page.getSummary()),
+				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()),
+				new SqlParameterValue(Types.NUMERIC, page.isSecured() ? 1 : 0 ),			
+				new SqlParameterValue(Types.NUMERIC, modifierId),
+				new SqlParameterValue(Types.DATE, page.getModifiedDate()),
+				new SqlParameterValue(Types.NUMERIC, page.getPageId()),
+				new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
 
 		}
 	}
@@ -448,10 +448,10 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 
 		if (page.getVersionId() == -1) {
 			List<Long> bodyIds = getExtendedJdbcTemplate().queryForList(
-					getBoundSql("COMMUNITY_PAGE.SELETE_PAGE_BODY_IDS").getSql(), Long.class,
-					new SqlParameterValue(Types.NUMERIC, page.getPageId()));
+				getBoundSql("COMMUNITY_PAGE.SELETE_PAGE_BODY_IDS").getSql(), Long.class,
+				new SqlParameterValue(Types.NUMERIC, page.getPageId()));
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_PAGE.DELETE_PAGE_BODY_VERSIONS").getSql(),
-					new SqlParameterValue(Types.NUMERIC, page.getPageId()));
+				new SqlParameterValue(Types.NUMERIC, page.getPageId()));
 			for (long bodyId : bodyIds) {
 				getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_PAGE.DELETE_PAGE_BODY").getSql(), new SqlParameterValue(Types.NUMERIC, bodyId));
 			}
@@ -477,38 +477,38 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 		page.setPageId(pageId);
 		page.setVersionId(versionNumber);
 		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_PAGE.SELECT_PAGE_BY_ID_AND_VERSION").getSql(),
-				new RowMapper<Page>() {
-			
-					public Page mapRow(ResultSet rs, int rowNum) throws SQLException {
+			new RowMapper<Page>() {			
+				public Page mapRow(ResultSet rs, int rowNum) throws SQLException {
+					page.setName(rs.getString("NAME"));
+					page.setObjectType(rs.getInt("OBJECT_TYPE"));
+					page.setObjectId(rs.getLong("OBJECT_ID"));
+					page.setPageState(PageState.valueOf(rs.getString("STATE").toUpperCase()));
 						
-						page.setName(rs.getString("NAME"));
-						page.setObjectType(rs.getInt("OBJECT_TYPE"));
-						page.setObjectId(rs.getLong("OBJECT_ID"));
-						page.setPageState(PageState.valueOf(rs.getString("STATE").toUpperCase()));
+					page.setUser(new UserTemplate(rs.getLong("USER_ID")));
+					if (rs.wasNull())
+						page.setUser(new UserTemplate(-1L));
 						
-						page.setUser(new UserTemplate(rs.getLong("USER_ID")));
-						if (rs.wasNull())
-							page.setUser(new UserTemplate(-1L));
-						
-						page.setTitle(rs.getString("TITLE"));
-						page.setSummary(rs.getString("SUMMARY"));
-						page.setTemplate(rs.getString("TEMPLATE"));
-						page.setCreationDate(rs.getTimestamp("CREATION_DATE"));
-						page.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));
-						return page;
-					}
-				}, new SqlParameterValue(Types.NUMERIC, page.getPageId()),
-				new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
+					page.setTitle(rs.getString("TITLE"));
+					page.setSummary(rs.getString("SUMMARY"));
+					page.setTemplate(rs.getString("TEMPLATE"));
+					page.setSecured(rs.getInt("SECURED") == 1 ? true : false);
+					page.setCreationDate(rs.getTimestamp("CREATION_DATE"));
+					page.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));
+					return page;
+				}
+			}, 
+			new SqlParameterValue(Types.NUMERIC, page.getPageId()),
+			new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
 
 		if (page.getName() == null)
 			return null;
 
 		try {
 			BodyContent bodyContent = getExtendedJdbcTemplate().queryForObject(
-					getBoundSql("COMMUNITY_PAGE.SELECT_PAGE_BODY").getSql(), 
-					bodyContentMapper,
-					new SqlParameterValue(Types.NUMERIC, page.getPageId()),
-					new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
+				getBoundSql("COMMUNITY_PAGE.SELECT_PAGE_BODY").getSql(), 
+				bodyContentMapper,
+				new SqlParameterValue(Types.NUMERIC, page.getPageId()),
+				new SqlParameterValue(Types.NUMERIC, page.getVersionId()));
 			page.setBodyContent(bodyContent);
 		} catch (EmptyResultDataAccessException e) {
 			page.setBodyContent(new DefaultBodyContent(-1L, page.getPageId(), BodyType.FREEMARKER, null ));

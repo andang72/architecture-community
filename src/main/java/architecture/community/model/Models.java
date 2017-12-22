@@ -20,6 +20,7 @@ import architecture.community.attachment.Attachment;
 import architecture.community.board.Board;
 import architecture.community.board.BoardMessage;
 import architecture.community.board.BoardThread;
+import architecture.community.codeset.CodeSet;
 import architecture.community.comment.Comment;
 import architecture.community.image.Image;
 import architecture.community.image.LogoImage;
@@ -46,7 +47,7 @@ public enum Models {
 	AVATAR_IMAGE(13, AvatarImage.class),
 	PAGE(14, Page.class),
 	TAG(15, ContentTag.class),
-	
+	CODESET(17, CodeSet.class),
 	ISSUE(18, Issue.class),
 	PROJECT(19, Project.class)
 	;

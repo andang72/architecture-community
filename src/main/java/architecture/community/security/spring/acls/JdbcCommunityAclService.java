@@ -91,9 +91,9 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 	
 	
 	
-	public <T> boolean isPermissionGrantedFinally(Authentication authentication, Class<T> clazz, Serializable identifier, List<Permission> permissions) {		
-		
+	public <T> boolean isPermissionGrantedFinally(Authentication authentication, Class<T> clazz, Serializable identifier, List<Permission> permissions) {		 
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
+		log.debug("checking final permissions for {}", identity);
 		return isPermissionGrantedFinally(authentication, identity, permissions);
 	}
 	/**
@@ -125,8 +125,7 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 			sids.add(new PrincipalSid(SecurityHelper.ANONYMOUS_USER_DETAILS.getUser().getUsername()));
 		}
 					
-		try {
-			
+		try { 
 			if (!permissions.contains(CommunityPermissions.ADMIN) ) {
 				isGranted = acl.isGranted(Arrays.asList( (Permission)CommunityPermissions.ADMIN) , sids, false);				
 			}
@@ -308,4 +307,109 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		return acl;
 	}
 
+
+    public PermissionsBundle getPermissionBundle( Authentication authentication, Class objectType , long objectId ) {    
+    		
+    		final PermissionsBundle bundle = new PermissionsBundle();    		
+    	
+    		getFinalGrantedPermissions(authentication, objectType,  objectId, new PermissionsSetter() {    
+    			
+    			private boolean isGranted ( MutableAcl acl, Permission permission, List<Sid> sids ) {
+    				boolean isGranted = false;
+    				try {
+    					isGranted = acl.isGranted(Arrays.asList(permission), sids, false);
+				} catch (NotFoundException e) { }	
+    				return isGranted;
+    			}    			
+    			
+    			public void execute(List<Sid> sids, MutableAcl acl) {			 		
+					log.debug("anonymous : {}", SecurityHelper.isAnonymous());
+			 		if( !SecurityHelper.isAnonymous() )
+			 		{
+			 			log.debug("is granted {} {}" , CommunityPermissions.ADMIN, sids );
+			 			try {
+							bundle.admin = isGranted( acl, (Permission)CommunityPermissions.ADMIN, sids);
+						} catch (NotFoundException e) {
+							
+						}			 	
+			 			log.debug("is granted {} > {}" , CommunityPermissions.ADMIN, bundle.admin );
+			 		}	
+			 		
+			 		if( bundle.admin ) {
+		    				bundle.read = true;
+		    				bundle.write = true;
+		    				bundle.create = true;
+		    				bundle.delete = true;
+		    				bundle.createThread = true;
+		    				bundle.createThreadMessage = true;
+		    				bundle.createAttachment = true;
+		    				bundle.createImage = true;
+		    				bundle.createComment = true;
+		    				bundle.readComment = true;    			 					
+					}else {
+						bundle.read = isGranted( acl, (Permission)CommunityPermissions.READ, sids);		
+						bundle.write = isGranted( acl, (Permission)CommunityPermissions.WRITE, sids);		
+						bundle.create = isGranted( acl, (Permission)CommunityPermissions.CREATE, sids);		
+						bundle.delete = isGranted( acl, (Permission)CommunityPermissions.DELETE, sids);		
+						bundle.createThread = isGranted( acl, (Permission)CommunityPermissions.CREATE_THREAD, sids);		
+						bundle.createThreadMessage = isGranted( acl, (Permission)CommunityPermissions.CREATE_THREAD_MESSAGE, sids);		
+						bundle.createAttachment = isGranted( acl, (Permission)CommunityPermissions.CREATE_ATTACHMENT, sids);		
+						bundle.createImage = isGranted( acl, (Permission)CommunityPermissions.CREATE_IMAGE, sids);		
+						bundle.createComment = isGranted( acl, (Permission)CommunityPermissions.CREATE_COMMENT, sids);		
+						bundle.readComment = isGranted( acl, (Permission)CommunityPermissions.READ_COMMENT, sids);	
+					}
+				}});    		
+    		return bundle;
+    }
+    
+    
+	public static class PermissionsBundle {    	
+		
+		boolean read = false;
+ 		private boolean write = false;
+ 		private boolean create = false;
+ 		private boolean delete = false;
+ 		private boolean admin = false;
+ 		private boolean createThread = false;
+ 		private boolean createThreadMessage = false;
+ 		private boolean createAttachment = false;
+ 		private boolean createImage = false;
+ 		private boolean createComment = false;
+ 		private boolean readComment = false;
+		public boolean isRead() {
+			return read;
+		}
+		public boolean isWrite() {
+			return write;
+		}
+		public boolean isCreate() {
+			return create;
+		}
+		public boolean isDelete() {
+			return delete;
+		}
+		public boolean isAdmin() {
+			return admin;
+		}
+		public boolean isCreateThread() {
+			return createThread;
+		}
+		public boolean isCreateThreadMessage() {
+			return createThreadMessage;
+		}
+		public boolean isCreateAttachment() {
+			return createAttachment;
+		}
+		public boolean isCreateImage() {
+			return createImage;
+		}
+		public boolean isCreateComment() {
+			return createComment;
+		}
+		public boolean isReadComment() {
+			return readComment;
+		}
+ 		
+ 		
+	 }
 }
