@@ -26,6 +26,8 @@ import architecture.community.board.DefaultBoard;
 import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetNotFoundException;
 import architecture.community.codeset.CodeSetService;
+import architecture.community.projects.Project;
+import architecture.community.projects.ProjectService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.web.model.ItemList;
 import architecture.ee.util.StringUtils;
@@ -40,6 +42,10 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@Qualifier("boardService")
 	private BoardService boardService;
 
+	@Inject
+	@Qualifier("projectService")
+	private ProjectService projectService;
+	
 	@Inject
 	@Qualifier("communityAclService")
 	private JdbcCommunityAclService communityAclService;
@@ -136,5 +142,13 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 					board.getDescription());
 		}
 		return boardService.getBoardById(boardToUse.getBoardId());
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getProjects(NativeWebRequest request) {
+		List<Project> list = projectService.getProjects();
+		return new ItemList(list, list.size());
 	}
 }

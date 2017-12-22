@@ -2,7 +2,50 @@
 <sqlset>
 	<name>COMMUNITY_WEB</name>
 	<description>VIEWCOUNT, IMAGE, ATTACHMENT 쿼리</description> 
-
+	<!--  ====================================  -->
+	<!-- PROJECT						 		   -->
+	<!--  ====================================  -->
+	<sql-query name="SELECT_PROJECT_BY_ID" description="SELECT_PROJECT_BY_ID"><![CDATA[    	
+ 	SELECT 
+ 		PROJECT_ID,
+		NAME,
+		SUMMARY,
+		START_DATE,
+		END_DATE,	
+		CREATION_DATE,
+		MODIFIED_DATE	
+ 	FROM MUSI_PROJECT 
+ 	WHERE 
+ 		PROJECT_ID = ?
+    ]]></sql-query>	
+	
+ 	<sql-query name="INSERT_PROJECT" description="INSERT_PROJECT"><![CDATA[    	
+ 	INSERT INTO MUSI_PROJECT ( 
+		PROJECT_ID,
+		NAME,
+		SUMMARY,
+		START_DATE,
+		END_DATE,	
+		CREATION_DATE,
+		MODIFIED_DATE
+    ) VALUES ( ?, ?, ? ,?, ?, ?, ? )
+    ]]></sql-query>		
+ 	<sql-query name="UPDATE_PROJECT" description="UPDATE_PROJECT"><![CDATA[    	
+ 	UPDATE MUSI_PROJECT
+ 	SET 
+	 	NAME = ?,
+	 	SUMMARY = ?,
+	 	START_DATE = ?,
+	 	END_DATE = ?,
+	 	MODIFIED_DATE = ?
+ 	WHERE PROJECT_ID = ?
+    ]]></sql-query>	
+	
+ 	<sql-query name="SELECT_PROJECT_IDS" description="SELECT_PROJECT_IDS"><![CDATA[    	
+  	SELECT PROJECT_ID FROM MUSI_PROJECT    
+ 	ORDER BY MODIFIED_DATE DESC 		
+    ]]></sql-query>		   
+    
 	<!--  ====================================  -->
 	<!-- CODESET						 		   -->
 	<!--  ====================================  -->
