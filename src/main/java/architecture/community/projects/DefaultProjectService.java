@@ -22,8 +22,8 @@ public class DefaultProjectService implements ProjectService {
 	private Cache projectCache;	
 	
 	@Inject
-	@Qualifier("issueCache")
-	private Cache issueCache;	
+	@Qualifier("projectIssueCache")
+	private Cache projectIssueCache;	
 	
 	public DefaultProjectService() { 
 	}

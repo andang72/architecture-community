@@ -65,7 +65,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		if (toUse.getProjectId() < 1L) {
 			toUse.setProjectId(getNextProjectId());
 		
-			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_ISSUE.INSERT_PROJECT").getSql(),
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_PROJECT").getSql(),
 					new SqlParameterValue(Types.NUMERIC, toUse.getProjectId()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getName()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
@@ -77,7 +77,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		} else {
 			Date now = Calendar.getInstance().getTime();
 			toUse.setModifiedDate(now);		
-			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_ISSUE.UPDATE_PROJECT").getSql(),
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_PROJECT").getSql(),
 					new SqlParameterValue(Types.VARCHAR, toUse.getName()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
@@ -92,7 +92,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	public Project getProjectById(long projectId) {
 		try {
 			return getExtendedJdbcTemplate().queryForObject(
-				getBoundSql("COMMUNITY_ISSUE.SELECT_PROJECT_BY_ID").getSql(),
+				getBoundSql("COMMUNITY_WEB.SELECT_PROJECT_BY_ID").getSql(),
 				projectMapper,
 				new SqlParameterValue(Types.NUMERIC, projectId));
 		} catch (DataAccessException e) {
@@ -102,7 +102,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	}
  
 	public List<Long> getAllProjectIds() {
-		return getExtendedJdbcTemplate().queryForList(getBoundSql("COMMUNITY_ISSUE.SELECT_PROJECT_IDS").getSql(), Long.class);
+		return getExtendedJdbcTemplate().queryForList(getBoundSql("COMMUNITY_WEB.SELECT_PROJECT_IDS").getSql(), Long.class);
 	}
 	
 	
