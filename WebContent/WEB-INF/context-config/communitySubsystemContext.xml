@@ -22,6 +22,128 @@
 	<beans:bean id="propertyDao" class="architecture.ee.jdbc.property.dao.impl.JdbcPropertyDao" p:dataSource-ref="dataSource" />
 
 	<!-- ================================= -->
+	<!-- CODESET							  -->
+	<!-- ================================= -->
+
+	<beans:bean id="codeSetDao" class="architecture.community.codeset.dao.JdbcCodeSetDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="codeSetCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="codeSetCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	
+    <beans:bean id="codeSetTreeWalkerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="codeSetTreeWalkerCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	
+    <beans:bean id="codeSetService" class="architecture.community.codeset.DefaultCodeSetService"  />	 
+
+	<!-- ================================= -->
+    <!-- PAGE							  -->
+    <!-- ================================= -->
+    <beans:bean id="pageDao" class="architecture.community.page.dao.jdbc.JdbcPageDao" p:dataSource-ref="dataSource" />
+	<beans:bean id="pageVersionDao" class="architecture.community.page.dao.jdbc.JdbcPageVersionDao" p:dataSource-ref="dataSource" />
+
+    <beans:bean id="pageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="pageCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	
+    <beans:bean id="pageIdCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="pageIdCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	
+    <beans:bean id="pageVersionCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="pageVersionCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	
+    <beans:bean id="pageVersionsCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="pageVersionsCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />     
+     		     	     	   
+    <beans:bean id="pageService" class="architecture.community.page.DefaultPageService"  />	
+	<!-- ================================= -->
+    <!-- TAG							  -->
+    <!-- ================================= -->    
+    <beans:bean id="tagIdCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="tagIdCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	
+    <beans:bean id="tagCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="tagCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="30"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	
+	<beans:bean id="tagContentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="tagContentCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" /> 	 
+     		    
+	<beans:bean id="tagDao" class="architecture.community.tag.dao.jdbc.JdbcTagDao" p:dataSource-ref="dataSource" />
+    	
+    	
+	<beans:bean id="tagService" class="architecture.community.tag.DefaultTagService"  />	
+
+	<!-- ================================= -->
 	<!-- USER AVATAR 					  -->
 	<!-- ================================= -->
 	<beans:bean id="userAvatarDao" class="architecture.community.user.dao.jdbc.JdbcUserAvatarDao" p:dataSource-ref="dataSource" />
@@ -31,7 +153,7 @@
 		p:maxElementsInMemory="20000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
+		p:timeToIdle="300"
 		p:timeToLive="600" 
 		p:eternal="false"
 		p:diskExpiryThreadIntervalSeconds="0" 
@@ -42,7 +164,7 @@
 		p:maxElementsInMemory="20000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
+		p:timeToIdle="300"
 		p:timeToLive="600" 
 		p:eternal="false"
 		p:diskExpiryThreadIntervalSeconds="0" 
@@ -61,7 +183,7 @@
 		p:maxElementsInMemory="20000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
+		p:timeToIdle="300"
 		p:timeToLive="600" 
 		p:eternal="false"
 		p:diskExpiryThreadIntervalSeconds="0" 
@@ -79,7 +201,7 @@
 		p:maxElementsInMemory="20000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
+		p:timeToIdle="300"
 		p:timeToLive="600" 
 		p:eternal="false"
 		p:diskExpiryThreadIntervalSeconds="0" 
@@ -90,7 +212,7 @@
 		p:maxElementsInMemory="1000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
+		p:timeToIdle="300"
 		p:timeToLive="600" 
 		p:eternal="false"
 		p:diskExpiryThreadIntervalSeconds="0" 
@@ -160,8 +282,8 @@
 		p:maxElementsInMemory="5000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
-		p:timeToLive="60" 
+		p:timeToIdle="300"
+		p:timeToLive="600" 
 		p:eternal="false" 
 		p:diskExpiryThreadIntervalSeconds="0"
 		p:statisticsEnabled="true" />
@@ -171,8 +293,8 @@
 		p:maxElementsInMemory="5000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
-		p:timeToLive="60" 
+		p:timeToIdle="300"
+		p:timeToLive="600" 
 		p:eternal="false" 
 		p:diskExpiryThreadIntervalSeconds="0"
 		p:statisticsEnabled="true" />
@@ -182,8 +304,8 @@
 		p:maxElementsInMemory="5000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
-		p:timeToLive="60" 
+		p:timeToIdle="300"
+		p:timeToLive="600" 
 		p:eternal="false" 
 		p:diskExpiryThreadIntervalSeconds="0"
 		p:statisticsEnabled="true" />
@@ -200,8 +322,8 @@
 		p:maxElementsInMemory="5000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
-		p:timeToLive="60" 
+		p:timeToIdle="300"
+		p:timeToLive="600"
 		p:eternal="false" 
 		p:diskExpiryThreadIntervalSeconds="0"
 		p:statisticsEnabled="true" />
@@ -218,8 +340,8 @@
 		p:maxElementsInMemory="5000"
 		p:diskPersistent="false" 
 		p:overflowToDisk="false" 
-		p:timeToIdle="30"
-		p:timeToLive="60" 
+		p:timeToIdle="300"
+		p:timeToLive="600" 
 		p:eternal="false" 
 		p:diskExpiryThreadIntervalSeconds="0"
 		p:statisticsEnabled="true" />
