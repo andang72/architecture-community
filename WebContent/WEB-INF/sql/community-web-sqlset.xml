@@ -10,6 +10,7 @@
  		PROJECT_ID,
 		NAME,
 		SUMMARY,
+		CONTRACT_STATE,
 		START_DATE,
 		END_DATE,	
 		CREATION_DATE,
@@ -24,17 +25,19 @@
 		PROJECT_ID,
 		NAME,
 		SUMMARY,
+		CONTRACT_STATE,
 		START_DATE,
 		END_DATE,	
 		CREATION_DATE,
 		MODIFIED_DATE
-    ) VALUES ( ?, ?, ? ,?, ?, ?, ? )
+    ) VALUES ( ?, ?, ? ,?, ?, ?, ?, ? )
     ]]></sql-query>		
  	<sql-query name="UPDATE_PROJECT" description="UPDATE_PROJECT"><![CDATA[    	
  	UPDATE MUSI_PROJECT
  	SET 
 	 	NAME = ?,
 	 	SUMMARY = ?,
+	 	CONTRACT_STATE = ?,
 	 	START_DATE = ?,
 	 	END_DATE = ?,
 	 	MODIFIED_DATE = ?
