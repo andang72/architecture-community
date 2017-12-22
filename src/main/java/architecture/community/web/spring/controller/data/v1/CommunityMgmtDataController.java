@@ -63,6 +63,11 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return communityAclService;
 	}
 
+	
+	/**
+	 * CODESET API 
+	******************************************/
+	
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/codeset/group/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
@@ -96,7 +101,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return Collections.EMPTY_LIST;
     }
 	
-	@RequestMapping(value = "/mgmt/competency/codeset/update.json", method = RequestMethod.POST)
+	@RequestMapping(value = "/codeset/update.json", method = RequestMethod.POST)
     @ResponseBody
     public CodeSet updateCodeSet(@RequestBody CodeSet codeset) {		
 		if (codeset.getParentCodeSetId() == null)
@@ -105,6 +110,12 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return codeset;
     }	
 
+	
+	
+	/**
+	 * BOARD API 
+	******************************************/
+	
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/boards/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
@@ -143,6 +154,12 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		}
 		return boardService.getBoardById(boardToUse.getBoardId());
 	}
+	
+	
+	
+	/**
+	 * PROJECT API 
+	******************************************/
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET })
