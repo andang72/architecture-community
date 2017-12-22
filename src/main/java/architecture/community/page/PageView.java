@@ -187,4 +187,14 @@ public class PageView implements Page {
 		page.setTemplate(template);
 	}
 
+	@JsonProperty
+	public boolean isSecured() {
+		return page.isSecured();
+	}
+
+	@JsonProperty
+	public void setSecured(boolean secured) {
+		page.setSecured(secured);		
+	}
+
 }

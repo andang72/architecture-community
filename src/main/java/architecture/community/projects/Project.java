@@ -1,4 +1,4 @@
-package architecture.community.issue;
+package architecture.community.projects;
 
 import java.util.Calendar;
 import java.util.Date;

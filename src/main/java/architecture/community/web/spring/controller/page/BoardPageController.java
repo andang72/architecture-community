@@ -23,7 +23,7 @@ import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.util.ServletUtils;
 
 @Controller("community-board-page-controller")
-@RequestMapping("/boards")
+@RequestMapping("/display/boards")
 public class BoardPageController {
 	
 	private static final Logger log = LoggerFactory.getLogger(BoardPageController.class);	
@@ -41,35 +41,27 @@ public class BoardPageController {
 		
 	}
 	
-	@RequestMapping(value = {"/", "/list"}, method = { RequestMethod.POST, RequestMethod.GET } )
+	@RequestMapping(value = {"/", "/index"}, method = { RequestMethod.POST, RequestMethod.GET } )
 	public String displayBoardList(
 			HttpServletRequest request,
-		    HttpServletResponse response, Model model) {
-		
-		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
-		
+		    HttpServletResponse response, Model model) {		
+		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);		
 		return "/boards/list-board" ;
 	}
-	
-	 
+		 
 	@PreAuthorize("hasPermission(#boardId, 'architecture.community.board.Board', 'READ')")
-	@RequestMapping(value = {"/{boardId:[\\p{Digit}]+}/list"}, method = { RequestMethod.POST, RequestMethod.GET } )
+	@RequestMapping(value = {"/{boardId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET } )
 	public String displayThreadList (
 			@PathVariable Long boardId, 
 			HttpServletRequest request,
 		    HttpServletResponse response, 
-		    Model model) throws BoardNotFoundException{		
-		
-		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
-		
+		    Model model) throws BoardNotFoundException{				
+		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);		
 		Board board = boardService.getBoardById(boardId);
-		model.addAttribute("currentBoard", board);		
-		model.addAttribute("boardId", boardId);
-		
+		model.addAttribute("__board", board);				
 		return "/boards/list-thread" ;
 	}
-	
-	 
+		 
 	@PreAuthorize("hasPermission(#boardId, 'architecture.community.board.Board', 'READ')")
 	@RequestMapping(value = {"/{boardId:[\\p{Digit}]+}/threads/{threadId:[\\p{Digit}]+}"}, method = { RequestMethod.POST, RequestMethod.GET } )
 	public String displayThread (
@@ -78,17 +70,13 @@ public class BoardPageController {
 			HttpServletRequest request,
 		    HttpServletResponse response, 
 		    Model model) throws BoardNotFoundException, BoardThreadNotFoundException{		
-		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
-		
+		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);		
 		Board board = boardService.getBoardById(boardId);
-		BoardThread thread = boardService.getBoardThread(threadId);
-
-		model.addAttribute("currentBoard", board);
-		model.addAttribute("currentThread", thread);
-		
+		BoardThread thread = boardService.getBoardThread(threadId);		
+		model.addAttribute("__board", board);		
+		model.addAttribute("__thread", thread);		
 		if(viewCountService!=null)
-			viewCountService.addViewCount(thread);
-		
+			viewCountService.addViewCount(thread);		
 		return "/boards/view-thread" ;
 	}
 	

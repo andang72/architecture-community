@@ -1,4 +1,4 @@
-package architecture.community.issue.dao.jdbc;
+package architecture.community.projects.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,16 +16,16 @@ import org.springframework.jdbc.core.SqlParameterValue;
 
 import architecture.community.board.Board;
 import architecture.community.board.DefaultBoard;
-import architecture.community.issue.Project;
-import architecture.community.issue.dao.IssueDao;
 import architecture.community.model.Models;
+import architecture.community.projects.Project;
+import architecture.community.projects.dao.ProjectDao;
 import architecture.community.user.AvatarImage;
 import architecture.community.user.AvatarImageNotFoundException;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
-public class JdbcIssueDao extends ExtendedJdbcDaoSupport implements IssueDao {
+public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao {
 
 	private final RowMapper<Project> projectMapper = new RowMapper<Project>() {		
 		
@@ -50,7 +50,7 @@ public class JdbcIssueDao extends ExtendedJdbcDaoSupport implements IssueDao {
 	@Qualifier("sequencerFactory")
 	private SequencerFactory sequencerFactory;
 	
-	public JdbcIssueDao() { 
+	public JdbcProjectDao() { 
 	}
 
 	public long getNextProjectId(){

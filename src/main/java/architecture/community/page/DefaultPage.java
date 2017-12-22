@@ -38,7 +38,8 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 	private Date creationDate;
 	private Date modifiedDate;
 	private User user;
-
+	private boolean secured;
+	
 	public DefaultPage() {
 		super(-1, -1L);
 		this.name = null;
@@ -50,11 +51,21 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.template = "";
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
+		this.secured = false;
 	}
 
 	public DefaultPage(Long pageId) {
 		super(-1, -1L);
 		this.pageId = pageId;
+		this.name = null;
+		this.versionId = -1;
+		this.pageState = PageState.INCOMPLETE;
+		this.user = new UserTemplate(-1L);
+		this.title = "";
+		this.template = "";
+		this.creationDate = Calendar.getInstance().getTime();
+		this.modifiedDate = creationDate;
+		this.secured = false;
 	}
 
 	public DefaultPage(int objectType, long objectId) {
@@ -296,5 +307,45 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		if (this.getPageId() > 0)
 			return getTagDelegator().getTagsAsString();
 		return null;
+	}
+
+	@JsonProperty
+	public boolean isSecured() {
+		return secured;
+	}
+
+	@JsonProperty
+	public void setSecured(boolean secured) {
+		this.secured = secured;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("DefaultPage [pageId=").append(pageId).append(", ");
+		if (name != null)
+			builder.append("name=").append(name).append(", ");
+		if (versionId != null)
+			builder.append("versionId=").append(versionId).append(", ");
+		if (pageState != null)
+			builder.append("pageState=").append(pageState).append(", ");
+		if (title != null)
+			builder.append("title=").append(title).append(", ");
+		if (summary != null)
+			builder.append("summary=").append(summary).append(", ");
+		if (template != null)
+			builder.append("template=").append(template).append(", ");
+		if (bodyContent != null)
+			builder.append("bodyContent=").append(bodyContent).append(", ");
+		if (creationDate != null)
+			builder.append("creationDate=").append(creationDate).append(", ");
+		if (modifiedDate != null)
+			builder.append("modifiedDate=").append(modifiedDate).append(", ");
+		if (user != null)
+			builder.append("user=").append(user).append(", ");
+		builder.append("secured=").append(secured).append("]");
+		return builder.toString();
 	} 
+	
+	
 }

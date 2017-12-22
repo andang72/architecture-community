@@ -1,4 +1,4 @@
-package architecture.community.issue;
+package architecture.community.projects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,15 +7,15 @@ import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import architecture.community.issue.dao.IssueDao;
+import architecture.community.projects.dao.ProjectDao;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
-public class DefaultIssueService implements IssueService {
+public class DefaultProjectService implements ProjectService {
 
 	@Inject
-	@Qualifier("issueDao")
-	private IssueDao issueDao;
+	@Qualifier("projectDao")
+	private ProjectDao projectDao;
 
 	@Inject
 	@Qualifier("projectCache")
@@ -25,12 +25,12 @@ public class DefaultIssueService implements IssueService {
 	@Qualifier("issueCache")
 	private Cache issueCache;	
 	
-	public DefaultIssueService() { 
+	public DefaultProjectService() { 
 	}
  
 	public List<Project> getProjects() {
 		
-		List<Long> ids = issueDao.getAllProjectIds();
+		List<Long> ids = projectDao.getAllProjectIds();
 		List<Project> list = new ArrayList<Project>(ids.size());
 		for(Long projectId : ids ) {
 			try {
@@ -45,7 +45,7 @@ public class DefaultIssueService implements IssueService {
 		
 		Project project = getProjectInCache(projectId);		
 		if( project == null ) {
-			project = issueDao.getProjectById(projectId);
+			project = projectDao.getProjectById(projectId);
 			if( project != null && project.getProjectId() > 0 )
 				projectCache.put(new Element(projectId, project ));
 		}
@@ -58,7 +58,7 @@ public class DefaultIssueService implements IssueService {
 		if( project.getProjectId() > 0 && projectCache.get(project.getProjectId()) != null  ) {
 			projectCache.remove(project.getProjectId());
 		} 
-		issueDao.saveOrUpdateProject(project);
+		projectDao.saveOrUpdateProject(project);
 	}
 	
 	protected Project getProjectInCache(long projectId){

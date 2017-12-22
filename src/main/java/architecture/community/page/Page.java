@@ -63,5 +63,9 @@ public interface Page extends ModelObjectAware {
     public abstract String getTemplate();
     
     public abstract void setTemplate(String template);
+ 
+	public abstract boolean isSecured() ;
+ 
+	public abstract void setSecured(boolean secured) ;
     
 }

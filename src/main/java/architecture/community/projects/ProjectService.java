@@ -1,8 +1,8 @@
-package architecture.community.issue;
+package architecture.community.projects;
 
 import java.util.List;
 
-public interface IssueService {
+public interface ProjectService {
 	
 	public abstract List<Project> getProjects();
 	

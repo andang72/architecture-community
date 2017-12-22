@@ -1,10 +1,10 @@
-package architecture.community.issue.dao;
+package architecture.community.projects.dao;
 
 import java.util.List;
 
-import architecture.community.issue.Project;
+import architecture.community.projects.Project;
 
-public interface IssueDao {
+public interface ProjectDao {
 	
 	public void saveOrUpdateProject(Project project);
 	

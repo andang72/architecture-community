@@ -82,7 +82,7 @@ public class DefaultPageService extends EventSupport implements PageService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdatePage(Page page, boolean forceNewVersion) {
-		boolean isNewPage = page.getPageId() == -1L;
+		boolean isNewPage = page.getPageId() < 1L;
 		boolean isNewVersionRequired = isNewVersionRequired(forceNewVersion, isNewPage);
 		if (isNewPage) {
 			pageDao.create(page);
@@ -122,17 +122,15 @@ public class DefaultPageService extends EventSupport implements PageService {
 		if (pageCache.get(pageId) != null) {
 			page = (Page) pageCache.get(pageId).getObjectValue();
 		}
-
 		if (page == null) {
 			try {
 				page = pageDao.getPageById(pageId);
 				if (page == null)
-					throw new PageNotFoundException();
+					throw new PageNotFoundException();				
 				setUserInPage(page);
-
 				if (PageState.PUBLISHED == page.getPageState())
-					pageCache.put(new Element(pageId, page));
-				pageIdCache.put(new Element(page.getName(), pageId));
+					pageCache.put(new Element(pageId, page));				
+				pageIdCache.put(new Element(page.getName(), pageId));				
 			} catch (Exception e) {
 				throw new PageNotFoundException(e);
 			}
@@ -206,8 +204,25 @@ public class DefaultPageService extends EventSupport implements PageService {
 	}
 
 	public Page getPage(String name, int versionId) throws PageNotFoundException {
-		// TODO 자동 생성된 메소드 스텁
-		return null;
+		Page pageToUse = null;
+		if (pageIdCache.get(name) != null) {
+			Long pageId = (Long) pageIdCache.get(name).getObjectValue();
+			log.debug("using cached pageId : " + pageId);
+			pageToUse = getPage(pageId, versionId);
+		}
+		
+		if (pageToUse == null) {			
+			try {
+				pageToUse = pageDao.getPageByName(name);
+				if (pageToUse == null)
+					throw new PageNotFoundException();
+				
+				pageToUse = getPage(pageToUse.getPageId(), versionId);
+			} catch (Exception e) {
+				throw new PageNotFoundException(e);
+			}
+		}
+		return pageToUse;
 	}
 
 	public List<Page> getPages(int objectType) {

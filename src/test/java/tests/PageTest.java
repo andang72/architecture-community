@@ -32,19 +32,19 @@ public class PageTest {
 	private UserManager userManager;
 	
 	
-	@Test  
+	@Test 
 	public void testNewPage() {
 		
 		String name = "test.html";
 		String title = "테스트";
 		Page page;
 		try {
-			page = pageService.getPage(name);
+			page = pageService.getPage(1);
 			log.debug("----------------------");
 			log.debug(" page props : {}", page.getProperties());
 			
 			page.getProperties().put("forward", "true");
-			pageService.saveOrUpdatePage(page);
+			//pageService.saveOrUpdatePage(page);
 			
 		} catch (PageNotFoundException e) {
 			e.printStackTrace();
