@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import architecture.community.board.DefaultBoard;
 import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetNotFoundException;
 import architecture.community.codeset.CodeSetService;
+import architecture.community.exception.NotFoundException;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
@@ -69,6 +71,46 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	******************************************/
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/codeset/{group}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<CodeSet> getCodeSetsByGroup(
+			@PathVariable String group,
+			@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
+			@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId ){
+
+		if (!StringUtils.isNullOrEmpty(group)) {
+			return codeSetService.getCodeSets(objectType, objectId, group);
+		}
+		return Collections.EMPTY_LIST;
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/codeset/{groupCode}/code/{code}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<CodeSet> getCodeSetsByGroupAndCode(
+			@PathVariable String groupCode,
+			@PathVariable String code,
+			@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
+			@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId ){
+		
+		List<CodeSet> groups = Collections.EMPTY_LIST ;
+		List<CodeSet> codes = Collections.EMPTY_LIST ;
+		if (!StringUtils.isNullOrEmpty(groupCode)) {
+			groups = codeSetService.getCodeSets(objectType, objectId, groupCode);
+		}
+		
+		if (!StringUtils.isNullOrEmpty(code))
+		for( CodeSet group : groups ) {
+			if( org.apache.commons.lang3.StringUtils.equals( group.getCode(), code )  ) {
+				codes = codeSetService.getCodeSets(group);
+				break;
+			}
+		}
+		return codes ;
+	}
+	
+	/**
+	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/codeset/group/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public List<CodeSet> getCodeSets(
@@ -81,6 +123,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		}
 		return Collections.EMPTY_LIST;
 	}
+	*/
 	
 	@RequestMapping(value = "/codeset/list.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
@@ -167,5 +210,47 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	public ItemList getProjects(NativeWebRequest request) {
 		List<Project> list = projectService.getProjects();
 		return new ItemList(list, list.size());
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/projects/save-or-update.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public Project saveOrUpdate(@RequestBody Project project, NativeWebRequest request) throws NotFoundException {
+
+		Project boardToUse = new Project();
+		if (project.getProjectId() > 0) {
+			boardToUse = projectService.getProject(project.getProjectId());
+			if (!StringUtils.isNullOrEmpty(project.getName()))
+				boardToUse.setName(project.getName());
+			if (!StringUtils.isNullOrEmpty(project.getSummary()))
+				boardToUse.setSummary(project.getSummary());
+			if (!StringUtils.isNullOrEmpty(project.getContractState()))			
+				boardToUse.setContractState(project.getContractState());
+			boardToUse.setMaintenanceCost(project.getMaintenanceCost());
+			
+			if( project.getStartDate()!= null)
+				boardToUse.setStartDate(project.getStartDate());
+			if( project.getEndDate()!= null)
+				boardToUse.setEndDate(project.getEndDate());
+			Date modifiedDate = new Date();
+			boardToUse.setModifiedDate(modifiedDate);
+			projectService.saveOrUpdateProject(boardToUse);
+			
+		} else {
+			// create...
+			boardToUse = new Project();
+			boardToUse.setName(project.getName());
+			boardToUse.setSummary(project.getSummary());
+			if (!StringUtils.isNullOrEmpty(project.getContractState()))			
+				boardToUse.setContractState(project.getContractState());
+			if( project.getStartDate()!= null)
+				boardToUse.setStartDate(project.getStartDate());
+			if( project.getEndDate()!= null)
+				boardToUse.setEndDate(project.getEndDate());
+			boardToUse.setMaintenanceCost(project.getMaintenanceCost());
+			projectService.saveOrUpdateProject(boardToUse);
+		}		
+		return boardToUse;
+		
 	}
 }

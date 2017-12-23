@@ -230,9 +230,9 @@
 	community.model.BodyContent = Model.define({ 		
 		id: "bodyId",
 		fields: { 	
-			bodyId: { type: "number", defaultValue: 0 },			
+			bodyId: { type: "number", defaultValue: -1 },			
 			bodyText: { type: "string", defaultValue: "" },			
-			bodyType:{ type: "string", defaultValue: "" },
+			bodyType:{ type: "string", defaultValue: "FREEMARKER" },
 			pageId: { type: "number", defaultValue: 0 }	
 		}
 	});	
@@ -241,18 +241,19 @@
 	community.model.Page = Model.define({ 		
 		id: "pageId",
 		fields: { 	
-			objectType: { type: "number", defaultValue: 0 },			
-			objectId: { type: "number", defaultValue: 0},				
+			objectType: { type: "number", defaultValue: -1 },			
+			objectId: { type: "number", defaultValue: -1},				
 			pageId: { type: "number", defaultValue: 0 },			
 			name: { type: "string", defaultValue: "" },	
 			versionId: { type: "number", defaultValue: 0 },	
-			pageState: { type: "string", defaultValue: "" },	
+			pageState: { type: "string", defaultValue: "INCOMPLETE" },	
 			commentCount: { type: "number", defaultValue: 0 },		
 			viewCount: { type: "number", defaultValue: 0 },		
 			summary: { type: "string", defaultValue: "" },	
 			tagsString: { type: "string", defaultValue: "" },	
 			title: { type: "string", defaultValue: "" },
 			template: { type: "string", defaultValue: "" },
+			secured: { type: "boolean", defaultValue: false },
 			properties: { type: "object", defaultValue : {} },
 			bodyText: { type: "string", defaultValue: "" },	
 			bodyContent : { type: "object", defaultValue : new community.model.BodyContent() },
@@ -273,6 +274,7 @@
 		    	target.set("tagsString", this.get("tagsString"));
 		    	target.set("title", this.get("title"));
 		    	target.set("template", this.get("template"));
+		    target.set("secured", this.get("secured"));
 		    	target.set("bodyText", this.get("bodyText"));
 		    	target.set("modifiedDate",this.get("modifiedDate") );
 		    	target.set("creationDate", this.get("creationDate") )
@@ -285,6 +287,32 @@
 		    	
 		}
 	});
+	
+	community.model.Project = Model.define({ 		
+		id: "projectId",
+		fields: { 	
+			projectId: { type: "number", defaultValue: -1 },			
+			name: { type: "string", defaultValue: "" },			
+			summary:{ type: "string", defaultValue: "" },
+			contractState: { type: "string", defaultValue: "" },
+			maintenanceCost : { type: "number", defaultValue: 0 },
+			startDate:{ type: "date" },			
+			endDate:{ type: "date"},
+			creationDate:{ type: "date" },			
+			modifiedDate:{ type: "date" }	
+		},
+		copy: function ( target ){
+			target.projectId = this.get("projectId");
+		    	target.set("name",this.get("name") );
+		    	target.set("summary", this.get("summary") );
+		    	target.set("contractState", this.get("contractState") );
+		    	target.set("maintenanceCost", this.get("maintenanceCost") );
+		    	target.set("startDate",this.get("startDate") );
+		    	target.set("endDate", this.get("endDate") );		
+		    	target.set("modifiedDate",this.get("modifiedDate") );
+		    	target.set("creationDate", this.get("creationDate") );
+		}
+	});	
 	
 	
 	function getUserProfileImage ( user ) {
@@ -324,10 +352,11 @@
 		return displayName ;
 	}
 	
-	function getFormattedDate(date){
+	function getFormattedDate(date, format ){		
+		format = format || "g";		
 		if( typeof(date) == 'string')			
-			return kendo.toString(new Date( date ) , "g");
-		return kendo.toString(date, "g");
+			return kendo.toString(new Date( date ) , format);
+		return kendo.toString(date, format);
     }
 	
 	

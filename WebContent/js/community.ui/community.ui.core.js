@@ -75,10 +75,8 @@
 		var Setup = kendo.Observable.extend({		
 			init: function(options) {
 				var that = this;
-				kendo.Observable.fn.init.call(that);
-				
-				options = that.options = extend(true, {}, DEFAULT_SETUP_SETTING, options);	
-				
+				kendo.Observable.fn.init.call(that);				
+				options = that.options = extend(true, {}, DEFAULT_SETUP_SETTING, options);					
 				if(!defined(that.complete))
 					that.complete = false;		
 				that._features();
@@ -89,24 +87,18 @@
 			_features: function(){
 				var that = this,
 				options = that.options,
-				features = options.features;
-				
+				features = options.features;				
 				if( features.culture ){
 					culture();				
 				}
-				if(features.landing){				
-					
+				if(features.landing){		
 				}
 				if(defined(features.accounts)){
-								
 				}			
 				if(features.wallpaper){
-					
 				}
-				if(features.lightbox){				
- 
-				}
-				
+				if(features.lightbox){
+				}				
 				if(defined(features.accounts)){
 					that.token = new community.model.User();
 					ajax( that.options.url || '/data/api/v1/users/me.json' , {
