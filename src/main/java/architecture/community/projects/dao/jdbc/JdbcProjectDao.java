@@ -29,6 +29,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			Project board = new Project(rs.getLong("PROJECT_ID"));			
 			board.setName(rs.getString("NAME"));
 			board.setSummary(rs.getString("SUMMARY"));
+			board.setContractState(rs.getString("CONTRACT_STATE"));
+			board.setMaintenanceCost(rs.getDouble("MAINTENANCE_COST"));
 			board.setStartDate(rs.getDate("START_DATE"));
 			board.setEndDate(rs.getDate("END_DATE"));
 			board.setCreationDate(rs.getDate("CREATION_DATE"));
@@ -69,6 +71,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getProjectId()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getName()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getContractState()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getMaintenanceCost()),					
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getEndDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
@@ -80,6 +84,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_PROJECT").getSql(),
 					new SqlParameterValue(Types.VARCHAR, toUse.getName()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getContractState()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getMaintenanceCost()),	
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getEndDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),

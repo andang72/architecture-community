@@ -13,6 +13,8 @@ import architecture.community.board.Board;
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardView;
 import architecture.community.model.Models;
+import architecture.community.projects.Project;
+import architecture.community.projects.ProjectView;
 import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
@@ -50,6 +52,26 @@ public abstract class AbstractCommunityDateController {
 		boardView.setTotalMessage(totalMessageCount);
 		boardView.setTotalThreadCount(totalThreadCount);		
 		return boardView;
+	}
+	
+	protected ProjectView toProjectView(JdbcCommunityAclService communityAclService, Project project) {		
+		
+		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();
+		log.debug("Board View : {} {} for {}.", project.getProjectId(),  project.getName(), userDetails.getUsername() );		
+		
+		PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, project.getProjectId() );				
+		ProjectView projectView = new ProjectView(project);
+ 
+		projectView.setWritable(bundle.isWrite());
+		projectView.setReadable(bundle.isRead());
+		projectView.setCreateAttachement(bundle.isCreateAttachment());
+		projectView.setReadComment(bundle.isReadComment());
+		projectView.setCreateComment(bundle.isCreateComment());
+		projectView.setCreateImage(bundle.isCreateImage());
+		projectView.setCreateThread(bundle.isCreateThread());
+		projectView.setCreateThreadMessage(bundle.isCreateThreadMessage());	
+		
+		return projectView;
 	}
 	
     protected String getEncodedFileName(Attachment attachment) {

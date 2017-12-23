@@ -117,8 +117,10 @@ public class PageMgmtDataController {
 			pageToUse = pageService.getPage(page.getPageId());
 			if (!StringUtils.equals(page.getName(), pageToUse.getName())
 					|| !StringUtils.equals(page.getTitle(), pageToUse.getTitle())
+					|| pageToUse.getPageState() != page.getPageState()
 					|| !StringUtils.equals(page.getSummary(), pageToUse.getSummary()) 
 					|| !StringUtils.equals(page.getTemplate(), pageToUse.getTemplate()) 
+					|| pageToUse.isSecured() != page.isSecured()
 					|| !StringUtils.equals(page.getBodyContent().getBodyText(), pageToUse.getBodyContent().getBodyText()) ) {
 				doUpdate = true;
 			}
@@ -132,9 +134,13 @@ public class PageMgmtDataController {
 		if (doUpdate) {
 			pageToUse.setName(page.getName());
 			pageToUse.setTitle(page.getTitle());
+			
+			if( page.getPageState() != null)
+					pageToUse.setPageState(page.getPageState());
+			
 			pageToUse.setSummary(page.getSummary());
 			pageToUse.setTemplate(page.getTemplate());
-			
+			pageToUse.setSecured(page.isSecured());
 			if (includeBodyContent)
 				pageToUse.setBodyText(page.getBodyContent().getBodyText());			
 			if (includeProperties)

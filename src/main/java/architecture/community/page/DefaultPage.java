@@ -68,6 +68,16 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 
 	public DefaultPage(int objectType, long objectId) {
 		super(objectType, objectId);
+		this.name = null;
+		this.pageId = -1L;
+		this.versionId = -1;
+		this.pageState = PageState.INCOMPLETE;
+		this.user = new UserTemplate(-1L);
+		this.title = "";
+		this.template = "";
+		this.creationDate = Calendar.getInstance().getTime();
+		this.modifiedDate = creationDate;
+		this.secured = false;
 	}
 
  
