@@ -122,13 +122,11 @@
 		
 	});
 	
-	
-	function isDeveloper(){
+ 
+	function isDeveloper(){ 
 		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
 	} 
-	
-		
-				
+ 			
 	</script>		
 </head>
 <body id="page-top" class="landing-page no-skin-config">
