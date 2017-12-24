@@ -26,8 +26,7 @@
 	<link href="<@spring.url "/css/community.ui/community.ui.components.min.css"/>" rel="stylesheet" type="text/css" />
   	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
   	 <!-- Summernote Editor CSS -->
-	<link href="<@spring.url "/js/summernote/summernote.css"/>" rel="stylesheet" type="text/css" />
-		
+	<link href="<@spring.url "/js/summernote/summernote.css"/>" rel="stylesheet" type="text/css" />	
 	<!-- Page landing js -->	   	
 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>   	
 	<!-- Requirejs for js loading -->
