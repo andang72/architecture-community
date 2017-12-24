@@ -491,9 +491,9 @@
 			<a href="javascript:void();" class="btn-link" data-action="create" data-object-type="board"  data-object-id="#:boardId#" >#:displayName#</a>
 			<div><small>#if(description != null ){# #:description # #}#</small></div>
 		</td>
-		<td class="text-center v-a-m"> #: totalThreadCount # </td>
-		<td class="text-center v-a-m"> #: totalMessage # </td>
-		<td class="v-a-m">
+		<td class="text-center align-middle"> #: totalThreadCount # </td>
+		<td class="text-center align-middle"> #: totalMessage # </td>
+		<td class="align-middle">
 			<button type="button" class="btn btn-outline btn-xs icon-svg-btn m-n" data-action="create" data-object-type="board"  data-object-id="#:boardId#"><i class="icon-svg icon-svg-sm icon-svg-dusk-edit"></i></button>
 			<!--<button type="button" class="btn btn-outline btn-xs btn-success m-n" data-action="create" data-object-type="board"  data-object-id="#:boardId#" >수정</button>-->
 		</td>

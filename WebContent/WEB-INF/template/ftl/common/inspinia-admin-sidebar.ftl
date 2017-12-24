@@ -25,21 +25,17 @@
                 <li>
                     <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">커뮤니티</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">
+                        <li><a href="view.html?t=/admin/manage-projects" data-page='/admin/manage-projects'>프로젝트</a></li>
                         <li><a href="view.html?t=/admin/manage-boards" data-page='/admin/manage-boards'>게시판</a></li>
                     </ul>
-                </li>                        
-                <li>
-                    <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">클라우드</span> <span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level collapse">
-                        <li><a href="view.html?t=/admin/manage-cloud-photos" data-page='/admin/manage-menu'>이미지</a></li>
-                        <li><a href="view.html?t=/admin/manage-cloud-files" data-page='/admin/manage-menu'>파일</a></li>
-                    </ul>
-                </li>   
+                </li>                         
                 <li>
                     <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">자원</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">
+                        <li><a href="view.html?t=/admin/manage-cloud-photos" data-page='/admin/manage-menu'>이미지</a></li>
+                        <li><a href="view.html?t=/admin/manage-cloud-files" data-page='/admin/manage-menu'>파일</a></li>
                     		<li><a href="view.html?t=/admin/manage-menu" data-page='/admin/manage-menu' >메뉴</a></li>	
-                    	    <li><a href="view.html?t=/admin/manage-pages" data-page='/admin/manage-menu'>페이지</a></li>	
+                    		<li><a href="view.html?t=/admin/manage-pages" data-page='/admin/manage-menu'>페이지</a></li>	
                     	    <li><a href="view.html?t=/admin/manage-templetes" data-page='/admin/manage-menu'>템플릿</a></li>	
                     </ul>
                 </li>                                           

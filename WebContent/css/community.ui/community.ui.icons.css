@@ -68,6 +68,10 @@ i.icon-svg {
 .icon-svg-ios-attach {
 	background-image: url("/images/icons/ios/attach.svg");
 }
+.icon-svg-ios-customer-support {
+	background-image: url("/images/icons/ios/customer-support.svg");
+}
+
 /* Dusk Icons */
 
 .icon-svg-dusk-edit {

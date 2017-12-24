@@ -9,6 +9,8 @@
     <meta http-equiv="Expires" content="-1">
 </head>
 <body>
+
+
 	<div class="container">
 	<#if SPRING_SECURITY_LAST_EXCEPTION ?? >	
 	<div class="alert alert-danger" role="alert">

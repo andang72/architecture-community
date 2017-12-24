@@ -92,13 +92,14 @@
 		<priority value="DEBUG" />
 	</category>
 	
+	<category name="org.springframework.web.servlet.mvc.method.annotation">
+		<priority value="ERROR" />
+	</category>
+		
 	<category name="freemarker">
 		<priority value="DEBUG" />
 	</category>
-	
-	<category name="neuro.honeycomb.spring.freemarker">
-		<priority value="ERROR" />
-	</category>
+ 
 		
 	<logger  name="com.opensymphony">
 	    <level  value="TRACE" />
@@ -110,7 +111,7 @@
 
 	<root>
 		<appender-ref ref="CONSOLE" />
-		<!-- <appender-ref ref="FILE" />-->
+		<!-- <appender-ref ref="FILE" /> -->
 	</root>
 
 </log4j:configuration>

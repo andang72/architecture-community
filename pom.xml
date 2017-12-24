@@ -201,11 +201,15 @@
 					<suffix>.min</suffix>
 					<webappDirectory>${basedir}/WebContent</webappDirectory>
 					<includes>
+						<include>**/css/bootstrap.theme/inspinia/custom.css</include>
+						<include>**/css/bootstrap.theme/inspinia/style.css</include>
 						<include>**/css/bootstrap.theme/unify/unify-core.css</include>
 						<include>**/css/bootstrap.theme/unify/unify-globals.css</include>
 						<include>**/css/community.ui/community.ui.core.css</include>
 						<include>**/css/community.ui/community.ui.glogals.css</include>
+						<include>**/css/community.ui/community.ui.components.css</include>
 						<include>**/css/community.ui/community.ui.style.css</include>
+						<include>**/css/community.ui/community.ui.icons.css</include>
 						<include>**/js/community.ui/community.data.js</include>
 						<include>**/js/community.ui/community.ui.core.js</include>
 			        </includes>

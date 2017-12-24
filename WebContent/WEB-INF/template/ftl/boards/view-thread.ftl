@@ -1,5 +1,4 @@
 <#ftl encoding="UTF-8"/>
-<#assign user = SecurityHelper.getUser() />	
 <#compress>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>${currentBoard.displayName}</title>
+    <title><#if __page?? >${__page.title}</#if></title>
 	<!-- Kendoui with bootstrap theme CSS -->			
 	<link href="/css/kendo.ui.core/web/kendo.common-bootstrap.core.css" rel="stylesheet" type="text/css" />
 	<link href="/css/kendo.ui.core/web/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -21,17 +20,23 @@
 	<link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet" type="text/css" />
 	
     <!-- Community CSS -->
+    <link href="/css/community.ui/community.ui.globals.css" rel="stylesheet" type="text/css" />
     <link href="/css/community.ui/community.ui.style.css" rel="stylesheet" type="text/css" />
     	
 	<link href="/js/summernote/summernote.css" rel="stylesheet" type="text/css" />
 	<link href="/css/animate/animate.css" rel="stylesheet" type="text/css" />
 	
+	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script> 
 	<!-- Requirejs for js loading -->
 	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
 
 	<!-- Application JavaScript
     ================================================== -->    
 	<script>
+	
+	var __threadId = <#if RequestParameters.threadId?? >${RequestParameters.threadId}<#else>0</#if>;
+	
+	
 	require.config({
 		shim : {
 	        "bootstrap" : { "deps" :['jquery'] },
@@ -67,21 +72,48 @@
 		  	}
 		});
 		
-		
+		// Topnav animation feature
+ 		var cbpAnimatedHeader = (function() {
+        		var docElem = document.documentElement, header = document.querySelector( '.navbar-default' ), didScroll = false, changeHeaderOn = 200;
+        		function init() {
+            		window.addEventListener( 'scroll', function( event ) {
+	                if( !didScroll ) {
+	                    didScroll = true;
+	                    setTimeout( scrollPage, 250 );
+	                }
+            		}, false );
+        		}
+        		function scrollPage() {
+            		var sy = scrollY();
+	            if ( sy >= changeHeaderOn ) {
+	                $(header).addClass('navbar-scroll')
+	            }
+	            else {
+	                $(header).removeClass('navbar-scroll')
+	            }
+            		didScroll = false;
+        		}
+	        function scrollY() {
+	            return window.pageYOffset || docElem.scrollTop;
+	        }
+        		init();
+		})();
 		// enable tooltip .
+		
 		$('[data-toggle="tooltip"]').tooltip();
 		 
 		var observable = new community.ui.observable({ 
-			currentUser : new community.model.User(),
-			board : new community.model.Board({ boardId : ${currentBoard.boardId}}),
-			thread : new community.model.Thread({ threadId : ${currentThread.threadId} , rootMessage: {subject: '', body: ''}}),
+			currentUser : new community.model.User(),			
+			board : new community.model.Board({boardId: <#if __thread?? >${__thread.objectId}<#else>0</#if>}),
+			thread : new community.model.Thread({ threadId :__threadId , rootMessage: {subject: '', body: '' }}),
 			autherAvatarSrc : "/images/no-avatar.png",
+			autherJoinDate : "",
 			editalbe : false,
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
 			},
-			messageDataSource : community.ui.datasource('/data/api/v1/threads/${currentThread.threadId}/messages/list.json', {
+			messageDataSource : community.ui.datasource('/data/api/v1/threads/' + __threadId + '/messages/list.json', {
 				schema: {
 					total: "totalCount",
 					data : "items",
@@ -96,32 +128,40 @@
 						if( handler != null && $.isFunction(handler) ){
 							handler( data );
 						}else{
-							$this.set('thread', new community.model.Thread(data));
-							$this.set('autherAvatarSrc', community.data.getUserProfileImage( $this.thread.rootMessage.user ) );
+							var t = new community.model.Thread(data) ;
+			    				t.copy( observable.get('thread') );
+							$this.set('autherAvatarSrc',  community.data.getUserProfileImage( $this.thread.rootMessage.user ) );
+							$this.set('autherJoinDate',  community.data.getFormattedDate( $this.thread.rootMessage.user.creationDate)  );  
 						}
 					}
 				});		
 			}
     		});   
  
+ 		/** 
+ 		 * get board 
+ 		 **/
 		community.ui.ajax('/data/api/v1/boards/' + observable.board.get('boardId') + '/info.json', {
 			success: function(data){				
 				observable.set('board', new community.model.Board(data) );			
 				if(observable.board.readable)	
 				{
 			    		observable.getThreadInfo( function ( data ) {    		
-			    			observable.set('thread', new community.model.Thread(data));
-			    			observable.set('autherAvatarSrc', community.data.getUserProfileImage( observable.thread.rootMessage.user ) );
-			    			createMessageListView(observable);
+			    			var t = new community.model.Thread(data) ;
+			    			t.copy( observable.get('thread') );			 
+			    			observable.set('autherAvatarSrc',  community.data.getUserProfileImage( observable.thread.rootMessage.user ) );
+						observable.set('autherJoinDate', community.data.getFormattedDate( observable.thread.rootMessage.user.creationDate)  );  
+						createMessageListView(observable); 
+						createMessageAttachmentListView($('#root-message-attachment-listview'), observable.thread.rootMessage.messageId );
 			    			if(observable.board.readComment){
 			    				createMessageCommentListView(observable.thread.rootMessage);
-			    			}
+			    			} 
 			    		});					
 				}
 			}
 		});	
     				
-		var renderTo = $('#page-wrapper');			
+		var renderTo = $('#page-top');			
 		renderTo.data('model', observable);
 		community.ui.bind(renderTo, observable );				
 								
@@ -143,7 +183,9 @@
 					});
 				}
 			}	
-			openMessageEditorModal( actionType , observable.board, message );			
+			
+			openMessageEditorModal( actionType , observable.board, message );	
+					
 			return false;		
 		});			
 		
@@ -159,27 +201,22 @@
 				}else if ( actionType === 'create' ){									
 					var messageId = $this.data("object-id");
 					var parentCommentId = $this.data("parent-comment-id");
-					//openMessageCommentModal( actionType , messageId , parentCommentId , targetObject );		
-					openMessageCommentModal2( actionType , messageId , parentCommentId , targetObject );				
+					openMessageCommentModal( actionType , messageId , parentCommentId , targetObject );				
 				}	
 			}			
 			return false;		
-		});		
-		
-																						
-																																																														
-	});
-	
+		});	 																																																										
+	}); 
 	
 	function isRootMessage( message ){		
-		if( message != null && message.messageId === ${ currentThread.rootMessage.messageId} ){
+		if( message != null && message.messageId === <#if __thread?? >${__thread.rootMessage.messageId}<#else>0</#if> ){
 			return true;
 		}
 		return false;
 	}
 	
 	function getPageModel(){
-		var renderTo = $('#page-wrapper');	
+		var renderTo = $('#page-top');	
 		return renderTo.data('model');
 	}
 	
@@ -197,6 +234,9 @@
 			return false;	
 	}
 	
+	/**
+	 * create message ListView .
+	 */
 	function createMessageListView(model){	
 		var renderTo = $('#message-listview');		
 		var listview = community.ui.listview( renderTo , {
@@ -208,10 +248,39 @@
         });            
 	}
 	
+	function createMessageAttachmentListView ( renderTo ,  messageId ){
+		if( !community.ui.exists( renderTo ) ){		
+			
+			var listview = community.ui.listview( renderTo , {
+				dataSource: community.ui.datasource('/data/api/v1/attachments/list.json', {
+					transport : {
+						parameterMap :  function (options, operation){
+							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 7 , objectId : messageId }
+						}
+					},
+					pageSize: 10,
+					schema: {
+						total: "totalCount",
+						data: "items",
+						model : community.model.Attachment
+					}
+				}),
+				template: community.ui.template($("#message-attachments-listview2-template").html()),
+				dataBound: function() {
+			        //handle event
+			        community.ui.tooltip(renderTo);
+			    }
+			});
+			
+			
+		}
+	}
+	
+	
 	function createMessageChildCommentListView(renderTo, options){	
 		renderTo.collapse('toggle');
 		if( !community.ui.exists( renderTo ) ){
-			var template = community.ui.template('/data/api/v1/threads/${currentThread.threadId}/messages/#: messageId #/comments/#: commentId #/list.json'); 
+			var template = community.ui.template('/data/api/v1/threads/<#if __thread?? >${__thread.objectId}<#else>0</#if>/messages/#: messageId #/comments/#: commentId #/list.json'); 
 			var target_url = template(options);
 			var listview = community.ui.listview( renderTo , {
 				dataSource : community.ui.datasource(target_url, {
@@ -225,13 +294,12 @@
 			});	
 		}else{
 		
-		}
-		
+		} 
 	}
 	
 	function createMessageCommentListView( model, renderTo ){			
 		renderTo = renderTo || $('#message-comment-listview');	
-		var template = community.ui.template('/data/api/v1/threads/${currentThread.threadId}/messages/#= messageId #/comments/list.json'); 
+		var template = community.ui.template('/data/api/v1/threads/<#if __thread?? >${__thread.objectId}<#else>0</#if>/messages/#= messageId #/comments/list.json'); 
 		var target_url = template(model);	
 		var listview = community.ui.listview( renderTo , {
 			dataSource : community.ui.datasource(target_url, {
@@ -242,11 +310,10 @@
 				pageSize : 10
 			}),
 			template: community.ui.template($("#comment-template").html())
-		});	
-		
-	}
-
-	function openMessageCommentModal2(actionType , messageId , parentCommentId, targetObject){	
+		});
+	} 
+	
+	function openMessageCommentModal(actionType , messageId , parentCommentId, targetObject){	
 		var renderTo = $('#message-comment-modal');
 		if( !renderTo.data("model") ){
 			var editorTenderTo = $('#editable-message-message-body');
@@ -262,7 +329,7 @@
 				text : "",
 				email : "",
 				name : "",
-				threadId : ${currentThread.threadId},
+				threadId : __threadId,
 				messageId : 0,				
 				parentCommentId : 0,
 				setMessage: function(data){
@@ -294,69 +361,24 @@
 			});		
 			renderTo.data("model", observable );
 			community.ui.bind(renderTo, observable);		
-			renderTo.on('show.bs.modal', function (e) {
-			  			
-			});
+			renderTo.on('show.bs.modal', function (e) { });
 		}
 		
 		renderTo.data("model").setMessage( { 'messageId': messageId , 'parentCommentId': parentCommentId  });
 		renderTo.modal('show');
-	}
-						
-	function openMessageCommentModal(actionType , messageId , parentCommentId, targetObject){	
-		var renderTo = $('#message-comment-modal');
-		if( !renderTo.data("model") ){
-			var observable = new community.ui.observable({ 
-				autherAvatarSrc :community.data.getUserProfileImage( getPageModel().currentUser ) ,
-				text : "",
-				email : "",
-				name : "",
-				threadId : ${currentThread.threadId},
-				messageId : 0,				
-				parentCommentId : 0,
-				save : function () {
-					var $this = this;
-				  	var template = community.ui.template("/data/api/v1/threads/#= threadId #/messages/#= messageId #/comments/add.json"); 
-				  	var target_url = template($this);			  	
-				  	community.ui.progress(renderTo, true);				
-					community.ui.ajax( target_url , {
-						data: community.ui.stringify({ data : { email:$this.get('email'), name:$this.get('name'), text:$this.get('text'), parentCommentId:$this.get('parentCommentId') } }),
-						contentType : "application/json",
-						success : function(response){
-							community.ui.listview(targetObject).dataSource.read();
-						}	
-					}).always( function () {
-							community.ui.progress(renderTo, false);
-							renderTo.modal('hide');
-					});				
-				}
-			});		
-			renderTo.data("model", observable );
-			community.ui.bind(renderTo, observable);		
-			renderTo.on('show.bs.modal', function (e) {			  			
-			});
-		}
-		
-		renderTo.data("model").set( 'messageId', messageId );
-		renderTo.data("model").set( 'parentCommentId', parentCommentId );
-		renderTo.data("model").set( 'text', "" );
-		renderTo.data("model").set( 'email', "" );
-		renderTo.data("model").set( 'name', "" );
-								
-		renderTo.modal('show');
-	}
+	} 			 
 	
 	function openMessageEditorModal(actionType, board, message){
 	
 		var renderTo = $("#message-editor-modal");
 		if( !renderTo.data("model") ){	
 		
-			var editorTenderTo = $('#editable-message-body');
-			
+			var editorTenderTo = $('#editable-message-body');			
 			var editorBody = renderTo.find('.message-editor');
 			var attachmentsBody = renderTo.find('.message-attachments');
 			var imagesBody = renderTo.find('.message-images');	
 						
+			// summernote			
 			editorTenderTo.summernote({
 				dialogsInBody: true,
 				height: 300,
@@ -364,13 +386,14 @@
 			});
 			
 			// attachment dorpzone
-			var myDropzone = new Dropzone('#message-attachments-dropzone', {
+			var myDropzone = new Dropzone("#message-attachments-dropzone", {
 				url: '/data/api/v1/attachments/upload.json',
 				paramName: 'file',
 				maxFilesize: 1,
 				previewsContainer: '#message-attachments-dropzone .dropzone-previews'	,
 				previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div></div>'
-			});	
+			});
+				
 			myDropzone.on("sending", function(file, xhr, formData) {
 			  formData.append("objectType", 7);
 			  formData.append("objectId", observable.message.messageId);
@@ -383,10 +406,10 @@
 			});		
 			myDropzone.on("complete", function() {
 			  community.ui.progress(attachmentsBody, false);
-			});
-			
-			// images dropzone
-			var myDropzone2 = new Dropzone('#message-images-dropzone', {
+			  observable.attachmentDatasource.read();
+			});			
+			// images dropzone			
+			var myDropzone2 = new Dropzone("#message-images-dropzone",{
 				url: '/data/api/v1/images/upload.json',
 				paramName: 'file',
 				maxFilesize: 1,
@@ -407,7 +430,7 @@
 			myDropzone2.on("complete", function() {
 			  community.ui.progress(imagesBody, false);
 			});
-					
+		
 			var observable = new community.ui.observable({ 
 				mode : 0,
 				board : board,
@@ -415,6 +438,19 @@
 				message : new community.model.Message(),
 				parentMessageSubject : "",
 				parentMessageBody : "",
+				attachmentDatasource : community.ui.datasource('/data/api/v1/attachments/list.json', {
+					transport : {
+						parameterMap :  function (options, operation){
+							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 7 , objectId : observable.message.messageId }
+						}
+					},
+					pageSize: 10,
+					schema: {
+						total: "totalCount",
+						data: "items",
+						model : community.model.Attachment
+					}
+				}),		
 				setMessage : function ( data ){
 					var $this = this;
 					$this.set('parentMessageSubject', '');
@@ -436,6 +472,7 @@
 						attachmentsBody.hide();
 						imagesBody.hide();		
 					}
+					$this.attachmentDatasource.read();
 				},
 				setParentMessage: function(data){
 					var $this = this;
@@ -496,7 +533,15 @@
 					});							
 				}
 			});
-	    		
+			
+						
+			// attachment listview 
+			var attachmentListview = community.ui.listview($('#message-attachments-listview'), {	
+				autoBind : false,
+				dataSource: observable.attachmentDatasource,
+				template: kendo.template($("#message-attachments-listview-template").html())		
+			});	
+			
 			renderTo.data("model", observable );
 			community.ui.bind( renderTo, observable );		
 			renderTo.on('show.bs.modal', function (e) {
@@ -517,20 +562,34 @@
 	</script>
     
 </head>
-<body class="top-navigation">
-    <div id="wrapper">
-        <div id="page-wrapper" class="gray-bg">
-        		<div class="row border-bottom white-bg">
-        		<!-- NAVBAR START -->     			
-        		<#include "/common/inspinia-top-navbar-ftl">
-        		<!-- NAVBAR END -->        		
-        		<div class="wrapper wrapper-content">
+<body id="page-top" class="landing-page no-skin-config">
+	<!-- NAVBAR START -->   
+	<#include "/includes/user-top-navbar.ftl">
+	<!-- NAVBAR END -->   
+	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(https://htmlstream.com/preview/unify-v2.4/assets/img-temp/1920x800/img8.jpg)">      
+      <div class="container text-center g-bg-cover__inner g-py-150">
+        <div class="row justify-content-center">
+          <div class="col-lg-6">
+            <div class="mb-5">
+              <h1 class="g-color-white g-font-size-60 mb-4">Have a question?</h1>
+              <h2 class="g-color-white g-font-weight-300 g-font-size-20 mb-0">Finding your questions is easy now.</h2>
+            </div>
+            <!-- Promo Blocks - Input -->
+            
+            <!-- End Promo Blocks - Input -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+	<section id="features" class="container services">
+		<div class="wrapper wrapper-content">
             		<div class="container">            
                 		<div class="row">
                     		<div class="col-lg-12">
-                        		<div class="ibox bordered float-e-margins">
+                        		<div class="ibox float-e-margins">
                             		<div class="ibox-title">
-                                		<h5>${currentBoard.displayName}</h5>
+                                		<h5 data-bind="text:board.displayName"></h5>
 									<div class="pull-right forum-desc">
 										<samll>Total posts: <span data-bind="text:thread.messageCount"></span></samll>
 									</div>                                		
@@ -540,15 +599,13 @@
 		                                <a class="forum-avatar" href="#">
 		                                    <img data-bind="attr:{ src: autherAvatarSrc  }"  width="64" height="64" src="/images/no-avatar.png" class="Avatar" alt="image">
 		                                    <div class="author-info">
-		                                        <strong>Posts:</strong> 542<br>
-		                                        <strong>Joined:</strong> April 11.2015<br>
+		                                        <strong>Posts:</strong><span>..</span><br>
+		                                        <strong>Joined:</strong> <span data-bind="text: autherJoinDate "></span><br>
 		                                    </div>
 		                                </a>
 		                                <div class="media-body">
-		                                    <h2 class="media-heading" data-bind="html: thread.rootMessage.subject" >${ currentThread.rootMessage.subject}</h2>
-		                                    <div class="message-body" data-bind="html: thread.rootMessage.body">
-		                                    ${ currentThread.rootMessage.body }
-		                                    </div>
+		                                    <h2 class="media-heading" data-bind="html: thread.rootMessage.subject" ></h2>
+		                                    <div class="message-body" data-bind="html: thread.rootMessage.body"></div>
 		                                    <!--
 		                                    <div class="actions">
                                             		<a class="btn btn-xs btn-white"><i class="fa fa-thumbs-up"></i> Like </a>
@@ -556,25 +613,65 @@
                                             </div>-->
 		                                </div>		                                
 		                            </div>	 
+		                            
+		                            <!-- Attachments --> 
+									<header class="g-mt-80">
+						              <div class="u-heading-v6-2  text-uppercase">
+						             	 <h2 class="u-heading-v6__title g-font-weight-400 g-font-size-26 g-brd-gray mb-0">attachments : <span data-bind="text:thread.rootMessage.attachmentsCount"></span> </h2>
+						                 <!--<h2 class="h4 u-heading-v6__title g-font-weight-300">첨부파일 (<span data-bind="text:thread.rootMessage.attachmentsCount"></span>)</h2>-->
+						              </div>
+						            </header>
+									
+									<div class="table-responsive m-t-sm">						
+						                <table class="table  u-table--v1">
+						                	<!--
+						                  	<thead class="text-uppercase g-letter-spacing-1">
+						                    		<tr>
+						                      		<th class="g-font-weight-100 g-color-black" width="60">&nbsp;</th>
+						                      		<th class="g-font-weight-100 g-color-black g-min-width-200">파일</th>
+			                       			 		<th class="g-font-weight-100 g-color-black text-right" width="100">크기(바이트)</th>
+			                    					</tr>
+			                  				</thead>
+			                  			-->	
+			                  				<tbody id="root-message-attachment-listview" class="no-border" style="min-height:100px;">		                  			
+						                		</tbody>
+						            		</table>
+						            </div>   									
+									<!-- /.Attachments -->
+			                         
+			                        <!--Basic Table-->
+			                         
+									<div class="table-responsive">
+									  <table class="table table-bordered u-table--v2">
+									    <tbody id="message-attachment-listview" class="no-border" style="min-height:50px;" >									      
+									    </tbody>
+									  </table>
+									</div>
+									<!--End Basic Table-->		                            
 									<div class="text-right p-xs">
-										<a href="/boards/${currentBoard.boardId}/list" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15">목록</a>
-		                                 <button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-subject="message" data-bind="enabled: board.createThread" data-action="create" data-object-id="${ currentThread.rootMessage.messageId}" >새로운 글 게시하기</button> 		                                
-		                                 <a href="#!" data-bind="enabled:board.createComment" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-subject="comment" data-object-id="${ currentThread.rootMessage.messageId}" data-target="#message-comment-listview" data-action="create" data-parent-comment-id="0" >
+										<a href="/display/pages/threads.html?boardId=${__thread.objectId}" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" >목록</a>
+		                                 <button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" style="display:none;" data-subject="message" data-bind="visible: board.createThread" data-action="create" data-object-id="${ __thread.rootMessage.messageId}" >새로운 글 게시하기</button> 		                                
+		                                 <a href="#!" data-bind="visible: board.createComment" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" style="display:none;" data-subject="comment" data-object-id="${ __thread.rootMessage.messageId}" data-target="#message-comment-listview" data-action="create" data-parent-comment-id="0" >
 						                    <span class=""><i class="icon-bubble g-mr-3"></i>댓글쓰기</span>
 						                 </a>
-		                                 <#if currentThread.rootMessage.user.userId == user.userId >
-		                                 <button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-subject="message" data-action="update" data-object-id="${ currentThread.rootMessage.messageId}" ><i class="fa fa-edit"></i> 수정</a> 
-		                                 <button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15 disabled" data-subject="messages" data-action="delete" data-object-id="${ currentThread.rootMessage.messageId}" ><i class="fa fa-remove"></i> 삭제</a>
+		                                 <#if __thread.rootMessage.user.userId == currentUser.userId >
+		                                 <button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-subject="message" data-action="update" data-object-id="${ __thread.rootMessage.messageId}" ><i class="fa fa-edit"></i> 수정</a> 
+		                                 <button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15 disabled" data-subject="messages" data-action="delete" data-object-id="${ __thread.rootMessage.messageId}" ><i class="fa fa-remove"></i> 삭제</a>
 		                           		 </#if>
 		                             </div>			                                     			                            					                                      			                            			          			                            					                                      			                            			          			                            			
 	                            </div> 
-		                          <div class="ibox-content comment" data-bind="visible:board.readComment" style="display:none;">                                        
+		                          <div class="ibox-content comment g-brd-top-2" data-bind="visible:board.readComment" style="display:none;">                                        
 		                            <!-- start of message comments -->
 									<div class="row">
 		                                <div class="col-lg-12">
-		                                    <h2>댓글:</h2>		                                    
+		                                    <div class="u-heading-v7-2 g-mb-30">
+						                      <h2 class="h4 u-heading-v7__title g-width-200">댓글&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h2>						
+						                      <div class="u-heading-v7-divider g-height-20">
+						                        <i class="fa fa-comment-o u-heading-v7-divider__icon"></i>						                        
+						                      </div>
+						                    </div>	                                    
 		                                    <div id="message-comment-listview" class="no-border" style="min-height:50px;"></div>
-		                                    <a href="#!" data-bind="enabled:board.createComment" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15 pull-right" data-subject="comment" data-object-id="${ currentThread.rootMessage.messageId}" data-target="#message-comment-listview" data-action="create" data-parent-comment-id="0" >
+		                                    <a href="#!" data-bind="enabled:board.createComment" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15 pull-right" data-subject="comment" data-object-id="${ __thread.rootMessage.messageId}" data-target="#message-comment-listview" data-action="create" data-parent-comment-id="0" >
 						                    	<span class="">
 						                      <i class="icon-bubble g-mr-3"></i>
 						                      댓글쓰기
@@ -584,29 +681,18 @@
 		                            </div>		                                      			                            			          			                            			
 		                            <!-- end of message comments -->      		                                                                                                                
 	                            </div>
-	                            <div class="ibox-content no-padding">
-		                            <div id="message-listview" class="no-border" style="border-style:none; min-height: 150px;"></div>
+	                            <div class="ibox-content no-padding g-brd-top-3">
+	                            		<div id="message-listview" class="no-border" style="border-style:none; min-height: 150px;"></div>
 	                            	</div>             
-	                            <div class="ibox-footer">  
-	                            		<div id="message-listview-pager" class="k-pager-wrap no-border"></div>
+	                            <div class="ibox-footer g-brd-top-3">  
+	                            		<div id="message-listview-pager" class="k-pager-wrap no-border g-bg-white"></div>
 	                            </div>             
                         		</div>
                     		</div>
                 		</div>
             		</div>
         		</div>
-        		<!-- FOOTER START -->
-	        <div class="footer">
-	            <div class="pull-right">
-	                10GB of <strong>250GB</strong> Free.
-	            </div>
-	            <div>
-	                <strong>Copyright</strong> Example Company &copy; 2014-2017
-	            </div>
-	        </div>
-	        <!-- FOOTER END -->
-		</div>
-	</div>
+	</section>
 	
 	
 	<!-- message comment modal -->
@@ -663,10 +749,10 @@
 			          <div id="editable-message-body" contenteditable="true" data-placeholder="내용"></div>	   
 			          <div class="p-sm" data-bind="invisible:isNew">
 			          	
-			          	<span class="text-danger">이미지를 업로드하여 이미지 갤러리를 만들거나 첨부파일을 업로드 할 수 있습니다.</span>
+			          	<h3 class="text-danger">이미지를 업로드하여 갤러리를 만들거나 여러 종류의 파일을 업로드 할 수 있습니다.</h3>
 			          	
-			          	<button type="button" class="btn btn-outline btn-xs icon-svg-btn m-n" data-toggle="tooltip" data-placement="bottom" title="첨부파일 업로드" data-bind="enabled:board.createAttachement, click:showAttachmentUploader "><i class="icon-svg icon-svg-sm icon-svg-dusk-upload"></i></button>
-			          	<button type="button" class="btn btn-outline btn-xs icon-svg-btn m-n" data-toggle="tooltip" data-placement="bottom" title="이미지 업로드"  data-bind="enabled:board.createImage, click:showImageUploader"><i class="icon-svg icon-svg-sm icon-svg-dusk-gallery"></i></button>
+			          	<button type="button" class="btn btn-outline btn-xs icon-svg-btn m-n" data-toggle="tooltip" data-placement="bottom" title="첨부파일 업로드" data-bind="enabled:board.createAttachement, click:showAttachmentUploader "><i class="icon-svg icon-svg-md icon-svg-dusk-upload"></i></button>
+			          	<button type="button" class="btn btn-outline btn-xs icon-svg-btn m-n" data-toggle="tooltip" data-placement="bottom" title="이미지 업로드"  data-bind="enabled:board.createImage, click:showImageUploader"><i class="icon-svg icon-svg-md icon-svg-dusk-gallery"></i></button>
 			          </div>
 			        </form>			        
 		      	</div><!-- /.modal-body -->
@@ -694,6 +780,21 @@
 						     <input name="file" type="file" multiple style="display:none;"/>
 						 </div>
 						</form> 
+
+						<div class="table-responsive m-t-sm">						
+			                <table class="table u-table--v2">
+			                  	<thead class="text-uppercase g-letter-spacing-1">
+			                    		<tr>
+			                      		<th class="g-font-weight-300 g-color-black" width="60">&nbsp;</th>
+			                      		<th class="g-font-weight-300 g-color-black g-min-width-200">파일</th>
+                       			 		<th class="g-font-weight-300 g-color-black" width="50">&nbsp;</th>
+                    					</tr>
+                  				</thead>
+                  				<tbody id="message-attachments-listview" class="no-border" style="min-height:100px;">
+                  			
+			                		</tbody>
+			            		</table>
+			            </div>   		
 		    			</div>
 	    			</div>
 	    			<div class="message-images"  style="display:none;">
@@ -714,6 +815,9 @@
 						     <input name="file" type="file" multiple style="display:none;"/>
 						 </div>
 						</form> 
+						
+						<div id="message-images-listview"></div>
+						
 		    			</div>	    			
 	    			</div>	    			
 	    		</div><!-- /.modal-content -->	    		
@@ -733,9 +837,9 @@
               	#= body #	
 				</div>
 				<div class="m-t-xs">
-					<button class="btn btn-sm u-btn u-btn-outline-blue u-btn-outline u-btn-3d" type="button" data-subject="comment" data-action="list" data-message-id="#:objectId#" data-comment-id="#:commentId#" data-target="\\#message-#:objectId#-comment-#:commentId#-listview" aria-expanded="false" aria-controls="message-#:objectId#-comment-#:commentId#-listview"> <i class="icon-bubbles"></i> 댓글 (<span>#: replyCount #</span>)</button>
+					<button class="btn btn-sm btn-link" type="button" data-subject="comment" data-action="list" data-message-id="#:objectId#" data-comment-id="#:commentId#" data-target="\\#message-#:objectId#-comment-#:commentId#-listview" aria-expanded="false" aria-controls="message-#:objectId#-comment-#:commentId#-listview"> <i class="icon-bubbles"></i> 답글보기 (<span>#: replyCount #</span>)</button>
 					# if (isCommentEnabled()) {#
-					<button class="btn btn-sm u-btn u-btn-outline-blue u-btn-outline u-btn-3d" type="button" data-subject="comment" data-action="create" data-object-id="#: objectId #" data-parent-comment-id="#: commentId#" ><i class="icon-bubble"></i> 댓글쓰기</button>	
+					<button class="btn btn-sm btn-link" type="button" data-subject="comment" data-action="create" data-object-id="#: objectId #" data-parent-comment-id="#: commentId#" ><i class="icon-bubble"></i> 답글쓰기</button>	
 					# } #	
 				</div>		
 				<div class="collapse no-border comment-reply" id="message-#:objectId#-comment-#:commentId#-listview"></div>		
@@ -745,48 +849,87 @@
 	</script>
      <script type="text/x-kendo-template" id="comment2-template">
 	 <div class="social-feed-box">
-		                                        <div class="social-avatar">
-		                                            <a href="" class="pull-left">
-		                                                <img alt="image" src="#= community.data.getUserProfileImage( user ) #">
-		                                            </a>
-		                                            <div class="media-body">
-		                                                <a href="javascript:void(0);">
-		                                                   #:  community.data.getUserDisplayName( user ) #
-		                                                </a>
-		                                                <small class="text-muted">#: kendo.toString( new Date(creationDate), "g") # - #: ipaddress #</small>
-		                                            </div>
-		                                        </div>
+		<div class="social-avatar">
+			<a href="" class="pull-left">
+				<img alt="image" src="#= community.data.getUserProfileImage( user ) #">
+			</a>
+			<div class="media-body">
+				<a href="javascript:void(0);">
+				#:  community.data.getUserDisplayName( user ) #
+				</a>
+				<small class="text-muted">#: kendo.toString( new Date(creationDate), "g") # - #: ipaddress #</small>
+			</div>
+		</div>
 		<div class="social-body">
 		 #: body #
 		</div>                        
 		<!--
-								                    <ul class="list-inline my-0">
-								                      <li class="list-inline-item g-mr-20">
-								                        <a class="g-color-gray-dark-v5 g-text-underline--none--hover" href="\\#">
-								                          <i class="icon-like g-pos-rel g-top-1 g-mr-3"></i> 214
-								                        </a>
-								                      </li>
-								                      <li class="list-inline-item g-mr-20">
-								                        <a class="g-color-gray-dark-v5 g-text-underline--none--hover" href="\\#">
-								                          <i class="icon-dislike g-pos-rel g-top-1 g-mr-3"></i> 35
-								                        </a>
-								                      </li>
-								                      <li class="list-inline-item g-mr-20">
-								                        <a class="g-color-gray-dark-v5 g-text-underline--none--hover" href="\\#">
-								                          <i class="icon-share g-pos-rel g-top-1 g-mr-3"></i> 52
-								                        </a>
-								                      </li>
-								                    </ul>
-								                    -->
-		                                       
+		<ul class="list-inline my-0">
+			<li class="list-inline-item g-mr-20">
+				<a class="g-color-gray-dark-v5 g-text-underline--none--hover" href="\\#">
+					<i class="icon-like g-pos-rel g-top-1 g-mr-3"></i> 214
+				</a>
+			</li>
+			<li class="list-inline-item g-mr-20">
+				<a class="g-color-gray-dark-v5 g-text-underline--none--hover" href="\\#">
+					<i class="icon-dislike g-pos-rel g-top-1 g-mr-3"></i> 35
+				</a>
+			</li>
+			<li class="list-inline-item g-mr-20">
+				<a class="g-color-gray-dark-v5 g-text-underline--none--hover" href="\\#">
+					<i class="icon-share g-pos-rel g-top-1 g-mr-3"></i> 52
+				</a>
+			</li>
+		</ul>
+		-->                              
 	</div>
-    </script>  
+    </script>   
                	
+    <script type="text/x-kendo-template" id="message-attachments-listview-template">    
+	<tr>
+		<td class="align-middle text-nowrap text-center">
+			#if ( contentType.match("^image") || contentType === "application/pdf" ) {#			
+			<img class="g-brd-around g-brd-gray-light-v4 g-pa-2 g-width-50 g-height-50" src="#= community.data.getAttachmentThumbnailUrl( data, true) #" />
+			# } else { #			
+				<i class="icon-svg icon-svg-sm icon-svg-dusk-attach m-t-xs"></i>
+			# } #
+		</td>
+		<td class="align-middle">
+		<p>#: name # <span class='text-muted'>(#: formattedSize() # bytes)</span></p>		
+		<small class="text-muted">#: formattedModifiedDate() #</small>
+		</td>                      
+        <td class="align-middle text-nowrap text-center">
+        		<button type="button" class="btn btn-outline btn-xs icon-svg-btn m-n" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="파일 삭제"><i class="icon-svg icon-svg-xs icon-svg-ios-trash m-t-xs"></i></button>
+        </td>
+	</tr>
+    </script>
+             	
+    <script type="text/x-kendo-template" id="message-attachments-listview2-template">   
+	<tr>
+		<td class="align-middle text-center" width="50">		
+			#if ( contentType.match("^image") ) {#	
+			<img class="g-width-50 g-height-50" src="#= community.data.getAttachmentThumbnailUrl( data, true) #" />
+			# }else if( contentType === "application/pdf" ){ #		
+			<img class="g-brd-around g-brd-gray-light-v4 g-width-50 g-height-50" src="#= community.data.getAttachmentThumbnailUrl( data, true) #" />
+			# } else { #			
+				<i class="icon-svg icon-svg-sm icon-svg-dusk-attach m-t-xs"></i>
+			# } #
+		</td> 
+		<td class="align-middle">
+			<a class="btn btn-xs icon-svg-btn" href="#: community.data.getAttachmentUrl(data) #" target="_blank" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="첨부파일 다운로드">
+				<i class="icon-svg icon-svg-xs m-t-xs icon-svg-dusk-desktop-download"></i>
+			</a>
+			#: name # 
+		</td>
+		<td class="align-middle text-right"><span class='text-muted'>#: formattedSize() #</span></td>
+	</tr>            	        	        	
+     </script>        	        	        	           	        	        	           	        	        	
 	<script type="text/x-kendo-template" id="template">
 	<div class="media post">
 		<a class="forum-avatar" href="javascript:void(0);">
 			<img src="#= community.data.getUserProfileImage( user ) #" class="Avatar" alt="image">
 			<div class="author-info">
+				<span>#: community.data.getUserDisplayName( user )#</span>
 				<!--<strong>Posts:</strong> 542<br>
 				<strong>Joined:</strong> April 11.2015<br>
 				-->
@@ -794,7 +937,7 @@
 		</a>		                                		
 		<div class="media-body">		
 		<h4 class="media-heading text-muted">#: subject #</h4>
-		#= community.data.getUserDisplayName( user )  # , #= kendo.toString( new Date(creationDate), "g") #	| #= kendo.toString( new Date(modifiedDate), "g") #		
+		#= community.data.getUserDisplayName( user )  # , #= community.data.getFormattedDate(creationDate) #	| #= community.data.getFormattedDate(modifiedDate) #		
 		<div class="message-body">
 		#= body #
 		</div>

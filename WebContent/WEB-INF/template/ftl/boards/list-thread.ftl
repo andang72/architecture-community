@@ -1,5 +1,4 @@
 <#ftl encoding="UTF-8"/>
-<#assign user = SecurityHelper.getUser() />	
 <#compress>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,30 +8,35 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>${currentBoard.displayName}</title>    
+    <title><#if __page?? >${__page.title}</#if></title>
 	<!-- Kendoui with bootstrap theme CSS -->			
-	<link href="/css/kendo.ui.core/web/kendo.common.core.min.css" rel="stylesheet" type="text/css" />
-	<link href="/css/kendo.ui.core/web/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common.core.min.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
 	    
 	<!-- Bootstrap core CSS -->
-	<link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet" type="text/css" />
-	<link href="/fonts/font-awesome.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />
 	
 	<!-- Bootstrap Theme CSS -->
-	<!--<link href="/fonts/simple-line-icons.css" rel="stylesheet" type="text/css" />	-->
-	<link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/bootstrap.theme/inspinia/style.css"/>" rel="stylesheet" type="text/css" />
 	
 	<!-- Community CSS -->
-  	<link href="/css/community.ui/community.ui.style.css" rel="stylesheet" type="text/css" />	
-	<link href="/js/summernote/summernote.css" rel="stylesheet" type="text/css" />
-	<link href="/css/animate/animate.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
+  	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/js/summernote/summernote.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />
 	
+	
+	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script> 
 	<!-- Requirejs for js loading -->
-	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
+	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
 
 	<!-- Application JavaScript
     ================================================== -->    
 	<script>
+	
+	var __boardId = <#if RequestParameters.boardId?? >${RequestParameters.boardId}<#else>0</#if>;
+	
 	require.config({
 		shim : {
 	        "bootstrap" : { "deps" :['jquery'] },
@@ -68,13 +72,40 @@
 		    		}
 		  	}
 		});
+
+		// Topnav animation feature
+ 		var cbpAnimatedHeader = (function() {
+        		var docElem = document.documentElement, header = document.querySelector( '.navbar-default' ), didScroll = false, changeHeaderOn = 200;
+        		function init() {
+            		window.addEventListener( 'scroll', function( event ) {
+	                if( !didScroll ) {
+	                    didScroll = true;
+	                    setTimeout( scrollPage, 250 );
+	                }
+            		}, false );
+        		}
+        		function scrollPage() {
+            		var sy = scrollY();
+	            if ( sy >= changeHeaderOn ) {
+	                $(header).addClass('navbar-scroll')
+	            }
+	            else {
+	                $(header).removeClass('navbar-scroll')
+	            }
+            		didScroll = false;
+        		}
+	        function scrollY() {
+	            return window.pageYOffset || docElem.scrollTop;
+	        }
+        		init();
+		})();
 		
 		var renderTo = $('#board-listview');
 		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
 			board : new community.model.Board(),
-			boardId : ${currentBoard.boardId},
+			boardId : __boardId,
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
@@ -89,13 +120,12 @@
 					createThreadListView(renderTo, observable);
 			}
 		});				
-		
-		community.ui.bind($('#page-wrapper'), observable );		
+		community.ui.bind($('#page-top'), observable );			
 	});	
-	
+
 	function createThreadListView(renderTo, observable){
 		community.ui.listview( renderTo , {
-			dataSource: community.ui.datasource('/data/api/v1/boards/'+ observable.get('boardId') +'/threads/list.json', {
+			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/boards/"/>'+ observable.get('boardId') +'/threads/list.json', {
 				schema: {
 					total: "totalCount",
 					data: "items",
@@ -106,7 +136,7 @@
 		});	
 	}	
 	
-	function openThreadEditorModal (){ 		
+	function openThreadEditorModal(){ 		
 		var renderTo = $('#message-editor-modal');
 		if( !renderTo.data("model") ){
 			var editorTenderTo = $('#editable-message-body');
@@ -118,12 +148,12 @@
 			var observable = new community.ui.observable({ 
 				isNew : false,
 				message : new community.model.Message(),
-				setMessage : function (  ){
+				setMessage : function (){
 					var $this = this;	
 					$this.message.set('parentMessageId', -1 );	
 					$this.message.set('messageId', -1 );	
 					$this.message.set('objectType', 5 );
-					$this.message.set('objectId', ${currentBoard.boardId});
+					$this.message.set('objectId', __boardId);
 					$this.message.set('threadId', -1 );
 					$this.message.set('subject',  '' );
 					$this.message.set('body', '' );					
@@ -154,17 +184,32 @@
 		}
 		renderTo.data("model").setMessage();
 		renderTo.modal('show');
-	}
+	}	
 	</script> 
   </head>
-  <body class="top-navigation">
-    <div id="wrapper">
-        <div id="page-wrapper" class="gray-bg">
-        		<div class="row border-bottom white-bg">
-        		<!-- NAVBAR START -->     			
-        		<#include "/common/inspinia-top-navbar-ftl">
-        		<!-- NAVBAR END -->        		
-        		<div class="wrapper wrapper-content">
+  <body id="page-top" class="landing-page no-skin-config">
+	<!-- NAVBAR START -->   
+	<#include "/includes/user-top-navbar.ftl">
+	<!-- NAVBAR END -->   
+	
+	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(https://htmlstream.com/preview/unify-v2.4/assets/img-temp/1920x800/img8.jpg)">      
+      <div class="container text-center g-bg-cover__inner g-py-150">
+        <div class="row justify-content-center">
+          <div class="col-lg-6">
+            <div class="mb-5">
+              <h1 class="g-color-white g-font-size-60 mb-4"><span data-bind="text:board.displayName"></span></h1>
+              <h2 class="g-color-white g-font-weight-300 g-font-size-20 mb-0"><span data-bind="text:board.description"></span></h2>
+            </div>
+            <!-- Promo Blocks - Input -->
+            
+            <!-- End Promo Blocks - Input -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+	<section id="features" class="container services">
+		<div class="wrapper wrapper-content">
             		<div class="container">            
                 		<div class="row">
                     		<div class="col-lg-12">
@@ -190,18 +235,8 @@
                 		</div>
             		</div>
         		</div>
-        		<!-- FOOTER START -->
-	        <div class="footer">
-	            <div class="pull-right">
-	                10GB of <strong>250GB</strong> Free.
-	            </div>
-	            <div>
-	                <strong>Copyright</strong> Example Company &copy; 2014-2017
-	            </div>
-	        </div>
-	        <!-- FOOTER END -->
-		</div>
-	</div>
+	</section>
+	
 	<!-- message editor modal -->
 	<div class="modal fade" id="message-editor-modal" tabindex="-1" role="dialog" aria-labelledby="message-editor-modal-labal" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -235,7 +270,7 @@
 						<div class="forum-icon">
 							<a class="forum-avatar small" href="\\#"><img src="#= community.data.getUserProfileImage( rootMessage.user ) #" class="Avatar" alt="image"></a>
 						</div>
-						<a href="/boards/${currentBoard.boardId}/threads/#=threadId#" class="forum-item-title">#: rootMessage.subject #</a>
+						<a href="/display/pages/view-thread.html?threadId=#=threadId#" class="forum-item-title">#: rootMessage.subject #</a>
 						<ul class="forum-list-item-info">
                             <li class="p-xs"><i class="icon fa fa-reply small"></i>  
                             #: latestMessage.subject #
@@ -243,7 +278,7 @@
                                  <a href="\#">
                                      <img src="#= community.data.getUserProfileImage( latestMessage.user ) #" class="Avatar" alt="image">
                                      <span>#= community.data.getUserDisplayName( latestMessage.user ) #</span>
-                                     <span class="date">#: kendo.toString( new Date (latestMessage.modifiedDate ), "g")  #</span>
+                                     <span class="date">#= community.data.getFormattedDate(latestMessage.modifiedDate) #</span>
                                 </a>
                             </div>                            
                             </li>
@@ -275,7 +310,7 @@
 					</div>
 				</div>
 			</div>
-    </script>    	
+    </script>   
 </body>
 </html>
 </#compress>

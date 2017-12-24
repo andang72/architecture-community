@@ -22,6 +22,15 @@
 	<beans:bean id="propertyDao" class="architecture.ee.jdbc.property.dao.impl.JdbcPropertyDao" p:dataSource-ref="dataSource" />
 
 	<!-- ================================= -->
+	<!-- PROJECTS					 	  -->
+	<!-- ================================= -->
+ 
+	<beans:bean id="projectDao" class="architecture.community.projects.dao.jdbc.JdbcProjectDao" p:dataSource-ref="dataSource" />
+	<beans:bean id="projectCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean"  p:cacheName="projectCache"   p:maxElementsInMemory="5000"   p:diskPersistent="false"  p:overflowToDisk="false" p:timeToIdle="300"   p:timeToLive="600"  p:eternal="false"   p:diskExpiryThreadIntervalSeconds="0"   p:statisticsEnabled="true" />
+	<beans:bean id="projectIssueCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" p:cacheName="projectIssueCache"   p:maxElementsInMemory="5000"   p:diskPersistent="false"  p:overflowToDisk="false"   p:timeToIdle="300" p:timeToLive="600"  p:eternal="false"   p:diskExpiryThreadIntervalSeconds="0"   p:statisticsEnabled="true" />
+    <beans:bean id="projectService" class="architecture.community.projects.DefaultProjectService"  />	  	
+     		
+	<!-- ================================= -->
 	<!-- CODESET							  -->
 	<!-- ================================= -->
 
