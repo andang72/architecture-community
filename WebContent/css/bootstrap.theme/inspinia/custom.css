@@ -34,3 +34,7 @@
 .landing-page li.pricing-title {	
   font-weight: 200!important; 
 }
+
+.landing-page section p {
+    font-size: 16px!important;
+}

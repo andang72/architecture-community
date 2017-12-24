@@ -99,3 +99,6 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
 	top : 15px;
 }
 
+.d-block {
+    display: block!important;
+}

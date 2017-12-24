@@ -47,6 +47,10 @@ i.icon-svg {
 }
 
 /* IOS Icons */
+.icon-svg-ios-call {
+	background-image: url("/images/icons/ios/call.svg");
+}
+
 .icon-svg-ios-close {
 	background-image: url("/images/icons/ios/close.svg");
 }
