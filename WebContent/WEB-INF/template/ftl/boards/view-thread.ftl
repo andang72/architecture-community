@@ -9,24 +9,27 @@
     <meta name="author" content="">
     <title><#if __page?? >${__page.title}</#if></title>
 	<!-- Kendoui with bootstrap theme CSS -->			
-	<link href="/css/kendo.ui.core/web/kendo.common-bootstrap.core.css" rel="stylesheet" type="text/css" />
-	<link href="/css/kendo.ui.core/web/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common.core.min.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
+	    
+	<!-- Bootstrap core CSS -->
+	<link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />
 	
-	<!-- Bootstrap CSS -->
-	<link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet" type="text/css" />
-	<link href="/fonts/font-awesome.css" rel="stylesheet" type="text/css" />
-	
-	<!-- Bootstrap Unify Theme CSS -->
-	<link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet" type="text/css" />
+	<!-- Bootstrap Theme CSS -->
+	<link href="<@spring.url "/css/bootstrap.theme/inspinia/style.css"/>" rel="stylesheet" type="text/css" />
 	
     <!-- Community CSS -->
-    <link href="/css/community.ui/community.ui.globals.css" rel="stylesheet" type="text/css" />
-    <link href="/css/community.ui/community.ui.style.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/community.ui/community.ui.components.min.css"/>" rel="stylesheet" type="text/css" />
+  	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
     	
-	<link href="/js/summernote/summernote.css" rel="stylesheet" type="text/css" />
-	<link href="/css/animate/animate.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/js/summernote/summernote.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />
 	
-	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script> 
+	
+	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script> 
+	
 	<!-- Requirejs for js loading -->
 	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
 
