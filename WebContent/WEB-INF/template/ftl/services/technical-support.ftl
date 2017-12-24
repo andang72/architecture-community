@@ -112,12 +112,23 @@
 			})
     		});
     		
+    		$('#page-top').data('model', observable);
+    		
     		var renderTo = $('#project-listview');	    		
 			community.ui.listview( renderTo , {
 			dataSource: observable.dataSource,
 			template: community.ui.template($("#template").html())
 		}); 
+		
 	});
+	
+	
+	fucntion isDeveloper(){
+		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
+	} 
+	
+		
+				
 	</script>		
 </head>
 <body id="page-top" class="landing-page no-skin-config">
@@ -171,8 +182,11 @@
 						
 						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # #:name#</h4>						
 						<div class="g-ml-60 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
+						
+						#if( isDeveloper() ){ #
 						<div class="g-ml-60"> 유지보수비용(월) : #: kendo.toString( maintenanceCost, 'c')  #</div>						
 						<div class="g-ml-60 text-muted">#if(summary != null ){# #:summary # #}#</div>
+						#}#
 					</div>
 					<div class="col-md-1 forum-info">
 						<span class="views-number"> 0 </span>

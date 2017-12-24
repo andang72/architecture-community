@@ -110,6 +110,8 @@
 				}
 			})
     		});
+    		    			
+		
     		var renderTo = $('#thread-listview');	    		
 		community.ui.listview( renderTo , {
 			dataSource: observable.dataSource,
@@ -117,6 +119,9 @@
 		}); 
 		
 	});
+	
+	fucntion 
+	
 	</script>		
 </head>
 <body id="page-top" class="landing-page no-skin-config">
