@@ -93,6 +93,11 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
 }
 
 
+
+/*------------------------------------
+  Custom css
+------------------------------------*/
+
 .u-close-v2{
 	position: absolute;
 	right : 15px;

@@ -209,31 +209,31 @@
 
 
         
-<section id="features" class="container services">
-
-    <div class="row">
-        <div class="col-sm-3">
-            <h2>Full responsive</h2>
-            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
-            <p><a class="navy-link" href="#" role="button">Details »</a></p>
-        </div>
-        <div class="col-sm-3">
-            <h2>LESS/SASS Files</h2>
-            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
-            <p><a class="navy-link" href="#" role="button">Details »</a></p>
-        </div>
-        <div class="col-sm-3">
-            <h2>6 Charts Library</h2>
-            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
-            <p><a class="navy-link" href="#" role="button">Details »</a></p>
-        </div>
-        <div class="col-sm-3">
-            <h2>Advanced Forms</h2>
-            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
-            <p><a class="navy-link" href="#" role="button">Details »</a></p>
-        </div>
-    </div>
-</section>
+		<section id="features" class="container services">
+		
+		    <div class="row">
+		        <div class="col-sm-3">
+		            <h2>Full responsive</h2>
+		            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
+		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
+		        </div>
+		        <div class="col-sm-3">
+		            <h2>LESS/SASS Files</h2>
+		            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
+		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
+		        </div>
+		        <div class="col-sm-3">
+		            <h2>6 Charts Library</h2>
+		            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
+		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
+		        </div>
+		        <div class="col-sm-3">
+		            <h2>Advanced Forms</h2>
+		            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
+		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
+		        </div>
+		    </div>
+		</section>
 
 
 <section id="pricing" class="">
@@ -243,38 +243,38 @@
                 <div class="navy-line"></div>
                 <h1>소프트웨어 기술 지원 서비스</h1>
                 <p>조직은 경쟁력을 유지하기 위해 가동 중단 또는 날짜가 지난 소프트웨어를 보유할 여유가 없습니다. 거의 모든 질문 또는 문제점에 대한 도움을 제공할 수 있는 심도 깊은 기술 지원에 액세스할 수 있어야 합니다. 
-
-숙련된 지원 담당자와 전화 또는 전자 문제점 제출을 통해 연락할 수 있으며 이들은 다양한 소프트웨어 문제점에 대한 도움을 제공할 수 있습니다. </p>
+					숙련된 지원 담당자와 전화 또는 전자 문제점 제출을 통해 연락할 수 있으며 이들은 다양한 소프트웨어 문제점에 대한 도움을 제공할 수 있습니다. </p>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-6 wow zoomIn animated" style="visibility: visible;">
                 <ul class="pricing-plan list-unstyled">
                     <li class="pricing-title">
-                        무상 하자보수
+                        하자보수
                     </li>
                     <li class="pricing-desc">
-                       솔루션 도입후 1년간 소프트웨어 결함에 대한 무상하자보수 지원합니다.
+                       구축후 소프트웨어 결함에 대한 1년간 하자보수를 지원합니다.
                     </li>
                     <li class="pricing-price">
-                        <span>$16</span> / month
+                        <span>무상</span>
                     </li>
                     <li>
-                        Dashboards
-                    </li>
+                         <h4>기술지원방법</h4>
+						<ul>
+							<li>전화: 고객 요청 접수, 문의 응답 및 문제 해결 </li>
+							<li>온라인: 자체 CSR 사이트를 통한 요청 접수 및 지원, 메일을 통한 요청 접수 및 지원</li>
+                            <li>원격: 엔지니어가 원격으로 고객 시스템에 접속하여 지원</li>
+                            <li>방문: 엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용이 발생됩니다.)</li>
+                        </ul>   
+                    </li>                    
                     <li>
-                        Projects view
+                        <h4>소프트웨어 결함지원 </h4>
+						<ul>
+							<li>설계상의 오류 수정(소프트웨어의 하자 발생 원인이 설계상의 오류인 경우) </li>
+							<li>코딩상의 오류 수정(소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공)</li>
+                            <li><span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외 </span>></li>
+                        </ul>
                     </li>
-                    <li>
-                        Contacts
-                    </li>
-                    <li>
-                        Calendar
-                    </li>
-                    <li>
-                        AngularJs
-                    </li>
-                    
                 </ul>
             </div>
 
@@ -286,27 +286,45 @@
                         유상 유지보수
                     </li>
                     <li class="pricing-desc">
-                        유상 유지보수는 하자보수에 포함되지 기능개선 건들에 대한 지원이 포함됩니다.
+                        소프트웨어 결함에 대한 지원 및 기능개선 건들에 대한 지원이 포함됩니다.
                     </li>
                     <li class="pricing-price">
-                        <span>$160</span> / month
+                        <span>구축비용의 10%~15%</span>
+                    </li>
+                    <li> 
+                         <h4>기술지원방법</h4>
+						<ul>
+							<li>전화: 고객 요청 접수, 문의 응답 및 문제 해결 </li>
+							<li>온라인: 자체 CSR 사이트를 통한 요청 접수 및 지원, 메일을 통한 요청 접수 및 지원</li>
+                            <li>원격: 엔지니어가 원격으로 고객 시스템에 접속하여 지원</li>
+                            <li>방문: 엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용이 발생됩니다.)</li>
+                        </ul>                                                                
+                    </li>   
+                    <li>
+                        정기정검 : 원격 , 방문 (방문지원의 경우 추가비용이 발생됩니다.)                        
                     </li>
                     <li>
-                        Dashboards
+                        <h4>소프트웨어 결함 지원 </h4>
+						<ul>
+							<li>설계상의 오류 수정(소프트웨어의 하자 발생 원인이 설계상의 오류인 경우) </li>
+							<li>코딩상의 오류 수정(소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공)</li>
+                            <li><span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외</span></li>
+                        </ul>
                     </li>
                     <li>
-                        Projects view
-                    </li>
-                    <li>
-                        Contacts
-                    </li>
-                    <li>
-                        Calendar
-                    </li>
-                    <li>
-                        AngularJs
-                    </li>
-                    
+                        <h4>소프트웨어 유지보수 지원 </h4>
+						<ul>
+							<li>기능변경</li>
+							<li>신규기능</li>
+                            <li>                            
+		                         <h4>기능개선 및 신규기능의 경우 기능 규모에 따라 추가 비용 발생할 수 도 있습니다.</h4>
+								<ul>
+									<li>기능점수방식을 이용하여 기능개선사항에 대한 비용 계산</li>
+		                             <li><span class="text-danger">월별 기능 개선 및 추가 개선 건들에 대한 총 비용이 월 유지보수 비용을 넘을 경우 이월하여 처리하거나 유상으로 처리</span></li>
+		                        </ul>  
+                            </li>
+                        </ul>
+                    </li>                    
                 </ul>
             </div>
         </div>
