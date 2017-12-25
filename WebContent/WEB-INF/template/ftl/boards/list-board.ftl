@@ -119,8 +119,7 @@
 		}); 
 		
 	});
-	
-	fucntion 
+
 	
 	</script>		
 </head>
