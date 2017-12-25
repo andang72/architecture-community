@@ -118,7 +118,7 @@
 <div id="inSlider" class="carousel carousel-fade" data-ride="carousel">
     <ol class="carousel-indicators">
         <li data-target="#inSlider" data-slide-to="0" class="active"></li>
-        <li data-target="#inSlider" data-slide-to="1"></li>
+        <!--<li data-target="#inSlider" data-slide-to="1"></li>-->
     </ol>
     <div class="carousel-inner" role="listbox">
         <div class="item active">
@@ -128,8 +128,20 @@
                     <p>
                     비용은 줄이고 서비스의 품질은 높이고<br/>
                     최적화된 유지보수,  지금 만나보십시오!
+                    </p>                    
+                    <p>
+                    
+ 					<a href="#!" class="btn btn-xl u-btn-pink u-btn-hover-v2-2 g-letter-spacing-0_5 text-uppercase g-rounded-50 g-px-30 g-mr-10 g-mb-15">
+                        <span class="pull-left text-left g-font-size-30">
+                          070-0000-0000
+                          <span class="d-block g-font-size-14">helpdesk@podosw.com</span>
+                        </span>
+                        <i class="fa fa-volume-control-phone float-right g-font-size-60 g-ml-15"></i>
+                      </a>
+                                                            
+                    
+                                                    
                     </p>
-                    <p><a class="btn btn-lg btn-primary" href="#" role="button">유지보수 서비스 소개자료 다운로드</a></p>
                 </div>
                 <div class="carousel-image wow zoomIn">
                     <img src="http://webapplayers.com/inspinia_admin-v2.7.1/img/landing/laptop.png" alt="laptop"/>
@@ -137,8 +149,8 @@
             </div>   
             <!-- Set background for slide in css -->
             <div class="header-back one"></div>
-        </div>
-        
+        </div><!-- /.item  -->
+        <!--
         <div class="item">
 			<div class="container">
                 <div class="carousel-caption">
@@ -152,22 +164,51 @@
                     가격 결정 및 관련 유지보수 서비스에 대한 정보에 대해서는, 귀사 담당 영업 대표에게 연락주시기 바랍니다. <br/>
                     </p> 
                 </div>
-            </div>
-            <!-- Set background for slide in css -->
+            </div>           
             <div class="header-back two"></div>
-        </div>
-        
-    </div>
-    <a class="left carousel-control" href="#inSlider" role="button" data-slide="prev">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control" href="#inSlider" role="button" data-slide="next">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
-</div>
+        </div>  
+    		-->
+    		</div>
+    		<!-- 
+	    <a class="left carousel-control" href="#inSlider" role="button" data-slide="prev">
+	        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+	        <span class="sr-only">Previous</span>
+	    </a>
+	    <a class="right carousel-control" href="#inSlider" role="button" data-slide="next">
+	        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+	        <span class="sr-only">Next</span>
+	    </a>
+	   -->
+	</div>
+		<div class="g-mb-50">
 
+              <section class="g-bg-gray-light-v5 g-py-50 g-px-30">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-9 align-self-center">
+                      <h3 class="h4">유지보수 재약정 수수료 정책 안내	</h3>
+                      <p class="lead g-mb-20 g-mb-0--md">
+                      무상보증 또는 유상 유지보수 계약 종료 후, <br/>유지보수 계약없이 90 일 이상("실효 기간")이 경과된 시스템에 대한 유지보수 계약 체결 시,  <br/>
+                    2018년 1월 1일부터는 유지보수 재약정 수수료가 부과됩니다.  <br/>
+                    재약정 수수료는 무상보증 또는 유상 유지보수 계약 종료 이후, 실효 기간 일수에 근거하여 산정됩니다.  <br/>
+                    가격 결정 및 관련 유지보수 서비스에 대한 정보에 대해서는, 귀사 담당 영업 대표에게 연락주시기 바랍니다. <br/>
+                      </p>
+                    </div>
+					<!-- 
+                    <div class="col-md-3 align-self-center text-md-right">
+                    <a href="#!" class="btn btn-lg u-btn-inset u-btn-inset--rounded u-btn-darkgray g-font-weight-200 g-letter-spacing-0_5 text-uppercase g-brd-2 g-rounded-50 g-mr-10 g-mb-15">
+                    <i class="fa fa-check-circle g-mr-3"></i>
+                    유지보수 서비스 소개자료 다운로드
+                  </a>
+                  -->
+                    </div>
+                  </div>
+                </div>
+              </section>
+          </div>
+
+
+        
 <section id="features" class="container services">
 
     <div class="row">
@@ -194,69 +235,6 @@
     </div>
 </section>
 
-<section id="supports" class="">
-    <div class="container">
-        <div class="row m-b-lg">
-            <div class="col-lg-12 text-center">
-                <div class="navy-line"></div>
-                <h1>기술지원서비스</h1>
-                <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod.</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4 wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft;">
-                <div class="team-member">
-                    <img src="img/landing/avatar3.jpg" class="img-responsive img-circle img-small" alt="">
-                    <h4><span class="navy">Amelia</span> Smith</h4>
-                    <p>Lorem ipsum dolor sit amet, illum fastidii dissentias quo ne. Sea ne sint animal iisque, nam an soluta sensibus. </p>
-                    <ul class="list-inline social-icon">
-                        <li><a href="#"><i class="fa fa-twitter"></i></a>
-                        </li>
-                        <li><a href="#"><i class="fa fa-facebook"></i></a>
-                        </li>
-                        <li><a href="#"><i class="fa fa-linkedin"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="team-member wow zoomIn animated" style="visibility: visible;">
-                    <img src="img/landing/avatar1.jpg" class="img-responsive img-circle" alt="">
-                    <h4><span class="navy">John</span> Novak</h4>
-                    <p>Lorem ipsum dolor sit amet, illum fastidii dissentias quo ne. Sea ne sint animal iisque, nam an soluta sensibus.</p>
-                    <ul class="list-inline social-icon">
-                        <li><a href="#"><i class="fa fa-twitter"></i></a>
-                        </li>
-                        <li><a href="#"><i class="fa fa-facebook"></i></a>
-                        </li>
-                        <li><a href="#"><i class="fa fa-linkedin"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-sm-4 wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
-                <div class="team-member">
-                    <img src="img/landing/avatar2.jpg" class="img-responsive img-circle img-small" alt="">
-                    <h4><span class="navy">Peter</span> Johnson</h4>
-                    <p>Lorem ipsum dolor sit amet, illum fastidii dissentias quo ne. Sea ne sint animal iisque, nam an soluta sensibus.</p>
-                    <ul class="list-inline social-icon">
-                        <li><a href="#"><i class="fa fa-twitter"></i></a>
-                        </li>
-                        <li><a href="#"><i class="fa fa-facebook"></i></a>
-                        </li>
-                        <li><a href="#"><i class="fa fa-linkedin"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut eaque, laboriosam veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde.</p>
-            </div>
-        </div>
-    </div>
-</section>
 
 <section id="pricing" class="">
     <div class="container">
@@ -276,7 +254,7 @@
                         무상 하자보수
                     </li>
                     <li class="pricing-desc">
-                       솔루션 도입후 1년간 하자보수 지원합니다.
+                       솔루션 도입후 1년간 소프트웨어 결함에 대한 무상하자보수 지원합니다.
                     </li>
                     <li class="pricing-price">
                         <span>$16</span> / month
@@ -308,7 +286,7 @@
                         유상 유지보수
                     </li>
                     <li class="pricing-desc">
-                        하자보수 종료후 유상 유지보수 서비스를 지원합니다. 유상 유지보수는 하자보수에 포함되지 기능개선 건들에 대한 조치가 포함됩니다.
+                        유상 유지보수는 하자보수에 포함되지 기능개선 건들에 대한 지원이 포함됩니다.
                     </li>
                     <li class="pricing-price">
                         <span>$160</span> / month

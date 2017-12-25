@@ -30,7 +30,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@Qualifier("statsService")
 	private StatisticsService statsService;
 	
-	@RequestMapping(value = "/stats/{target}/{name}/list.json", method = {RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/stats/{target}/{statement}/list.json", method = {RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getStats(
 			@PathVariable String target, 
