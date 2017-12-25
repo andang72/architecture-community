@@ -24,7 +24,8 @@ import architecture.community.web.model.ItemList;
 @Controller("community-data-v1-stats-controller")
 @RequestMapping("/data/v1")
 public class StatsDataController {
-private Logger log = LoggerFactory.getLogger(getClass());	
+	
+	private Logger log = LoggerFactory.getLogger(getClass());	
 	
 	@Inject
 	@Qualifier("statsService")
