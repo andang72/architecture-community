@@ -132,7 +132,7 @@
                     </p>                    
                     <p>
                     
- 					<a href="#!" class="btn btn-xl u-btn-pink u-btn-hover-v2-2 g-letter-spacing-0_5 text-uppercase g-rounded-50 g-px-30 g-mr-10 g-mb-15">
+ 					<a href="tel:070-7432-2657" class="btn btn-xl u-btn-pink u-btn-hover-v2-2 g-letter-spacing-0_5 text-uppercase g-rounded-50 g-px-30 g-mr-10 g-mb-15">
                         <span class="pull-left text-left g-font-size-30">
                           070-7432-2657
                           <span class="d-block g-font-size-14">helpdesk@podosw.com</span>
