@@ -100,8 +100,6 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	protected JdbcCommunityAclService getCommunityAclService() { 
 		return communityAclService;
 	}
-
-	
 	
 	/**
 	 * PROJECT API 
@@ -141,20 +139,32 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	public Issue saveOrUpdateIssue(@RequestBody DefaultIssue newIssue, NativeWebRequest request) throws NotFoundException {
 
 		User user = SecurityHelper.getUser();
-
+		
 		log.debug("ISSUE : " + newIssue.toString() );
-		// NEW THREAD MESSAGE...	
+		Issue issueToUse ;
 		if ( newIssue.getIssueId() > 0) {
-			Issue issue = projectService.getIssue(newIssue.getIssueId());
-			projectService.saveOrUpdateIssue(newIssue);		
+			issueToUse = projectService.getIssue(newIssue.getIssueId());
 		}else {
-			if( newIssue.getIssueId() < 1 ) {
-				// NEW MESSAGE...
-				projectService.saveOrUpdateIssue(newIssue);			
-			}
-		}		
-		return newIssue;
+			issueToUse = projectService.createIssue(newIssue.getObjectType(), newIssue.getObjectId(), user );
+		}
+		
+		if(  newIssue.getAssignee().getUserId() > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
+			issueToUse.setAssignee(newIssue.getAssignee());
+		}
+		if( newIssue.getDueDate() != null && newIssue.getDueDate() != issueToUse.getDueDate() )
+			issueToUse.setDueDate(newIssue.getDueDate());
+		
+		issueToUse.setComponent(newIssue.getComponent());
+		issueToUse.setSummary(newIssue.getSummary());
+		issueToUse.setDescription(newIssue.getDescription());
+		issueToUse.setIssueType(newIssue.getIssueType());
+		issueToUse.setPriority(newIssue.getPriority());
+		
+		projectService.saveOrUpdateIssue(newIssue);
+		
+		return issueToUse;
 	}	 
+	
 	
 	/**
 	 * 프로젝트 이슈 목록
