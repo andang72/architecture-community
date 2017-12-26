@@ -14,17 +14,21 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
+import architecture.community.board.BoardThread;
+import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.model.Models;
+import architecture.community.projects.DefaultIssue;
+import architecture.community.projects.Issue;
 import architecture.community.projects.Project;
 import architecture.community.projects.dao.ProjectDao;
+import architecture.community.user.UserTemplate;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
 public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao {
 
-	private final RowMapper<Project> projectMapper = new RowMapper<Project>() {		
-		
+	private final RowMapper<Project> projectMapper = new RowMapper<Project>() {				
 		public Project mapRow(ResultSet rs, int rowNum) throws SQLException {			
 			Project board = new Project(rs.getLong("PROJECT_ID"));			
 			board.setName(rs.getString("NAME"));
@@ -36,8 +40,27 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			board.setCreationDate(rs.getDate("CREATION_DATE"));
 			board.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
 			return board;
-		}
-		
+		}		
+	};
+	
+	private final RowMapper<Issue> issueMapper = new RowMapper<Issue>() {				
+		public Issue mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			DefaultIssue issue = new DefaultIssue(rs.getLong("ISSUE_ID"));			
+			issue.setObjectType(rs.getInt("OBJECT_TYPE"));
+			issue.setObjectId(rs.getLong("OBJECT_ID"));
+			issue.setSummary(rs.getString("SUMMARY"));
+			issue.setDescription(rs.getString("DESCRIPTION"));
+			issue.setPriority(rs.getString("PRIORITY"));
+			issue.setComponent(rs.getString("COMPONENT"));
+			
+			issue.setAssignee(new UserTemplate(rs.getLong("ASSIGNEE")));
+			issue.setRepoter(new UserTemplate(rs.getLong("REPOTER")));
+			
+			issue.setDueDate(rs.getDate("DUE_DATE"));
+			issue.setCreationDate(rs.getDate("CREATION_DATE"));
+			issue.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
+			return issue;
+		}		
 	};
 	
 	@Inject
@@ -109,6 +132,90 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
  
 	public List<Long> getAllProjectIds() {
 		return getExtendedJdbcTemplate().queryForList(getBoundSql("COMMUNITY_WEB.SELECT_PROJECT_IDS").getSql(), Long.class);
+	}
+
+	@Override
+	public void saveOrUpdateIssue(Issue issue) {
+ 
+		Issue toUse = issue;
+		if (toUse.getIssueId() < 1L) {
+			toUse.setIssueId(getNextIssueId());
+		
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_ISSUE").getSql(),
+					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getObjectType()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getObjectId()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),					
+					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));		
+			
+		} else {
+			Date now = Calendar.getInstance().getTime();
+			toUse.setModifiedDate(now);		
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_ISSUE").getSql(), 
+					new SqlParameterValue(Types.NUMERIC, toUse.getObjectType()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getObjectId()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getSummary()),	
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getDescription()),
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId())
+			);		
+			
+		}	
+		
+	}
+ 
+	public Issue getIssueById(long issueId) {
+		Issue thread = null;
+		if (issueId <= 0L) {
+			return thread;
+		}		
+		try {
+			thread = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_WEB.SELECT_ISSUE_BY_ID").getSql(), 
+					issueMapper, 
+					new SqlParameterValue(Types.NUMERIC, issueId ));
+		} catch (DataAccessException e) {
+			logger.error(CommunityLogLocalizer.format("013005", issueId), e);
+		}
+		return thread;
+	}
+ 
+	public int getIssueCount(int objectType, long objectId) {
+		return getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("COMMUNITY_WEB.COUNT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				Integer.class,
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+			);
+	}
+ 
+	public List<Long> getIssueIds(int objectType, long objectId) {
+		return getExtendedJdbcTemplate().queryForList(
+				getBoundSql("COMMUNITY_WEB.SELECT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				Long.class,
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+			);
+	}
+ 
+	public List<Long> getIssueIds(int objectType, long objectId, int startIndex, int numResults) {
+		return getExtendedJdbcTemplate().query(
+				getBoundSql("COMMUNITY_WEB.SELECT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+				startIndex, 
+				numResults, 
+				Long.class, 
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+		);
 	}
 	
 	

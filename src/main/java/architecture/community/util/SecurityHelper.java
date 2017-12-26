@@ -117,16 +117,13 @@ public class SecurityHelper {
 	 * 
 	 */
 	public static void refreshUserToken(){
-		
-		User user = getUser();
-		
+		User user = getUser();		
 		if( !user.isAnonymous() ){
 			CommunityUserDetailsService detailsService = CommunityContextHelper.getComponent(CommunityUserDetailsService.class);
 			UserDetails details = detailsService.loadUserByUsername(user.getUsername());
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken( details, null , details.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(token);
-		}
-		
+		}		
 	}
 	
 }
