@@ -348,7 +348,6 @@
                             </table>                                                               
 		                    </li>   
 		                    <li>
-
 		                    <table class="table table-bordered">
                                 <thead>
                                 <tr>
