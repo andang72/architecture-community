@@ -285,25 +285,34 @@
                                 </tbody>
                             </table>
 		                    </li>                    
-		                    <li>		                    
+		                    <li>
+		                    
 							<table class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th colspan="2">소프트웨어 유지보수 범위</th> 
+                                    <th colspan="2">소프트웨어 유지보수</th> 
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class="align-middle" width="100">설계상 오류</td>
+                                    <td class="align-middle" width="100">설계상의 오류 수정</td>
                                     <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 설계상의 오류인 경우</td> 
                                 </tr>
                                 <tr>
-                                    <td class="align-middle" width="100">코딩상 오류</td>
+                                    <td class="align-middle" width="100">코딩상의 오류 수정</td>
                                     <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공</td> 
                                 </tr>                                                                                               
                                 </tbody>
                             </table>		
                             <span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외 </span>
+                                                
+		                        <h4 class="text-left">소프트웨어 결함지원 </h4>
+								<ul>
+									<li>설계상의 오류 수정(소프트웨어의 하자 발생 원인이 설계상의 오류인 경우) </li>
+									<li>코딩상의 오류 수정(소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공)</li>
+		                            <li><span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외 </span>></li>
+		                        </ul>
+		                    </li>
 		                </ul>
 		            </div> 
 		            <div class="col-lg-6 wow zoomIn animated" style="visibility: visible;">
