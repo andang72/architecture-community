@@ -304,14 +304,7 @@
                                 </tr>                                                                                               
                                 </tbody>
                             </table>		
-                            <span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외 </span>
-                                                
-		                        <h4 class="text-left">소프트웨어 결함지원 </h4>
-								<ul>
-									<li>설계상의 오류 수정(소프트웨어의 하자 발생 원인이 설계상의 오류인 경우) </li>
-									<li>코딩상의 오류 수정(소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공)</li>
-		                            <li><span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외 </span>></li>
-		                        </ul>
+                            <span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외 </span>		                      
 		                    </li>
 		                </ul>
 		            </div> 
@@ -327,39 +320,65 @@
 		                        <span>구축비용의 10%~15%</span>
 		                    </li>
 		                    <li> 
-		                         <h4>기술지원방법</h4>
-								<ul>
-									<li>전화: 고객 요청 접수, 문의 응답 및 문제 해결 </li>
-									<li>온라인: 자체 CSR 사이트를 통한 요청 접수 및 지원, 메일을 통한 요청 접수 및 지원</li>
-		                            <li>원격: 엔지니어가 원격으로 고객 시스템에 접속하여 지원</li>
-		                            <li>방문: 엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용이 발생됩니다.)</li>
-		                        </ul>                                                                
+							<table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th colspan="2">기술지원방법</th> 
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class="align-middle" width="100">전화</td>
+                                    <td class="align-middle text-left">전화: 고객 요청 접수, 문의 응답 및 문제 해결 </td> 
+                                </tr>
+                                <tr>
+                                    <td class="align-middle" width="100">온라인</td>
+                                    <td class="align-middle text-left">온라인: 자체 CSR 사이트를 통한 요청 접수 및 지원, 메일을 통한 요청 접수 및 지원</td> 
+                                </tr>
+                                <tr>
+                                    <td class="align-middle" width="100">원격</td>
+                                    <td class="align-middle text-left">엔지니어가 고객사에 방문하여 지원 <br/>(방문지원의 경우 추가비용 발생)</td> 
+                                </tr>
+                                <tr>
+                                    <td class="align-middle" width="100">방문</td>
+                                    <td class="align-middle text-left">엔지니어가 고객사에 방문하여 지원 <br/>(방문지원의 경우 추가비용 발생)</td> 
+                                </tr>                                                                                                 
+                                </tbody>
+                            </table>                                                               
 		                    </li>   
 		                    <li>
-		                        정기정검 : 원격 , 방문 (방문지원의 경우 추가비용이 발생됩니다.)                        
+		                        정기정검 : 원격 , 방문 (방문지원의 경우 추가비용이 발생됩니다.)
 		                    </li>
 		                    <li>
-		                        <h4>소프트웨어 결함 지원 </h4>
-								<ul>
-									<li>설계상의 오류 수정 (소프트웨어의 하자 발생 원인이 설계상의 오류인 경우) </li>
-									<li>코딩상의 오류 수정(소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공)</li>
-		                            <li><span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외</span></li>
-		                        </ul>
+
+		                    <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th colspan="2">소프트웨어 유지보수</th> 
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class="align-middle" width="100">설계상의 오류 수정</td>
+                                    <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 설계상의 오류인 경우</td> 
+                                </tr>
+                                <tr>
+                                    <td class="align-middle" width="100">코딩상의 오류 수정</td>
+                                    <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공</td> 
+                                </tr>  
+                                <tr>
+                                    <td class="align-middle" width="100">기능변경</td>
+                                    <td class="align-middle text-left">월별 기능개선 건들에 대한 총 비용이 월 유지보수 비용을 넘을 경우 이월하여 처리하거나 유상으로 처리</td> 
+                                </tr>    
+                                <tr>
+                                    <td class="align-middle" width="100">기능추가</td>
+                                    <td class="align-middle text-left">월별 기능추가 건들에 대한 총 비용이 월 유지보수 비용을 넘을 경우 이월하여 처리하거나 유상으로 처리</td> 
+                                </tr>                                                                                                                                                             
+                                </tbody>
+                            </table>		
+
 		                    </li>
-		                    <li>
-		                        <h4>소프트웨어 유지보수 지원 </h4>
-								<ul>
-									<li>기능변경</li>
-									<li>신규기능</li>
-		                            <li>                            
-				                         <h4>기능개선 및 신규기능의 경우 기능 규모에 따라 추가 비용 발생할 수 도 있습니다.</h4>
-										<ul>
-											<li>기능점수방식을 이용하여 기능개선사항에 대한 비용 계산</li>
-				                             <li><span class="text-danger">월별 기능 개선 및 추가 개선 건들에 대한 총 비용이 월 유지보수 비용을 넘을 경우 이월하여 처리하거나 유상으로 처리</span></li>
-				                        </ul>  
-		                            </li>
-		                        </ul>
-		                    </li>                    
+		                             
 		                </ul>
 		            </div>
 		        </div>
