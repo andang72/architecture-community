@@ -276,10 +276,7 @@
                         </ul>
                     </li>
                 </ul>
-            </div>
-
-            
-
+            </div> 
             <div class="col-lg-6 wow zoomIn animated" style="visibility: visible;">
                 <ul class="pricing-plan list-unstyled">
                     <li class="pricing-title">
