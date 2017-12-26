@@ -267,26 +267,26 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td width="100">전화</td>
-                                    <td>전화: 고객 요청 접수, 문의 응답 및 문제 해결 </td> 
+                                    <td class="align-middle" width="100">전화</td>
+                                    <td class="align-middle text-left">전화: 고객 요청 접수, 문의 응답 및 문제 해결 </td> 
                                 </tr>
                                 <tr>
-                                    <td width="100">온라인</td>
-                                    <td>온라인: 자체 CSR 사이트를 통한 요청 접수 및 지원, 메일을 통한 요청 접수 및 지원</td> 
+                                    <td class="align-middle" width="100">온라인</td>
+                                    <td class="align-middle text-left">온라인: 자체 CSR 사이트를 통한 요청 접수 및 지원, 메일을 통한 요청 접수 및 지원</td> 
                                 </tr>
                                 <tr>
-                                    <td width="100">원격</td>
-                                    <td>엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용 발생)</td> 
+                                    <td class="align-middle" width="100">원격</td>
+                                    <td class="align-middle text-left">엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용 발생)</td> 
                                 </tr>
                                 <tr>
-                                    <td width="100">방문</td>
-                                    <td>엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용 발생)</td> 
+                                    <td class="align-middle" width="100">방문</td>
+                                    <td class="align-middle text-left">엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용 발생)</td> 
                                 </tr>                                                                                                 
                                 </tbody>
                             </table>
 		                    </li>                    
 		                    <li>
-		                        <h4>소프트웨어 결함지원 </h4>
+		                        <h4 class="text-left">소프트웨어 결함지원 </h4>
 								<ul>
 									<li>설계상의 오류 수정(소프트웨어의 하자 발생 원인이 설계상의 오류인 경우) </li>
 									<li>코딩상의 오류 수정(소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공)</li>
@@ -321,7 +321,7 @@
 		                    <li>
 		                        <h4>소프트웨어 결함 지원 </h4>
 								<ul>
-									<li>설계상의 오류 수정(소프트웨어의 하자 발생 원인이 설계상의 오류인 경우) </li>
+									<li>설계상의 오류 수정 (소프트웨어의 하자 발생 원인이 설계상의 오류인 경우) </li>
 									<li>코딩상의 오류 수정(소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공)</li>
 		                            <li><span class="text-danger">사용자 및 운영자의 고의나 과실 및 천재지변에 의한 장애는 제외</span></li>
 		                        </ul>
