@@ -212,25 +212,15 @@
 		
 		    <div class="row">
 		        <div class="col-sm-3">
-		            <h2>Full responsive</h2>
-		            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
-		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
-		        </div>
-		        <div class="col-sm-3">
-		            <h2>LESS/SASS Files</h2>
-		            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
-		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
-		        </div>
-		        <div class="col-sm-3">
-		            <h2>HelpDesk</h2>
-		            <p>전담 유지보수 인력이외에도 자사 HelpDesk 전문 유지 보수 인력이 항시 대기하고 있어 시스템의 안정적인 상태 유지, 
+		            <h2>HELPDESK 운영</h2>
+		            <p>전담 유지보수 인력이외에도 자사 HELPDESK에는 전문 유지 보수 인력이 항시 대기하고 있어 시스템의 안정적인 상태 유지, 
 		            	오류 발생 시 즉각적인 대응이 가능하며 업무담당자 변경에도 업무 연속성 확보할 수 있습니다.</p>
 		        </div>
 		        <div class="col-sm-3">
-		            <h2>운영방침</h2>
+		            <h2>HELPDESK 운영시간</h2>
 		            <p>
 		            메일, 전화, 온라인( csr.podosw.com ) 를 통하여 서비스 접수가 진행되며<br/>
-		            메일, 전화, 원격등의 기술지원방법으로 기술지원이 진행됩니다.</p>
+		            메일, 전화, 원격등의 기술지원방법으로 처리 됩니다.</p>
 					<ul>
 						<li>월~금 9:00 ~ 18:00</li>
 						<li>토요일, 일요일, 공휴일 휴무</li>
