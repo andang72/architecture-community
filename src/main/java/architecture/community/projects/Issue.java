@@ -1,37 +1,54 @@
 package architecture.community.projects;
 
-import java.util.List;
+import java.util.Date;
 
-import architecture.community.model.PropertyAwareSupport;
+import architecture.community.model.ModelObjectAware;
 import architecture.community.user.User;
 
-public class Issue extends PropertyAwareSupport {
-	
-	private User repoter;
-	
-	private List<User> assignees ;
-	
-	private String issueType;
-	
-	// 0(하), 1(중), 2 (상)
-	private int priority;
-	
-	private String status;
-	
-	private String title;
-	
-	private String description;	
-	
-	// 접수일자
-	// 작업일자 계획  시작 - 종료
-	// 작업완료 실적
-	// 작업시간 계획 
-	// 작업시간 실적  
-	
-	private Project project;
-	
-	public Issue() {
+public interface Issue extends ModelObjectAware { 
 
-	}
+	public abstract long getIssueId();
 
+	public abstract User getRepoter(); 
+	
+	public abstract void setRepoter(User repoter) ; 
+
+	public abstract void setIssueId(long issueId) ;
+
+	public abstract String getSummary() ;
+
+	public abstract void setSummary(String summary);
+
+	public abstract String getDescription() ;
+
+	public abstract void setDescription(String description) ;
+	 
+	public abstract Date getCreationDate() ;
+  
+	public abstract void setCreationDate(Date creationDate) ;
+ 
+	public abstract Date getModifiedDate();
+ 
+	public abstract void setModifiedDate(Date modifiedDate) ;
+
+	public abstract String getIssueType() ;
+
+	public abstract void setIssueType(String issueType) ;
+ 
+	public abstract Date getDueDate() ;
+ 
+	public abstract void setDueDate(Date dueDate);  
+ 
+	public abstract User getAssignee() ;
+ 
+	public abstract void setAssignee(User assignee); 
+	
+	public abstract String getPriority() ;
+	
+	public abstract void setPriority(String priority) ;
+
+	public abstract String getComponent();
+
+	public abstract void setComponent(String component) ;
+	
 }

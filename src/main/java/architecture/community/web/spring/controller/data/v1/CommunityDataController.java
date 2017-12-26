@@ -47,6 +47,8 @@ import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.model.Models;
+import architecture.community.projects.DefaultIssue;
+import architecture.community.projects.Issue;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.projects.ProjectView;
@@ -132,7 +134,59 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		ProjectView b = toProjectView(communityAclService, project);
 		return b;
 	}
+	 
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/issues/save-or-update.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public Issue saveOrUpdateIssue(@RequestBody DefaultIssue newIssue, NativeWebRequest request) throws NotFoundException {
+
+		User user = SecurityHelper.getUser();
+
+		log.debug("ISSUE : " + newIssue.toString() );
+		// NEW THREAD MESSAGE...	
+		if ( newIssue.getIssueId() > 0) {
+			Issue issue = projectService.getIssue(newIssue.getIssueId());
+			projectService.saveOrUpdateIssue(newIssue);		
+		}else {
+			if( newIssue.getIssueId() < 1 ) {
+				// NEW MESSAGE...
+				projectService.saveOrUpdateIssue(newIssue);			
+			}
+		}		
+		return newIssue;
+	}	
 	
+	
+
+	/**
+	 * 프로젝트 이슈 목록
+	 * /data/boards/{boardId}/threads/list.json
+	 * 
+	 * @param boardId
+	 * @param request
+	 * @return
+	 * @throws BoardNotFoundException
+	 */
+	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/issues/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getProjectIssues (@PathVariable Long projectId, 
+			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
+			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
+			NativeWebRequest request) throws NotFoundException {	
+				
+		Project project = projectService.getProject(projectId);
+		List<Issue> list;
+		
+		int totalSize = projectService.getIssueCount(Models.PROJECT.getObjectType(), project.getProjectId());
+		
+		if( pageSize == 0 && page == 0){
+			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId());
+		}else{
+			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId(), skip, pageSize);
+		}
+		return new ItemList(list, totalSize);
+	}
 	
 	/**
 	 * BOARD API 
