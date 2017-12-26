@@ -26,9 +26,7 @@ public class Issue extends PropertyAwareSupport {
 	// 작업일자 계획  시작 - 종료
 	// 작업완료 실적
 	// 작업시간 계획 
-	// 작업시간 실적 
-	
-	
+	// 작업시간 실적  
 	
 	private Project project;
 	
