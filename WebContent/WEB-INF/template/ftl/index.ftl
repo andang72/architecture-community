@@ -208,8 +208,6 @@
               </section>
           </div>
 
-
-        
 		<section id="features" class="container services">
 		
 		    <div class="row">
@@ -225,7 +223,8 @@
 		        </div>
 		        <div class="col-sm-3">
 		            <h2>HelpDesk</h2>
-		            <p>전담 유지보수 인력이외에도 자사 HelpDesk 전문 유지 보수 인력이 항시 대기하고 있어 시스템의 안정적인 상태 유지, 오류 발생 시 즉각적인 대응이 가능하며 업무담당자 변경에도 업무 연속성 확보할 수 있습니다.</p>
+		            <p>전담 유지보수 인력이외에도 자사 HelpDesk 전문 유지 보수 인력이 항시 대기하고 있어 시스템의 안정적인 상태 유지, 
+		            	오류 발생 시 즉각적인 대응이 가능하며 업무담당자 변경에도 업무 연속성 확보할 수 있습니다.</p>
 		        </div>
 		        <div class="col-sm-3">
 		            <h2>운영방침</h2>
