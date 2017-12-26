@@ -132,7 +132,7 @@
                     </p>                    
                     <p>
                     
- 					<a href="#!" class="btn btn-xl u-btn-pink u-btn-hover-v2-2 g-letter-spacing-0_5 text-uppercase g-rounded-50 g-px-30 g-mr-10 g-mb-15">
+ 					<a href="tel:070-7432-2657" class="btn btn-xl u-btn-pink u-btn-hover-v2-2 g-letter-spacing-0_5 text-uppercase g-rounded-50 g-px-30 g-mr-10 g-mb-15">
                         <span class="pull-left text-left g-font-size-30">
                           070-7432-2657
                           <span class="d-block g-font-size-14">helpdesk@podosw.com</span>
@@ -224,14 +224,19 @@
 		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
 		        </div>
 		        <div class="col-sm-3">
-		            <h2>6 Charts Library</h2>
-		            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
-		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
+		            <h2>HelpDesk</h2>
+		            <p>전담 유지보수 인력이외에도 자사 HelpDesk 전문 유지 보수 인력이 항시 대기하고 있어 시스템의 안정적인 상태 유지, 오류 발생 시 즉각적인 대응이 가능하며 업무담당자 변경에도 업무 연속성 확보할 수 있습니다.</p>
 		        </div>
 		        <div class="col-sm-3">
-		            <h2>Advanced Forms</h2>
-		            <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus.</p>
-		            <p><a class="navy-link" href="#" role="button">Details »</a></p>
+		            <h2>운영방침</h2>
+		            <p>
+		            메일, 전화, 온라인( csr.podosw.com ) 를 통하여 서비스 접수가 진행되며<br/>
+		            메일, 전화, 원격등의 기술지원방법으로 기술지원이 진행됩니다.</p>
+					<ul>
+						<li>월~금 9:00 ~ 18:00</li>
+						<li>토요일, 일요일, 공휴일 휴무</li>
+						<li class="text-danger">비상시 비상연락망을 통하여 응대</li>
+					</ul>
 		        </div>
 		    </div>
 		</section>
@@ -363,6 +368,10 @@
                                     <td class="align-middle" width="100">코딩 오류</td>
                                     <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공</td> 
                                 </tr>  
+                                <tr>
+                                    <td class="align-middle" width="100">장애 및 운영지원</td>
+                                    <td class="align-middle text-left">장애 및 운영을 위한 기술지원</td> 
+                                </tr> 
                                 <tr>
                                     <td class="align-middle" width="100">기능 변경</td>
                                     <td class="align-middle text-left">월별 기능개선 건들에 대한 총 비용이 월 유지보수 비용을 넘을 경우 이월하여 처리하거나 유상으로 처리</td> 
