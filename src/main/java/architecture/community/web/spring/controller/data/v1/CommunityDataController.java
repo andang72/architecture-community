@@ -154,10 +154,8 @@ private Logger log = LoggerFactory.getLogger(getClass());
 			}
 		}		
 		return newIssue;
-	}	
+	}	 
 	
-	
-
 	/**
 	 * 프로젝트 이슈 목록
 	 * /data/boards/{boardId}/threads/list.json
