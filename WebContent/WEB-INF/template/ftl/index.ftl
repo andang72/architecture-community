@@ -258,8 +258,7 @@
 		                    <li class="pricing-price">
 		                        <span>무상</span>
 		                    </li>
-		                    <li>
-		                    
+		                    <li>		                    
 							<table class="table table-bordered">
                                 <thead>
                                 <tr>
@@ -268,24 +267,23 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td>전화</td>
+                                    <td width="100">전화</td>
                                     <td>전화: 고객 요청 접수, 문의 응답 및 문제 해결 </td> 
                                 </tr>
                                 <tr>
-                                    <td>온라인</td>
+                                    <td width="100">온라인</td>
                                     <td>온라인: 자체 CSR 사이트를 통한 요청 접수 및 지원, 메일을 통한 요청 접수 및 지원</td> 
                                 </tr>
                                 <tr>
-                                    <td>원격</td>
-                                    <td>엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용이 발생됩니다.)</td> 
+                                    <td width="100">원격</td>
+                                    <td>엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용 발생)</td> 
                                 </tr>
                                 <tr>
-                                    <td>방문</td>
-                                    <td>엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용이 발생됩니다.)</td> 
+                                    <td width="100">방문</td>
+                                    <td>엔지니어가 고객사에 방문하여 지원 (방문지원의 경우 추가비용 발생)</td> 
                                 </tr>                                                                                                 
                                 </tbody>
-                            </table>		                    
-		                        
+                            </table>
 		                    </li>                    
 		                    <li>
 		                        <h4>소프트웨어 결함지원 </h4>
