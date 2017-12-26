@@ -20,9 +20,11 @@
     <link href="/css/animate/animate.css" rel="stylesheet"> 
     <link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet">
      
-    <!-- Musi Community CSS -->
-    <link href="/css/community.ui/community.ui.globals.css" rel="stylesheet">
-    <link href="/css/community.ui/community.ui.style.css" rel="stylesheet">
+    <!-- Community CSS -->
+	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
+  	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
+  	
  	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script>
  	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
  	
