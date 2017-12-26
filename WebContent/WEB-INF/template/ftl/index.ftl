@@ -22,7 +22,7 @@
 	
 	<!-- Community CSS -->
 	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
-	<link href="<@spring.url "/css/community.ui/community.ui.components.min.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
   	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
   		
 	<!-- Page landing js -->	   	
@@ -249,7 +249,7 @@
 		        <div class="row">
 		            <div class="col-lg-6 wow zoomIn animated" style="visibility: visible;">
 		                <ul class="pricing-plan list-unstyled">
-		                    <li class="pricing-title">
+		                    <li class="pricing-title" style="background:#ccc;">
 		                        하자보수
 		                    </li>
 		                    <li class="pricing-desc">
