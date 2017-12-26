@@ -134,7 +134,7 @@
                     
  					<a href="#!" class="btn btn-xl u-btn-pink u-btn-hover-v2-2 g-letter-spacing-0_5 text-uppercase g-rounded-50 g-px-30 g-mr-10 g-mb-15">
                         <span class="pull-left text-left g-font-size-30">
-                          070-0000-0000
+                          070-7432-2657
                           <span class="d-block g-font-size-14">helpdesk@podosw.com</span>
                         </span>
                         <i class="fa fa-volume-control-phone float-right g-font-size-60 g-ml-15"></i>
@@ -384,7 +384,7 @@
 		        </div>
 		        <div class="row m-t-lg">
 		            <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg">
-		                <p>*Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. <span class="navy">Various versions</span>  have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
+		                <p>* 소프트웨어 유지보수 대상은 (주)포도소프트웨어에 의하여 구축되었고 현재 운영중인 소프트웨어에 대한 유지보수를 의미합니다.</p>
 		            </div>
 		        </div>
 		    </div>
