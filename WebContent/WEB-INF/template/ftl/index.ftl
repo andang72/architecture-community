@@ -295,11 +295,11 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class="align-middle" width="100">설계상의 오류 수정</td>
+                                    <td class="align-middle" width="100">설계오류</td>
                                     <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 설계상의 오류인 경우</td> 
                                 </tr>
                                 <tr>
-                                    <td class="align-middle" width="100">코딩상의 오류 수정</td>
+                                    <td class="align-middle" width="100">코딩오류</td>
                                     <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공</td> 
                                 </tr>                                                                                               
                                 </tbody>
@@ -347,9 +347,6 @@
                             </table>                                                               
 		                    </li>   
 		                    <li>
-		                        정기정검 : 원격 , 방문 (방문지원의 경우 추가비용이 발생됩니다.)
-		                    </li>
-		                    <li>
 
 		                    <table class="table table-bordered">
                                 <thead>
@@ -359,26 +356,28 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class="align-middle" width="100">설계상의 오류 수정</td>
+                                    <td class="align-middle" width="100">설계 오류</td>
                                     <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 설계상의 오류인 경우</td> 
                                 </tr>
                                 <tr>
-                                    <td class="align-middle" width="100">코딩상의 오류 수정</td>
+                                    <td class="align-middle" width="100">코딩 오류</td>
                                     <td class="align-middle text-left">소프트웨어의 하자 발생 원인이 코드상의 오류인 경우, 코딩상의 오류를 수정하여 패치 형태로 제공</td> 
                                 </tr>  
                                 <tr>
-                                    <td class="align-middle" width="100">기능변경</td>
+                                    <td class="align-middle" width="100">기능 변경</td>
                                     <td class="align-middle text-left">월별 기능개선 건들에 대한 총 비용이 월 유지보수 비용을 넘을 경우 이월하여 처리하거나 유상으로 처리</td> 
                                 </tr>    
                                 <tr>
-                                    <td class="align-middle" width="100">기능추가</td>
+                                    <td class="align-middle" width="100">기능 추가</td>
                                     <td class="align-middle text-left">월별 기능추가 건들에 대한 총 비용이 월 유지보수 비용을 넘을 경우 이월하여 처리하거나 유상으로 처리</td> 
                                 </tr>                                                                                                                                                             
                                 </tbody>
                             </table>		
 
 		                    </li>
-		                             
+		                    <li>
+		                        정기정검 : 원격 , 방문 (방문지원의 경우 추가비용이 발생됩니다.)
+		                    </li>		                             
 		                </ul>
 		            </div>
 		        </div>
