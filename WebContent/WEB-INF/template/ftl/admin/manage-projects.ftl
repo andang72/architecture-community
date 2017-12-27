@@ -360,12 +360,12 @@
 					  </div>	
 					 <div class="form-group">					    
 						<input data-role="dropdownlist"
-										 data-option-label="계약상태를 선택하세요."
-						                 data-auto-bind="false"
-						                 data-text-field="name"
-						                 data-value-field="code"
-						                 data-bind="value: project.contractState, source: contractDataSource"
-						                 style="width: 100%;" />
+							data-option-label="계약상태를 선택하세요."
+							data-auto-bind="false"
+							data-text-field="name"
+							data-value-field="code"
+							data-bind="value: project.contractState, source: contractDataSource"
+							style="width: 100%;" />
 					  </div>			
 					 <div class="form-group"> 
 					 	<h6 class="text-light-gray text-semibold">비용(월)</h6>	

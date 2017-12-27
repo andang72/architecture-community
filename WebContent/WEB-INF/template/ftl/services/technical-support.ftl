@@ -126,7 +126,11 @@
 	function createOrOpenIssueEditor(){
 		var renderTo = $('#issue-editor-modal');
 		if( !renderTo.data("model") ){
-			var observable = new community.ui.observable({ });
+			var observable = new community.ui.observable({ 
+			
+				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/ISSUE_TYPE/list.json" />' , {} )
+			
+			});
 			renderTo.data("model", observable );	
 			community.ui.bind( renderTo, observable );				
 			renderTo.on('show.bs.modal', function (e) {	});
@@ -206,6 +210,17 @@
 		                   data-bind="source: dataSource"
 		                   style="width: 100%;"/>			        	  
 					</div>
+				 	<h6 class="text-light-gray text-semibold">요청구분</h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="false"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="source: issueTypeDataSource"
+		                   style="width: 100%;"/>			        	  
+					</div>					
 				</form>   
 				<div class="text-editor"></div>
 				</div>
