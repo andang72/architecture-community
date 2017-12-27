@@ -148,6 +148,7 @@
 		if( !renderTo.data("model") ){
 			var observable = new community.ui.observable({ 
 				isNew : false,	
+				isDeveloper : false,
 				issue : new community.model.Issue(),
 				projectDataSource   : community.ui.listview($('#project-listview')).dataSource,
 				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
@@ -162,6 +163,7 @@
 					}else{
 						$this.set('isNew', true );	
 					}
+					$this.set('isDeveloper', isDeveloper());
 			 	},
 				saveOrUpdate : function(e){				
 					var $this = this;
@@ -209,7 +211,7 @@
             </div>
             <!-- Promo Blocks - Input -->
 			<p>
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청</a>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
@@ -244,7 +246,7 @@
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
 			        </button>
-			        <h2 class="modal-title"><span data-bind="text:project.name"></span></h2>
+			        <h2 class="modal-title">기술지원요청</h2>
 		      	</div><!-- /.modal-content -->
 				<div class="modal-body">
 				
@@ -327,7 +329,7 @@
  							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support"></i>
 						</div>
 						
-						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # #:name#</h4>						
+						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="/display/pages/issues.html?projectId=#=projectId#" class="btn-link"> #:name# </a></h4>						
 						<div class="g-ml-60 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
 						
 						#if( isDeveloper() ){ #

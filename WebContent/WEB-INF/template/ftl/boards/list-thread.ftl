@@ -19,6 +19,7 @@
 	
 	<!-- Bootstrap Theme CSS -->
 	<link href="<@spring.url "/css/bootstrap.theme/inspinia/style.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/bootstrap.theme/inspinia/custom.css"/>" rel="stylesheet" type="text/css" />	
 	
 	<!-- Community CSS -->
 	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
@@ -225,7 +226,7 @@
                                     <h3>You have meeting today!</h3>
                                     <small><i class="fa fa-map-marker"></i> Meeting is on 6:00am. Check your schedule to see detail.</small>
                                     <div class="ibox-tools">
-		                                <button type="button" class="btn btn-primary" data-bind="{ enabled: board.createThread, click:write ">새로운 글 게시하기</button>
+		                                <button type="button" class="btn btn-primary g-mr-20" data-bind="{ enabled: board.createThread, click:write ">새로운 글 게시하기</button>
 		                            </div>
                                 </div>                            		
 	                            <div class="ibox-content">

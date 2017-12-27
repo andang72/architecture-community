@@ -8,22 +8,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INSPINIA | Empty Page</title>
 	<!-- Kendoui with bootstrap theme CSS -->			
-	<link href="/css/kendo.ui.core/web/kendo.common-bootstrap.core.css" rel="stylesheet" type="text/css" />
-	<link href="/css/kendo.ui.core/web/kendo.bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common-bootstrap.core.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
 	
 	<!-- Bootstrap CSS -->
-    <link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet">
-    <link href="/fonts/font-awesome.css" rel="stylesheet">
+    <link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
     
     <!-- Bootstrap Theme Inspinia CSS -->
-    <link href="/css/animate/animate.css" rel="stylesheet">
-    <!--<link href="/css/bootstrap.theme/unify/unify-core.min.css" rel="stylesheet">-->
-    
-    <link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet">
-     
-    <!-- Musi Community CSS -->
-    <link href="/css/community.ui/community.ui.globals.css" rel="stylesheet">
-    <link href="/css/community.ui/community.ui.style.css" rel="stylesheet">
+    <link href="<@spring.url "/css/bootstrap.theme/inspinia/style.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/bootstrap.theme/inspinia/custom.css"/>" rel="stylesheet" type="text/css" />	
+            
+    <!-- Community CSS -->
+	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
+  	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
+  	    
  	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script>
  	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
  	
