@@ -234,7 +234,8 @@
 				 
 				 	<h6 class="text-light-gray text-semibold">프로젝트 <span class="text-danger">*</span></h6>
 					<div class="form-group">
-						<input data-role="dropdownlist"  
+						<input name="projectSelect"
+						   data-role="dropdownlist"  
 						   data-placeholder="선택"
 		                   data-auto-bind="false"
 		                   data-value-primitive="true"
@@ -253,7 +254,8 @@
 		                   data-text-field="name"
 		                   data-value-field="code"
 		                   data-bind="value: issue.issueType, source: issueTypeDataSource"
-		                   style="width: 100%;"/>			        	  
+		                   style="width: 100%;"/>	
+		                   		        	  
 					</div>	
 					<h6 class="text-light-gray text-semibold">요약 <span class="text-danger">*</span></h6>				 	
 				 	<div class="form-group">
