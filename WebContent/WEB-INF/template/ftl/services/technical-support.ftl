@@ -109,28 +109,47 @@
 					data: "items",
 					model: community.model.Project
 				}
-			}),
-			openIssueEditor : function(e){
-				createOrOpenIssueEditor (new community.model.Issue());
-    			}
+			})
     		});
     		
-    		$('#page-top').data('model', observable);
-    		community.ui.bind( $('#page-top'), observable );    		
-    		var renderTo = $('#project-listview');	    		
-			community.ui.listview( renderTo , {
-			dataSource: observable.dataSource,
-			template: community.ui.template($("#template").html())
-		}); 
+    		
+    		var renderTo = $('#page-top');
+    		renderTo.data('model', observable);
+    		
+    		createProjectListView(observable);
+		
+		renderTo.on("click", "button[data-action=create], a[data-action=create]", function(e){			
+			var $this = $(this);
+			var actionType = $this.data("action");		
+			var objectId = $this.data("object-id");		
+			var targetObject = new community.model.Issue();	
+			targetObject.set('objectType', 18);
+			console.log( "total: " + observable.dataSource.total() );
+			if( observable.dataSource.total() == 1 ){
+				targetObject.set('objectId', observable.dataSource.at(0).projectId);
+			}						
+ 			createOrOpenIssueEditor (targetObject);		
+			return false;		
+		});				
 		
 	});
 	
+	function createProjectListView(observable){
+		var renderTo = $('#project-listview');	    		
+			community.ui.listview( renderTo , {
+			dataSource: observable.dataSource,
+			template: community.ui.template($("#template").html())
+		}); 	
+	}
+	
 	function createOrOpenIssueEditor( data ){
+		console.log( community.ui.stringify(data) );
 		var renderTo = $('#issue-editor-modal');
 		if( !renderTo.data("model") ){
 			var observable = new community.ui.observable({ 
 				isNew : false,	
 				issue : new community.model.Issue(),
+				projectDataSource   : community.ui.listview($('#project-listview')).dataSource,
 				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 				priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
 			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
@@ -141,8 +160,7 @@
 					if(  $this.issue.issueId > 0 ){
 						$this.set('isNew', false );
 					}else{
-						$this.issue.set('objectType', 18);
-						$this.set('isNew', true );
+						$this.set('isNew', true );	
 					}
 			 	},
 				saveOrUpdate : function(e){				
@@ -191,7 +209,7 @@
             </div>
             <!-- Promo Blocks - Input -->
 			<p>
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-bind="click:openIssueEditor">기술지원요청</a>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
@@ -237,11 +255,11 @@
 						<input name="projectSelect"
 						   data-role="dropdownlist"  
 						   data-placeholder="선택"
-		                   data-auto-bind="false"
+		                   data-auto-bind="true"
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="projectId"
-		                   data-bind="value:issue.objectId, source: dataSource"
+		                   data-bind="value:issue.objectId, source:projectDataSource"
 		                   style="width: 100%;"/>			        	  
 					</div>
 									 
@@ -249,12 +267,12 @@
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
-		                   data-auto-bind="false"
+		                   data-auto-bind="true"
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="value: issue.issueType, source: issueTypeDataSource"
-		                   style="width: 100%;"/>	
+		                   data-bind="value:issue.issueType, source:issueTypeDataSource"
+		                   style="width:100%;"/>	
 		                   		        	  
 					</div>	
 					<h6 class="text-light-gray text-semibold">요약 <span class="text-danger">*</span></h6>				 	
@@ -274,7 +292,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="value: issue.priority, source: priorityDataSource"
+		                   data-bind="value:issue.priority, source:priorityDataSource"
 		                   style="width: 100%;"/>			        	  
 					</div>
 						
@@ -286,7 +304,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="source: methodsDataSource"
+		                   data-bind="source:methodsDataSource"
 		                   style="width: 100%;"/>
 					</div>	
 														
