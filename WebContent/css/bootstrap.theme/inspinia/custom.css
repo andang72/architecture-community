@@ -41,3 +41,9 @@
 .landing-page section p {
     font-size: 16px!important;
 }
+
+.landing-page .modal-footer .btn-default {
+    font-size: 14px;
+    padding: 10px 20px;
+    font-weight: 200;
+}
