@@ -146,10 +146,15 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getObjectType()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getObjectId()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
-					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),					
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
+					
+					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId()),	
+					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId()),	
+					
+					
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));		
@@ -158,13 +163,13 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			Date now = Calendar.getInstance().getTime();
 			toUse.setModifiedDate(now);		
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_ISSUE").getSql(), 
-					new SqlParameterValue(Types.NUMERIC, toUse.getObjectType()),
-					new SqlParameterValue(Types.NUMERIC, toUse.getObjectId()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
-					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
-					new SqlParameterValue(Types.NUMERIC, toUse.getSummary()),	
-					new SqlParameterValue(Types.TIMESTAMP, toUse.getDescription()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
+					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId()),	
+					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId()),	
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId())

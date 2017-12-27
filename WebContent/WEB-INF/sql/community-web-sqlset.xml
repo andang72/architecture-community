@@ -38,34 +38,34 @@
 
  	<sql-query name="INSERT_ISSUE" description="INSERT_ISSUE"><![CDATA[    	
 	INSERT INTO MUSI_ISSUE (
+	    ISSUE_ID,
 	 	OBJECT_TYPE,
-	 	ISSUE_ID,
+	 	OBJECT_ID,
 	 	ISSUE_TYPE,
-	 	PRIORITY,	 	
 	 	COMPONENT,
-	 	ASSIGNEE,
-	 	REPOTER,
 	 	SUMMARY,
 	 	DESCRIPTION,
+	 	PRIORITY,
+	 	ASSIGNEE,
+	 	REPOTER,
 	 	DUE_DATE,
 		CREATION_DATE,
 		MODIFIED_DATE
-	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
     ]]></sql-query>	
  
 					
  	<sql-query name="UPDATE_ISSUE" description="UPDATE_ISSUE"><![CDATA[    	
  	UPDATE MUSI_ISSUE
  	SET 
-	 	OBJECT_TYPE = ?,
-	 	ISSUE_ID = ?,
-	 	ISSUE_TYPE = ?,
+ 		ISSUE_TYPE = ?,
 	 	PRIORITY = ?,	 	
 	 	COMPONENT = ?,
-	 	ASSIGNEE = ?,
-	 	REPOTER = ?,
 	 	SUMMARY = ?,
 	 	DESCRIPTION = ?,
+	 	PRIORITY = ?
+	 	ASSIGNEE = ?,
+	 	REPOTER = ?,
 	 	DUE_DATE = ?,
 	 	MODIFIED_DATE = ?
  	WHERE ISSUE_ID = ? 
