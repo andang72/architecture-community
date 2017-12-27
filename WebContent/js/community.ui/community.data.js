@@ -314,6 +314,39 @@
 		}
 	});	
 	
+	community.model.Issue = Model.define({ 		
+		
+		id: "issueId",
+		fields: { 	
+			issueId: { type: "number", defaultValue: -1 },			
+			issueType: { type: "string", defaultValue: "" },			
+			summary:{ type: "string", defaultValue: "" },
+			description: { type: "string", defaultValue: "" },
+			priority : { type: "string", defaultValue: "002" },
+			dueDate:{ type: "date" },	
+			repoter:{ type: "object", defaultValue: new community.model.User() },
+			assignee:{ type: "object", defaultValue: new community.model.User() },
+			creationDate:{ type: "date" },			
+			modifiedDate:{ type: "date" }	
+		},
+		copy: function ( target ){
+			target.issueId = this.get("issueId");
+		    	target.set("issueType",this.get("issueType") );
+		    	target.set("summary", this.get("summary") );
+		    	target.set("description", this.get("description") );
+		    	target.set("maintenanceCost", this.get("maintenanceCost") );
+		    	target.set("dueDate",this.get("dueDate") );	
+		    	target.set("modifiedDate",this.get("modifiedDate") );
+		    	target.set("creationDate", this.get("creationDate") );
+		    	if( typeof this.get("repoter") === 'repoter' )
+		    		target.set("repoter", this.get("repoter") );
+		    	if( typeof this.get("assignee") === 'object' )
+		    		target.set("assignee", this.get("assignee") );
+		}		
+		
+		
+	});
+	
 	
 	function getUserProfileImage ( user ) {
 		if( user != null && user.username != null &&  user.username.length > 0 )

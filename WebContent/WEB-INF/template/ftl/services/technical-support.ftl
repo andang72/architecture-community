@@ -110,7 +110,9 @@
 					model: community.model.Project
 				}
 			}),
-			openIssueEditor : createOrOpenIssueEditor
+			openIssueEditor : function(e){
+				createOrOpenIssueEditor (new community.model.Issue());
+    			}
     		});
     		
     		$('#page-top').data('model', observable);
@@ -123,19 +125,48 @@
 		
 	});
 	
-	function createOrOpenIssueEditor(){
+	function createOrOpenIssueEditor( data ){
 		var renderTo = $('#issue-editor-modal');
 		if( !renderTo.data("model") ){
 			var observable = new community.ui.observable({ 
-			
-				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/ISSUE_TYPE/list.json" />' , {} )
-			
+				isNew : false,	
+				issue : new community.model.Issue(),
+				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
+				priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
+			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
+			 	setSource : function( data ){
+			 		var $this = this;
+					var orgIssueId = $this.issue.issueId ;
+					data.copy( $this.issue ); 
+					if(  $this.issue.issueId > 0 ){
+						$this.set('isNew', false );
+					}else{
+						$this.set('isNew', true );
+					}
+			 	},
+				saveOrUpdate : function(e){				
+					var $this = this;
+					community.ui.progress(renderTo.find('.modal-content'), true);	
+					community.ui.ajax( '<@spring.url "/data/api/v1/issues/save-or-update.json" />', {
+						data: community.ui.stringify($this.issue),
+						contentType : "application/json",						
+						success : function(response){
+							
+						}
+					}).always( function () {
+						community.ui.progress(renderTo.find('.modal-content'), false);
+						renderTo.modal('hide');
+					});						
+				}
 			});
 			renderTo.data("model", observable );	
 			community.ui.bind( renderTo, observable );				
 			renderTo.on('show.bs.modal', function (e) {	});
 		}	
-		//renderTo.data("model").setSource(data);
+		
+		if( community.ui.defined(data) ) 
+			renderTo.data("model").setSource(data);
+		
 		renderTo.modal('show');
 	}
  
@@ -199,7 +230,8 @@
 				<div class="modal-body">
 				
 				 <form>
-				 	<h6 class="text-light-gray text-semibold">프로젝트</h6>
+				 
+				 	<h6 class="text-light-gray text-semibold">프로젝트 <span class="text-danger">*</span></h6>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
@@ -210,7 +242,8 @@
 		                   data-bind="source: dataSource"
 		                   style="width: 100%;"/>			        	  
 					</div>
-				 	<h6 class="text-light-gray text-semibold">요청구분</h6>
+									 
+				 	<h6 class="text-light-gray text-semibold">요청구분 <span class="text-danger">*</span></h6>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
@@ -218,15 +251,45 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="source: issueTypeDataSource"
+		                   data-bind="value: issue.issueType, source: issueTypeDataSource"
 		                   style="width: 100%;"/>			        	  
-					</div>					
+					</div>	
+					<h6 class="text-light-gray text-semibold">요약 <span class="text-danger">*</span></h6>				 	
+				 	<div class="form-group">
+			            <input type="text" class="form-control" placeholder="요약" data-bind="value: issue.summary">
+			        </div> 	
+
+
+					<h6 class="text-light-gray text-semibold">우선순위 <span class="text-danger">*</span></h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="value: issue.priority, source: priorityDataSource"
+		                   style="width: 100%;"/>			        	  
+					</div>
+						
+					<h6 class="text-light-gray text-semibold">지원방법</h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="source: methodsDataSource"
+		                   style="width: 100%;"/>			        	  
+					</div>	
+														
 				</form>   
 				<div class="text-editor"></div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-primary">확인</button>
+					<button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate">확인</button>
 				</div>
 			</div>
 		</div>

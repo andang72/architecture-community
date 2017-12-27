@@ -114,6 +114,7 @@
 							success : function(response){
 								if( response.success ){
 									// gonguration !!
+									location.href="<@spring.url "/accounts/login" />";
 								}
 							}
 					}).always( function () {
@@ -148,10 +149,14 @@
             <form class="m-t" role="form" id="register-form" name="register-form" method="POST" accept-charset="utf-8" >
                 <div class="form-group">
                     <input type="text" class="form-control" name="name" placeholder="이름"  data-bind="enabled: enabled, value:currentUser.name" required data-required-msg="이름을 입력하여 주십시오." >
-                </div>
+                </div>               
                 <div class="form-group">
                     <input type="email" class="form-control" name="email" placeholder="메일"  data-bind="enabled: enabled, value:currentUser.email" required data-required-msg="메일주소를 입력하여 주십시오." data-email-msg="메일주소 형식이 바르지 않습니다.">
                 </div>
+                 <div class="form-group">
+                    <input type="text" class="form-control" name="name" placeholder="아이디"  data-bind="enabled: enabled, value:currentUser.username" >
+                    <span class="help-block m-b-none">아이디를 입력하지 않는 경우 메일 주소를 아이디로 사용하게 됩니다.</span>
+                </div>                
                 <div class="form-group">
                     <input type="password" class="form-control" name="password" placeholder="비밀번호" data-bind="enabled: enabled, value:currentUser.password" required  data-required-msg="비밀번호를 입력하여 주십시오.">
                 </div>

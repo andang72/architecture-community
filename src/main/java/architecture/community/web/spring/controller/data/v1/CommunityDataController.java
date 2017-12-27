@@ -3,6 +3,7 @@ package architecture.community.web.spring.controller.data.v1;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,6 +40,8 @@ import architecture.community.board.BoardThreadNotFoundException;
 import architecture.community.board.BoardView;
 import architecture.community.board.DefaultBoardMessage;
 import architecture.community.board.MessageTreeWalker;
+import architecture.community.codeset.CodeSet;
+import architecture.community.codeset.CodeSetService;
 import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
 import architecture.community.exception.NotFoundException;
@@ -91,7 +94,10 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@Inject
 	@Qualifier("projectService")
 	private ProjectService projectService;
-	
+		
+	@Inject
+	@Qualifier("codeSetService")
+	private CodeSetService codeSetService;
 	
 	protected BoardService getBoardService () {
 		return boardService;
@@ -99,6 +105,21 @@ private Logger log = LoggerFactory.getLogger(getClass());
  
 	protected JdbcCommunityAclService getCommunityAclService() { 
 		return communityAclService;
+	}
+	
+	@RequestMapping(value = "/codeset/{group}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<CodeSet> getCodeSetsByGroupAndCode(
+			@PathVariable String group,
+			@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
+			@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId ){
+		
+		List<CodeSet> codes = Collections.EMPTY_LIST ;
+		
+		if (!StringUtils.isNullOrEmpty(group)) {
+			codes = codeSetService.getCodeSets(objectType, objectId, group);
+		}
+		return codes ;
 	}
 	
 	/**

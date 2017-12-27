@@ -3,6 +3,7 @@ package architecture.community.web.spring.controller.data;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,11 +38,20 @@ public class AccountsDataController {
 		
 		String nameToUse =  data.getDataAsString("name", null);
 		String emailToUse =  data.getDataAsString("email", null);
-		String usernameToUse = extractUsernameFromEmail(emailToUse);
+		
+		String usernameToUse ;
+		if( data.getData().containsKey("username") && StringUtils.isNotEmpty(  data.getDataAsString("username", null)  )) {
+			usernameToUse = data.getDataAsString("username", null);
+		}else {
+			usernameToUse = extractUsernameFromEmail(emailToUse);
+		}
+		
 		String passwordToUse =  data.getDataAsString("password", null);
 		boolean mameVisible =  data.getDataAsBoolean("nameVisible", false);
 		boolean emailVisible =  data.getDataAsBoolean("emailVisible", false);		
+		
 		String ipAddress = request.getNativeRequest(HttpServletRequest.class).getRemoteAddr();		
+		
 		User newUser = new UserTemplate(usernameToUse, passwordToUse, nameToUse, mameVisible, emailToUse, emailVisible);		
 		
 		Result result = Result.newResult();	
