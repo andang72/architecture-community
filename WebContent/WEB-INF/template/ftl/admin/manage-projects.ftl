@@ -226,6 +226,7 @@
 				}),
 				contractDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/PROJECT/list.json" />' , {} )
 			});
+			
 						
 			observable.bind("change", function(e){						
 				if( e.field == "permissionToType" ){
