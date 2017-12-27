@@ -259,7 +259,10 @@
 			            <input type="text" class="form-control" placeholder="요약" data-bind="value: issue.summary">
 			        </div> 	
 
-
+					<h6 class="text-light-gray text-semibold">상세 내용 <span class="text-danger">*</span></h6>				 	
+				 	<div class="form-group">
+					<textarea class="form-control" placeholder="상세내용" data-bind="value:issue.description"></textarea>
+	 				</div> 
 					<h6 class="text-light-gray text-semibold">우선순위 <span class="text-danger">*</span></h6>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
@@ -281,7 +284,7 @@
 		                   data-text-field="name"
 		                   data-value-field="code"
 		                   data-bind="source: methodsDataSource"
-		                   style="width: 100%;"/>			        	  
+		                   style="width: 100%;"/>
 					</div>	
 														
 				</form>   
