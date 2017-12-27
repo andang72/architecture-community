@@ -186,7 +186,7 @@
           <div class="col-lg-6">
             <div class="mb-5">
               <h1 class="g-color-darkgray g-font-size-60 mb-4"><#if __page?? >${__page.title}</#if></h1>
-              <h2 class="g-color-darkgray g-font-weight-300 g-font-size-22 mb-0 text-left g-color-blue" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
+              <h2 class="g-color-darkgray g-font-weight-400 g-font-size-22 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
             </div>
             <!-- Promo Blocks - Input -->
 			<p>
