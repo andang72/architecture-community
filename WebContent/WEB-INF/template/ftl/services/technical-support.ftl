@@ -10,8 +10,8 @@
     <meta name="author" content="">
     <title><#if __page?? >${__page.title}</#if></title>
  	
- 	<!-- Kendoui with bootstrap theme CSS -->			
-	<!--<link href="/css/kendo.ui.core/web/kendo.common-bootstrap.core.css" rel="stylesheet" type="text/css" />-->
+ 	<!-- Kendoui with bootstrap theme CSS -->			 
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common-bootstrap.core.min.css"/>" rel="stylesheet" type="text/css" />	
 	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	 
 	
 	<!-- Bootstrap core CSS -->
@@ -34,7 +34,6 @@
 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>   	
 	<!-- Requirejs for js loading -->
 	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
-		
 	<!-- Application JavaScript
     		================================================== -->    
 	<script>
@@ -110,11 +109,12 @@
 					data: "items",
 					model: community.model.Project
 				}
-			})
+			}),
+			openIssueEditor : createOrOpenIssueEditor
     		});
     		
     		$('#page-top').data('model', observable);
-    		
+    		community.ui.bind( $('#page-top'), observable );    		
     		var renderTo = $('#project-listview');	    		
 			community.ui.listview( renderTo , {
 			dataSource: observable.dataSource,
@@ -123,6 +123,17 @@
 		
 	});
 	
+	function createOrOpenIssueEditor(){
+		var renderTo = $('#issue-editor-modal');
+		if( !renderTo.data("model") ){
+			var observable = new community.ui.observable({ });
+			renderTo.data("model", observable );	
+			community.ui.bind( renderTo, observable );				
+			renderTo.on('show.bs.modal', function (e) {	});
+		}	
+		//renderTo.data("model").setSource(data);
+		renderTo.modal('show');
+	}
  
 	function isDeveloper(){ 
 		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
@@ -144,7 +155,7 @@
             </div>
             <!-- Promo Blocks - Input -->
 			<p>
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button">기술지원요청</a>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-bind="click:openIssueEditor">기술지원요청</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
@@ -170,6 +181,41 @@
             		</div>
         		</div>
 	</section>
+	
+	<!-- issue editor modal -->
+	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
+			        </button>
+			        <h2 class="modal-title"><span data-bind="text:project.name"></span></h2>
+		      	</div><!-- /.modal-content -->
+				<div class="modal-body">
+				
+				 <form>
+				 	<h6 class="text-light-gray text-semibold">프로젝트</h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="false"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="projectId"
+		                   data-bind="source: dataSource"
+		                   style="width: 100%;"/>			        	  
+					</div>
+				</form>   
+				<div class="text-editor"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>	 
 	
 	<script type="text/x-kendo-template" id="template">
 			<div class="forum-item">
@@ -207,8 +253,7 @@
 					</div>
 				</div>
 			</div>
-    </script>	
-    
+    </script> 
 </body>
 </html>
 </#compress>
