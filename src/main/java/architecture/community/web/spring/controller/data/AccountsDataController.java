@@ -72,13 +72,18 @@ public class AccountsDataController {
 	public Result signup(@RequestBody SignupForm user, NativeWebRequest request)  {		
 		Result result = Result.newResult();	
 		result.setAnonymous(true);	
-
+		logger.debug(user.getUsername());
 		logger.debug(user.getName());
 		logger.debug(user.getEmail());
-		logger.debug(user.getPassword());
+		//logger.debug(user.getPassword());
+		
+		String usernameToUse = user.getUsername();
+		if( StringUtils.isNotEmpty( usernameToUse  ))
+			usernameToUse = user.getEmail();
+		
 		try {
 			
-			User newUser = new UserTemplate(user.email, user.password, user.name, user.mameVisible, user.email, user.emailVisible);				
+			User newUser = new UserTemplate(usernameToUse, user.password, user.name, user.mameVisible, user.email, user.emailVisible);				
 			User registeredUser = userManager.createUser(newUser);
 			result.getData().put("user", registeredUser);
 			result.setCount(1);
@@ -96,7 +101,7 @@ public class AccountsDataController {
 	
 	
 	private static class SignupForm {
-		
+		private String username ;
 		private String name ;
 		private String password;
 		private String email;
@@ -138,6 +143,13 @@ public class AccountsDataController {
 		}
 		public void setEmailVisible(Boolean emailVisible) {
 			this.emailVisible = emailVisible;
+		}
+		
+		public String getUsername() {
+			return username;
+		}
+		public void setUsername(String username) {
+			this.username = username;
 		}
 		
 		public String toString() {
