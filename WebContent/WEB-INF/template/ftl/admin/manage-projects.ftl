@@ -226,6 +226,7 @@
 				}),
 				contractDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/PROJECT/list.json" />' , {} )
 			});
+			
 						
 			observable.bind("change", function(e){						
 				if( e.field == "permissionToType" ){
@@ -361,7 +362,7 @@
 					 <div class="form-group">					    
 						<input data-role="dropdownlist"
 							data-option-label="계약상태를 선택하세요."
-							data-auto-bind="false"
+							data-auto-bind="true"
 							data-text-field="name"
 							data-value-field="code"
 							data-bind="value: project.contractState, source: contractDataSource"
