@@ -319,9 +319,9 @@
 		id: "issueId",
 		fields: { 	
 			issueId: { type: "number", defaultValue: -1 },	
-			objectType: { type: "number", defaultValue: 0 },			
-			objectId: { type: "number", defaultValue: 0},	
-			issueType: { type: "string", defaultValue: "" },			
+			objectType: { type: "number", defaultValue: -1 },			
+			objectId: { type: "number", defaultValue: -1},	
+			issueType: { type: "string", defaultValue: null },			
 			summary:{ type: "string", defaultValue: "" },
 			description: { type: "string", defaultValue: "" },
 			priority : { type: "string", defaultValue: "002" },
