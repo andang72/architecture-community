@@ -318,7 +318,9 @@
 		
 		id: "issueId",
 		fields: { 	
-			issueId: { type: "number", defaultValue: -1 },			
+			issueId: { type: "number", defaultValue: -1 },	
+			objectType: { type: "number", defaultValue: 0 },			
+			objectId: { type: "number", defaultValue: 0},	
 			issueType: { type: "string", defaultValue: "" },			
 			summary:{ type: "string", defaultValue: "" },
 			description: { type: "string", defaultValue: "" },
@@ -331,6 +333,8 @@
 		},
 		copy: function ( target ){
 			target.issueId = this.get("issueId");
+	    		target.set("objectType",this.get("objectType") );
+	    		target.set("objectId", this.get("objectId"));
 		    	target.set("issueType",this.get("issueType") );
 		    	target.set("summary", this.get("summary") );
 		    	target.set("description", this.get("description") );
