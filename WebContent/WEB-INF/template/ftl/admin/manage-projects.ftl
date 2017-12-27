@@ -383,7 +383,6 @@
 						     	<input data-role="datepicker" data-bind="value: project.endDate" style="width: 100%">
 						  	</div>
 					  	</div>   
-					   
 					  </div>						  		          	          
 			        </form>
 		      	</div><!-- /.modal-body -->
