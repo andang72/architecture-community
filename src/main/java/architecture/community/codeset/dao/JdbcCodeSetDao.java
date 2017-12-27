@@ -241,6 +241,7 @@ public class JdbcCodeSetDao extends ExtendedJdbcDaoSupport implements CodeSetDao
 		return codeset;
 	}
 
+	
 	public int getCodeSetCount(int objectType, long objectId) {
 		return getExtendedJdbcTemplate().queryForObject(
 				getBoundSql("COMMUNITY_WEB.COUNT_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(), Integer.class,
@@ -263,16 +264,36 @@ public class JdbcCodeSetDao extends ExtendedJdbcDaoSupport implements CodeSetDao
  
 	public List<Long> getCodeSetIds(int objectType, long objectId, String groupCode) {
 		return getExtendedJdbcTemplate().queryForList(
-				getBoundSql("COMMUNITY_WEB.SELECT_CODESET_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_CODE").getSql(),
+				getBoundSql("COMMUNITY_WEB.SELECT_CODESET_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP").getSql(),
 				Long.class, new SqlParameterValue(Types.NUMERIC, objectType),
 				new SqlParameterValue(Types.NUMERIC, objectId), new SqlParameterValue(Types.VARCHAR, groupCode));
 	}
  
 	public int getCodeSetCount(int objectType, long objectId, String groupCode) {
 		return getExtendedJdbcTemplate().queryForObject(
-				getBoundSql("COMMUNITY_WEB.COUNT_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_CODE").getSql(),
+				getBoundSql("COMMUNITY_WEB.COUNT_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP").getSql(),
 				Integer.class, new SqlParameterValue(Types.NUMERIC, objectType),
 				new SqlParameterValue(Types.NUMERIC, objectId), new SqlParameterValue(Types.VARCHAR, groupCode));
+	}
+ 
+	public int getCodeSetCount(int objectType, long objectId, String group, String code) {
+		return getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("COMMUNITY_WEB.COUNT_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_AND_CODE").getSql(),
+				Integer.class, 
+				new SqlParameterValue(Types.NUMERIC, objectType),
+				new SqlParameterValue(Types.NUMERIC, objectId), 
+				new SqlParameterValue(Types.VARCHAR, group),
+				new SqlParameterValue(Types.VARCHAR, code));
+	}
+ 
+	public List<Long> getCodeSetIds(int objectType, long objectId, String group, String code) {
+		return getExtendedJdbcTemplate().queryForList(
+				getBoundSql("COMMUNITY_WEB.SELECT_CODESET_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_AND_CODE").getSql(),
+				Long.class, 
+				new SqlParameterValue(Types.NUMERIC, objectType),
+				new SqlParameterValue(Types.NUMERIC, objectId), 
+				new SqlParameterValue(Types.VARCHAR, group),
+				new SqlParameterValue(Types.VARCHAR, code));
 	}
 
 }

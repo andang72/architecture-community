@@ -85,26 +85,17 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	}
 
 	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/codeset/{groupCode}/code/{code}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/codeset/{group}/code/{code}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public List<CodeSet> getCodeSetsByGroupAndCode(
-			@PathVariable String groupCode,
+			@PathVariable String group,
 			@PathVariable String code,
 			@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
 			@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId ){
 		
-		List<CodeSet> groups = Collections.EMPTY_LIST ;
 		List<CodeSet> codes = Collections.EMPTY_LIST ;
-		if (!StringUtils.isNullOrEmpty(groupCode)) {
-			groups = codeSetService.getCodeSets(objectType, objectId, groupCode);
-		}
-		
-		if (!StringUtils.isNullOrEmpty(code))
-		for( CodeSet group : groups ) {
-			if( org.apache.commons.lang3.StringUtils.equals( group.getCode(), code )  ) {
-				codes = codeSetService.getCodeSets(group);
-				break;
-			}
+		if (!StringUtils.isNullOrEmpty(group) && !StringUtils.isNullOrEmpty(code)) {
+			codes = codeSetService.getCodeSets(objectType, objectId, group, code);
 		}
 		return codes ;
 	}
@@ -144,7 +135,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return Collections.EMPTY_LIST;
     }
 	
-	@RequestMapping(value = "/codeset/update.json", method = RequestMethod.POST)
+	@RequestMapping(value = "/codeset/save-or-update.json", method = RequestMethod.POST)
     @ResponseBody
     public CodeSet updateCodeSet(@RequestBody CodeSet codeset) {		
 		if (codeset.getParentCodeSetId() == null)

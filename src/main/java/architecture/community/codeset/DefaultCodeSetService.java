@@ -61,6 +61,10 @@ public class DefaultCodeSetService implements CodeSetService {
 	}
 
 	
+	/**
+	 * 인자로 전달된 객체의 자식에 해당하는 코드세트 목록을 리턴한다.
+	 * 
+	 */
 	public List<CodeSet> getCodeSets(CodeSet codeset) {
 		List<Long> codesetIds = codeSetDao.getCodeSetIds(codeset.getObjectType(), codeset.getObjectId(), codeset.getCodeSetId());
 		List<CodeSet> codesets = new ArrayList<CodeSet>(codesetIds.size());
@@ -80,24 +84,45 @@ public class DefaultCodeSetService implements CodeSetService {
 		return null;
 	}
 
-	public int getCodeSetCount(int objectType, long objectId, String groupCode) {
-		return codeSetDao.getCodeSetCount(objectType, objectId, groupCode);
+	public int getCodeSetCount(int objectType, long objectId, String group) {
+		return codeSetDao.getCodeSetCount(objectType, objectId, group);
 	}
 
-	public List<CodeSet> getCodeSets(int objectType, long objectId, String groupCode) {
-		List<Long> codesetIds = codeSetDao.getCodeSetIds(objectType, objectId, groupCode);
-		List<CodeSet> codesets = new ArrayList<CodeSet>(codesetIds.size());
-		for (long codesetId : codesetIds) {
+	public List<CodeSet> getCodeSets(int objectType, long objectId, String group) {
+		List<Long> groups = codeSetDao.getCodeSetIds(objectType, objectId, group);
+		List<CodeSet> list = new ArrayList<CodeSet>(groups.size());
+		for (long id : groups) {
 			CodeSet codeset;
 			try {
-				codeset = getCodeSet(codesetId);
-				codesets.add(codeset);
+				codeset = getCodeSet(id);
+				list.add(codeset);
 			} catch (CodeSetNotFoundException e) {
 			}
 		}
-		return codesets;
+		return list;
 	}
 
+
+	@Override
+	public int getCodeSetCount(int objectType, long objectId, String group, String code) {
+		return codeSetDao.getCodeSetCount(objectType, objectId, group, code);
+	}
+
+	@Override
+	public List<CodeSet> getCodeSets(int objectType, long objectId, String group, String code) {
+		List<Long> groups = codeSetDao.getCodeSetIds(objectType, objectId, group, code);
+		List<CodeSet> list = new ArrayList<CodeSet>(groups.size());
+		for (long id : groups) {
+			CodeSet codeset;
+			try {
+				codeset = getCodeSet(id);
+				list.add(codeset);
+			} catch (CodeSetNotFoundException e) {
+			}
+		}
+		return list;
+	}	
+	
 	@Override
 	public int getCodeSetCount(CodeSet codeset) {
 		return codeSetDao.getCodeSetCount(codeset.getObjectType(), codeset.getObjectId(), codeset.getCodeSetId());
@@ -169,4 +194,5 @@ public class DefaultCodeSetService implements CodeSetService {
 		return LockUtils.intern(
 				(new StringBuilder("codeSetTreeWalker-")).append(objectType).append("-").append(objectId).toString());
 	}
+
 }

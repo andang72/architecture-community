@@ -21,6 +21,10 @@ public interface CodeSetService {
     public int getCodeSetCount(int objectType, long objectId, String groupCode);
 
     public List<CodeSet> getCodeSets(int objectType, long objectId, String groupCode);
+        
+    public int getCodeSetCount(int objectType, long objectId, String group, String code);
+
+    public List<CodeSet> getCodeSets(int objectType, long objectId, String group, String code);
 
     public int getCodeSetCount(CodeSet codeset);
 
