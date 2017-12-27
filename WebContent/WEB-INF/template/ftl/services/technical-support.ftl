@@ -141,6 +141,7 @@
 					if(  $this.issue.issueId > 0 ){
 						$this.set('isNew', false );
 					}else{
+						$this.issue.set('objectType', 18);
 						$this.set('isNew', true );
 					}
 			 	},
@@ -239,7 +240,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="projectId"
-		                   data-bind="source: dataSource"
+		                   data-bind="value:issue.objectId, source: dataSource"
 		                   style="width: 100%;"/>			        	  
 					</div>
 									 
