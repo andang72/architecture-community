@@ -3,6 +3,9 @@ package architecture.community.projects;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -22,6 +25,8 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	// 오류 , 기술지원, ..정기정검...
 	private String issueType;
 	
+	private String issueTypeName;
+	
 	// 접수일자
 	// 작업일자 계획  시작 - 종료
 	// 작업완료 실적
@@ -37,7 +42,8 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	// 0(하), 1(중), 2 (상)
 	private String priority;
 	
-	// 0(하), 1(중), 2 (상)
+	private String priorityName;
+	
 	private String component;
 	
 		
@@ -225,6 +231,26 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 
 	public void setComponent(String component) {
 		this.component = component;
+	}
+
+	@JsonGetter
+	public String getPriorityName() {
+		return priorityName;
+	}
+
+	@JsonIgnore
+	public void setPriorityName(String priorityName) {
+		this.priorityName = priorityName;
+	}
+
+	@JsonGetter
+	public String getIssueTypeName() {
+		return issueTypeName;
+	}
+
+	@JsonIgnore
+	public void setIssueTypeName(String issueTypeName) {
+		this.issueTypeName = issueTypeName;
 	}
 
 }

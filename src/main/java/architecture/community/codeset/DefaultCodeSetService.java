@@ -34,6 +34,11 @@ public class DefaultCodeSetService implements CodeSetService {
 	@Qualifier("codeSetTreeWalkerCache")
 	private Cache treeWalkerCache;
 
+	@Inject
+	@Qualifier("codeSetIdCache")
+	private Cache codeSetIdCache;
+	
+
 	public DefaultCodeSetService() {
 	}
 
@@ -139,6 +144,7 @@ public class DefaultCodeSetService implements CodeSetService {
 			if (codeset == null)
 				throw new CodeSetNotFoundException();
 			codeSetCache.put(new Element(codeSetId, codeset));
+			codeSetIdCache.put(new Element(getCodeSetKey(codeset.getObjectType(), codeset.getObjectId(), codeset.getGroupCode(), codeset.getCode()), codeSetId));
 		}
 		return codeset;
 	}
@@ -167,7 +173,7 @@ public class DefaultCodeSetService implements CodeSetService {
 		String key = getTreeWalkerCacheKey(objectType, objectId);
 		ModelObjectTreeWalker treeWalker;
 		if (treeWalkerCache.get(key) != null) {
-			treeWalker = (ModelObjectTreeWalker) treeWalkerCache.get(key).getValue();
+			treeWalker = (ModelObjectTreeWalker) treeWalkerCache.get(key).getObjectValue();
 		} else {
 			synchronized (key) {
 				treeWalker = codeSetDao.getTreeWalker(objectType, objectId);
@@ -176,10 +182,35 @@ public class DefaultCodeSetService implements CodeSetService {
 		}
 		return treeWalker;
 	}
+	
+ 
+	public CodeSet getCodeSetByCode(String group, String code) throws CodeSetNotFoundException {
+		return getCodeSetByCode(-1, -1L, group, code);
+	}
+	
+	public CodeSet getCodeSetByCode(int objectType, long objectId, String group, String code) throws CodeSetNotFoundException {		
+		String key = getCodeSetKey(objectType, objectId, group, code);
+		long codeSetId = -1L;
+		if(codeSetIdCache.get(key) != null) {
+			codeSetId = (Long)codeSetIdCache.get(key).getObjectValue();
+		}else {
+			// dao call 
+		}
+		if( codeSetId > 0 )
+			return getCodeSet(codeSetId);
+		
+		throw new CodeSetNotFoundException();
+	}
+		
 
 	private void clearCodeSetCache(long codeSetId) {
-		if (codeSetCache.get(codeSetId) != null)
+		if (codeSetCache.get(codeSetId) != null) {
+			CodeSet codeset = (CodeSet)codeSetCache.get(codeSetId).getObjectValue();		
+			String key = getCodeSetKey(codeset.getObjectType(), codeset.getObjectId(), codeset.getGroupCode(), codeset.getCode());
 			codeSetCache.remove(codeSetId);
+			if (codeSetIdCache.get(key) != null)
+				codeSetIdCache.remove(key);
+		}
 	}
 
 	private void clearCodeSetCache(CodeSet codeSet) {
@@ -191,8 +222,11 @@ public class DefaultCodeSetService implements CodeSetService {
 	}
 
 	private static String getTreeWalkerCacheKey(int objectType, long objectId) {
-		return LockUtils.intern(
-				(new StringBuilder("codeSetTreeWalker-")).append(objectType).append("-").append(objectId).toString());
+		return LockUtils.intern((new StringBuilder("codeSetTreeWalker-")).append(objectType).append("-").append(objectId).toString());
+	}
+	
+	private String getCodeSetKey(int objectType, long objectId, String group, String code) {
+		return (new StringBuilder()).append(objectType).append("-").append(objectId).append("-").append(group).append("-").append(code).toString();
 	}
 
 }

@@ -296,4 +296,15 @@ public class JdbcCodeSetDao extends ExtendedJdbcDaoSupport implements CodeSetDao
 				new SqlParameterValue(Types.VARCHAR, code));
 	}
 
+ 
+	public Long findCodeSetByCode(int objectType, long objectId, String group, String code) {
+		return getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("COMMUNITY_WEB.FIND_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_AND_CODE").getSql(),
+				Long.class, 
+				new SqlParameterValue(Types.NUMERIC, objectType),
+				new SqlParameterValue(Types.NUMERIC, objectId), 
+				new SqlParameterValue(Types.VARCHAR, group),
+				new SqlParameterValue(Types.VARCHAR, code));
+	}
+
 }
