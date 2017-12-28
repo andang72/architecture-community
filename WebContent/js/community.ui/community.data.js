@@ -322,9 +322,11 @@
 			objectType: { type: "number", defaultValue: -1 },			
 			objectId: { type: "number", defaultValue: -1},	
 			issueType: { type: "string", defaultValue: null },			
+			issueTypeName: { type: "string", defaultValue: null },
 			summary:{ type: "string", defaultValue: "" },
 			description: { type: "string", defaultValue: "" },
 			priority : { type: "string", defaultValue: "002" },
+			priorityName: { type: "string", defaultValue: null },
 			dueDate:{ type: "date" },	
 			repoter:{ type: "object", defaultValue: new community.model.User() },
 			assignee:{ type: "object", defaultValue: new community.model.User() },
@@ -336,7 +338,10 @@
 	    		target.set("objectType",this.get("objectType") );
 	    		target.set("objectId", this.get("objectId"));
 		    	target.set("issueType",this.get("issueType") );
+		    	target.set("issueTypeName",this.get("issueTypeName") );	
 		    	target.set("summary", this.get("summary") );
+		    	target.set("priority",this.get("priority") );	
+		    	target.set("priorityName",this.get("priorityName") );	
 		    	target.set("description", this.get("description") );
 		    	target.set("maintenanceCost", this.get("maintenanceCost") );
 		    	target.set("dueDate",this.get("dueDate") );	
