@@ -73,7 +73,7 @@ public class RoleManagerTest {
 			Role role = roleManager.getRole("ROLE_ADMINISTRATOR");	
 			log.debug("ROLE : " + role );
 		} catch (RoleNotFoundException e) {	
-			doCreate = true;		
+			//doCreate = true;		
 		}	
 		if(doCreate){
 			try {

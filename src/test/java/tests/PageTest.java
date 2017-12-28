@@ -48,7 +48,7 @@ public class PageTest {
 			
 		} catch (PageNotFoundException e) {
 			e.printStackTrace();
-			
+			/*
 			User newUesr = new UserTemplate("king", "1234", "킹", false, "king@king.com", false);
 			log.debug("---------------" + newUesr);
 			User existUser = userManager.getUser(newUesr);
@@ -57,7 +57,7 @@ public class PageTest {
 			log.debug("1> new page {}, {}", newPage.getPageId(), newPage.getPageState() );
 			pageService.saveOrUpdatePage(newPage);
 			log.debug("2> new page {}, {}", newPage.getPageId(), newPage.getPageState() );
-			
+			*/
 		}
 		
 	}

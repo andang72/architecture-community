@@ -37,7 +37,7 @@ public class ProjectTest {
 		Project project = new Project();
 		project.setName("한국항공우주산업");
 		project.setSummary("한국항공우주산업 프로젝트");
-		projectService.saveOrUpdateProject(project);
+		//projectService.saveOrUpdateProject(project);
 		}
 	}
 
