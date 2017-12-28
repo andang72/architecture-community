@@ -17,7 +17,6 @@
     <!-- ================================= -->
 	<beans:bean id="propertyDao" class="architecture.ee.jdbc.property.dao.impl.JdbcPropertyDao"  p:dataSource-ref="dataSource" />
 
-     		
 	<!-- ================================= -->
 	<!-- CODESET							  -->
 	<!-- ================================= -->
