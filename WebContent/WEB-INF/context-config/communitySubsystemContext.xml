@@ -49,7 +49,18 @@
      	p:eternal="false"  
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />
-     	
+
+	<beans:bean id="codeSetIdCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="codeSetIdCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	     	
     <beans:bean id="codeSetTreeWalkerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
      	p:cacheName="codeSetTreeWalkerCache"  
      	p:maxElementsInMemory="5000"  
