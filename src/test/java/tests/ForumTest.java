@@ -53,11 +53,12 @@ public class ForumTest {
 		long boardId = 0 ;
 		if( boards.size() == 0 )
 		{
-			Board board = boardService.createBoard("질문답변게시판", "질문&답변 게시판", "");
-			boardId = board.getBoardId();
+			//Board board = boardService.createBoard("질문답변게시판", "질문&답변 게시판", "");
+			//boardId = board.getBoardId();
 		}else {
 			boardId = boards.get(0).getBoardId();
 		}
+		
 		/**
 		int objectType = Models.BOARD.getObjectType();
 		long objectId = boardId;

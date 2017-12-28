@@ -45,8 +45,7 @@ public class UserManagerTest {
 			log.error("ERROR" , e);
 		}
 	}
-
-	@Test
+ 
 	public void testCreateUserIfNotExist() {
 		
 		User newUesr = new UserTemplate("king", "1234", "킹", false, "king@king.com", false);
