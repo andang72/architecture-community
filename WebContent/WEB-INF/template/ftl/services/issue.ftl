@@ -73,6 +73,7 @@
 		    		}
 		  	}
 		});	        
+		
         // Topnav animation feature
  		var cbpAnimatedHeader = (function() {
         		var docElem = document.documentElement, header = document.querySelector( '.navbar-default' ), didScroll = false, changeHeaderOn = 200;
@@ -109,7 +110,7 @@
 				var $this = this;
 				data.copy($this.currentUser)
 			},
-			fetchProject : function( ){
+			loadProjectInfo : function( ){
 				var $this = this;
 				community.ui.ajax('/data/api/v1/projects/'+ observable.get('projectId') +'/info.json/', {
 					success: function(data){		
@@ -119,7 +120,9 @@
 				});
 			}
     		});
-		observable.fetchProject();
+    		
+		observable.loadProjectInfo();
+		createIssueListView(observable);
 		
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
@@ -130,17 +133,35 @@
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.Issue();	
-			targetObject.set('objectType', 18);
+			
+			targetObject.set('objectType', 19);
+			
 			console.log( "total: " + observable.dataSource.total() );
+			
 			if( observable.dataSource.total() == 1 ){
 				targetObject.set('objectId', observable.dataSource.at(0).projectId);
 			}						
- 			createOrOpenIssueEditor (targetObject);		
+			
+ 			createOrOpenIssueEditor (targetObject);
+			
 			return false;		
 		});				
 		
 	});
 	
+	function createIssueListView( observable ){
+		var renderTo = $('#issue-listview');
+		community.ui.listview( renderTo , {
+			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/"/>'+ observable.get('projectId') +'/issues/list.json', {
+				schema: {
+					total: "totalCount",
+					data: "items",
+					model : community.model.Issue
+				}
+			}),
+			template: community.ui.template($("#template").html())
+		});	
+	}
  
 	function isDeveloper(){ 
 		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
@@ -185,7 +206,32 @@
                                 		
                             		</div>
 	                            <div class="ibox-content">
-	                                <div id="project-listview" class="no-border" ></div>
+
+ 
+              <!--Issue ListView-->
+              <div class="table-responsive">
+                <table class="table table-bordered u-table--v2">
+                  <thead class="text-uppercase g-letter-spacing-1">
+                    <tr>
+                    	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">ID</th>	
+                      <th class="align-middle g-font-weight-300 g-color-black">요약</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-100">유형</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-100">중요도</th>
+                      <th class="align-middle g-font-weight-300 g-color-black">보고자</th>
+                      <th class="align-middle g-font-weight-300 g-color-black">담당자</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-100">상태</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-100">결과</th>
+                      <th class="align-middle g-font-weight-300 g-color-black text-nowrap">예정일</th>
+                      <th class="align-middle g-font-weight-300 g-color-black text-nowrap">생성일</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="issue-listview" >
+                    
+                  </tbody>
+                </table>
+              </div>
+              <!--End Issue ListView -->
 	                            </div>
                         		</div>
                     		</div>
@@ -193,7 +239,36 @@
             		</div>
         		</div>
 	</section>
-	 
+	<script type="text/x-kendo-template" id="template">
+                    <tr>
+                      <td class="align-middle text-center">
+                      #: issueId # 	
+                      </td>
+                      <td class="align-middle text-nowrap">
+                      #: summary # 	
+                      </td>
+                      <td class="align-middle">#: issueTypeName #</td>
+                      <td class="align-middle">#: priorityName #</td>
+                      <td class="align-middle">
+                      	#if ( repoter.userId > 0 ) {#
+                      	#= community.data.getUserDisplayName( repoter ) #
+                      	#} else {#
+                      		
+                      	#}#
+                      </td>
+                      <td class="align-middle">
+                      	#if ( assignee.userId > 0 ) {#
+                      	#= community.data.getUserDisplayName( assignee ) #
+                      	#} else {#
+                      	미지정
+                      	#}#
+                      </td>
+                      <td class="align-middle"></td>
+                      <td class="align-middle"></td>
+                      <td class="align-middle">#: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') #</td>
+                      <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
+                    </tr>
+	</script>	   
 	 
 </body>
 </html>

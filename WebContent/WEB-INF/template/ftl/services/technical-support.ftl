@@ -123,7 +123,7 @@
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.Issue();	
-			targetObject.set('objectType', 18);
+			targetObject.set('objectType', 19 );
 			console.log( "total: " + observable.dataSource.total() );
 			if( observable.dataSource.total() == 1 ){
 				targetObject.set('objectId', observable.dataSource.at(0).projectId);
