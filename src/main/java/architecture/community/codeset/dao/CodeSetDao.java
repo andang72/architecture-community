@@ -67,4 +67,7 @@ public interface CodeSetDao {
      */
     public List<Long> getCodeSetIds(int objectType, long objectId, String group, String code);
     
+    
+    public Long findCodeSetByCode(int objectType, long objectId, String group, String code);
+    
 }

@@ -17,7 +17,49 @@
     <!-- ================================= -->
 	<beans:bean id="propertyDao" class="architecture.ee.jdbc.property.dao.impl.JdbcPropertyDao"  p:dataSource-ref="dataSource" />
 
+     		
+	<!-- ================================= -->
+	<!-- CODESET							  -->
+	<!-- ================================= -->
 
+	<beans:bean id="codeSetDao" class="architecture.community.codeset.dao.JdbcCodeSetDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="codeSetCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="codeSetCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+
+	<beans:bean id="codeSetIdCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="codeSetIdCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	     	
+    <beans:bean id="codeSetTreeWalkerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" 
+     	p:cacheName="codeSetTreeWalkerCache"  
+     	p:maxElementsInMemory="5000"  
+     	p:diskPersistent="false" 
+     	p:overflowToDisk="false"  
+     	p:timeToIdle="300"  
+     	p:timeToLive="600" 
+     	p:eternal="false"  
+     	p:diskExpiryThreadIntervalSeconds="0"  
+     	p:statisticsEnabled="true" />
+     	
+    <beans:bean id="codeSetService" class="architecture.community.codeset.DefaultCodeSetService"  />	 
+
+	
 	<!-- ================================= -->
 	<!-- PROJECTS					 	  -->
 	<!-- ================================= -->

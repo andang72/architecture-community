@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +16,8 @@ import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
 import architecture.community.board.DefaultBoardMessage;
 import architecture.community.board.dao.BoardDao;
+import architecture.community.codeset.CodeSetNotFoundException;
+import architecture.community.codeset.CodeSetService;
 import architecture.community.projects.dao.ProjectDao;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
@@ -40,6 +43,11 @@ public class DefaultProjectService implements ProjectService {
 	@Inject
 	@Qualifier("userManager")
 	private UserManager userManager;
+	
+	@Inject
+	@Qualifier("codeSetService")
+	private CodeSetService codeSetService;
+	
 	
 	public DefaultProjectService() { 
 	}
@@ -149,14 +157,27 @@ public class DefaultProjectService implements ProjectService {
 					issue.setAssignee( userManager.getUser(issue.getAssignee()));
 					
 				if( issue.getRepoter().getUserId() > 0)
-					issue.setRepoter( userManager.getUser(issue.getRepoter()));
-				
+					issue.setRepoter( userManager.getUser(issue.getRepoter()));				
+				((DefaultIssue)issue).setIssueTypeName(getCodeText( "ISSUE_TYPE", issue.getIssueType()));
+				((DefaultIssue)issue).setPriorityName(getCodeText( "PRIORITY", issue.getPriority()));				
 				projectIssueCache.put(new Element(issueId, issue ));
 			}
 		}
 		if( issue == null )
 			throw new IssueNotFoundException(); 
 		return issue;
+	}
+	
+	
+	private String getCodeText( String group, String code ) {
+		if( StringUtils.isEmpty(group) || StringUtils.isEmpty(code))
+			return null;
+		try {
+			return codeSetService.getCodeSetByCode(group, code).getName();
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return null;
+		}
 	}
 
 }

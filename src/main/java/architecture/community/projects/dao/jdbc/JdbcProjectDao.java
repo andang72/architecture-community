@@ -48,6 +48,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			DefaultIssue issue = new DefaultIssue(rs.getLong("ISSUE_ID"));			
 			issue.setObjectType(rs.getInt("OBJECT_TYPE"));
 			issue.setObjectId(rs.getLong("OBJECT_ID"));
+			issue.setIssueType(rs.getString("ISSUE_TYPE"));
 			issue.setSummary(rs.getString("SUMMARY"));
 			issue.setDescription(rs.getString("DESCRIPTION"));
 			issue.setPriority(rs.getString("PRIORITY"));

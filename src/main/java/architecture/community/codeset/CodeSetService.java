@@ -31,7 +31,10 @@ public interface CodeSetService {
     public int getRecrusiveCodeSetCount(CodeSet codeset);
 
     public CodeSet getCodeSet(long codeSetId) throws CodeSetNotFoundException;
-
+    
+    public CodeSet getCodeSetByCode(String group, String code )throws CodeSetNotFoundException;
+    
+    public CodeSet getCodeSetByCode(int objectType, long objectId, String group, String code )throws CodeSetNotFoundException;
 
     /**
      * 인자로 전달된 표준 코드 세트의 하위 표준 코드 세트를 생성한다
