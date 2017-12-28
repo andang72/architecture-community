@@ -194,7 +194,7 @@ public class DefaultCodeSetService implements CodeSetService {
 		if(codeSetIdCache.get(key) != null) {
 			codeSetId = (Long)codeSetIdCache.get(key).getObjectValue();
 		}else {
-			// dao call 
+			codeSetId = codeSetDao.findCodeSetByCode(objectType, objectId, group, code);
 		}
 		if( codeSetId > 0 )
 			return getCodeSet(codeSetId);

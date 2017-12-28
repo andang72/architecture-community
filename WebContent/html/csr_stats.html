@@ -38,14 +38,18 @@
     		TOTAL_CSR_LEFT_CNT: 0,
     		TOTAL_CSR_DETAIL_CNT: 0,
     		selectedSystem :null,
-    		startDate : "",
-    		endDate: "",
+    		startDate : new Date(),
+    		endDate: new Date(),
     		targetSystems : [
                 { text: "포도소스트웨어", value: "podo-csr-datasource", prefix: "PODO_" },
                 { text: "인키움", value: "inkium-csr-datasource", prefix: "INKIUM_" }
     		],
     		doSearch : function (){
     			var $this = this;
+    			$this.set("TOTAL_CSR_CNT", 0);
+    			$this.set("TOTAL_CSR_DONE_CNT", 0);
+    			$this.set("TOTAL_CSR_LEFT_CNT", 0);
+    			$this.set("TOTAL_CSR_DETAIL_CNT", 0);
 	    	    	createGrid1();
 	    	    	createGrid2();
 	    	    	createGrid3();
