@@ -70,15 +70,7 @@
 	 	MODIFIED_DATE = ?
  	WHERE ISSUE_ID = ? 
     ]]></sql-query>	        		
-        
- 	<sql-query name="FIND_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_AND_CODE" description="FIND_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_AND_CODE"><![CDATA[    	
-  	SELECT ISSUE_ID FROM MUSI_ISSUE    
- 	WHERE 
- 	OBJECT_TYPE = ? AND 
- 	OBJECT_ID = ? AND
- 	GROUP_CODE = ? AND
- 	CODE = ?
-    ]]></sql-query>	
+
         
 	<!--  ====================================  -->
 	<!-- PROJECT						 		   -->
@@ -300,7 +292,17 @@
 		CREATION_DATE, 
 		CODESET_ID ASC	
 	]]></sql-query>		
-	
+
+        
+ 	<sql-query name="FIND_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_AND_CODE" description="FIND_CODESET_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_GROUP_AND_CODE"><![CDATA[    	
+  	SELECT CODESET_ID FROM MUSI_CODESET    
+ 	WHERE 
+ 	OBJECT_TYPE = ? AND 
+ 	OBJECT_ID = ? AND
+ 	GROUP_CODE = ? AND
+ 	CODE = ?
+    ]]></sql-query>	
+    	
 	<!--  ====================================  -->
 	<!--  TAG						 		   -->
 	<!--  ====================================  -->
