@@ -11,6 +11,8 @@
 		OBJECT_ID,
 		ISSUE_ID,
 		ISSUE_TYPE,
+		ISSUE_STATUS,
+		RESULUTION,
 		PRIORITY	,	
 		COMPONENT,					
 		ASSIGNEE,
@@ -42,6 +44,7 @@
 	 	OBJECT_TYPE,
 	 	OBJECT_ID,
 	 	ISSUE_TYPE,
+	 	ISSUE_STATUS,
 	 	COMPONENT,
 	 	SUMMARY,
 	 	DESCRIPTION,
@@ -51,7 +54,7 @@
 	 	DUE_DATE,
 		CREATION_DATE,
 		MODIFIED_DATE
-	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
     ]]></sql-query>	
  
 					
@@ -59,6 +62,8 @@
  	UPDATE MUSI_ISSUE
  	SET 
  		ISSUE_TYPE = ?,
+ 		ISSUE_STATUS = ?,
+ 		RESULUTION = ?
 	 	PRIORITY = ?,	 	
 	 	COMPONENT = ?,
 	 	SUMMARY = ?,

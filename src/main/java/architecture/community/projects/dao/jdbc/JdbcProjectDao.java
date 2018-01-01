@@ -49,6 +49,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			issue.setObjectType(rs.getInt("OBJECT_TYPE"));
 			issue.setObjectId(rs.getLong("OBJECT_ID"));
 			issue.setIssueType(rs.getString("ISSUE_TYPE"));
+			issue.setStatus(rs.getString("ISSUE_STATUS"));
+			issue.setStatus(rs.getString("RESOLUTION"));
 			issue.setSummary(rs.getString("SUMMARY"));
 			issue.setDescription(rs.getString("DESCRIPTION"));
 			issue.setPriority(rs.getString("PRIORITY"));
@@ -147,6 +149,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getObjectType()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getObjectId()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getStatus()),
+					
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),
@@ -154,8 +158,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					
 					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId()),	
-					
-					
+					 
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));		
@@ -165,6 +168,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			toUse.setModifiedDate(now);		
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_ISSUE").getSql(), 
 					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getStatus()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getResolution()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),

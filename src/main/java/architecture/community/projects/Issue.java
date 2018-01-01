@@ -2,6 +2,9 @@ package architecture.community.projects;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import architecture.community.model.ModelObjectAware;
 import architecture.community.user.User;
 
@@ -49,6 +52,14 @@ public interface Issue extends ModelObjectAware {
 
 	public abstract String getComponent();
 
-	public abstract void setComponent(String component) ;
+	public abstract void setComponent(String component) ; 
+	
+	public abstract String getResolution(); 
+	
+	public abstract void setResolution(String resolution) ; 
+	
+	public abstract String getStatus() ;
+
+	public abstract void setStatus(String status) ;
 	
 }

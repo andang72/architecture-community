@@ -46,7 +46,17 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	
 	private String component;
 	
+	//처리결과 코드
+	private String resolution;
 		
+	//처리결과 
+	private String resolutionName;
+	
+	private String status;
+	
+	private String statusName;
+	
+	
 	// 예정일 
 	private Date dueDate;
 	
@@ -65,6 +75,10 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.dueDate = null;
 		this.assignee = null;
 		this.repoter = null;
+		this.resolution = null;
+		this.resolutionName = null;
+		this.status = null;
+		this.statusName = null;
 	}
 
 	
@@ -79,6 +93,9 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.dueDate = null;
 		this.assignee = null;
 		this.repoter = null;
+		this.resolution = null;
+		this.status = null;
+		this.statusName = null;
 	}
 	
 	public DefaultIssue(int objectType, long objectId) {
@@ -92,6 +109,9 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.dueDate = null;
 		this.assignee = null;
 		this.repoter = null;
+		this.resolution = null;
+		this.status = null;
+		this.statusName = null;
 	}
 	
 	public DefaultIssue(int objectType, long objectId, User repoter) {
@@ -105,6 +125,10 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.dueDate = null;
 		this.assignee = null;
 		this.repoter = repoter;
+		this.resolution = null;
+		this.resolutionName = null;
+		this.status = null;
+		this.statusName = null;
 	}
 	
 	
@@ -253,4 +277,49 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.issueTypeName = issueTypeName;
 	}
 
+
+	public String getResolution() {
+		return resolution;
+	}
+
+
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
+	}
+
+	@JsonGetter
+	public String getResolutionName() {
+		return resolutionName;
+	}
+
+	
+	@JsonIgnore
+	public void setResolutionName(String resolutionName) {
+		this.resolutionName = resolutionName;
+	}
+
+
+	
+	
+	public String getStatus() {
+		return status;
+	}
+
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	@JsonGetter
+	public String getStatusName() {
+		return statusName;
+	}
+
+	@JsonIgnore
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
+
+
+	
 }

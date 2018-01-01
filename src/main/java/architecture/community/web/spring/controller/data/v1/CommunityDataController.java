@@ -179,8 +179,9 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		issueToUse.setSummary(newIssue.getSummary());
 		issueToUse.setDescription(newIssue.getDescription());
 		issueToUse.setIssueType(newIssue.getIssueType());
+		issueToUse.setIssueType(newIssue.getStatus());
+		issueToUse.setIssueType(newIssue.getResolution());
 		issueToUse.setPriority(newIssue.getPriority());
-		
 		projectService.saveOrUpdateIssue(newIssue);
 		
 		return issueToUse;
