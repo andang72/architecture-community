@@ -120,33 +120,21 @@
 				});
 			}
     		});
-    		
 		observable.loadProjectInfo();
-		createIssueListView(observable);
-		
+		createIssueListView(observable);		
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	
-			  				
 		renderTo.on("click", "button[data-action=create], a[data-action=create]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.Issue();	
-			
 			targetObject.set('objectType', 19);
-			
-			console.log( "total: " + observable.dataSource.total() );
-			
-			if( observable.dataSource.total() == 1 ){
-				targetObject.set('objectId', observable.dataSource.at(0).projectId);
-			}						
-			
+			targetObject.set('objectId', __projectId);
  			createOrOpenIssueEditor (targetObject);
-			
 			return false;		
-		});				
-		
+		});
 	});
 	
 	function createIssueListView( observable ){
@@ -163,6 +151,150 @@
 		});	
 	}
  
+ 
+	function createOrOpenIssueEditor( data ){ 
+		var renderTo = $('#issue-editor-modal');
+		if( !renderTo.data("model") ){
+			var observable = new community.ui.observable({ 
+				isNew : false,	
+				isDeveloper : false,
+				issue : new community.model.Issue(),
+				projectDataSource   : community.ui.listview($('#project-listview')).dataSource,
+				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
+				priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
+			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
+			 	resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
+			 	statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} ),
+			 	setSource : function( data ){
+			 		var $this = this;
+					var orgIssueId = $this.issue.issueId ;
+					data.copy( $this.issue ); 
+					if(  $this.issue.issueId > 0 ){
+						$this.set('isNew', false );
+					}else{
+						$this.set('isNew', true );	
+					}
+					$this.set('isDeveloper', isDeveloper());
+			 	},
+				saveOrUpdate : function(e){				
+					var $this = this;
+					community.ui.progress(renderTo.find('.modal-content'), true);	
+					community.ui.ajax( '<@spring.url "/data/api/v1/issues/save-or-update.json" />', {
+						data: community.ui.stringify($this.issue),
+						contentType : "application/json",						
+						success : function(response){
+							
+						}
+					}).always( function () {
+						community.ui.progress(renderTo.find('.modal-content'), false);
+						renderTo.modal('hide');
+					});						
+				}
+			});
+			renderTo.data("model", observable );	
+			community.ui.bind( renderTo, observable );				
+			renderTo.on('show.bs.modal', function (e) {	});
+		}	
+		
+		if( community.ui.defined(data) ) 
+			renderTo.data("model").setSource(data);
+		
+		renderTo.modal('show');
+	}
+
+	
+	<!-- issue editor modal -->
+	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
+			        </button>
+			        <h2 class="modal-title">기술지원요청</h2>
+		      	</div><!-- /.modal-content -->
+				<div class="modal-body">				
+				 <form>
+				 	<h6 class="text-light-gray text-semibold">요청구분 <span class="text-danger">*</span></h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="value:issue.issueType, source:issueTypeDataSource"
+		                   style="width:100%;"/>	
+		                   		        	  
+					</div>	
+					<h6 class="text-light-gray text-semibold">요약 <span class="text-danger">*</span></h6>				 	
+				 	<div class="form-group">
+			            <input type="text" class="form-control" placeholder="요약" data-bind="value: issue.summary">
+			        </div> 	
+
+					<h6 class="text-light-gray text-semibold">상세 내용 <span class="text-danger">*</span></h6>				 	
+				 	<div class="form-group">
+					<textarea class="form-control" placeholder="상세내용" data-bind="value:issue.description"></textarea>
+	 				</div> 
+					<h6 class="text-light-gray text-semibold">우선순위 <span class="text-danger">*</span></h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="value:issue.priority, source:priorityDataSource"
+		                   style="width: 100%;"/>			        	  
+					</div>
+						
+					<h6 class="text-light-gray text-semibold">지원방법</h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="source:methodsDataSource"
+		                   style="width: 100%;"/>
+					</div>	
+
+					<h6 class="text-light-gray text-semibold">처리결과</h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource"
+		                   style="width: 100%;"/>
+					</div>	
+					
+					<h6 class="text-light-gray text-semibold">상태</h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource"
+		                   style="width: 100%;"/>
+					</div>	
+																																						
+				</form>   
+				<div class="text-editor"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>	 
+		
 	function isDeveloper(){ 
 		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
 	} 
