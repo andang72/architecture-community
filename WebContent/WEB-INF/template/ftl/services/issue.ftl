@@ -217,12 +217,12 @@
                       <th class="align-middle g-font-weight-300 g-color-black">요약</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-65">유형</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">중요도</th>
-                      <th class="align-middle g-font-weight-300 g-color-black">보고자</th>
-                      <th class="align-middle g-font-weight-300 g-color-black">담당자</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-width-65">상태</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-width-65">결과</th>
-                      <th class="align-middle g-font-weight-300 g-color-black text-nowrap">예정일</th>
-                      <th class="align-middle g-font-weight-300 g-color-black text-nowrap">생성일</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">보고자</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">담당자</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">상태</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">결과</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
                     </tr>
                   </thead>
 
