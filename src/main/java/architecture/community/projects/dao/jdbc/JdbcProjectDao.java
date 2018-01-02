@@ -45,12 +45,14 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	
 	private final RowMapper<Issue> issueMapper = new RowMapper<Issue>() {				
 		public Issue mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			
 			DefaultIssue issue = new DefaultIssue(rs.getLong("ISSUE_ID"));			
 			issue.setObjectType(rs.getInt("OBJECT_TYPE"));
 			issue.setObjectId(rs.getLong("OBJECT_ID"));
 			issue.setIssueType(rs.getString("ISSUE_TYPE"));
 			issue.setStatus(rs.getString("ISSUE_STATUS"));
-			issue.setStatus(rs.getString("RESOLUTION"));
+			issue.setResolution(rs.getString("RESOLUTION"));
+			
 			issue.setSummary(rs.getString("SUMMARY"));
 			issue.setDescription(rs.getString("DESCRIPTION"));
 			issue.setPriority(rs.getString("PRIORITY"));
@@ -60,6 +62,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			issue.setRepoter(new UserTemplate(rs.getLong("REPOTER")));
 			
 			issue.setDueDate(rs.getDate("DUE_DATE"));
+			
 			issue.setCreationDate(rs.getDate("CREATION_DATE"));
 			issue.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
 			return issue;

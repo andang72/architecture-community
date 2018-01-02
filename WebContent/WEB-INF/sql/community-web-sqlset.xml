@@ -12,7 +12,7 @@
 		ISSUE_ID,
 		ISSUE_TYPE,
 		ISSUE_STATUS,
-		RESULUTION,
+		RESOLUTION,
 		PRIORITY	,	
 		COMPONENT,					
 		ASSIGNEE,
@@ -63,7 +63,7 @@
  	SET 
  		ISSUE_TYPE = ?,
  		ISSUE_STATUS = ?,
- 		RESULUTION = ?
+ 		RESOLUTION = ?
 	 	PRIORITY = ?,	 	
 	 	COMPONENT = ?,
 	 	SUMMARY = ?,
