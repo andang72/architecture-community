@@ -107,6 +107,10 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		return communityAclService;
 	}
 	
+	/**
+	 * COMMON CODE API 
+	******************************************/
+	
 	@RequestMapping(value = "/codeset/{group}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public List<CodeSet> getCodeSetsByGroupAndCode(
@@ -123,7 +127,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	}
 	
 	/**
-	 * PROJECT API 
+	 * PROJECT & ISSUE API 
 	******************************************/
 	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
@@ -179,9 +183,10 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		issueToUse.setSummary(newIssue.getSummary());
 		issueToUse.setDescription(newIssue.getDescription());
 		issueToUse.setIssueType(newIssue.getIssueType());
-		issueToUse.setIssueType(newIssue.getStatus());
-		issueToUse.setIssueType(newIssue.getResolution());
+		issueToUse.setStatus(newIssue.getStatus());
+		issueToUse.setResolution(newIssue.getResolution());
 		issueToUse.setPriority(newIssue.getPriority());
+		
 		projectService.saveOrUpdateIssue(newIssue);
 		
 		return issueToUse;
@@ -217,6 +222,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		}
 		return new ItemList(list, totalSize);
 	}
+	
 	
 	/**
 	 * BOARD API 
@@ -326,7 +332,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		
 		MessageTreeWalker walker = boardService.getTreeWalker(thread);
 		int totalSize = walker.getChildCount(thread.getRootMessage());
-		List<BoardMessage> list = getMessages(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));
+		List<BoardMessage> list = getProjectView(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));
 		return new ItemList(list, totalSize);
 	}	
 	
@@ -665,7 +671,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		return list;
 	}
 		
-	protected List<BoardMessage> getMessages(int skip, int page, int pageSize, long[] messageIds) {
+	protected List<BoardMessage> getProjectView(int skip, int page, int pageSize, long[] messageIds) {
 		if (pageSize == 0 && page == 0) {
 			return getMessages(messageIds);
 		}

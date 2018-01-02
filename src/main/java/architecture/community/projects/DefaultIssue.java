@@ -298,8 +298,6 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.resolutionName = resolutionName;
 	}
 
-
-	
 	
 	public String getStatus() {
 		return status;

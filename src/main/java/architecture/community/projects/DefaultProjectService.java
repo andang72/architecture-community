@@ -158,8 +158,15 @@ public class DefaultProjectService implements ProjectService {
 					
 				if( issue.getRepoter().getUserId() > 0)
 					issue.setRepoter( userManager.getUser(issue.getRepoter()));				
+				
 				((DefaultIssue)issue).setIssueTypeName(getCodeText( "ISSUE_TYPE", issue.getIssueType()));
-				((DefaultIssue)issue).setPriorityName(getCodeText( "PRIORITY", issue.getPriority()));				
+				
+				((DefaultIssue)issue).setPriorityName(getCodeText( "PRIORITY", issue.getPriority()));		
+				
+				((DefaultIssue)issue).setStatusName(getCodeText( "ISSUE_STATUS", issue.getStatus()));
+				
+				((DefaultIssue)issue).setResolutionName(getCodeText( "RESOLUTION", issue.getResolution()));
+				
 				projectIssueCache.put(new Element(issueId, issue ));
 			}
 		}
@@ -168,10 +175,18 @@ public class DefaultProjectService implements ProjectService {
 		return issue;
 	}
 	
-	
+	/**
+	 * 코드값에 해당하는 테스트를 리턴한다.
+	 * 
+	 * @param group
+	 * @param code
+	 * @return
+	 */
 	private String getCodeText( String group, String code ) {
+		
 		if( StringUtils.isEmpty(group) || StringUtils.isEmpty(code))
 			return null;
+		
 		try {
 			return codeSetService.getCodeSetByCode(group, code).getName();
 		} catch (Exception e) {

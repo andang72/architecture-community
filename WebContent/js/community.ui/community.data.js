@@ -327,6 +327,10 @@
 			description: { type: "string", defaultValue: "" },
 			priority : { type: "string", defaultValue: "002" },
 			priorityName: { type: "string", defaultValue: null },
+			resolution : { type: "string", defaultValue: null},
+			resolutionName: { type: "string", defaultValue: null },	
+			status : { type: "string", defaultValue: null},
+			statusName: { type: "string", defaultValue: null },				
 			dueDate:{ type: "date" },	
 			repoter:{ type: "object", defaultValue: new community.model.User() },
 			assignee:{ type: "object", defaultValue: new community.model.User() },
@@ -339,6 +343,10 @@
 	    		target.set("objectId", this.get("objectId"));
 		    	target.set("issueType",this.get("issueType") );
 		    	target.set("issueTypeName",this.get("issueTypeName") );	
+		    	target.set("resolution",this.get("resolution") );
+		    	target.set("resolutionName",this.get("resolutionName") );			    	
+		    	target.set("status",this.get("status") );
+		    	target.set("statusName",this.get("statusName") );			    	
 		    	target.set("summary", this.get("summary") );
 		    	target.set("priority",this.get("priority") );	
 		    	target.set("priorityName",this.get("priorityName") );	

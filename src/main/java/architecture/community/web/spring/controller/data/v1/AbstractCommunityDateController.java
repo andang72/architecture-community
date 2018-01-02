@@ -29,6 +29,7 @@ public abstract class AbstractCommunityDateController {
 	
 	protected abstract JdbcCommunityAclService getCommunityAclService (); 	
 	
+	
 	protected boolean hasPermission ( int objectType , long objectId,  CommunityPermissions permission ) {	
 		return getCommunityAclService().isPermissionGrantedFinally(SecurityHelper.getAuthentication(), Models.valueOf(objectType).getObjectClass(), objectId, Arrays.asList( (Permission) permission));
 	}
