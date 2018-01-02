@@ -214,7 +214,7 @@
                   <thead class="text-uppercase g-letter-spacing-1">
                     <tr>
                     	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">ID</th>	
-                      <th class="align-middle g-font-weight-300 g-color-black">요약</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-65">유형</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">중요도</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">보고자</th>
@@ -244,7 +244,7 @@
                       <td class="align-middle text-center">
                       #: issueId # 	
                       </td>
-                      <td class="align-middle text-nowrap">
+                      <td class="align-middle">
                       #: summary # 	
                       </td>
                       <td class="align-middle">#: issueTypeName #</td>
