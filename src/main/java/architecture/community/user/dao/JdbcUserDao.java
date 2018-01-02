@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,6 +56,25 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 		}
 	};
 
+	private final RowMapper<User> userMapper2 = new RowMapper<User>() {
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+			UserTemplate ut = new UserTemplate();
+			ut.setUserId(rs.getLong("USER_ID"));
+			ut.setUsername(rs.getString("USERNAME"));
+			ut.setName(rs.getString("NAME"));
+			ut.setNameVisible(rs.getInt("NAME_VISIBLE") == 1);
+			ut.setFirstName(rs.getString("FIRST_NAME"));
+			ut.setLastName(rs.getString("LAST_NAME"));
+			ut.setEmail(rs.getString("EMAIL"));
+			ut.setEmailVisible(rs.getInt("EMAIL_VISIBLE") == 1);
+			ut.setEnabled(rs.getInt("USER_ENABLED") == 1);
+			ut.setStatus(UserTemplate.Status.getById(rs.getInt("STATUS")));
+			ut.setCreationDate(rs.getDate("CREATION_DATE"));
+			ut.setModifiedDate(rs.getDate("MODIFIED_DATE"));
+			return ut;
+		}
+	};
+	
 	public JdbcUserDao() {
 		super();
 	}
@@ -172,8 +192,7 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 			return null;
 		UserTemplate user = null;
 		try {
-			user = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_USER.SELECT_USER_BY_USERNAME").getSql(),
-					userMapper, new SqlParameterValue(Types.VARCHAR, username));
+			user = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_USER.SELECT_USER_BY_USERNAME").getSql(), userMapper, new SqlParameterValue(Types.VARCHAR, username));
 		} catch (EmptyResultDataAccessException e) {
 			logger.error(CommunityLogLocalizer.format("010009", username), e);
 		} catch (DataAccessException e) {
@@ -186,4 +205,41 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_USER.DELETE_USER_BY_ID").getSql(), new SqlParameterValue(Types.NUMERIC, user.getUserId()));		
 	}
 
+	
+	public int getFoundUserCount(String nameOrEmail) {
+		return getExtendedJdbcTemplate().queryForObject(
+			getBoundSql("COMMUNITY_USER.COUNT_USERS_BY_EMAIL_OR_NAME").getSql(),
+			Integer.class,
+			new SqlParameterValue(Types.VARCHAR, nameOrEmail), 
+			new SqlParameterValue(Types.VARCHAR, nameOrEmail));
+	}
+	
+	public List<User> findUsers(String nameOrEmail) {
+		List<User> users = getExtendedJdbcTemplate().query( 
+			getBoundSql("COMMUNITY_USER.SELECT_USER_BY_EMAIL_OR_NAME").getSql(), 
+			userMapper2,		
+			new SqlParameterValue(Types.VARCHAR, nameOrEmail),
+			new SqlParameterValue(Types.VARCHAR, nameOrEmail));
+		return users;
+	}
+			
+	public List<Long> findUserIds(String nameOrEmail) {
+		List<Long> users = getExtendedJdbcTemplate().queryForList( 
+			getBoundSql("COMMUNITY_USER.SELECT_USER_IDS_BY_EMAIL_OR_NAME").getSql(), 
+			Long.class,			
+			new SqlParameterValue(Types.VARCHAR, nameOrEmail),
+			new SqlParameterValue(Types.VARCHAR, nameOrEmail));
+		return users;
+	}
+	
+	public List<Long> findUserIds(String nameOrEmail, int startIndex, int numResults) {
+		List<Long> users = getExtendedJdbcTemplate().query( 
+			getBoundSql("COMMUNITY_USER.SELECT_USER_IDS_BY_EMAIL_OR_NAME").getSql(), 
+			startIndex, 
+			numResults,
+			Long.class,
+			new SqlParameterValue(Types.VARCHAR, nameOrEmail),
+			new SqlParameterValue(Types.VARCHAR, nameOrEmail));
+		return users;
+	}
 }

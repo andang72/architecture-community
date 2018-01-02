@@ -1,6 +1,8 @@
 package architecture.community.user;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -232,6 +234,37 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 	
 	private String caseEmailAddress(User user) {
 		return emailAddressCaseSensitive || user.getEmail() == null ? user.getEmail() : user.getEmail().toLowerCase();
+	}
+
+	@Override
+	public List<User> findUsers(String nameOrEmail) {
+		List<Long> ids = userDao.findUserIds(nameOrEmail );
+		List<User> users = new ArrayList<User>(ids.size());
+		for( long id : ids )
+			try {
+				users.add(getUser(id));
+			} catch (UserNotFoundException e) {
+				log.warn(e.getMessage(), e);
+			}
+		return users;
+	}
+
+	@Override
+	public List<User> findUsers(String nameOrEmail, int startIndex, int numResults) {
+		List<Long> ids = userDao.findUserIds(nameOrEmail, startIndex, numResults);
+		List<User> users = new ArrayList<User>(ids.size());
+		for( long id : ids )
+			try {
+				users.add(getUser(id));
+			} catch (UserNotFoundException e) {
+				log.warn(e.getMessage(), e);
+			}
+		return users;
+	}
+
+	@Override
+	public int getFoundUserCount(String nameOrEmail) {
+		return userDao.getFoundUserCount(nameOrEmail);
 	}
 
 }

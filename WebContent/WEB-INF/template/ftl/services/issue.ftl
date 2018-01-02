@@ -243,8 +243,6 @@
                                 		
                             		</div>
 	                            <div class="ibox-content">
-
- 
               <!--Issue ListView-->
               <div class="table-responsive">
                 <table class="table table-bordered u-table--v2">
@@ -262,10 +260,7 @@
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
                     </tr>
                   </thead>
-
-                  <tbody id="issue-listview" >
-                    
-                  </tbody>
+                  <tbody id="issue-listview" ></tbody>
                 </table>
               </div>
               <!--End Issue ListView -->

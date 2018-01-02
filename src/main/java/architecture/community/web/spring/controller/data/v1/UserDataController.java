@@ -5,23 +5,61 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.user.User;
+import architecture.community.user.UserManager;
 import architecture.community.util.SecurityHelper;
+import architecture.community.web.model.ItemList;
 
 @Controller("community-data-v1-user-controller")
 @RequestMapping("/data/api/v1/users")
 public class UserDataController {
 		
+	@Inject
+	@Qualifier("userManager")
+	private UserManager userManager;
+	
+	
+	@PreAuthorize("permitAll")
+    @RequestMapping(value = "/find.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public ItemList findUsers(
+    		@RequestParam(value = "nameOrEmail", required = false) String nameOrEmail,
+    		@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
+		@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+		@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize, NativeWebRequest request) {				
+		ItemList list = new ItemList();
+		if( StringUtils.isNotEmpty(nameOrEmail))
+		{
+			int totalCount = userManager.getFoundUserCount(nameOrEmail);
+			if( totalCount > 0 ) {
+				List<User> users;
+				if( pageSize > 0 ) {
+					users = userManager.findUsers(nameOrEmail, skip, pageSize);					
+				}else {
+					users = userManager.findUsers(nameOrEmail);
+				}
+				list.setTotalCount(totalCount);
+				list.setItems(users);
+			}
+		}
+		return list;
+	}
+	
 	@PreAuthorize("permitAll")
     @RequestMapping(value = "/me.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody

@@ -14,4 +14,23 @@ public interface UserManager {
 	
 	public abstract void deleteUser(User user) throws UserNotFoundException ;
 	
+	
+    /**
+     * 
+     * @param nameOrEmail
+     * @return
+     */
+    public abstract List<User> findUsers(String nameOrEmail);
+
+    /**
+     * 
+     * @param nameOrEmail
+     * @param startIndex
+     * @param numResults
+     * @return
+     */
+    public abstract List<User> findUsers(String nameOrEmail, int startIndex, int numResults);
+
+    public abstract int getFoundUserCount(String nameOrEmail);
+    
 }
