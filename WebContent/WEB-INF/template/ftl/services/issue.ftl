@@ -202,6 +202,84 @@
 		renderTo.modal('show');
 	}
 
+	function isDeveloper(){ 
+		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
+	} 
+ 			
+	</script>		
+</head>
+<body id="page-top" class="landing-page no-skin-config">
+	<!-- NAVBAR START -->   
+	<#include "/includes/user-top-navbar.ftl">
+	<!-- NAVBAR END -->   
+	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(https://htmlstream.com/preview/unify-v2.4/assets/img-temp/1920x800/img8.jpg)">      
+      <div class="container text-center g-bg-cover__inner g-py-50">
+        <div class="row justify-content-center">
+          <div class="col-lg-6">
+            <div class="mb-5">
+              <h1 class="g-color-darkgray g-font-size-60 mb-4"><#if __page?? >${__page.title}</#if></h1>
+              <!--<h2 class="g-color-darkgray g-font-weight-400 g-font-size-22 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>-->
+            </div>
+            <!-- Promo Blocks - Input -->
+			<p>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
+			</p>            
+            <!-- End Promo Blocks - Input -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+	<section id="features" class="container services">
+		<div class="wrapper wrapper-content">
+            		<div class="container">            
+                		<div class="row">
+                    		<div class="col-lg-12">
+                        		<div class="ibox float-e-margins">
+                            		<div class="ibox-title">
+                                		<h2>
+                                			<span data-bind="text:project.name"></span>
+                                			<div class="g-pt-15 g-pb-15 g-font-size-20 g-font-weight-200" data-bind="html: project.summary"></div>
+                                			<div class="g-font-size-20 g-font-weight-200"><span class="text-warning" data-bind="text: projecPeriod "/></div>
+                                		</h5>
+                                		
+                            		</div>
+	                            <div class="ibox-content">
+
+ 
+              <!--Issue ListView-->
+              <div class="table-responsive">
+                <table class="table table-bordered u-table--v2">
+                  <thead class="text-uppercase g-letter-spacing-1">
+                    <tr>
+                    	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">ID</th>	
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-65">유형</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">중요도</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">보고자</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">담당자</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">상태</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">결과</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="issue-listview" >
+                    
+                  </tbody>
+                </table>
+              </div>
+              <!--End Issue ListView -->
+	                            </div>
+                        		</div>
+                    		</div>
+                		</div>
+            		</div>
+        		</div>
+	</section>
+
+
 	
 	<!-- issue editor modal -->
 	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -294,83 +372,8 @@
 			</div>
 		</div>
 	</div>	 
-		
-	function isDeveloper(){ 
-		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
-	} 
- 			
-	</script>		
-</head>
-<body id="page-top" class="landing-page no-skin-config">
-	<!-- NAVBAR START -->   
-	<#include "/includes/user-top-navbar.ftl">
-	<!-- NAVBAR END -->   
-	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(https://htmlstream.com/preview/unify-v2.4/assets/img-temp/1920x800/img8.jpg)">      
-      <div class="container text-center g-bg-cover__inner g-py-50">
-        <div class="row justify-content-center">
-          <div class="col-lg-6">
-            <div class="mb-5">
-              <h1 class="g-color-darkgray g-font-size-60 mb-4"><#if __page?? >${__page.title}</#if></h1>
-              <!--<h2 class="g-color-darkgray g-font-weight-400 g-font-size-22 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>-->
-            </div>
-            <!-- Promo Blocks - Input -->
-			<p>
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
-			</p>            
-            <!-- End Promo Blocks - Input -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-	<section id="features" class="container services">
-		<div class="wrapper wrapper-content">
-            		<div class="container">            
-                		<div class="row">
-                    		<div class="col-lg-12">
-                        		<div class="ibox float-e-margins">
-                            		<div class="ibox-title">
-                                		<h2>
-                                			<span data-bind="text:project.name"></span>
-                                			<div class="g-pt-15 g-pb-15 g-font-size-20 g-font-weight-200" data-bind="html: project.summary"></div>
-                                			<div class="g-font-size-20 g-font-weight-200"><span class="text-warning" data-bind="text: projecPeriod "/></div>
-                                		</h5>
-                                		
-                            		</div>
-	                            <div class="ibox-content">
-
- 
-              <!--Issue ListView-->
-              <div class="table-responsive">
-                <table class="table table-bordered u-table--v2">
-                  <thead class="text-uppercase g-letter-spacing-1">
-                    <tr>
-                    	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">ID</th>	
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-65">유형</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">중요도</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">보고자</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">담당자</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">상태</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">결과</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
-                    </tr>
-                  </thead>
-
-                  <tbody id="issue-listview" >
-                    
-                  </tbody>
-                </table>
-              </div>
-              <!--End Issue ListView -->
-	                            </div>
-                        		</div>
-                    		</div>
-                		</div>
-            		</div>
-        		</div>
-	</section>
+			
+			
 	<script type="text/x-kendo-template" id="template">
                     <tr>
                       <td class="align-middle text-center">
