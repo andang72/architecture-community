@@ -309,7 +309,31 @@
 		                   data-bind="source:methodsDataSource"
 		                   style="width: 100%;"/>
 					</div>	
-														
+
+					<h6 class="text-light-gray text-semibold">처리결과</h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource"
+		                   style="width: 100%;"/>
+					</div>	
+					
+					<h6 class="text-light-gray text-semibold">상태</h6>
+					<div class="form-group">
+						<input data-role="dropdownlist"  
+						   data-placeholder="선택"
+		                   data-auto-bind="true"
+		                   data-value-primitive="true"
+		                   data-text-field="name"
+		                   data-value-field="code"
+		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource"
+		                   style="width: 100%;"/>
+					</div>	
+																																						
 				</form>   
 				<div class="text-editor"></div>
 				</div>
