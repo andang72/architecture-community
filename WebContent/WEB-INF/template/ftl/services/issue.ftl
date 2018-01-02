@@ -62,7 +62,6 @@
 	});
 	
 	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap"], function($, kendo ) {	
-		
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -159,7 +158,6 @@
 				isNew : false,	
 				isDeveloper : false,
 				issue : new community.model.Issue(),
-				projectDataSource   : community.ui.listview($('#project-listview')).dataSource,
 				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 				priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
 			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
