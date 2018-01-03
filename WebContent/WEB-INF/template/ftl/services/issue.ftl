@@ -164,7 +164,7 @@
 				isNew : false,	
 				editalbe : false, 
 				isDeveloper : false,
-				stateIconCss : "icon-svg-dusk-close-sign",
+				stateIconCss : "icon-svg icon-svg-sm icon-svg-dusk-close-sign",
 				issue : new community.model.Issue(),
 				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 				priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
@@ -296,7 +296,7 @@
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
 			        </button>
-			        <h2 class="modal-title"><i class="icon-svg icon-svg-sm" data-bind="css:stateIconCss"></i> 기술지원요청</h2>
+			        <h2 class="modal-title"><i class="" data-bind="attr: {class:stateIconCss }"></i> 기술지원요청</h2>
 		      	</div><!-- /.modal-content -->
 				<div class="modal-body">				
 				 <form>
