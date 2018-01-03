@@ -296,7 +296,7 @@
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
 			        </button>
-			        <h2 class="modal-title"><i class="icon-svg icon-svg-sm" data-bind="css:stateIconCss"></i> 기술지원요청</h2>
+			        <h2 class="modal-title"><i class="icon-svg icon-svg-sm" data-bind="attr: {class:stateIconCss }"></i> 기술지원요청</h2>
 		      	</div><!-- /.modal-content -->
 				<div class="modal-body">				
 				 <form>
