@@ -80,6 +80,14 @@ i.icon-svg {
 }
 
 /* Dusk Icons */
+.icon-svg-dusk-open-sign {
+	background-image: url("/images/icons/dusk/open-sign.svg");
+}
+
+.icon-svg-dusk-close-sing {
+	background-image: url("/images/icons/dusk/close-sign.svg");
+}
+
 
 .icon-svg-dusk-edit {
 	background-image: url("/images/icons/dusk/edit.svg");

@@ -63,12 +63,11 @@
  	SET 
  		ISSUE_TYPE = ?,
  		ISSUE_STATUS = ?,
- 		RESOLUTION = ?
+ 		RESOLUTION = ?,
 	 	PRIORITY = ?,	 	
 	 	COMPONENT = ?,
 	 	SUMMARY = ?,
 	 	DESCRIPTION = ?,
-	 	PRIORITY = ?
 	 	ASSIGNEE = ?,
 	 	REPOTER = ?,
 	 	DUE_DATE = ?,

@@ -124,13 +124,19 @@
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	
-		renderTo.on("click", "button[data-action=create], a[data-action=create]", function(e){			
+		
+		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=edit]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.Issue();	
-			targetObject.set('objectType', 19);
-			targetObject.set('objectId', __projectId);
+			if( objectId > 0 ){
+				targetObject = community.ui.listview($('#issue-listview')).dataSource.get(objectId);
+			}else{			
+				targetObject = new community.model.Issue();	
+				targetObject.set('objectType', 19);
+				targetObject.set('objectId', __projectId);
+			}			
  			createOrOpenIssueEditor (targetObject);
 			return false;		
 		});
@@ -156,6 +162,7 @@
 		if( !renderTo.data("model") ){
 			var observable = new community.ui.observable({ 
 				isNew : false,	
+				editalbe : false, 
 				isDeveloper : false,
 				issue : new community.model.Issue(),
 				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
@@ -169,10 +176,16 @@
 					data.copy( $this.issue ); 
 					if(  $this.issue.issueId > 0 ){
 						$this.set('isNew', false );
+						$this.set('editalbe', false );
 					}else{
 						$this.set('isNew', true );	
+						$this.set('editalbe', true );
 					}
 					$this.set('isDeveloper', isDeveloper());
+			 	},
+			 	edit : function(e){
+			 		var $this = this;
+			 		$this.set('editalbe', true );
 			 	},
 				saveOrUpdate : function(e){				
 					var $this = this;
@@ -255,7 +268,7 @@
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">보고자</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">담당자</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">상태</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">결과</th>
+                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">결과</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
                     </tr>
@@ -286,7 +299,7 @@
 		      	</div><!-- /.modal-content -->
 				<div class="modal-body">				
 				 <form>
-				 	<h6 class="text-light-gray text-semibold">요청구분 <span class="text-danger">*</span></h6>
+				 	<h4 class="text-light-gray text-semibold">요청구분 <span class="text-danger" data-bind="visible:editable" >*</span></h4>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
@@ -294,20 +307,28 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="value:issue.issueType, source:issueTypeDataSource"
+		                   data-bind="value:issue.issueType, source:issueTypeDataSource, enabled:editalbe"
 		                   style="width:100%;"/>	
 		                   		        	  
 					</div>	
-					<h6 class="text-light-gray text-semibold">요약 <span class="text-danger">*</span></h6>				 	
-				 	<div class="form-group">
+					
+					<!-- issue summary start -->
+					<h4 class="text-light-gray text-semibold">요약 <span class="text-danger" data-bind="visible:editable">*</span></h4>		
+					<div data-bind="text:issue.summary, invisible:editable" class="g-mb-15"></div>	
+				 	<div class="form-group" data-bind="visible:editable">
 			            <input type="text" class="form-control" placeholder="요약" data-bind="value: issue.summary">
 			        </div> 	
+					<!-- issue summary start -->
 
-					<h6 class="text-light-gray text-semibold">상세 내용 <span class="text-danger">*</span></h6>				 	
-				 	<div class="form-group">
+					<!-- issue descripton start -->
+					<h4 class="text-light-gray text-semibold">상세 내용 <span class="text-danger" data-bind="visible:editable">*</span></h4>	
+					<div data-bind="html:issue.description, invisible:editable" class="g-mb-15"></div>
+					<div class="form-group" data-bind="visible:editalbe">
 					<textarea class="form-control" placeholder="상세내용" data-bind="value:issue.description"></textarea>
 	 				</div> 
-					<h6 class="text-light-gray text-semibold">우선순위 <span class="text-danger">*</span></h6>
+	 				<!-- issue descripton end -->	
+	 										
+					<h4 class="text-light-gray text-semibold">우선순위 <span class="text-danger" data-bind="visible:editable">*</span></h4>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
@@ -315,11 +336,11 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="value:issue.priority, source:priorityDataSource"
+		                   data-bind="value:issue.priority, source:priorityDataSource, enabled:editalbe"
 		                   style="width: 100%;"/>			        	  
 					</div>
-						
-					<h6 class="text-light-gray text-semibold">지원방법</h6>
+					 					
+					<h4 class="text-light-gray text-semibold">지원방법</h4>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
@@ -327,11 +348,11 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="source:methodsDataSource"
+		                   data-bind="source:methodsDataSource, visible: isDeveloper, enabled:editalbe"
 		                   style="width: 100%;"/>
 					</div>	
 
-					<h6 class="text-light-gray text-semibold">처리결과</h6>
+					<h4 class="text-light-gray text-semibold">처리결과</h4>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
@@ -339,11 +360,11 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource"
+		                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource, enabled:editalbe"
 		                   style="width: 100%;"/>
 					</div>	
 					
-					<h6 class="text-light-gray text-semibold">상태</h6>
+					<h4 class="text-light-gray text-semibold">상태</h4>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
@@ -351,7 +372,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource"
+		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource, enabled:editalbe"
 		                   style="width: 100%;"/>
 					</div>	
 																																						
@@ -359,8 +380,11 @@
 				<div class="text-editor"></div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate">확인</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="visible:editalbe" >취소</button>
+					<button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate, visible:editalbe">확인</button>
+					
+					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="invisible:editalbe">취소</button>		
+					<button type="button" class="btn btn-primary" data-bind="invisible:editalbe,click:edit">수정</button>			
 				</div>
 			</div>
 		</div>
@@ -373,7 +397,7 @@
                       #: issueId # 	
                       </td>
                       <td class="align-middle">
-                      #: summary # 	
+                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-18" href="javascript:void();" data-action="edit" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
                       </td>
                       <td class="align-middle">#: issueTypeName #</td>
                       <td class="align-middle">#: priorityName #</td>
@@ -391,8 +415,14 @@
                       	미지정
                       	#}#
                       </td>
-                      <td class="align-middle"></td>
-                      <td class="align-middle"></td>
+                      <td class="align-middle">
+                       #: statusName #
+                      </td>
+                      <td class="align-middle">
+                      #if( resolutionName != null){#
+                      #: resolutionName #
+                      #}#
+                      </td>
                       <td class="align-middle">#: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') #</td>
                       <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
                     </tr>

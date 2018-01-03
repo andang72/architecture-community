@@ -167,16 +167,19 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));		
 			
 		} else {
+
+	 			 			
 			Date now = Calendar.getInstance().getTime();
 			toUse.setModifiedDate(now);		
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_ISSUE").getSql(), 
 					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getStatus()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getResolution()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),
-					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
+					
 					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId()),	
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),

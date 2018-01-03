@@ -1,5 +1,7 @@
 package architecture.community.user;
 
+import java.util.List;
+
 public interface UserManager {
 	
 	public abstract User getUser(User template );
@@ -32,5 +34,4 @@ public interface UserManager {
     public abstract List<User> findUsers(String nameOrEmail, int startIndex, int numResults);
 
     public abstract int getFoundUserCount(String nameOrEmail);
-    
 }
