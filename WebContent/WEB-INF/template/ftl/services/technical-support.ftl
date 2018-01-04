@@ -356,15 +356,15 @@
 				<div class="row">
 					<div class="col-md-9">
 						<div class="forum-icon">
- 							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support"></i>
+ 							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support #if ( new Date() > endDate ) {#g-opacity-0_3#}#"></i>
 						</div>
 						
 						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="/display/pages/issues.html?projectId=#=projectId#" class="btn-link"> #:name# </a></h4>						
-						<div class="g-ml-60 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
+						<div class="g-ml-60 g-mb-5 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
 						
 						#if( isDeveloper() ){ #
-						<div class="g-ml-60"> 유지보수비용(월) : #: kendo.toString( maintenanceCost, 'c')  #</div>						
-						<div class="g-ml-60 text-muted">#if(summary != null ){# #:summary # #}#</div>
+						<div class="g-ml-60 g-mb-5"> 유지보수비용(월) : #: kendo.toString( maintenanceCost, 'c')  #</div>						
+						<div class="g-ml-60 g-mb-5 text-muted">#if(summary != null ){# #:summary # #}#</div>
 						#}#
 					</div>
 					<div class="col-md-1 forum-info">

@@ -100,6 +100,24 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
     display: block!important;
 }
 
+.back {
+    float: left;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    filter: alpha(opacity=20);
+    opacity: .2;
+}
+
+.back:hover, .back:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: .5;
+  }
+
 
 /*------------------------------------
   Kendoui css

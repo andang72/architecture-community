@@ -144,8 +144,16 @@
 	
 	function createIssueListView( observable ){
 		var renderTo = $('#issue-listview');
-		community.ui.listview( renderTo , {
+		var listview = community.ui.listview( renderTo , {
 			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/"/>'+ observable.get('projectId') +'/issues/list.json', {
+				transport:{
+					read:{
+						contentType: "application/json; charset=utf-8"
+					},
+					parameterMap: function (options, operation){			
+						return community.ui.stringify(options)
+					} 				
+				},
 				schema: {
 					total: "totalCount",
 					data: "items",
@@ -154,6 +162,9 @@
 			}),
 			template: community.ui.template($("#template").html())
 		});	
+		community.ui.pager( $("#issue-listview-pager"), {
+            dataSource: listview.dataSource
+        });   
 	} 
  
 	function createOrOpenIssueEditor( data ){ 
@@ -212,6 +223,10 @@
 			 			$this.set('isClosed', false);
 			 		}
 					$this.set('isDeveloper', isDeveloper());
+					
+					$.each(renderTo.find('input[data-role=combobox]'), function( index, value ) {
+					  	$(value).data('kendoComboBox').refresh();
+					});
 			 	},
 			 	edit : function(e){
 			 		var $this = this;
@@ -291,8 +306,11 @@
                 		<div class="row">
                     		<div class="col-lg-12">
                         		<div class="ibox float-e-margins">
-                            		<div class="ibox-title">
-                                		<h2>
+                            		<div class="ibox-title g-pl-0">
+	                            		<a href="<@spring.url "/display/pages/technical-support.html" />" class="back">
+									<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
+									</a>
+                                		<h2 class="g-pl-55">
                                 			<span data-bind="text:project.name"></span>
                                 			<div class="g-pt-15 g-pb-15 g-font-size-20 g-font-weight-200" data-bind="html: project.summary"></div>
                                 			<div class="g-font-size-20 g-font-weight-200"><span class="text-warning" data-bind="text: projecPeriod "/></div>
@@ -304,7 +322,7 @@
               <div class="table-responsive">
                 <table class="table table-bordered u-table--v2">
                   <thead class="text-uppercase g-letter-spacing-1">
-                    <tr>
+                    <tr class="g-height-50">
                     	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">ID</th>	
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-65">유형</th>
@@ -317,8 +335,11 @@
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
                     </tr>
                   </thead>
-                  <tbody id="issue-listview" ></tbody>
+                  <tbody id="issue-listview" >
+                  
+                  </tbody>
                 </table>
+                <div id="issue-listview-pager" class="g-bg-transparent g-brd-none"></div>
               </div>
               <!--End Issue ListView -->
 	                            </div>
@@ -377,7 +398,7 @@
 						    		<span class="help-block m-b-none">이름으로 검색하고 선택하면 보고자가 지정됩니다.</span>
 						    		<input data-role="combobox"
 		                   		 data-placeholder="보고자 이름을 입력하세요."
-								 data-filter="contains"
+								 data-filter="contains" 
 		                   		 data-text-field="name"
 		                   	 	 data-value-field="username"
 		                   		 data-bind="value: issue.repoter,
@@ -492,7 +513,7 @@
                       #: issueId # 	
                       </td>
                       <td class="align-middle">
-                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-18" href="javascript:void();" data-action="edit" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
+                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="javascript:void();" data-action="edit" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
                       </td>
                       <td class="align-middle">#: issueTypeName #</td>
                       <td class="align-middle">#: priorityName #</td>
