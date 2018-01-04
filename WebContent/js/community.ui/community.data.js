@@ -331,7 +331,7 @@
 			resolutionName: { type: "string", defaultValue: null },	
 			status : { type: "string", defaultValue: null},
 			statusName: { type: "string", defaultValue: null },				
-			dueDate:{ type: "date" },	
+			dueDate:{ type: "date", defaultValue: null },	
 			repoter:{ type: "object", defaultValue: new community.model.User() },
 			assignee:{ type: "object", defaultValue: new community.model.User() },
 			creationDate:{ type: "date" },			
