@@ -4,7 +4,7 @@
 	<description>COMMUNITY USER SUBSYSTEM QUERIES</description>	
 	
 	
-	<sql-query name="SELECT_USER_COUNT_BY_EMAIL_OR_NAME" description="메일 또는 이름에 해당하는 모든 사용자 수를 조회"><![CDATA[
+	<sql-query name="COUNT_USERS_BY_EMAIL_OR_NAME" description="메일 또는 이름에 해당하는 모든 사용자 수를 조회"><![CDATA[
 	SELECT 
 		 COUNT( USER_ID )
 	FROM MUSI_USER WHERE USER_ENABLED = 1 AND ( EMAIL LIKE ? OR NAME LIKE ? )		  

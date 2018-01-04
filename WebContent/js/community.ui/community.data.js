@@ -355,7 +355,7 @@
 		    	target.set("dueDate",this.get("dueDate") );	
 		    	target.set("modifiedDate",this.get("modifiedDate") );
 		    	target.set("creationDate", this.get("creationDate") );
-		    	if( typeof this.get("repoter") === 'repoter' )
+		    	if( typeof this.get("repoter") === 'object' )
 		    		target.set("repoter", this.get("repoter") );
 		    	if( typeof this.get("assignee") === 'object' )
 		    		target.set("assignee", this.get("assignee") );

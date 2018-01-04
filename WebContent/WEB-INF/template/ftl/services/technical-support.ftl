@@ -288,6 +288,10 @@
 				 	<div class="form-group">
 					<textarea class="form-control" placeholder="상세내용" data-bind="value:issue.description"></textarea>
 	 				</div> 
+	 				
+	 				<h6 class="text-light-gray text-semibold g-mt-15" data-bind="visible: isDeveloper">예정일</h6>	
+					<input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled:editable" style="width: 100%">
+					
 					<h6 class="text-light-gray text-semibold">우선순위 <span class="text-danger">*</span></h6>
 					<div class="form-group">
 						<input data-role="dropdownlist"  

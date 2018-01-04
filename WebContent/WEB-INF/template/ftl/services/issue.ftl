@@ -61,7 +61,7 @@
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap"], function($, kendo ) {	
+	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR"], function($, kendo ) {	
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -154,48 +154,85 @@
 			}),
 			template: community.ui.template($("#template").html())
 		});	
-	}
- 
+	} 
  
 	function createOrOpenIssueEditor( data ){ 
 		var renderTo = $('#issue-editor-modal');
+		var editorTo = renderTo.find('.text-editor');
 		if( !renderTo.data("model") ){
 			var observable = new community.ui.observable({ 
 				isNew : false,	
-				editalbe : false, 
+				editable : false, 
 				isDeveloper : false,
-				stateIconCss : "icon-svg icon-svg-sm icon-svg-dusk-close-sign",
+				isOpen : false,
+				isClosed : false,
 				issue : new community.model.Issue(),
 				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 				priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
 			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
 			 	resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
 			 	statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} ),
+			 	userDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/users/find.json" />' , {
+			 		serverFiltering: true,
+			 		transport: {
+				 		parameterMap: function (options, operation){
+	                        	if (community.ui.defined(options.filter)) {
+									return { nameOrEmail: options.filter.filters[0].value };
+								}else{
+									return { };
+								}
+						}
+					},
+			 	 	schema: {
+						total: "totalCount",
+						data: "items",
+						model: community.model.User
+					}
+			 	}),
 			 	setSource : function( data ){
 			 		var $this = this;
 					var orgIssueId = $this.issue.issueId ;
 					data.copy( $this.issue ); 
 					if(  $this.issue.issueId > 0 ){
 						$this.set('isNew', false );
-						$this.set('editalbe', false );
+						$this.set('editable', false );
 					}else{
 						$this.set('isNew', true );	
-						$this.set('editalbe', true );
+						$this.edit();
+						//$this.set('editable', true );
 					}
+					if($this.issue.status == '001' || $this.issue.status == '002' || $this.issue.status == '003' || $this.issue.status == '004' ){
+			 			$this.set('isOpen', true);
+			 			$this.set('isClosed', false);
+			 		}else if($this.issue.status == '005' ){
+			 			$this.set('isOpen', false);
+			 			$this.set('isClosed', true);
+			 		}else{
+			 			$this.set('isOpen', false);
+			 			$this.set('isClosed', false);
+			 		}
 					$this.set('isDeveloper', isDeveloper());
 			 	},
 			 	edit : function(e){
 			 		var $this = this;
-			 		$this.set('editalbe', true );
+			 		$this.set('editable', true );
+			 		console.log('summernote create.');
+			 		editorTo.summernote({
+						placeholder: '자세하게 기술하여 주세요.',
+						dialogsInBody: true,
+						height: 300
+					});			 	
+					editorTo.summernote('code', $this.issue.get('description'));	
 			 	},
 				saveOrUpdate : function(e){				
 					var $this = this;
 					community.ui.progress(renderTo.find('.modal-content'), true);	
+					$this.issue.set('description', editorTo.summernote('code') );	
 					community.ui.ajax( '<@spring.url "/data/api/v1/issues/save-or-update.json" />', {
 						data: community.ui.stringify($this.issue),
 						contentType : "application/json",						
 						success : function(response){
-							
+							community.ui.listview( $('#issue-listview') ).dataSource.read();
 						}
 					}).always( function () {
 						community.ui.progress(renderTo.find('.modal-content'), false);
@@ -206,11 +243,17 @@
 			renderTo.data("model", observable );	
 			community.ui.bind( renderTo, observable );				
 			renderTo.on('show.bs.modal', function (e) {	});
+			renderTo.on('hide.bs.modal', function (e) {	
+				if(observable.get('editable') == true ){
+					console.log('summernote destory.');
+					editorTo.summernote('destroy');
+					editorTo.html('');
+				}
+			});
 		}	
 		
 		if( community.ui.defined(data) ) 
-			renderTo.data("model").setSource(data);
-		
+			renderTo.data("model").setSource(data); 
 		renderTo.modal('show');
 	}
 
@@ -286,8 +329,6 @@
         		</div>
 	</section>
 
-
-	
 	<!-- issue editor modal -->
 	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -296,7 +337,11 @@
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
 			        </button>
-			        <h2 class="modal-title"><i class="" data-bind="attr: {class:stateIconCss }"></i> 기술지원요청</h2>
+			        <h2 class="modal-title">
+			        		<i class="icon-svg icon-svg-sm icon-svg-dusk-close-sign" data-bind="visible:isClosed"></i>
+			        		<i class="icon-svg icon-svg-sm icon-svg-dusk-open-sign" data-bind="visible:isOpen"></i> 
+			        		기술지원요청
+			        	</h2>
 		      	</div><!-- /.modal-content -->
 				<div class="modal-body">				
 				 <form>
@@ -308,7 +353,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="value:issue.issueType, source:issueTypeDataSource, enabled:editalbe"
+		                   data-bind="value:issue.issueType, source:issueTypeDataSource, enabled:editable"
 		                   style="width:100%;"/>	
 		                   		        	  
 					</div>	
@@ -316,20 +361,69 @@
 					<!-- issue summary start -->
 					<h4 class="text-light-gray text-semibold">요약 <span class="text-danger" data-bind="visible:editable">*</span></h4>		
 					<div data-bind="text:issue.summary, invisible:editable" class="g-mb-15"></div>	
+					
 				 	<div class="form-group" data-bind="visible:editable">
 			            <input type="text" class="form-control" placeholder="요약" data-bind="value: issue.summary">
 			        </div> 	
 					<!-- issue summary start -->
 
+					<div class="form-group">			
+						<div class="row">
+						  	<div class="col-sm-6">
+						  		<h4 class="text-light-gray text-semibold">보고자</h4>		
+						  		<div data-bind="text:issue.repoter.name"></div>
+						  	</div>
+						    <div class="col-sm-6">
+						    		<span class="help-block m-b-none">이름으로 검색하고 선택하면 보고자가 지정됩니다.</span>
+						    		<input data-role="combobox"
+		                   		 data-placeholder="보고자 이름을 입력하세요."
+								 data-filter="contains"
+		                   		 data-text-field="name"
+		                   	 	 data-value-field="username"
+		                   		 data-bind="value: issue.repoter,
+	                              source: userDataSource,
+	                              visible: isDeveloper,
+	                              enabled: editable"
+	                   			 style="width: 100%"/>
+						  	</div>
+					  	</div>   
+					</div>	
+
+					<div class="form-group">			
+						<div class="row">
+						  	<div class="col-sm-6">
+						  		<h4 class="text-light-gray text-semibold">담당자</h4>		
+						  		<div data-bind="text:issue.assignee.name"></div>
+						  	</div>
+						    <div class="col-sm-6">
+						    		<span class="help-block m-b-none">이름으로 검색하고 선택하면 담당자가 지정됩니다.</span>
+						    		<input data-role="combobox"
+		                   		 data-placeholder="담당자 이름을 입력하세요."
+								 data-filter="contains"
+		                   		 data-text-field="name"
+		                   	 	 data-value-field="username"
+		                   		 data-bind="value: issue.assignee,
+	                              source: userDataSource,
+	                              visible: isDeveloper,
+	                              enabled: editable"
+	                   			 style="width: 100%"/>
+						  	</div>
+					  	</div>   
+					</div>						
+
 					<!-- issue descripton start -->
 					<h4 class="text-light-gray text-semibold">상세 내용 <span class="text-danger" data-bind="visible:editable">*</span></h4>	
 					<div data-bind="html:issue.description, invisible:editable" class="g-mb-15"></div>
-					<div class="form-group" data-bind="visible:editalbe">
-					<textarea class="form-control" placeholder="상세내용" data-bind="value:issue.description"></textarea>
-	 				</div> 
+					
+					<div class="text-editor" class="hide"></div>
+					
 	 				<!-- issue descripton end -->	
+	 				
+	 				<h4 class="text-light-gray text-semibold g-mt-20" data-bind="visible: isDeveloper">예정일</h4>	
+					<input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled: editable" style="width: 100%">
+						  		 
 	 										
-					<h4 class="text-light-gray text-semibold">우선순위 <span class="text-danger" data-bind="visible:editable">*</span></h4>
+					<h4 class="text-light-gray text-semibold g-mt-15">우선순위 <span class="text-danger" data-bind="visible:editable">*</span></h4>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
 						   data-placeholder="선택"
@@ -337,7 +431,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="value:issue.priority, source:priorityDataSource, enabled:editalbe"
+		                   data-bind="value:issue.priority, source:priorityDataSource, enabled:editable"
 		                   style="width: 100%;"/>			        	  
 					</div>
 					 					
@@ -349,7 +443,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="source:methodsDataSource, visible: isDeveloper, enabled:editalbe"
+		                   data-bind="source:methodsDataSource, visible: isDeveloper, enabled:editable"
 		                   style="width: 100%;"/>
 					</div>	
 
@@ -361,7 +455,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource, enabled:editalbe"
+		                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource, enabled:editable"
 		                   style="width: 100%;"/>
 					</div>	
 					
@@ -373,19 +467,19 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="code"
-		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource, enabled:editalbe"
+		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource, enabled:editable"
 		                   style="width: 100%;"/>
 					</div>	
 																																						
 				</form>   
-				<div class="text-editor"></div>
+				
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="visible:editalbe" >취소</button>
-					<button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate, visible:editalbe">확인</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="visible:editable" >취소</button>
+					<button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate, visible:editable">확인</button>
 					
-					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="invisible:editalbe">취소</button>		
-					<button type="button" class="btn btn-primary" data-bind="invisible:editalbe,click:edit">수정</button>			
+					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="invisible:editable">취소</button>		
+					<button type="button" class="btn btn-primary" data-bind="invisible:editable,click:edit">수정</button>			
 				</div>
 			</div>
 		</div>
@@ -417,7 +511,9 @@
                       	#}#
                       </td>
                       <td class="align-middle">
+                       #if ( statusName != null ){# 
                        #: statusName #
+                       #}#
                       </td>
                       <td class="align-middle">
                       #if( resolutionName != null){#
