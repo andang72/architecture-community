@@ -1,12 +1,13 @@
 package architecture.community.web.model.json;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
-public class RequestData {
+public class DataSourceRequest {
 
 	private int page;
 
@@ -20,7 +21,13 @@ public class RequestData {
 
 	private FilterDescriptor filter;
 	
-	public RequestData() {
+	private List<SortDescriptor> sort;
+	
+	private List<GroupDescriptor> group;
+	
+    private List<AggregateDescriptor> aggregate;
+	
+	public DataSourceRequest() {
 		filter = new FilterDescriptor();
 		data = new HashMap<String, Object>();
 		page = 0;
@@ -29,6 +36,50 @@ public class RequestData {
 		skip = 0;
 	}
 
+	
+	public List<SortDescriptor> getSort() {
+		if( sort == null )
+			return Collections.EMPTY_LIST;
+        return sort;
+    }
+
+    public void setSort(List<SortDescriptor> sort) {
+        this.sort = sort;
+    }
+    
+    private List<SortDescriptor> sortDescriptors() {
+        List<SortDescriptor> sort = new ArrayList<SortDescriptor>();
+        List<GroupDescriptor> groups = getGroup();
+        List<SortDescriptor> sorts = getSort();
+        if (groups != null) {
+            sort.addAll(groups);
+        }                
+        if (sorts != null) {
+            sort.addAll(sorts);
+        }
+        return sort;        
+    }
+    
+    public List<GroupDescriptor> getGroup() {
+		if( group == null )
+			return Collections.EMPTY_LIST;
+        return group;
+    }
+
+    public void setGroup(List<GroupDescriptor> group) {
+        this.group = group;
+    }
+    
+    public List<AggregateDescriptor> getAggregate() {
+		if( aggregate == null )
+			return Collections.EMPTY_LIST;
+        return aggregate;
+    }
+
+    public void setAggregate(List<AggregateDescriptor> aggregate) {
+        this.aggregate = aggregate;
+    }
+    
 	public FilterDescriptor getFilter() {
 		return filter;
 	}
@@ -175,6 +226,79 @@ public class RequestData {
 		public String toString() {
 			return "FilterDescriptor [logic=" + logic + ", filters=" + filters + ", field=" + field + ", value=" + value
 					+ ", operator=" + operator + ", ignoreCase=" + ignoreCase + "]";
+		}
+
+	}
+
+	public static class SortDescriptor {
+		
+		private String field;
+		private String dir;
+
+		public String getField() {
+			return field;
+		}
+
+		public void setField(String field) {
+			this.field = field;
+		}
+
+		public String getDir() {
+			return dir;
+		}
+
+		public void setDir(String dir) {
+			this.dir = dir;
+		}
+
+		@Override
+		public String toString() {
+			return "SortDescriptor [field=" + field + ", dir=" + dir + "]";
+		}
+
+	}
+
+	public static class GroupDescriptor extends SortDescriptor {
+		private List<AggregateDescriptor> aggregates;
+
+		public GroupDescriptor() {
+			aggregates = new ArrayList<AggregateDescriptor>();
+		}
+
+		public List<AggregateDescriptor> getAggregates() {
+			return aggregates;
+		}
+
+		@Override
+		public String toString() {
+			return "GroupDescriptor [aggregates=" + aggregates + "]";
+		}
+
+	}
+
+	public static class AggregateDescriptor {
+		private String field;
+		private String aggregate;
+
+		public String getField() {
+			return field;
+		}
+
+		public void setField(String field) {
+			this.field = field;
+		}
+
+		public String getAggregate() {
+			return aggregate;
+		}
+
+		public void setAggregate(String aggregate) {
+			this.aggregate = aggregate;
+		}
+
+		@Override
+		public String toString() {
+			return "AggregateDescriptor [field=" + field + ", aggregate=" + aggregate + "]";
 		}
 
 	}

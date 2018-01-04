@@ -60,7 +60,7 @@ import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.model.ItemList;
-import architecture.community.web.model.json.RequestData;
+import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
 
@@ -205,6 +205,27 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/issues/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public ItemList getProjectIssues (@PathVariable Long projectId, 
+			@RequestBody DataSourceRequest dataSourceRequest,
+			NativeWebRequest request) throws NotFoundException {	
+				
+		Project project = projectService.getProject(projectId);
+		List<Issue> list;
+		
+		int totalSize = projectService.getIssueCount(Models.PROJECT.getObjectType(), project.getProjectId());
+		
+		if( dataSourceRequest.getPageSize() == 0 && dataSourceRequest.getPage() == 0){
+			
+			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId());
+		
+		}else{
+		
+			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId(), dataSourceRequest.getSkip(), dataSourceRequest.getPageSize());
+		
+		}
+		return new ItemList(list, totalSize);
+	}
+	/*
+	public ItemList getProjectIssues (@PathVariable Long projectId, 
 			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
 			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
 			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
@@ -222,7 +243,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		}
 		return new ItemList(list, totalSize);
 	}
-	
+	*/
 	
 	/**
 	 * BOARD API 
@@ -581,7 +602,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Result addMessageComment(@PathVariable Long threadId, @PathVariable Long messageId,
-			@RequestBody RequestData reqeustData, HttpServletRequest request, ModelMap model) {
+			@RequestBody DataSourceRequest reqeustData, HttpServletRequest request, ModelMap model) {
 		Result result = Result.newResult();
 		try {
 			User user = SecurityHelper.getUser();

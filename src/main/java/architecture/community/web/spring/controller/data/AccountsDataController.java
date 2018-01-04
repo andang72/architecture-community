@@ -17,7 +17,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserTemplate;
-import architecture.community.web.model.json.RequestData;
+import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 
 @Controller("accounts-data-controller")
@@ -34,7 +34,7 @@ public class AccountsDataController {
 	
 	@RequestMapping(value = "/signup-with-data.json", method = { RequestMethod.POST})
 	@ResponseBody
-	public Object signupByJson(@RequestBody RequestData data, NativeWebRequest request) {		
+	public Object signupByJson(@RequestBody DataSourceRequest data, NativeWebRequest request) {		
 		
 		String nameToUse =  data.getDataAsString("name", null);
 		String emailToUse =  data.getDataAsString("email", null);

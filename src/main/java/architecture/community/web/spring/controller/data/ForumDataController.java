@@ -66,7 +66,7 @@ import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
-import architecture.community.web.model.json.RequestData;
+import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
 
@@ -375,7 +375,7 @@ public class ForumDataController {
 
 	@RequestMapping(value = "/threads/{threadId:[\\p{Digit}]+}/messages/{messageId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public Result addMessageComment(@PathVariable Long threadId, @PathVariable Long messageId, @RequestBody RequestData reqeustData, HttpServletRequest request, ModelMap model) {
+	public Result addMessageComment(@PathVariable Long threadId, @PathVariable Long messageId, @RequestBody DataSourceRequest reqeustData, HttpServletRequest request, ModelMap model) {
 		Result result = Result.newResult();
 		try {
 			User user = SecurityHelper.getUser();
