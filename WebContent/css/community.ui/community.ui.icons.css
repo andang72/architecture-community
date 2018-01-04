@@ -50,6 +50,10 @@ i.icon-svg {
 }
 
 /* IOS Icons */
+.icon-svg-ios-back {
+	background-image: url("/images/icons/ios/back.svg");
+}
+
 .icon-svg-ios-call {
 	background-image: url("/images/icons/ios/call.svg");
 }
@@ -80,6 +84,10 @@ i.icon-svg {
 }
 
 /* Dusk Icons */
+.icon-svg-dusk-back {
+	background-image: url("/images/icons/dusk/back.svg");
+}
+
 .icon-svg-dusk-open-sign {
 	background-image: url("/images/icons/dusk/open-sign.svg");
 }
