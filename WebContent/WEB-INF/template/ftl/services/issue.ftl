@@ -520,7 +520,7 @@
                       #: resolutionName #
                       #}#
                       </td>
-                      <td class="align-middle">#: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') #</td>
+                      <td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
                       <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
                     </tr>
 	</script>	   
