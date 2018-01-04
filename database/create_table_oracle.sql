@@ -18,7 +18,7 @@
 		drop table MUSI_LOGO cascade constraints PURGE ;
 		drop table MUSI_LOGO_DATA cascade constraints PURGE ;
 		drop table MUSI_EXTERNAL_LINK cascade constraints PURGE ;
-		
+		drop table MUSI_ISSUE cascade constraints PURGE ;
 		
 		-- User
 		CREATE TABLE MUSI_USER (
@@ -528,6 +528,10 @@
 	--  PROJECT
 	-- =================================================		 
 
+	
+	
+	
+	
 	CREATE TABLE MUSI_PROJECT (	
 		PROJECT_ID					INTEGER NOT NULL,
 		NAME							VARCHAR2(255) NOT NULL,	
@@ -548,13 +552,13 @@
 		ISSUE_ID						INTEGER NOT NULL,
 		ISSUE_TYPE					VARCHAR2(100) ,
 		ISSUE_STATUS					VARCHAR2(100) ,
-		RESULUTION					VARCHAR2(100) ,
+		RESOLUTION					VARCHAR2(100) ,
 		PRIORITY						VARCHAR2(100) ,	
 		COMPONENT					VARCHAR2(100) ,					
 		ASSIGNEE 					INTEGER,
 		REPOTER						INTEGER NOT NULL,
 		SUMMARY						VARCHAR2(2000) NOT NULL,
-		DESCRIPTION					VARCHAR2(2000) NOT NULL,
+		DESCRIPTION					CLOB, --VARCHAR2(2000) NOT NULL,
 		DUE_DATE						DATE,	
 		CREATION_DATE				DATE DEFAULT  SYSDATE NOT NULL,
 		MODIFIED_DATE				DATE DEFAULT  SYSDATE NOT NULL,			
