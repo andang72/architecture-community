@@ -47,3 +47,7 @@
     padding: 10px 20px;
     font-weight: 200;
 }
+
+.landing-page .navbar.navbar-scroll .back {
+	margin-top: 18px!important;
+}
