@@ -49,7 +49,7 @@
                         <div class="form-group"> 
 					        <div class="checkbox">
 					          <label>
-					            <input type="checkbox" value="remember-me"> 로그인상태유지
+					            <input type="checkbox" name="remember-me"> 로그인상태유지
 					          </label>
 					        </div>
                         </div>                        
