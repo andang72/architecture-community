@@ -28,10 +28,13 @@ import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetNotFoundException;
 import architecture.community.codeset.CodeSetService;
 import architecture.community.exception.NotFoundException;
+import architecture.community.model.Property;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.web.model.ItemList;
+import architecture.community.web.model.json.DataSourceRequest;
+import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
 
 @Controller("community-data-v1-mgmt-core-controller")
@@ -56,6 +59,10 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@Qualifier("codeSetService")
 	private CodeSetService codeSetService;
 	
+	@Inject
+	@Qualifier("configService")
+	private ConfigService configService;
+	
 
 	protected BoardService getBoardService() {
 		return boardService;
@@ -65,6 +72,24 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return communityAclService;
 	}
 
+	/**
+	 * CONFIG API 
+	******************************************/
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> getConfig(@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request){
+
+		List<String> propertyKeys = configService.getApplicationPropertyNames();
+		List<Property> list = new ArrayList<Property>(); 
+		
+		for( String key : propertyKeys ) {
+			String value = configService.getApplicationProperty(key);
+			list.add(new Property( key, value ));
+		}
+		
+		return list ;
+	}
 	
 	/**
 	 * CODESET API 
@@ -144,8 +169,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return codeset;
     }	
 
-	
-	
+
 	/**
 	 * BOARD API 
 	******************************************/
