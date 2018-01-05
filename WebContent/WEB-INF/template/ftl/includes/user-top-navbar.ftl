@@ -1,4 +1,4 @@
-
+	<#assign  security=JspTaglibs["http://www.springframework.org/security/tags"] />
 	<div class="navbar-wrapper">
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
