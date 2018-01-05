@@ -325,6 +325,17 @@
                                 		
                             		</div>
 	                            <div class="ibox-content">
+	                            
+	          					<h4 class="text-light-gray text-semibold">요청구분</h4>
+								<input data-role="dropdownlist"  
+								   data-placeholder="선택"
+				                   data-auto-bind="true"
+				                   data-value-primitive="true"
+				                   data-text-field="name"
+				                   data-value-field="code"
+				                   data-bind="source:issueTypeDataSource"
+				                   style="width:100%;"/>	
+					                  
               <!--Issue ListView-->
               <div class="table-responsive">
                 <table class="table table-bordered u-table--v2">
@@ -342,9 +353,7 @@
                       <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
                     </tr>
                   </thead>
-                  <tbody id="issue-listview" >
-                  
-                  </tbody>
+                  <tbody id="issue-listview" ></tbody>
                 </table>
                 <div id="issue-listview-pager" class="g-bg-transparent g-brd-none"></div>
               </div>
