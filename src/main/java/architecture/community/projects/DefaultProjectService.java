@@ -21,6 +21,7 @@ import architecture.community.codeset.CodeSetService;
 import architecture.community.projects.dao.ProjectDao;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
+import architecture.community.web.model.json.DataSourceRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
@@ -132,6 +133,26 @@ public class DefaultProjectService implements ProjectService {
 		}
 		return list;
 	}
+	
+
+	public int getIssueCount(DataSourceRequest dataSourceRequest) {
+		return projectDao.getIssueCount(dataSourceRequest);
+	}
+
+	public List<Issue> getIssues(DataSourceRequest dataSourceRequest) {
+		List<Long> threadIds = projectDao.getIssueIds(dataSourceRequest);
+		List<Issue> list = new ArrayList<Issue>(threadIds.size());
+		for( Long threadId : threadIds )
+		{
+			try {
+				list.add(getIssue(threadId));
+			} catch (IssueNotFoundException e) {
+				// ignore;
+				logger.warn(e.getMessage(), e);
+			}
+		}
+		return list;
+	}
 	 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdateIssue(Issue issue) {
@@ -194,5 +215,6 @@ public class DefaultProjectService implements ProjectService {
 			return null;
 		}
 	}
+
 
 }

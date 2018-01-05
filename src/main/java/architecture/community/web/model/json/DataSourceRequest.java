@@ -144,7 +144,24 @@ public class DataSourceRequest {
 	public Long getDataAsLong(String key, Long defaultValue) {
 		if (data.containsKey(key)) {
 			try {
-				return Long.parseLong(data.get(key).toString());
+				Object value = data.get(key);
+				if( value instanceof Long )
+					return (Long)value;
+				
+				return Long.parseLong(value.toString());
+			} catch (Exception ignore) {
+			}
+		}
+		return defaultValue;
+	}
+	
+	public Integer getDataAsInteger(String key, Integer defaultValue) {
+		if (data.containsKey(key)) {
+			try {
+				Object value = data.get(key);
+				if( value instanceof Integer )
+					return (Integer)value;
+				return Integer.parseInt(value.toString());
 			} catch (Exception ignore) {
 			}
 		}

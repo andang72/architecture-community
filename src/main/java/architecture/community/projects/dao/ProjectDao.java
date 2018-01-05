@@ -4,6 +4,7 @@ import java.util.List;
 
 import architecture.community.projects.Issue;
 import architecture.community.projects.Project;
+import architecture.community.web.model.json.DataSourceRequest;
 
 public interface ProjectDao {
 	
@@ -20,7 +21,11 @@ public interface ProjectDao {
 	
 	public abstract int getIssueCount( int objectType, long objectId ); 
 	
+	public abstract int getIssueCount(DataSourceRequest dataSourceRequest);
+	
 	public abstract List<Long> getIssueIds( int objectType, long objectId ); 
+	
+	public abstract List<Long> getIssueIds(DataSourceRequest dataSourceRequest);
 	
 	public abstract List<Long> getIssueIds(int objectType, long objectId, int startIndex, int numResults);
 	

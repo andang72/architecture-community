@@ -209,12 +209,20 @@ private Logger log = LoggerFactory.getLogger(getClass());
 			NativeWebRequest request) throws NotFoundException {	
 				
 		Project project = projectService.getProject(projectId);
-		List<Issue> list;
+		List<Issue> list ;
 		
 		log.debug("DataSourceRequest: {}", dataSourceRequest );
 		
-		int totalSize = projectService.getIssueCount(Models.PROJECT.getObjectType(), project.getProjectId());
+		dataSourceRequest.getData().put("objectType", Models.PROJECT.getObjectType());
+		dataSourceRequest.getData().put("objectId", project.getProjectId());
 		
+		int totalSize = projectService.getIssueCount(dataSourceRequest);
+		if( totalSize > 0) {
+			list = projectService.getIssues(dataSourceRequest);
+		}else {
+			list = Collections.EMPTY_LIST;
+		}
+		/**
 		if( dataSourceRequest.getPageSize() == 0 && dataSourceRequest.getPage() == 0){
 			
 			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId());
@@ -224,6 +232,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId(), dataSourceRequest.getSkip(), dataSourceRequest.getPageSize());
 		
 		}
+		*/
 		return new ItemList(list, totalSize);
 	}
 	/*

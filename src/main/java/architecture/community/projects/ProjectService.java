@@ -3,6 +3,7 @@ package architecture.community.projects;
 import java.util.List;
 
 import architecture.community.user.User;
+import architecture.community.web.model.json.DataSourceRequest;
 
 public interface ProjectService {
 	
@@ -18,9 +19,13 @@ public interface ProjectService {
 	
 	public abstract int getIssueCount(int objectType, long objectId);
 	
+	public abstract int getIssueCount(DataSourceRequest dataSourceRequest);
+	
 	public abstract Issue getIssue( long issueId ) throws  IssueNotFoundException ;
 	
 	public abstract List<Issue> getIssues(int objectType, long objectId);
+	
+	public abstract List<Issue> getIssues(DataSourceRequest dataSourceRequest);
 	
 	public abstract List<Issue> getIssues(int objectType, long objectId, int startIndex, int numResults);
 	

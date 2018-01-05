@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -14,7 +16,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
-import architecture.community.board.BoardThread;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.model.Models;
 import architecture.community.projects.DefaultIssue;
@@ -22,7 +23,9 @@ import architecture.community.projects.Issue;
 import architecture.community.projects.Project;
 import architecture.community.projects.dao.ProjectDao;
 import architecture.community.user.UserTemplate;
+import architecture.community.web.model.json.DataSourceRequest;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
+import architecture.ee.jdbc.sqlquery.mapping.BoundSql;
 import architecture.ee.service.ConfigService;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
@@ -233,6 +236,53 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 				new SqlParameterValue(Types.NUMERIC, objectType ),
 				new SqlParameterValue(Types.NUMERIC, objectId )
 		);
+	}
+
+	@Override
+	public int getIssueCount(DataSourceRequest dataSourceRequest) {
+		
+		int objectType = dataSourceRequest.getDataAsInteger("objectType", -1);
+		long objectId = dataSourceRequest.getDataAsLong("objectId", -1L);		
+		Map<String, Object> additionalParameter = new HashMap<String, Object>();
+		additionalParameter.put("filter", dataSourceRequest.getFilter());
+		additionalParameter.put("sort", dataSourceRequest.getSort());
+		
+		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.COUNT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID", additionalParameter);
+		return getExtendedJdbcTemplate().queryForObject(
+				sqlSource.getSql(), 
+				Integer.class,
+				new SqlParameterValue(Types.NUMERIC, objectType ),
+				new SqlParameterValue(Types.NUMERIC, objectId )
+			);
+	}
+
+	@Override
+	public List<Long> getIssueIds(DataSourceRequest dataSourceRequest) {
+		int objectType = dataSourceRequest.getDataAsInteger("objectType", -1);
+		long objectId = dataSourceRequest.getDataAsLong("objectId", -1L);		
+		Map<String, Object> additionalParameter = new HashMap<String, Object>();
+		additionalParameter.put("filter", dataSourceRequest.getFilter());
+		additionalParameter.put("sort", dataSourceRequest.getSort());
+		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.SELECT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID", additionalParameter);
+		if( dataSourceRequest.getPageSize() > 0 )
+		{	
+			return getExtendedJdbcTemplate().query(
+					sqlSource.getSql(), 
+					dataSourceRequest.getSkip(), 
+					dataSourceRequest.getPageSize(), 
+					Long.class, 
+					new SqlParameterValue(Types.NUMERIC, objectType ),
+					new SqlParameterValue(Types.NUMERIC, objectId )
+			);			
+		}else {
+			getBoundSql("COMMUNITY_WEB.SELECT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID", dataSourceRequest.getFilter(), dataSourceRequest.getSort());
+			return getExtendedJdbcTemplate().queryForList(
+					sqlSource.getSql(), 
+					Long.class,
+					new SqlParameterValue(Types.NUMERIC, objectType ),
+					new SqlParameterValue(Types.NUMERIC, objectId )
+			);
+		}
 	}
 	
 	

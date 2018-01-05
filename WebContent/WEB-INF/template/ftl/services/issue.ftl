@@ -118,8 +118,19 @@
 					}	
 				});
 			},
+			search : function(){
+				community.ui.listview( $('#issue-listview') ).dataSource.read();
+			},
+			filter : {
+				ISSUE_TYPE : null,
+				PRIORITY : null,
+				RESOLUTION : null,
+				ISSUE_STATUS : null
+			},
 			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
-			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} )
+			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
+			resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
+			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} )			
     		});
 		observable.loadProjectInfo();
 		createIssueListView(observable);		
@@ -157,7 +168,26 @@
 					read:{
 						contentType: "application/json; charset=utf-8"
 					},
-					parameterMap: function (options, operation){			
+					parameterMap: function (options, operation){		
+					
+						var filter = {filter:{filters: [], logic: "AND" } };
+						if( observable.filter.ISSUE_TYPE != null && observable.filter.ISSUE_TYPE.length > 0 ){
+							filter.filter.filters.push( {field: "ISSUE_TYPE", operator: "equals", value : observable.filter.ISSUE_TYPE, logic: "AND" } );
+						}
+						if( observable.filter.PRIORITY != null && observable.filter.PRIORITY.length > 0 ){
+							filter.filter.filters.push( {field: "PRIORITY", operator: "equals", value : observable.filter.PRIORITY, logic: "AND" } );
+						}
+						if( observable.filter.RESOLUTION != null && observable.filter.RESOLUTION.length > 0 ){
+							filter.filter.filters.push( {field: "RESOLUTION", operator: "equals", value : observable.filter.RESOLUTION, logic: "AND" } );
+						}
+						if( observable.filter.ISSUE_STATUS != null && observable.filter.ISSUE_STATUS.length > 0 ){
+							filter.filter.filters.push( {field: "ISSUE_STATUS", operator: "equals", value : observable.filter.ISSUE_STATUS, logic: "AND" } );
+						}
+						if( filter.filter.filters.length > 0 ){
+							options = $.extend( true, {}, filter, options );
+						}
+						
+						console.log( options );
 						return community.ui.stringify(options)
 					} 				
 				},
@@ -188,8 +218,8 @@
 				issueTypeDataSource : getPageModel().issueTypeDataSource ,
 				priorityDataSource  : getPageModel().priorityDataSource,
 			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
-			 	resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
-			 	statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} ),
+			 	resolutionDataSource : getPageModel().resolutionDataSource,
+			 	statusDataSource : getPageModel().statusDataSource,
 			 	userDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/users/find.json" />' , {
 			 		serverFiltering: true,
 			 		transport: {
@@ -324,19 +354,57 @@
                                 		</h5>
                                 		
                             		</div>
-	                            <div class="ibox-content">
-	                            
-	          					<h4 class="text-light-gray text-semibold">요청구분</h4>
-								<input data-role="dropdownlist"  
-								   data-placeholder="선택"
-				                   data-auto-bind="true"
-				                   data-value-primitive="true"
-				                   data-text-field="name"
-				                   data-value-field="code"
-				                   data-bind="source:issueTypeDataSource"
-				                   placeholder="선택"
-				                   style="width:100%;"/>	
-					                  
+                            		<div class="ibox-content ibox-heading">
+									
+									<div class="row">
+	                            			<div class="col-sm-4 g-mb-15">
+	                            			<input data-role="combobox"  
+										  	data-placeholder="요청구분"
+						                   	data-auto-bind="true"
+						                   	data-value-primitive="true"
+						                   	data-text-field="name"
+						                   	data-value-field="code"
+						                   	data-bind="source:issueTypeDataSource, value:filter.ISSUE_TYPE "
+						                   	style="width:100%;"/>	
+	                            			</div>
+	                            			<div class="col-sm-4 g-mb-15">
+	                            			<input data-role="combobox"  
+										   	data-placeholder="우선순위"
+						                   	data-auto-bind="true"
+						                   	data-value-primitive="true"
+						                   	data-text-field="name"
+						                   	data-value-field="code"
+						                   	data-bind="source: priorityDataSource, value:filter.PRIORITY"
+						                   	style="width:100%;"/>
+	                            			</div>
+	                            		</div>
+	                            		<div class="row">
+	                            			<div class="col-sm-4 g-mb-15">
+	                            			<input data-role="combobox"  
+											   data-placeholder="처리결과"
+							                   data-auto-bind="true"
+							                   data-value-primitive="true"
+							                   data-text-field="name"
+							                   data-value-field="code"
+							                   data-bind="source:resolutionDataSource, value:filter.RESOLUTION"
+							                   style="width: 100%;"/>
+	                            			</div>
+	                            			<div class="col-sm-4 g-mb-15">
+	                            			<input data-role="combobox"  
+											   data-placeholder="상태"
+							                   data-auto-bind="true"
+							                   data-value-primitive="true"
+							                   data-text-field="name"
+							                   data-value-field="code"
+							                   data-bind="source:statusDataSource, value:filter.ISSUE_STATUS"
+							                   style="width: 100%;"/>
+	                            			</div>
+	                            		</div>
+	                            		<div class="ibox-tools">
+										<button type="button" class="btn btn-primary g-mr-20" data-bind="{click:search ">검색</button>
+									</div>
+								</div>
+	                             <div class="ibox-content">					                  
               <!--Issue ListView-->
               <div class="table-responsive">
                 <table class="table table-bordered u-table--v2">
