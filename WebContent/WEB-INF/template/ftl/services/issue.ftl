@@ -117,7 +117,9 @@
 						$this.set('projecPeriod' , community.data.getFormattedDate( $this.project.startDate , 'yyyy-MM-dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy-MM-dd' ) );
 					}	
 				});
-			}
+			},
+			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
+			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} )
     		});
 		observable.loadProjectInfo();
 		createIssueListView(observable);		
@@ -141,6 +143,11 @@
 			return false;		
 		});
 	});
+	
+	function getPageModel(){
+		var renderTo = $('#page-top');
+		return renderTo.data('model');
+	}
 	
 	function createIssueListView( observable ){
 		var renderTo = $('#issue-listview');
@@ -178,8 +185,8 @@
 				isOpen : false,
 				isClosed : false,
 				issue : new community.model.Issue(),
-				issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
-				priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
+				issueTypeDataSource : getPageModel().issueTypeDataSource ,
+				priorityDataSource  : getPageModel().priorityDataSource,
 			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
 			 	resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
 			 	statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} ),
