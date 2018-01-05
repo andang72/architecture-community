@@ -50,6 +50,17 @@ i.icon-svg {
 }
 
 /* IOS Icons */
+
+.icon-svg-ios-administrative-tools {
+	background-image: url("/images/icons/ios/administrative-tools.svg");	
+}
+.icon-svg-ios-open-sign {
+	background-image: url("/images/icons/ios/open-sign.svg");
+}
+
+.icon-svg-ios-close-sign {
+	background-image: url("/images/icons/ios/close-sign.svg");
+}
 .icon-svg-ios-back {
 	background-image: url("/images/icons/ios/back.svg");
 }
@@ -84,6 +95,10 @@ i.icon-svg {
 }
 
 /* Dusk Icons */
+.icon-svg-dusk-administrative-tools {
+	background-image: url("/images/icons/dusk/administrative-tools.svg");	
+}
+
 .icon-svg-dusk-back {
 	background-image: url("/images/icons/dusk/back.svg");
 }
