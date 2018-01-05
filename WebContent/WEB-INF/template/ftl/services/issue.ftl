@@ -334,6 +334,7 @@
 				                   data-text-field="name"
 				                   data-value-field="code"
 				                   data-bind="source:issueTypeDataSource"
+				                   placeholder="선택"
 				                   style="width:100%;"/>	
 					                  
               <!--Issue ListView-->
