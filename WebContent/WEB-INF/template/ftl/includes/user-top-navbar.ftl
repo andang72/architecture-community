@@ -1,4 +1,3 @@
-	<#assign  security=JspTaglibs["http://www.springframework.org/security/tags"] />
 	<div class="navbar-wrapper">
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
@@ -11,9 +10,9 @@
                     </button>
                     
                     <a class="navbar-brand" href="/index.html">HELPDESK</a>
-                    <@security.authorize ifAnyGranted="ROLE_ADMINISTRATOR">
+                    <#if SecurityHelper.isUserInRole("ROLE_ADMINISTRATOR") >
                     <a class="back g-mt-15 g-ml-10" href="<@spring.url "/secure/display/view.html?t=/admin/main"/>" ><i class="icon-svg icon-svg-sm icon-svg-dusk-administrative-tools "></i></a>
-                    </@security.authorize>
+                    </#if>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
