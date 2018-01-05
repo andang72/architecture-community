@@ -1,3 +1,4 @@
+
 	<div class="navbar-wrapper">
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
@@ -8,7 +9,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
+                    
                     <a class="navbar-brand" href="/index.html">HELPDESK</a>
+                    <@security.authorize ifAnyGranted="ROLE_ADMINISTRATOR">
+                    <a class="back g-mt-15 g-ml-10" href="<@spring.url "/secure/display/view.html?t=/admin/main"/>" ><i class="icon-svg icon-svg-sm icon-svg-dusk-administrative-tools "></i></a>
+                    </@security.authorize>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
