@@ -211,6 +211,8 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		Project project = projectService.getProject(projectId);
 		List<Issue> list;
 		
+		log.debug("DataSourceRequest: {}", dataSourceRequest );
+		
 		int totalSize = projectService.getIssueCount(Models.PROJECT.getObjectType(), project.getProjectId());
 		
 		if( dataSourceRequest.getPageSize() == 0 && dataSourceRequest.getPage() == 0){

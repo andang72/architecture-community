@@ -1,8 +1,10 @@
 package architecture.community.web.model.json;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -159,6 +161,41 @@ public class DataSourceRequest {
 		return defaultValue;
 	}
 	
+
+	@Override
+	public String toString() {
+		final int maxLen = 10;
+		StringBuilder builder = new StringBuilder();
+		builder.append("DataSourceRequest [page=").append(page).append(", pageSize=").append(pageSize).append(", take=")
+				.append(take).append(", skip=").append(skip).append(", ");
+		if (data != null)
+			builder.append("data=").append(toString(data.entrySet(), maxLen)).append(", ");
+		if (filter != null)
+			builder.append("filter=").append(filter).append(", ");
+		if (sort != null)
+			builder.append("sort=").append(toString(sort, maxLen)).append(", ");
+		if (group != null)
+			builder.append("group=").append(toString(group, maxLen)).append(", ");
+		if (aggregate != null)
+			builder.append("aggregate=").append(toString(aggregate, maxLen));
+		builder.append("]");
+		return builder.toString();
+	}
+
+
+	private String toString(Collection<?> collection, int maxLen) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		int i = 0;
+		for (Iterator<?> iterator = collection.iterator(); iterator.hasNext() && i < maxLen; i++) {
+			if (i > 0)
+				builder.append(", ");
+			builder.append(iterator.next());
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+
 
 	public static class FilterDescriptor {
 		

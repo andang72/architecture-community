@@ -19,6 +19,7 @@ public class JdbcTokenRepositoryDao extends ExtendedJdbcDaoSupport implements Pe
 
 	
 	public void createNewToken(PersistentRememberMeToken token) {			
+		
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_USER.CREATE_REMEMBER_USER_TOKEN").getSql(),
 				new SqlParameterValue(Types.VARCHAR, token.getSeries()),
 				new SqlParameterValue(Types.VARCHAR, token.getUsername()),
