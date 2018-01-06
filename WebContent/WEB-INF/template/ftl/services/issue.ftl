@@ -355,7 +355,6 @@
                                 		
                             		</div>
                             		<div class="ibox-content ibox-heading">
-									
 									<div class="row">
 	                            			<div class="col-sm-4 g-mb-15">
 	                            			<input data-role="combobox"  
@@ -405,28 +404,28 @@
 									</div>
 								</div>
 	                             <div class="ibox-content">					                  
-              <!--Issue ListView-->
-              <div class="table-responsive">
-                <table class="table table-bordered u-table--v2">
-                  <thead class="text-uppercase g-letter-spacing-1">
-                    <tr class="g-height-50">
-                    	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">ID</th>	
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-65">유형</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">중요도</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">보고자</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">담당자</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">상태</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">결과</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
-                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
-                    </tr>
-                  </thead>
-                  <tbody id="issue-listview" ></tbody>
-                </table>
-                <div id="issue-listview-pager" class="g-bg-transparent g-brd-none"></div>
-              </div>
-              <!--End Issue ListView -->
+						              <!--Issue ListView-->
+						              <div class="table-responsive">
+						                <table class="table table-bordered u-table--v2">
+						                  <thead class="text-uppercase g-letter-spacing-1">
+						                    <tr class="g-height-50">
+						                    	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">ID</th>	
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-65">유형</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">중요도</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">보고자</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">담당자</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">상태</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">결과</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
+						                    </tr>
+						                  </thead>
+						                  <tbody id="issue-listview" ></tbody>
+						                </table>
+						                <div id="issue-listview-pager" class="g-bg-transparent g-brd-none"></div>
+						              </div>
+						              <!--End Issue ListView -->
 	                            </div>
                         		</div>
                     		</div>
