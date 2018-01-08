@@ -115,6 +115,7 @@
     		
     		var renderTo = $('#page-top');
     		renderTo.data('model', observable);
+    		community.ui.bind(renderTo, observable );	
     		
     		createProjectListView(observable);
 		
@@ -212,8 +213,8 @@
               <h2 class="g-color-darkgray g-font-weight-400 g-font-size-22 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
             </div>
             <!-- Promo Blocks - Input -->
-			<p>
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="invisable: currentUser.anonymous ">기술지원요청하기</a>
+			<p data-bind="invisible:currentUser.anonymous">
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" >기술지원요청하기</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
