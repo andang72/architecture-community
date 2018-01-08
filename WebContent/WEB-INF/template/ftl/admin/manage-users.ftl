@@ -175,7 +175,6 @@
                     <strong>Copyright</strong> Example Company &copy; 2014-2017
                 </div>
             </div>
-
         </div>
     </div>
 	</body>
