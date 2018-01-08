@@ -183,7 +183,7 @@
 		<td class="u-text-left">		
 		<h3 class="g-font-weight-100">
 		#if (enabled ) { # <i class="icon-lock"></i>  # } else {# <i class="icon-lock-open"></i> #}#
-		<u>#= name #</u> #= title # 
+		<u>#= username #</u> #= name # 
 		<div class="pull-right">		
 		<span class="u-label u-label-default g-mr-10 g-mb-15 g-font-weight-100">#: pageState #</span>
 		</div>	
