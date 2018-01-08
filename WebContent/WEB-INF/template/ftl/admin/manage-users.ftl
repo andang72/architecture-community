@@ -87,7 +87,7 @@
 	function createUserListView(){
 		var renderTo = $('#users-listview');	
 		var listview = community.ui.listview( renderTo , {
-			dataSource: community.ui.datasource('/data/api/mgmt/v1/users/list.json', {
+			dataSource: community.ui.datasource('/data/api/mgmt/v1/security/users/list.json', {
 				transport: { 
 					parameterMap: function (options, operation){	 
 						return community.ui.stringify(options);
