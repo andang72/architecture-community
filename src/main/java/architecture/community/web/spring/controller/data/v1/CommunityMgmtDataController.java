@@ -87,7 +87,6 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 			String value = configService.getApplicationProperty(key);
 			list.add(new Property( key, value ));
 		}
-		
 		return list ;
 	}
 	

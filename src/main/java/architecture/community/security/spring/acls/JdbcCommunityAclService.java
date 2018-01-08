@@ -68,25 +68,31 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 	}
 	
 	public <T> void getFinalGrantedPermissions(  Authentication authentication, Class<T> clazz, Serializable identifier, PermissionsSetter setter ) {	
+		
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
 		
 		log.debug("final granted permission for {}({})" ,  clazz.getCanonicalName() ,  identifier );
-		MutableAcl acl = (MutableAcl) readAclById(identity);
-		log.debug("final granted permission entries: {}" , acl.getEntries() );
 		
-		List<Sid> sids = sidRetrievalStrategy.getSids(authentication);	
-		
-		// checking anonymous !!
-		boolean isAnonymous = false;
-		if (authentication.getPrincipal() instanceof CommuintyUserDetails ){
-			isAnonymous = ((CommuintyUserDetails) authentication.getPrincipal()).getUser().isAnonymous() ;
-		}
-		
-		if( ! isAnonymous ) {
-			sids.add(new PrincipalSid(SecurityHelper.ANONYMOUS_USER_DETAILS.getUser().getUsername()));
+		MutableAcl acl = null ;
+		List<Sid> sids = Collections.EMPTY_LIST;
+		try {
+			acl = (MutableAcl) readAclById(identity);
+			log.debug("final granted permission entries: {}" , acl.getEntries() );
+			sids = sidRetrievalStrategy.getSids(authentication);	
+			// checking anonymous !!
+			boolean isAnonymous = false;
+			if (authentication.getPrincipal() instanceof CommuintyUserDetails ){
+				isAnonymous = ((CommuintyUserDetails) authentication.getPrincipal()).getUser().isAnonymous() ;
+			}
+			
+			if( ! isAnonymous ) {
+				sids.add(new PrincipalSid(SecurityHelper.ANONYMOUS_USER_DETAILS.getUser().getUsername()));
+			}
+		} catch (NotFoundException e) {
 		}
 		
 		setter.execute( sids, acl);	
+	
 	}
 	
 	
@@ -324,40 +330,50 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
     			
     			public void execute(List<Sid> sids, MutableAcl acl) {			 		
 					log.debug("anonymous : {}", SecurityHelper.isAnonymous());
-			 		if( !SecurityHelper.isAnonymous() )
-			 		{
-			 			log.debug("is granted {} {}" , CommunityPermissions.ADMIN, sids );
-			 			try {
-							bundle.admin = isGranted( acl, (Permission)CommunityPermissions.ADMIN, sids);
-						} catch (NotFoundException e) {
+					
+					if( acl != null)
+					{						
+				 		if( !SecurityHelper.isAnonymous() )
+				 		{
+				 			log.debug("is granted {} {}" , CommunityPermissions.ADMIN, sids );
+				 			try {
+								bundle.admin = isGranted( acl, (Permission)CommunityPermissions.ADMIN, sids);
+							} catch (NotFoundException e) {
+								
+							}			 	
+				 			log.debug("is granted {} > {}" , CommunityPermissions.ADMIN, bundle.admin );
+				 		}	
+				 		
+				 		if( bundle.admin ) {
+			    				bundle.read = true;
+			    				bundle.write = true;
+			    				bundle.create = true;
+			    				bundle.delete = true;
+			    				bundle.createThread = true;
+			    				bundle.createThreadMessage = true;
+			    				bundle.createAttachment = true;
+			    				bundle.createImage = true;
+			    				bundle.createComment = true;
+			    				bundle.readComment = true;    			 					
+						}else {
+							bundle.read = isGranted( acl, (Permission)CommunityPermissions.READ, sids);		
+							bundle.write = isGranted( acl, (Permission)CommunityPermissions.WRITE, sids);		
+							bundle.create = isGranted( acl, (Permission)CommunityPermissions.CREATE, sids);		
 							
-						}			 	
-			 			log.debug("is granted {} > {}" , CommunityPermissions.ADMIN, bundle.admin );
-			 		}	
-			 		
-			 		if( bundle.admin ) {
-		    				bundle.read = true;
-		    				bundle.write = true;
-		    				bundle.create = true;
-		    				bundle.delete = true;
-		    				bundle.createThread = true;
-		    				bundle.createThreadMessage = true;
-		    				bundle.createAttachment = true;
-		    				bundle.createImage = true;
-		    				bundle.createComment = true;
-		    				bundle.readComment = true;    			 					
-					}else {
-						bundle.read = isGranted( acl, (Permission)CommunityPermissions.READ, sids);		
-						bundle.write = isGranted( acl, (Permission)CommunityPermissions.WRITE, sids);		
-						bundle.create = isGranted( acl, (Permission)CommunityPermissions.CREATE, sids);		
-						bundle.delete = isGranted( acl, (Permission)CommunityPermissions.DELETE, sids);		
-						bundle.createThread = isGranted( acl, (Permission)CommunityPermissions.CREATE_THREAD, sids);		
-						bundle.createThreadMessage = isGranted( acl, (Permission)CommunityPermissions.CREATE_THREAD_MESSAGE, sids);		
-						bundle.createAttachment = isGranted( acl, (Permission)CommunityPermissions.CREATE_ATTACHMENT, sids);		
-						bundle.createImage = isGranted( acl, (Permission)CommunityPermissions.CREATE_IMAGE, sids);		
-						bundle.createComment = isGranted( acl, (Permission)CommunityPermissions.CREATE_COMMENT, sids);		
-						bundle.readComment = isGranted( acl, (Permission)CommunityPermissions.READ_COMMENT, sids);	
+							if( (bundle.write || bundle.create ) && !bundle.read) 
+							{
+								bundle.read = true;
+							}
+							bundle.delete = isGranted( acl, (Permission)CommunityPermissions.DELETE, sids);		
+							bundle.createThread = isGranted( acl, (Permission)CommunityPermissions.CREATE_THREAD, sids);		
+							bundle.createThreadMessage = isGranted( acl, (Permission)CommunityPermissions.CREATE_THREAD_MESSAGE, sids);		
+							bundle.createAttachment = isGranted( acl, (Permission)CommunityPermissions.CREATE_ATTACHMENT, sids);		
+							bundle.createImage = isGranted( acl, (Permission)CommunityPermissions.CREATE_IMAGE, sids);		
+							bundle.createComment = isGranted( acl, (Permission)CommunityPermissions.CREATE_COMMENT, sids);		
+							bundle.readComment = isGranted( acl, (Permission)CommunityPermissions.READ_COMMENT, sids);	
+						}						 
 					}
+
 				}});    		
     		return bundle;
     }
