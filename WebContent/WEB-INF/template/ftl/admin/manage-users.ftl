@@ -89,6 +89,9 @@
 		var listview = community.ui.listview( renderTo , {
 			dataSource: community.ui.datasource('/data/api/mgmt/v1/security/users/list.json', {
 				transport: { 
+					read:{
+						contentType: "application/json; charset=utf-8"
+					},
 					parameterMap: function (options, operation){	 
 						return community.ui.stringify(options);
 					}
