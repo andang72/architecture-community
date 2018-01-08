@@ -400,6 +400,7 @@
 	                            			</div>
 	                            		</div>
 	                            		<div class="ibox-tools">
+	                            			<a class="btn btn-primary g-mr-20" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
 										<button type="button" class="btn btn-primary g-mr-20" data-bind="{click:search ">검색</button>
 									</div>
 								</div>
