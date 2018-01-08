@@ -115,6 +115,7 @@
     		
     		var renderTo = $('#page-top');
     		renderTo.data('model', observable);
+    		community.ui.bind(renderTo, observable );	
     		
     		createProjectListView(observable);
 		
@@ -213,7 +214,7 @@
             </div>
             <!-- Promo Blocks - Input -->
 			<p>
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="invisible:currentUser.anonymous ">기술지원요청하기</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
