@@ -115,6 +115,7 @@
     		
     		var renderTo = $('#page-top');
     		renderTo.data('model', observable);
+    		community.ui.bind(renderTo, observable );	
     		
     		createProjectListView(observable);
 		
