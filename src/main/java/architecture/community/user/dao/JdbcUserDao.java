@@ -148,9 +148,7 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 	public User createUser(User user) {
 		UserTemplate template = new UserTemplate(user);
 		if (template.getEmail() == null)
-			throw new IllegalArgumentException(CommunityLogLocalizer.getMessage("010012"));		
-		
-		
+			throw new IllegalArgumentException(CommunityLogLocalizer.getMessage("010012"));
 		long nextUserId = getNextUserId() ;
 				
 		if ("".equals(template.getName()))
@@ -241,5 +239,59 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 			new SqlParameterValue(Types.VARCHAR, nameOrEmail),
 			new SqlParameterValue(Types.VARCHAR, nameOrEmail));
 		return users;
+	}
+ 
+	public int getUserCount() {
+		return getExtendedJdbcTemplate().queryForObject(
+				getBoundSql("COMMUNITY_USER.ALL_COUNT_USERS").getSql(),
+				Integer.class);
+	}
+
+   
+	public List<Long> getUserIds() {
+		List<Long> users = getExtendedJdbcTemplate().queryForList        ( 
+				getBoundSql("COMMUNITY_USER.SELECT_ALL_USER_IDS").getSql(), 
+				Long.class);
+			return users;
+	}
+ 
+	public List<Long> getUserIds(int startIndex, int numResults) {
+		List<Long> users = getExtendedJdbcTemplate().query( 
+				getBoundSql("COMMUNITY_USER.SELECT_ALL_USER_IDS").getSql(), 
+				startIndex, 
+				numResults,
+				Long.class);
+			return users;
+	}
+
+
+		
+	public User updateUser(User user) {
+		UserTemplate userToUse = (UserTemplate)user;
+		  boolean useLastNameFirstName = userToUse.getFirstName() != null && userToUse.getLastName() != null;
+		try {
+
+		    getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_USER.UPDATE_USER").getSql(),
+		    		new SqlParameterValue(Types.VARCHAR, userToUse.getUsername()),
+		    		new SqlParameterValue(Types.VARCHAR, userToUse.getPasswordHash()),
+		    		new SqlParameterValue(Types.VARCHAR, userToUse.getName()),
+		    		new SqlParameterValue(Types.NUMERIC, userToUse.isNameVisible() ? 1 : 0 ),
+		    		new SqlParameterValue(Types.VARCHAR, useLastNameFirstName ? userToUse.getFirstName() : null),
+		    		new SqlParameterValue(Types.VARCHAR, useLastNameFirstName ? userToUse.getLastName() : null),
+		    		new SqlParameterValue(Types.VARCHAR, userToUse.getEmail()),
+		    		new SqlParameterValue(Types.NUMERIC, userToUse.isEmailVisible() ? 1 : 0 ),
+		    		new SqlParameterValue(Types.NUMERIC, userToUse.isEnabled() ? 1 : 0 ),
+		    		new SqlParameterValue(Types.NUMERIC, userToUse.getStatus().getId() ),
+		    		new SqlParameterValue(Types.TIMESTAMP, userToUse.getModifiedDate() != null ? userToUse.getModifiedDate() : new Date() ),
+		    		new SqlParameterValue(Types.NUMERIC, userToUse.isEnabled() ? 1 : 0 )
+		);
+		   // setUserProperties(user.getUserId(), user.getProperties());
+
+		} catch (DataAccessException e) {
+		    String message = "Failed to update user.";
+		    logger.error(message, e);
+		    throw e;
+		}
+		return user;
 	}
 }

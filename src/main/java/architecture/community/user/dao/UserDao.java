@@ -1,16 +1,15 @@
 package architecture.community.user.dao;
 
-import java.sql.Types;
 import java.util.List;
-
-import org.springframework.jdbc.core.SqlParameterValue;
 
 import architecture.community.user.User;
 
 public interface UserDao {
 	
 	public abstract User createUser(User template);
-
+	
+	public abstract User updateUser(User user);
+	
 	public abstract User getUserById(long userId);
 		
 	public abstract User getUserByUsername(String username);
@@ -28,4 +27,12 @@ public interface UserDao {
 	public abstract List<Long> findUserIds(String nameOrEmail) ;
 	
 	public abstract List<Long> findUserIds(String nameOrEmail, int startIndex, int numResults) ;
+	
+	
+    public abstract int getUserCount();
+
+    public abstract List<Long> getUserIds();
+
+    public abstract List<Long> getUserIds(int startIndex, int numResults);
+    
 }

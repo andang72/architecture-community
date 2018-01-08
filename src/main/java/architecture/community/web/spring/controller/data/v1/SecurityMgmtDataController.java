@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import architecture.community.exception.NotFoundException;
 import architecture.community.model.Models;
 import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
@@ -26,10 +27,13 @@ import architecture.community.user.RoleAlreadyExistsException;
 import architecture.community.user.RoleManager;
 import architecture.community.user.RoleNotFoundException;
 import architecture.community.user.User;
+import architecture.community.user.UserAlreadyExistsException;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
+import architecture.community.user.UserTemplate;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
+import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
 
@@ -56,6 +60,33 @@ public class SecurityMgmtDataController {
 	/**
 	 * USER API 
 	******************************************/
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getUsers (
+		@RequestBody DataSourceRequest dataSourceRequest,
+		NativeWebRequest request) throws NotFoundException {	
+				 
+		if( dataSourceRequest.getPageSize() == 0)
+			dataSourceRequest.setPageSize(15);
+		
+		int totalCount = userManager.getUserCount();		
+		
+		List<User> users = userManager.getUsers(dataSourceRequest.getSkip(), dataSourceRequest.getPageSize() );		
+		
+		return new ItemList(users, totalCount);
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/save-or-update.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public Result updateRole(@RequestBody UserTemplate user , NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException {
+
+		if( user.getUserId() > 0 )
+			userManager.updateUser(user);
+		
+		return Result.newResult();
+    }
 	
 	
 	/**

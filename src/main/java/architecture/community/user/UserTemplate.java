@@ -8,13 +8,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateDeserializer;
 import architecture.community.model.json.JsonDateSerializer;
 import architecture.ee.util.StringUtils;
 
-public class UserTemplate implements User, Serializable {
+public class UserTemplate extends PropertyAwareSupport implements User, Serializable {
 
-	
 	private long userId;
 
 	private String username;

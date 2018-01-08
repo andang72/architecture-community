@@ -3,7 +3,20 @@
 	<name>COMMUNITY_USER</name>
 	<description>COMMUNITY USER SUBSYSTEM QUERIES</description>	
 	
-	
+	<sql-query name="ALL_COUNT_USERS" description="모든 사용자 수를 조회"><![CDATA[
+	SELECT 
+		 COUNT( USER_ID )
+	FROM MUSI_USER  
+	 ]]></sql-query>
+	 
+	 <sql-query name="SELECT_ALL_USER_IDS" description="모든 사용자 ID 를 조회"><![CDATA[
+	SELECT 
+		 USER_ID
+	FROM MUSI_USER 
+	ORDER BY NAME 
+	 ]]></sql-query>
+	 
+	 
 	<sql-query name="COUNT_USERS_BY_EMAIL_OR_NAME" description="메일 또는 이름에 해당하는 모든 사용자 수를 조회"><![CDATA[
 	SELECT 
 		 COUNT( USER_ID )
@@ -123,12 +136,29 @@
 		  MODIFIED_DATE
 	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
     ]]></sql-query>	
+ 
+
+ 	<sql-query name="UPDATE_USER" description="사용자 변경"><![CDATA[
+	UPDATE MUSI_USER 
+    SET
+		  USERNAME,
+		  PASSWORD_HASH,
+		  NAME,
+		  NAME_VISIBLE,
+		  FIRST_NAME,
+		  LAST_NAME,
+		  EMAIL,
+		  EMAIL_VISIBLE,
+		  USER_ENABLED,
+		  STATUS,
+		  MODIFIED_DATE
+	WHERE = USER_ID = ?
+    ]]></sql-query>	
     
+      
     <sql-query name="DELETE_USER_BY_ID" description="사용자 삭제"><![CDATA[
     DELETE MUSI_USER WHERE USER_ID = ?
-     ]]></sql-query>
-     
-     
+     ]]></sql-query> 
      
 	<sql-query name="CREATE_ROLE" description="CREATE_ROLE"><![CDATA[                 
     INSERT INTO MUSI_ROLE ( 

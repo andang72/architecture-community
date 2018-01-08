@@ -16,6 +16,7 @@ public interface UserManager {
 	
 	public abstract void deleteUser(User user) throws UserNotFoundException ;
 	
+	public abstract void updateUser(User user)  throws UserNotFoundException, UserAlreadyExistsException ;
 	
     /**
      * 
@@ -34,4 +35,12 @@ public interface UserManager {
     public abstract List<User> findUsers(String nameOrEmail, int startIndex, int numResults);
 
     public abstract int getFoundUserCount(String nameOrEmail);
+    
+    
+    public abstract int getUserCount();
+    
+    public abstract List<User> getUsers();
+
+    public abstract List<User> getUsers(int startIndex, int numResults);
+    
 }

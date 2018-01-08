@@ -102,6 +102,7 @@ public class AccountsDataController {
 	
 	
 	private static class SignupForm {
+		
 		private String username ;
 		private String name ;
 		private String password;

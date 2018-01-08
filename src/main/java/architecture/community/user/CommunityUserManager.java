@@ -54,7 +54,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 	}
 
 	public User getUser(User template, boolean caseSensitive) {
-		
+
 		User user = null;
 
 		if (template.getUserId() == -1L) {
@@ -79,7 +79,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 			long userIdToUse = getUserIdInCache(nameToUse);
 			if (userIdToUse > 0L) {
 				user = getUserInCache(template.getUserId());
-			}	
+			}
 			if (user == null) {
 
 				if (!caseSensitive) {
@@ -124,12 +124,10 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		return user;
 	}
 
-
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public User createUser(User newUser) throws UserAlreadyExistsException, EmailAlreadyExistsException {
 		User user = getUser(newUser);
-		
-		
+
 		if (null != user) {
 			if (!user.getUsername().equals(newUser.getUsername())) {
 				if (caseEmailAddress(user).equals(caseEmailAddress(newUser))) {
@@ -149,16 +147,16 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		userTemplate.setPassword(newUser.getPassword());
 		userTemplate.setPasswordHash(getPasswordHash(newUser));
 		userTemplate.setEmail(caseEmailAddress(newUser));
-		setTemplateDates(userTemplate);		
-		
+		setTemplateDates(userTemplate);
+
 		user = userDao.createUser(userTemplate);
-		
+
 		userTemplate = new UserTemplate(user);
 		userTemplate.setPassword(null);
-		updateCaches(userTemplate);		
+		updateCaches(userTemplate);
 		return userTemplate;
 	}
-	
+
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void deleteUser(User user) throws UserNotFoundException {
 		User existUser = getUser(user);
@@ -171,18 +169,17 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 			log.error(message, ex);
 			throw ex;
 		}
-		
-		
+
 	}
 
-	protected void evictCaches(User user){		
+	protected void evictCaches(User user) {
 		userCache.remove(Long.valueOf(user.getUserId()));
 		userIdCache.remove(user.getUsername());
 	}
 
 	protected long getUserIdInCache(String username) {
 		if (userIdCache.get(username) != null) {
-			return (Long)userIdCache.get(username).getObjectValue();
+			return (Long) userIdCache.get(username).getObjectValue();
 		}
 		return -2L;
 	}
@@ -191,20 +188,20 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		if (user != null) {
 			if (user.getUserId() > 0 && StringUtils.isNullOrEmpty(user.getUsername())) {
 				userIdCache.remove(user.getUsername());
-				userIdCache.put(new Element(user.getUsername(), user.getUserId()));				
+				userIdCache.put(new Element(user.getUsername(), user.getUserId()));
 				userCache.remove(user.getUserId());
 				userCache.put(new Element(user.getUserId(), user));
-				
+
 			}
 		}
 	}
 
 	protected User getUserInCache(Long userId) {
 		if (userCache.get(userId) != null)
-			return (User)userCache.get(userId).getObjectValue();
+			return (User) userCache.get(userId).getObjectValue();
 		return null;
 	}
-	
+
 	/**
 	 * 사용자 객체의 생성일 과 수정일이 널인 경우 현재 일자로 업데이트 한다.
 	 * 
@@ -218,7 +215,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		if (null == ut.getModifiedDate())
 			ut.setModifiedDate(new Date());
 	}
-	
+
 	private String getPasswordHash(User user) {
 		String passwd;
 		passwd = user.getPassword();
@@ -231,16 +228,16 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		}
 		return null;
 	}
-	
+
 	private String caseEmailAddress(User user) {
 		return emailAddressCaseSensitive || user.getEmail() == null ? user.getEmail() : user.getEmail().toLowerCase();
 	}
 
 	@Override
 	public List<User> findUsers(String nameOrEmail) {
-		List<Long> ids = userDao.findUserIds(nameOrEmail );
+		List<Long> ids = userDao.findUserIds(nameOrEmail);
 		List<User> users = new ArrayList<User>(ids.size());
-		for( long id : ids )
+		for (long id : ids)
 			try {
 				users.add(getUser(id));
 			} catch (UserNotFoundException e) {
@@ -253,7 +250,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 	public List<User> findUsers(String nameOrEmail, int startIndex, int numResults) {
 		List<Long> ids = userDao.findUserIds(nameOrEmail, startIndex, numResults);
 		List<User> users = new ArrayList<User>(ids.size());
-		for( long id : ids )
+		for (long id : ids)
 			try {
 				users.add(getUser(id));
 			} catch (UserNotFoundException e) {
@@ -267,4 +264,88 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		return userDao.getFoundUserCount(nameOrEmail);
 	}
 
+	public int getUserCount() {
+		return userDao.getUserCount();
+	}
+
+	public List<User> getUsers() {
+		List<Long> ids = userDao.getUserIds();
+		List<User> users = new ArrayList<User>(ids.size());
+		for (long id : ids)
+			try {
+				users.add(getUser(id));
+			} catch (UserNotFoundException e) {
+				log.warn(e.getMessage(), e);
+			}
+		return users;
+	}
+
+	@Override
+	public List<User> getUsers(int startIndex, int numResults) {
+		List<Long> ids = userDao.getUserIds(startIndex, numResults);
+		List<User> users = new ArrayList<User>(ids.size());
+		for (long id : ids)
+			try {
+				users.add(getUser(id));
+			} catch (UserNotFoundException e) {
+				log.warn(e.getMessage(), e);
+			}
+		return users;
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void updateUser(User user) throws UserNotFoundException, UserAlreadyExistsException {
+
+		UserTemplate userModel = new UserTemplate(getUser(user));
+		
+		if (null == userModel) {
+			throw new UserNotFoundException();
+		}
+
+		String previousUsername = null;
+		if (!userModel.getUsername().equals(user.getUsername())) {
+			previousUsername = userModel.getUsername();
+			UserTemplate toCheck = new UserTemplate();
+			toCheck.setUsername(user.getUsername());
+			User match = getUser(toCheck);
+			if (null != match && match.getUserId() != user.getUserId()) {
+				throw new UserAlreadyExistsException();
+			}
+		}
+
+		userModel.setEmail(caseEmailAddress(user));
+		userModel.setEmailVisible(user.isEmailVisible());
+		userModel.setModifiedDate(new Date());
+		userModel.setName(user.getName());
+		userModel.setNameVisible(user.isNameVisible());
+		userModel.setProperties(user.getProperties());
+		userModel.setUsername(user.getUsername());
+		userModel.setEnabled(user.isEnabled());
+		userModel.setStatus(user.getStatus());
+		userModel.setPassword(user.getPassword());
+		userModel.setPasswordHash(getPasswordHash(user));
+		
+		wireTemplateDates(userModel);
+
+		try {
+			userDao.updateUser(userModel); 
+			// cache 수정 ..
+			userCache.put(new Element(userModel.getUserId(), userModel));
+			if (previousUsername != null)
+				userIdCache.remove(previousUsername);
+			userIdCache.put(new Element(userModel.getUsername(), userModel.getUserId())); 
+		} catch (DataAccessException ex) { 
+			throw ex;
+		}
+
+	}
+
+	private void wireTemplateDates(UserTemplate ut) {
+		if (null == ut)
+			return;
+		if (null == ut.getCreationDate())
+			ut.setCreationDate(new Date());
+		if (null == ut.getModifiedDate())
+			ut.setModifiedDate(new Date());
+	}
 }

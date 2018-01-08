@@ -3,8 +3,9 @@ package architecture.community.user;
 import java.util.Date;
 
 import architecture.community.model.Models;
+import architecture.community.model.PropertyAware;
 
-public interface User {
+public interface User extends PropertyAware {
 	
 	public static final int MODLE_TYPE = Models.USER.getObjectType();
 	
