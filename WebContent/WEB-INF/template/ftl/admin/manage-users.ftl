@@ -150,8 +150,7 @@
                         			 <div class="ibox-content no-padding">	 
                         			 	<table class="table no-margins">
 			                            <thead>
-			                            <tr>
-			                                <th class="text-center">ID</th>
+			                            <tr> 
 			                                <th class="text-center" width="100">이름</th>
 			                                <th class="text-center" width="100">상태</th>
 			                                <th class="text-center" width="100">생성일</th>
@@ -184,7 +183,7 @@
 	<tr class="u-listview-item">
 		<td class="u-text-left">		
 		<h3 class="g-font-weight-100">
-		#if (enaled ) { # <i class="icon-lock"></i>  # } else {# <i class="icon-lock-open"></i> #}#
+		#if (enabled ) { # <i class="icon-lock"></i>  # } else {# <i class="icon-lock-open"></i> #}#
 		<u>#= name #</u> #= title # 
 		<div class="pull-right">		
 		<span class="u-label u-label-default g-mr-10 g-mb-15 g-font-weight-100">#: pageState #</span>
