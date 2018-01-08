@@ -6,14 +6,27 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INSPINIA | Empty Page</title>
-    <link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet">
-    <link href="/fonts/font-awesome.css" rel="stylesheet">
-    <link href="/css/animate/animate.css" rel="stylesheet">
-    <link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet">
-    <link href="/css/community.ui/community.ui.style.css" rel="stylesheet">
- 	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script>
- 	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
+    <title>INSPINIA | Empty Page</title> 
+	<!-- Kendoui with bootstrap theme CSS -->			
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common-bootstrap.core.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+	
+	<!-- Bootstrap CSS -->
+    <link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
+    
+    <!-- Bootstrap Theme Inspinia CSS -->
+    <link href="<@spring.url "/css/bootstrap.theme/inspinia/style.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/bootstrap.theme/inspinia/custom.css"/>" rel="stylesheet" type="text/css" />	
+            
+    <!-- Community CSS -->
+	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
+  	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
+  	    
+ 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js'"/>></script>
+ 	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
  	
 	<!-- Application JavaScript
     		================================================== -->    	
@@ -41,8 +54,8 @@
 			"community.data" 			: "/js/community.ui/community.data"
 		}
 	});
-	require([ "jquery", "bootstrap", "kendo.ui.core.min", "community.ui.core", "community.data", "jquery.metisMenu" , "jquery.slimscroll", "inspinia"], function($, kendo ) {
-		
+	require([ "jquery", "bootstrap", "kendo.ui.core.min", "community.ui.core", "community.data", "jquery.metisMenu" , "jquery.slimscroll", "inspinia"], function($, kendo ) { 
+	
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -66,9 +79,33 @@
 		
 		var renderTo = $('#wrapper');
 		console.log( community.ui.stringify(observable.currentUser) );
-		community.ui.bind( renderTo , observable );
+		community.ui.bind( renderTo , observable ); 
+		createUserListView();
 		
 	});
+	
+	function createUserListView(){
+		var renderTo = $('#users-listview');	
+		var listview = community.ui.listview( renderTo , {
+			dataSource: community.ui.datasource('/data/api/mgmt/v1/users/list.json', {
+				transport: { 
+					parameterMap: function (options, operation){	 
+						return community.ui.stringify(options);
+					}
+				},
+				schema: {
+					total: "totalCount",
+					data:  "items",
+					model: community.model.User
+				}
+			}),
+			template: community.ui.template($("#template").html())
+		}); 			
+		
+		community.ui.pager( $("#users-listview-pager"), {
+            dataSource: listview.dataSource
+        }); 	
+	}
 	
 	</script>
 </head>
@@ -105,13 +142,27 @@
             </div>
 
             <div class="wrapper wrapper-content">
-                <div class="middle-box text-center animated fadeInRightBig">
-                    <h3 class="font-bold">This is page content</h3>
-                    <div class="error-desc">
-                        You can create here any grid layout you want. And any variation layout you imagine:) Check out
-                        main dashboard and other site. It use many different layout.
-                        <br/><a href="index.html" class="btn btn-primary m-t">Dashboard</a>
-                    </div>
+                <div class="text-center">
+  					<div class="ibox float-e-margins">
+                        			 <div class="ibox-content no-padding">	 
+                        			 	<table class="table no-margins">
+			                            <thead>
+			                            <tr>
+			                                <th class="text-center">ID</th>
+			                                <th class="text-center" width="100">이름</th>
+			                                <th class="text-center" width="100">상태</th>
+			                                <th class="text-center" width="100">생성일</th>
+			                                <th class="text-center" width="150">수정일</th>
+			                            </tr>
+			                            </thead>
+			                            <tbody id="users-listview" class="no-border u-listview" >	
+			                            </tbody>                            
+			                        </table>          
+                        			 </div>
+                        			 <div class="ibox-footer no-padding">  
+	                            		<div id="users-listview-pager" class="k-pager-wrap no-border" ></div>
+	                             </div>  
+					</div>
                 </div>
             </div>
             <div class="footer">
@@ -124,7 +175,29 @@
             </div>
 
         </div>
-        </div>
-</body>
+    </div>
+	</body>
+	<script type="text/x-kendo-template" id="template">    	
+	<tr class="u-listview-item">
+		<td class="u-text-left">		
+		<h3 class="g-font-weight-100">
+		#if (enaled ) { # <i class="icon-lock"></i>  # } else {# <i class="icon-lock-open"></i> #}#
+		<u>#= name #</u> #= title # 
+		<div class="pull-right">		
+		<span class="u-label u-label-default g-mr-10 g-mb-15 g-font-weight-100">#: pageState #</span>
+		</div>	
+		</h3>
+		<div class="u-visible-on-select">
+			<div class="btn-group">
+			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="edit" data-object-id="#= pageId#">수정</button>
+			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-id="#= pageId#">삭제</button>
+			</div>
+	 	</div>
+		</td>
+		<td class="text-center"> #: status # </td>
+		<td class="text-center">  #: community.data.getFormattedDate( creationDate)  #  </td>
+		<td class="text-center">#: community.data.getFormattedDate( modifiedDate)  # </td>
+	</tr>				                      
+    </script>       
 </html>
 </#compress>
