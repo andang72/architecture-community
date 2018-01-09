@@ -140,19 +140,18 @@
 
  	<sql-query name="UPDATE_USER" description="사용자 변경"><![CDATA[
 	UPDATE MUSI_USER 
-    SET
-		  USERNAME,
-		  PASSWORD_HASH,
-		  NAME,
-		  NAME_VISIBLE,
-		  FIRST_NAME,
-		  LAST_NAME,
-		  EMAIL,
-		  EMAIL_VISIBLE,
-		  USER_ENABLED,
-		  STATUS,
-		  MODIFIED_DATE
-	WHERE = USER_ID = ?
+    SET   USERNAME = ?,
+		  PASSWORD_HASH = ?,
+		  NAME = ?,
+		  NAME_VISIBLE = ?,
+		  FIRST_NAME = ?,
+		  LAST_NAME = ?,
+		  EMAIL = ?,
+		  EMAIL_VISIBLE = ?,
+		  USER_ENABLED = ?,
+		  STATUS = ?,
+		  MODIFIED_DATE = ?
+	WHERE USER_ID = ?
     ]]></sql-query>	
     
       

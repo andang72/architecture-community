@@ -12,6 +12,17 @@
 		}
 	});
 	
+	community.model.Role = Model.define({ 		
+		id: "roleId",
+		fields: { 		
+			roleId: { type: "number", defaultValue: 0 },			
+			name: { type: "string", defaultValue: null },		
+			description: { type: "string", defaultValue: null },
+			creationDate:{ type: "date" },			
+			modifiedDate:{ type: "date"}
+		}
+	});
+	
 	community.model.ObjectAccessControlEntry = Model.define({ 		
 		id: "id",
 		fields: { 	

@@ -314,8 +314,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		if( StringUtils.isNullOrEmpty( user.getPassword() ) ){
 			userModel.setPasswordHash(user.getPasswordHash());			
 		}else {
-			userModel.setPassword(user.getPassword());
-			userModel.setPasswordHash(getPasswordHash(user));			
+			userModel.setPasswordHash(userModel.getPassword());
 		}
 		
 		wireTemplateDates(userModel);

@@ -21,7 +21,9 @@
                        MUSU
                     </div>
                 </li>
-
+				<li>
+					<a href="view.html?t=/admin/manage-properties" data-page='/admin/manage-properties'><i class="fa fa-cog" aria-hidden="true"></i> 설정</a>				
+				</li>
                 <li>
                     <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">커뮤니티</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">

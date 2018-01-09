@@ -141,8 +141,8 @@
 					message = ERROR_MESSAGES[$xhr.errorThrown];						
 				} else {		
 					if( $xhr.responseText ){
+						console.log( $xhr.responseText );
 						var obj = eval("("+$xhr.responseText+")")
-						
 						if( obj != null && obj.error.exceptionMessage ){
 							if( obj.error.exceptionMessage == 'Bad credentials' ){
 								message = '아이디 또는 비밀번호를 잘못 입력하셨습니다.';
@@ -171,6 +171,13 @@
 			}		
 			return renderTo.data("kendoGrid");
 		}
+		
+	    function listbox ( renderTo, options ){
+	    		if(!renderTo.data("kendoListBox")){			
+				 renderTo.kendoListView(options);
+			}	
+	    		return renderTo.data("kendoListBox");
+	    }
 		
 		function listview( renderTo, options){		
 			if(!renderTo.data("kendoListView")){			
@@ -230,15 +237,23 @@
 		};
 		
 		
-		function datasource(url, options){		
-			options = options || {};		
+		function datasource(url, options ){
+			options = options || {} ;		
+			
 			var settings = extend(true, {}, DEFAULT_DATASOURCE_SETTING , options ); 
+			
 			if( defined(url) && url != null ){
 				settings.transport.read.url = url;			
 			}		
 			var dataSource =  DataSource.create(settings);
 			return dataSource;
 		};
+		
+		function datasource_v2( options ){
+			options = options || {} ;
+			var settings = extend(true, {}, { error:handleAjaxError } , options ); 
+			return DataSource.create(settings);
+		}
 
 		var DEFAULT_AJAX_SETTING = {
 			type : POST,	
@@ -417,8 +432,10 @@
 			error : error,
 			defined : defined,
 			datasource : datasource,
+			datasource_v2 : datasource_v2,
 			ajax : ajax,
 			listview : listview,
+			listbox : listbox,
 			grid :  grid,
 			pager :  pager,
 			fx : kendo.fx,

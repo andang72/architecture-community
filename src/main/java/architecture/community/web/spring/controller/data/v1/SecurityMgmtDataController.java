@@ -95,7 +95,7 @@ public class SecurityMgmtDataController {
     }
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/users/{userId:[\\\\p{Digit}]+}/roles/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/roles/list.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     public ItemList getUserRoles(@PathVariable Long userId, NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException {
 		
@@ -109,9 +109,40 @@ public class SecurityMgmtDataController {
 	
 		return result;
     }
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/roles/save-or-update.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public Result saveOrUpdateUserRoles(@PathVariable Long userId, @RequestBody List<DefaultRole> roles, NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException, RoleNotFoundException {
+		
+		//ItemList result = new ItemList();
+		if( userId > 0 && roles.size() > 0 ) {
+			User user = userManager.getUser(userId);
+			
+			List<Role> list1 = new ArrayList<Role> (roles.size());
+			for(Role r : roles ) {
+				list1.add( roleManager.getRole(r.getRoleId() ));
+			}
+			
+			List<Role> list2 = roleManager.getFinalUserRoles(user.getUserId());
+			
+			for( Role r : list2) {
+				if( !list1.contains(r) ) {
+					roleManager.revokeRole(r, user);
+				}
+			}			
+			for( Role r : list1) {
+				if( !list2.contains(r)) {
+					roleManager.grantRole(r, user);
+				}
+			}
+		}
+		
+		return Result.newResult();
+    }
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/users/{userId:[\\\\p{Digit}]+}/roles/add.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/roles/add.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     public Result addUserRoles(@PathVariable Long userId, @RequestParam(value = "roleId", defaultValue = "0", required = false) Long roleId, NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException, RoleNotFoundException {
 		
@@ -128,7 +159,7 @@ public class SecurityMgmtDataController {
     }
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/users/{userId:[\\\\p{Digit}]+}/roles/remove.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/roles/remove.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     public Result removeUserRoles(@PathVariable Long userId, @RequestParam(value = "roleId", defaultValue = "0", required = false) Long roleId, NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException, RoleNotFoundException {
 		
