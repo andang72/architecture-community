@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
@@ -35,6 +36,7 @@ import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
+import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
 
 @Controller("community-data-v1-mgmt-security-controller")
@@ -52,6 +54,10 @@ public class SecurityMgmtDataController {
 	@Inject
 	@Qualifier("roleManager")
 	private RoleManager roleManager;
+	
+	@Inject
+	@Qualifier("configService")
+	private ConfigService configService;
 	
 	public SecurityMgmtDataController() {
 	}
@@ -88,6 +94,55 @@ public class SecurityMgmtDataController {
 		return Result.newResult();
     }
 	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\\\p{Digit}]+}/roles/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public ItemList getUserRoles(@PathVariable Long userId, NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException {
+		
+		ItemList result = new ItemList();
+		if( userId > 0 ) {
+			User user = userManager.getUser(userId);
+			List<Role> items = roleManager.getFinalUserRoles(user.getUserId());
+			result.setItems(items);
+			result.setTotalCount(items.size());
+		}
+	
+		return result;
+    }
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\\\p{Digit}]+}/roles/add.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public Result addUserRoles(@PathVariable Long userId, @RequestParam(value = "roleId", defaultValue = "0", required = false) Long roleId, NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException, RoleNotFoundException {
+		
+		//ItemList result = new ItemList();
+		if( userId > 0 && roleId > 0 ) {
+			User user = userManager.getUser(userId);
+			Role role = roleManager.getRole(roleId);
+			roleManager.grantRole(role, user);			
+			//List<Role> items = roleManager.getFinalUserRoles(user.getUserId());
+			//result.setItems(items);
+			//result.setTotalCount(items.size());
+		}	
+		return Result.newResult();
+    }
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\\\p{Digit}]+}/roles/remove.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public Result removeUserRoles(@PathVariable Long userId, @RequestParam(value = "roleId", defaultValue = "0", required = false) Long roleId, NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException, RoleNotFoundException {
+		
+		//ItemList result = new ItemList();
+		if( userId > 0 && roleId > 0 ) {
+			User user = userManager.getUser(userId);
+			Role role = roleManager.getRole(roleId);
+			roleManager.revokeRole(role, user);			
+			//List<Role> items = roleManager.getFinalUserRoles(user.getUserId());
+			//result.setItems(items);
+			//result.setTotalCount(items.size());
+		}	
+		return Result.newResult();
+    }
 	
 	/**
 	 * ROLE API 
