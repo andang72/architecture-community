@@ -1,6 +1,7 @@
 package architecture.community.user;
 
 import java.util.Date;
+import java.util.Map;
 
 public class CommunityUser implements User {
 
@@ -134,13 +135,23 @@ public class CommunityUser implements User {
 
 	@Override
 	public Date getCreationDate() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Date getModifiedDate() {
+		return null;
+	}
+
+	@Override
+	public Map<String, String> getProperties() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setProperties(Map<String, String> properties) {
+		// TODO Auto-generated method stub
+		
 	}
 }

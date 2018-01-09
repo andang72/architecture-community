@@ -216,18 +216,6 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 			ut.setModifiedDate(new Date());
 	}
 
-	private String getPasswordHash(User user) {
-		String passwd;
-		passwd = user.getPassword();
-		if (StringUtils.isNullOrEmpty(passwd))
-			return null;
-		try {
-			return passwordEncoder.encode(passwd);
-		} catch (Exception ex) {
-			log.warn(CommunityLogLocalizer.getMessage("010001"), ex);
-		}
-		return null;
-	}
 
 	private String caseEmailAddress(User user) {
 		return emailAddressCaseSensitive || user.getEmail() == null ? user.getEmail() : user.getEmail().toLowerCase();
@@ -322,8 +310,13 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		userModel.setUsername(user.getUsername());
 		userModel.setEnabled(user.isEnabled());
 		userModel.setStatus(user.getStatus());
-		userModel.setPassword(user.getPassword());
-		userModel.setPasswordHash(getPasswordHash(user));
+		
+		if( StringUtils.isNullOrEmpty( user.getPassword() ) ){
+			userModel.setPasswordHash(user.getPasswordHash());			
+		}else {
+			userModel.setPassword(user.getPassword());
+			userModel.setPasswordHash(getPasswordHash(user));			
+		}
 		
 		wireTemplateDates(userModel);
 
@@ -340,6 +333,18 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 
 	}
 
+	private String getPasswordHash(User user) {
+		String passwd;
+		passwd = user.getPassword();
+		if (StringUtils.isNullOrEmpty(passwd))
+			return null;
+		try {
+			return passwordEncoder.encode(passwd);
+		} catch (Exception ex) {
+			log.warn(CommunityLogLocalizer.getMessage("010001"), ex);
+		}
+		return null;
+	}
 	private void wireTemplateDates(UserTemplate ut) {
 		if (null == ut)
 			return;
