@@ -87,7 +87,7 @@ public class SecurityTest {
 	}
 	
 
-	@Test
+	
 	public void testGrantedPermission() throws UserNotFoundException {		
 		setAuthentication("dhson@podosw.com");
 		User user = userManager.getUser("dhson@podosw.com");
