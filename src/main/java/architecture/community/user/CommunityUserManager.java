@@ -131,13 +131,11 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		if (null != user) {
 			if (!user.getUsername().equals(newUser.getUsername())) {
 				if (caseEmailAddress(user).equals(caseEmailAddress(newUser))) {
-					EmailAlreadyExistsException e = new EmailAlreadyExistsException(
-							CommunityLogLocalizer.format("010014", user.getUsername(), caseEmailAddress(user)));
+					EmailAlreadyExistsException e = new EmailAlreadyExistsException( CommunityLogLocalizer.format("010014", user.getUsername(), caseEmailAddress(user)));
 					throw e;
 				}
 			} else {
-				UserAlreadyExistsException e = new UserAlreadyExistsException(
-						CommunityLogLocalizer.format("010014", user.getUsername(), caseEmailAddress(user)));
+				UserAlreadyExistsException e = new UserAlreadyExistsException( CommunityLogLocalizer.format("010014", user.getUsername(), caseEmailAddress(user)));
 				log.info(e.getMessage());
 				throw e;
 			}
