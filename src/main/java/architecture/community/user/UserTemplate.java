@@ -56,41 +56,41 @@ public class UserTemplate extends PropertyAwareSupport implements User, Serializ
 		this.enabled = true;
 		this.nameVisible = nameVisible;
 		this.emailVisible = emailVisible;
-		enabled = true;
+		this.enabled = true;
 	}
 
 	public UserTemplate(User user) {
 		if (null == user)
 			return;
-		userId = user.getUserId();
+		this.userId = user.getUserId();
 		
 		if(StringUtils.isNullOrEmpty(user.getUsername()))
 			throw new NullPointerException(CommunityLogLocalizer.getMessage("010015"));
 		
-		username = user.getUsername();
-		name = user.getName();
-		email = user.getEmail();
-		nameVisible = user.isNameVisible();
-		emailVisible = user.isEmailVisible();
-		creationDate = user.getCreationDate();
-		modifiedDate = user.getModifiedDate();
-		status = user.getStatus();
-		password = user.getPassword();
-		passwordHash = user.getPasswordHash();
-		enabled = true;
-		status = Status.NONE;
+		this.username = user.getUsername();
+		this.name = user.getName();
+		this.email = user.getEmail();
+		this.nameVisible = user.isNameVisible();
+		this.emailVisible = user.isEmailVisible();
+		this.creationDate = user.getCreationDate();
+		this.modifiedDate = user.getModifiedDate();
+		this.status = user.getStatus();
+		this.password = user.getPassword();
+		this.passwordHash = user.getPasswordHash();
+		this.enabled = true;
+		this.status = Status.NONE;
 	}
 
 	public UserTemplate() {
-		userId = -2L;
-		status = Status.NONE;
+		this.userId = -2L;
+		this.status = Status.NONE;
 	}
 
 	public UserTemplate(String username) {
 		this.userId = -2L;
 		this.username = username;
 		this.enabled = true;
-		status = Status.NONE;
+		this.status = Status.NONE;
 	}
 	
 	public UserTemplate(long userId, String username) {

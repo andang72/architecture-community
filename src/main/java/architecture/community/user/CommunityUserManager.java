@@ -284,15 +284,15 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void updateUser(User user) throws UserNotFoundException, UserAlreadyExistsException {
 
-		UserTemplate userModel = new UserTemplate(getUser(user));
+		UserTemplate userToUse = new UserTemplate(getUser(user));
 		
-		if (null == userModel) {
+		if (null == userToUse) {
 			throw new UserNotFoundException();
 		}
 
 		String previousUsername = null;
-		if (!userModel.getUsername().equals(user.getUsername())) {
-			previousUsername = userModel.getUsername();
+		if (!userToUse.getUsername().equals(user.getUsername())) {
+			previousUsername = userToUse.getUsername();
 			UserTemplate toCheck = new UserTemplate();
 			toCheck.setUsername(user.getUsername());
 			User match = getUser(toCheck);
@@ -301,31 +301,29 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 			}
 		}
 
-		userModel.setEmail(caseEmailAddress(user));
-		userModel.setEmailVisible(user.isEmailVisible());
-		userModel.setModifiedDate(new Date());
-		userModel.setName(user.getName());
-		userModel.setNameVisible(user.isNameVisible());
-		userModel.setProperties(user.getProperties());
-		userModel.setUsername(user.getUsername());
-		userModel.setEnabled(user.isEnabled());
-		userModel.setStatus(user.getStatus());
+		userToUse.setEmail(caseEmailAddress(user));
+		userToUse.setEmailVisible(user.isEmailVisible());
+		userToUse.setModifiedDate(new Date());
+		userToUse.setName(user.getName());
+		userToUse.setNameVisible(user.isNameVisible());
+		userToUse.setProperties(user.getProperties());
+		userToUse.setUsername(user.getUsername());
+		userToUse.setEnabled(user.isEnabled());
+		userToUse.setStatus(user.getStatus());
 		
-		if( StringUtils.isNullOrEmpty( user.getPassword() ) ){
-			userModel.setPasswordHash(user.getPasswordHash());			
-		}else {
-			userModel.setPasswordHash(userModel.getPassword());
+		if( !StringUtils.isNullOrEmpty( user.getPassword() ) ){
+			userToUse.setPasswordHash(getPasswordHash(user));			
 		}
 		
-		wireTemplateDates(userModel);
+		wireTemplateDates(userToUse);
 
 		try {
-			userDao.updateUser(userModel); 
+			userDao.updateUser(userToUse); 
 			// cache 수정 ..
-			userCache.put(new Element(userModel.getUserId(), userModel));
+			userCache.put(new Element(userToUse.getUserId(), userToUse));
 			if (previousUsername != null)
 				userIdCache.remove(previousUsername);
-			userIdCache.put(new Element(userModel.getUsername(), userModel.getUserId())); 
+			userIdCache.put(new Element(userToUse.getUsername(), userToUse.getUserId())); 
 		} catch (DataAccessException ex) { 
 			throw ex;
 		}

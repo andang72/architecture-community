@@ -41,7 +41,7 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 			UserTemplate ut = new UserTemplate();
 			ut.setUserId(rs.getLong("USER_ID"));
 			ut.setUsername(rs.getString("USERNAME"));
-			ut.setPassword(rs.getString("PASSWORD_HASH"));
+			ut.setPasswordHash(rs.getString("PASSWORD_HASH"));
 			ut.setName(rs.getString("NAME"));
 			ut.setNameVisible(rs.getInt("NAME_VISIBLE") == 1);
 			ut.setFirstName(rs.getString("FIRST_NAME"));
@@ -268,7 +268,7 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 		
 	public User updateUser(User user) {
 		UserTemplate userToUse = (UserTemplate)user;
-		  boolean useLastNameFirstName = userToUse.getFirstName() != null && userToUse.getLastName() != null;
+		boolean useLastNameFirstName = userToUse.getFirstName() != null && userToUse.getLastName() != null;
 		try {
 
 		    getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_USER.UPDATE_USER").getSql(),
