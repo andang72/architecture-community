@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.acls.model.AccessControlEntry;
@@ -43,6 +45,7 @@ import architecture.ee.util.StringUtils;
 @RequestMapping("/data/api/mgmt/v1/security")
 public class SecurityMgmtDataController {
 
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	@Inject
 	@Qualifier("communityAclService")
 	private JdbcCommunityAclService communityAclService;
@@ -88,6 +91,37 @@ public class SecurityMgmtDataController {
     @ResponseBody
     public Result updateRole(@RequestBody UserTemplate user , NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException {
 
+		
+ 
+			StringBuilder builder = new StringBuilder();
+			builder.append("UserTemplate [userId=").append(user.getUserId()).append(", ");
+			if (user.getUsername() != null)
+				builder.append("username=").append(user.getUsername()).append(", ");
+			if (user.getName() != null)
+				builder.append("name=").append(user.getName()).append(", ");
+			if (user.getStatus() != null)
+				builder.append("status=").append(user.getStatus()).append(", ");
+			if (user.getEmail() != null)
+				builder.append("email=").append(user.getEmail()).append(", ");
+			if (user.getFirstName() != null)
+				builder.append("firstName=").append(user.getFirstName()).append(", ");
+			if (user.getLastName() != null)
+				builder.append("lastName=").append(user.getLastName()).append(", ");
+			if (user.getPassword() != null)
+				builder.append("password=").append(user.getPassword()).append(", ");
+			if (user.getPasswordHash() != null)
+				builder.append("passwordHash=").append(user.getPasswordHash() ).append(", ");
+			builder.append("enabled=").append(user.isEnabled()).append(", nameVisible=").append(user.isNameVisible())
+					.append(", emailVisible=").append(user.isEmailVisible()).append(", ");
+			if (user.getCreationDate() != null)
+				builder.append("creationDate=").append(user.getCreationDate()).append(", ");
+			if (user.getModifiedDate() != null)
+				builder.append("modifiedDate=").append(user.getModifiedDate());
+			builder.append("]");
+ 
+		
+		logger.debug("Save or update {} ", builder.toString());
+		
 		if( user.getUserId() > 0 )
 			userManager.updateUser(user);
 		

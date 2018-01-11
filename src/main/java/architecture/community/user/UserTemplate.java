@@ -3,7 +3,9 @@ package architecture.community.user;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -79,6 +81,9 @@ public class UserTemplate extends PropertyAwareSupport implements User, Serializ
 		this.passwordHash = user.getPasswordHash();
 		this.enabled = true;
 		this.status = Status.NONE;
+		
+		if( user.getStatus() != Status.NONE)
+			this.status = user.getStatus();
 	}
 
 	public UserTemplate() {
@@ -141,6 +146,7 @@ public class UserTemplate extends PropertyAwareSupport implements User, Serializ
 		this.username = username;
 	}
 
+	@JsonGetter
 	public String getName() {
 		if (lastName != null && firstName != null) {
 			StringBuilder builder = new StringBuilder(firstName);
@@ -151,6 +157,7 @@ public class UserTemplate extends PropertyAwareSupport implements User, Serializ
 		}
 	}
 
+	@JsonSetter
 	public void setName(String name) {
 		if (lastName != null && firstName != null && name != null) {
 			name = name.trim();

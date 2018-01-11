@@ -1,5 +1,8 @@
 package architecture.community.web.spring.controller.data;
 
+import java.util.Date;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
@@ -69,7 +74,7 @@ public class AccountsDataController {
 	
 	@RequestMapping(value = "/signup-with-user.json", method = { RequestMethod.POST})
 	@ResponseBody
-	public Result signup(@RequestBody SignupForm user, NativeWebRequest request)  {		
+	public Result signup(@RequestBody UserForm user, NativeWebRequest request)  {		
 		Result result = Result.newResult();	
 		result.setAnonymous(true);	
 		logger.debug(user.getUsername());
@@ -101,7 +106,7 @@ public class AccountsDataController {
 	
 	
 	
-	private static class SignupForm {
+	private static class UserForm implements User {
 		
 		private String username ;
 		private String name ;
@@ -111,7 +116,7 @@ public class AccountsDataController {
 		private Boolean emailVisible;
 		 
 		
-		public SignupForm() {
+		public UserForm() {
 			mameVisible = false;
 			emailVisible = false;
 		}
@@ -156,7 +161,7 @@ public class AccountsDataController {
 		
 		public String toString() {
 			StringBuilder builder = new StringBuilder();
-			builder.append("SignupForm [");
+			builder.append("UserForm [");
 			if (name != null)
 				builder.append("name=").append(name).append(", ");
 			if (password != null)
@@ -165,6 +170,62 @@ public class AccountsDataController {
 				builder.append("email=").append(email);
 			builder.append("]");
 			return builder.toString();
+		}
+
+		
+		@JsonIgnore
+		public Map<String, String> getProperties() {
+			return null;
+		}
+ 
+		@JsonIgnore
+		public void setProperties(Map<String, String> properties) {
+			
+		}
+		
+		public long getUserId() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public boolean isEnabled() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		@Override
+		public boolean isNameVisible() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		@Override
+		public boolean isEmailVisible() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		@Override
+		public Status getStatus() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public String getPasswordHash() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public boolean isAnonymous() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		@Override
+		public Date getCreationDate() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public Date getModifiedDate() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 	}

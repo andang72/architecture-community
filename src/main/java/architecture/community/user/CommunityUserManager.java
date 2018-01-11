@@ -56,11 +56,6 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 	public User getUser(User template, boolean caseSensitive) {
 
 		User user = null;
-
-		if (template.getUserId() == -1L) {
-			return SecurityHelper.ANONYMOUS;
-		}
-
 		if (template.getUserId() > 0L) {
 			user = getUserInCache(template.getUserId());
 			if (user == null) {
@@ -72,6 +67,8 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 				}
 
 			}
+		}else {
+			return SecurityHelper.ANONYMOUS;
 		}
 
 		if (user == null && !StringUtils.isNullOrEmpty(template.getUsername())) {
