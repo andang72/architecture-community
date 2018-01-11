@@ -13,6 +13,7 @@ import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateDeserializer;
 import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.model.json.JsonUserStatusDeserializer;
 import architecture.ee.util.StringUtils;
 
 public class UserTemplate extends PropertyAwareSupport implements User, Serializable {
@@ -181,6 +182,7 @@ public class UserTemplate extends PropertyAwareSupport implements User, Serializ
 		return status;
 	}
 
+	@JsonDeserialize(using = JsonUserStatusDeserializer.class)
 	public void setStatus(Status status) {
 		this.status = status;
 	}
@@ -258,8 +260,7 @@ public class UserTemplate extends PropertyAwareSupport implements User, Serializ
 		else
 			return false;
 	}
-
-	@Override
+ 
 	public String toString() {
 		return "UserTemplate [userId=" + userId + ", username=" + username + "]";
 	}

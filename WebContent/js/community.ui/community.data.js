@@ -51,6 +51,7 @@
 			enabled: { type: "boolean", defaultValue: false },
 			creationDate:{ type: "date" },			
 			modifiedDate:{ type: "date"},
+			status : {type:"string", defaultValue: "NONE"},
 			properties: { type: "object", defaultValue : {} },
 			roles: { type: "object", defaultValue: [] }
 		},
@@ -74,7 +75,7 @@
 		    	target.set("username", this.get("username"));
 		    	target.set("name", this.get("name"));
 		    	target.set("email", this.get("email"));
-		    			    	
+		    	target.set("status", this.get("status"));		    	
 		    	if(this.get("creationDate") != null )
 		    		target.set("creationDate", this.get("creationDate"));
 		    	if(this.get("modifiedDate") != null )

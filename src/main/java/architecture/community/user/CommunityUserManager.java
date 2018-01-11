@@ -67,10 +67,8 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 				}
 
 			}
-		}else {
-			return SecurityHelper.ANONYMOUS;
-		}
-
+		} 
+		
 		if (user == null && !StringUtils.isNullOrEmpty(template.getUsername())) {
 			String nameToUse = template.getUsername();
 			long userIdToUse = getUserIdInCache(nameToUse);
@@ -78,11 +76,9 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 				user = getUserInCache(template.getUserId());
 			}
 			if (user == null) {
-
 				if (!caseSensitive) {
 					nameToUse = nameToUse.toUpperCase();
 				}
-
 				try {
 					user = userDao.getUserByUsername(nameToUse);
 					updateCaches(user);
@@ -287,6 +283,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 
 		String previousUsername = null;
 		if (!userToUse.getUsername().equals(user.getUsername())) {
+			log.debug("previous username is {}. new username is {}." , userToUse.getUsername() , user.getUsername());
 			previousUsername = userToUse.getUsername();
 			UserTemplate toCheck = new UserTemplate();
 			toCheck.setUsername(user.getUsername());
@@ -295,23 +292,25 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 				throw new UserAlreadyExistsException();
 			}
 		}
-
-		userToUse.setEmail(caseEmailAddress(user));
+		
+		if(!StringUtils.isNullOrEmpty(user.getUsername()))
+			userToUse.setUsername(user.getUsername());		
+		if(!StringUtils.isNullOrEmpty(user.getEmail()))
+			userToUse.setEmail( caseEmailAddress(user) );
 		userToUse.setEmailVisible(user.isEmailVisible());
-		userToUse.setModifiedDate(new Date());
-		userToUse.setName(user.getName());
-		userToUse.setNameVisible(user.isNameVisible());
-		userToUse.setProperties(user.getProperties());
-		userToUse.setUsername(user.getUsername());
-		userToUse.setEnabled(user.isEnabled());
-		userToUse.setStatus(user.getStatus());
-		
+		if( !StringUtils.isNullOrEmpty(user.getName()) && !org.apache.commons.lang3.StringUtils.equals(user.getName(), userToUse.getName()))
+			userToUse.setName( user.getName() );
+		userToUse.setNameVisible( user.isNameVisible() );
+		userToUse.setProperties( user.getProperties() );
+		userToUse.setEnabled( user.isEnabled() );
+		userToUse.setStatus( user.getStatus() );
+		userToUse.setModifiedDate(new Date());		
 		if( !StringUtils.isNullOrEmpty( user.getPassword() ) ){
-			userToUse.setPasswordHash(getPasswordHash(user));			
-		}
-		
+			userToUse.setPasswordHash(getPasswordHash(user));	
+		}else {
+			userToUse.setPasswordHash(userToUse.getPassword());
+		}		
 		wireTemplateDates(userToUse);
-
 		try {
 			userDao.updateUser(userToUse); 
 			// cache 수정 ..

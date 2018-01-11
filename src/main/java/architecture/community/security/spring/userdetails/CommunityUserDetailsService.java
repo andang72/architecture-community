@@ -1,6 +1,7 @@
 package architecture.community.security.spring.userdetails;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,11 +42,10 @@ public class CommunityUserDetailsService implements UserDetailsService {
 	
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {			
-			User user = userManager.getUser(username);
-
-			
-			CommuintyUserDetails details = new CommuintyUserDetails(user, getFinalUserAuthority(user));
-			
+			logger.debug("loading user by {}", username );
+			User user = userManager.getUser(username); 
+			logger.debug("loaded user {}", user );
+			CommuintyUserDetails details = new CommuintyUserDetails(user, getFinalUserAuthority(user)); 
 			return details ;			
 		} catch (UserNotFoundException e) {
 			throw new UsernameNotFoundException("User not found.", e);	
@@ -53,6 +53,8 @@ public class CommunityUserDetailsService implements UserDetailsService {
 	}
 
 	protected List<GrantedAuthority> getFinalUserAuthority(User user) {		
+		if( user.getUserId() <= 0)
+			return Collections.EMPTY_LIST;
 		
 		String authority = configService.getLocalProperty(CommunityConstants.SECURITY_AUTHENTICATION_AUTHORITY_PROP_NAME);
 	    if(logger.isDebugEnabled())

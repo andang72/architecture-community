@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import architecture.community.user.User;
+import architecture.community.user.User.Status;
 import architecture.community.user.UserTemplate;
 
 public class JsonUserDeserializer extends JsonDeserializer<User> {
@@ -48,6 +49,9 @@ public class JsonUserDeserializer extends JsonDeserializer<User> {
 				user.setEmailVisible(node.get("emailVisible").asBoolean());
 			if (node.get("nameVisible") != null)
 				user.setNameVisible(node.get("nameVisible").asBoolean());
+			if( node.get("status") != null)
+				user.setStatus( Status.valueOf( node.get("status").asText("NONE") ) );
+				
 		}
 		return user;
 	}

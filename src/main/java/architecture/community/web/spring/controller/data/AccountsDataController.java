@@ -106,7 +106,7 @@ public class AccountsDataController {
 	
 	
 	
-	private static class UserForm implements User {
+	private static class UserForm  {
 		
 		private String username ;
 		private String name ;
@@ -173,60 +173,6 @@ public class AccountsDataController {
 		}
 
 		
-		@JsonIgnore
-		public Map<String, String> getProperties() {
-			return null;
-		}
- 
-		@JsonIgnore
-		public void setProperties(Map<String, String> properties) {
-			
-		}
-		
-		public long getUserId() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-		@Override
-		public boolean isEnabled() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		@Override
-		public boolean isNameVisible() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		@Override
-		public boolean isEmailVisible() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		@Override
-		public Status getStatus() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public String getPasswordHash() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public boolean isAnonymous() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		@Override
-		public Date getCreationDate() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public Date getModifiedDate() {
-			// TODO Auto-generated method stub
-			return null;
-		}
 		
 	}
 }

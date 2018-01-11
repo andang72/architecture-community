@@ -117,11 +117,12 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 		} catch (Exception e) {}	
 	}
 	
-    protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception{
-    	MappingJackson2JsonView view = new MappingJackson2JsonView();
-    	view.setExtractValueFromSingleKeyModel(true);
-    	view.setModelKey("item");
-    	view.render(model, request, response);
-    }
+	protected void createJsonViewAndRender(Map<String, ?> model, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		MappingJackson2JsonView view = new MappingJackson2JsonView();
+		view.setExtractValueFromSingleKeyModel(true);
+		view.setModelKey("item");
+		view.render(model, request, response);
+	}
 
 }

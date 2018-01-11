@@ -466,7 +466,7 @@
 					
 					<!-- issue summary start -->
 					<h4 class="text-light-gray text-semibold">요약 <span class="text-danger" data-bind="visible:editable">*</span></h4>		
-					<div data-bind="text:issue.summary, invisible:editable" class="g-mb-15"></div>	
+					<div data-bind="text:issue.summary, invisible:editable" class="g-mb-15 g-brd-2 g-brd-bluegray g-rounded-5 g-brd-around--lg g-pa-15"></div>	
 					
 				 	<div class="form-group" data-bind="visible:editable">
 			            <input type="text" class="form-control" placeholder="요약" data-bind="value: issue.summary">
@@ -519,7 +519,7 @@
 
 					<!-- issue descripton start -->
 					<h4 class="text-light-gray text-semibold">상세 내용 <span class="text-danger" data-bind="visible:editable">*</span></h4>	
-					<div data-bind="html:issue.description, invisible:editable" class="g-mb-15"></div>
+					<div data-bind="html:issue.description, invisible:editable" class="g-mb-15 g-brd-2 g-brd-blue g-rounded-5 g-brd-around--lg g-pa-15"></div>
 					
 					<div class="text-editor" class="hide"></div>
 					

@@ -1,9 +1,18 @@
 package architecture.community.user;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 
-public class CommunityUser implements User {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import architecture.community.model.PropertyAwareSupport;
+import architecture.community.model.json.JsonDateDeserializer;
+import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.model.json.JsonUserStatusDeserializer;
+
+public class CommunityUser extends PropertyAwareSupport implements User , Serializable {
 
 	private long userId;
 	
@@ -21,6 +30,7 @@ public class CommunityUser implements User {
 	
 	private String password;
 	
+	@JsonIgnore
 	private String passwordHash;
 	
 	private boolean enabled;
@@ -28,8 +38,28 @@ public class CommunityUser implements User {
 	private boolean nameVisible;
 	
 	private boolean emailVisible;
+	 	
+	private Date creationDate;
+
+	private Date modifiedDate;
 	
-	
+	public CommunityUser() {
+		userId = -1L;
+		username = null;
+		name = null;
+		email = null;
+		firstName = null;
+		lastName = null;
+		password = null;
+		passwordHash = null;
+		enabled = false;
+		nameVisible = false;
+		emailVisible = false;
+		creationDate = null;
+		modifiedDate = null;
+		status = Status.NONE;
+	}
+
 	public long getUserId() {
 		return userId;
 	}
@@ -58,6 +88,7 @@ public class CommunityUser implements User {
 		return status;
 	}
 
+	@JsonDeserialize(using = JsonUserStatusDeserializer.class)
 	public void setStatus(Status status) {
 		this.status = status;
 	}
@@ -133,25 +164,24 @@ public class CommunityUser implements User {
 			return true;
 	}
 
-	@Override
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
-		return null;
+		return creationDate;
 	}
 
-	@Override
+	@JsonDeserialize(using = JsonDateDeserializer.class)
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getModifiedDate() {
-		return null;
+		return modifiedDate;
 	}
-
-	@Override
-	public Map<String, String> getProperties() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	@JsonDeserialize(using = JsonDateDeserializer.class)
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
-
-	@Override
-	public void setProperties(Map<String, String> properties) {
-		// TODO Auto-generated method stub
-		
-	}
+ 
 }

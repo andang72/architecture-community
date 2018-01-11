@@ -190,7 +190,7 @@
 		var DEFAULT_PAGER_SETTING = {
 				refresh : true,		
 				buttonCount : 9,
-				info: false
+				pageSizes: [15, 30, 50]
 		};	
 		
 		function pager ( renderTo, options ){		

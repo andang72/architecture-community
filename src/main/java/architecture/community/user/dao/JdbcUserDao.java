@@ -283,7 +283,7 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 		    		new SqlParameterValue(Types.NUMERIC, userToUse.isEnabled() ? 1 : 0 ),
 		    		new SqlParameterValue(Types.NUMERIC, userToUse.getStatus().getId() ),
 		    		new SqlParameterValue(Types.TIMESTAMP, userToUse.getModifiedDate() != null ? userToUse.getModifiedDate() : new Date() ),
-		    		new SqlParameterValue(Types.NUMERIC, userToUse.isEnabled() ? 1 : 0 )
+		    		new SqlParameterValue(Types.NUMERIC, userToUse.getUserId() )
 		);
 		   // setUserProperties(user.getUserId(), user.getProperties());
 

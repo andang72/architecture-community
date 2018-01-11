@@ -24,7 +24,9 @@ import architecture.community.model.Models;
 import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.security.spring.acls.ObjectAccessControlEntry;
+import architecture.community.user.CommunityUser;
 import architecture.community.user.DefaultRole;
+import architecture.community.user.EmailAlreadyExistsException;
 import architecture.community.user.Role;
 import architecture.community.user.RoleAlreadyExistsException;
 import architecture.community.user.RoleManager;
@@ -89,42 +91,15 @@ public class SecurityMgmtDataController {
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/users/save-or-update.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
-    public Result updateRole(@RequestBody UserTemplate user , NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException {
-
+    public Result updateRole(@RequestBody CommunityUser user , NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException, EmailAlreadyExistsException { 
 		
- 
-			StringBuilder builder = new StringBuilder();
-			builder.append("UserTemplate [userId=").append(user.getUserId()).append(", ");
-			if (user.getUsername() != null)
-				builder.append("username=").append(user.getUsername()).append(", ");
-			if (user.getName() != null)
-				builder.append("name=").append(user.getName()).append(", ");
-			if (user.getStatus() != null)
-				builder.append("status=").append(user.getStatus()).append(", ");
-			if (user.getEmail() != null)
-				builder.append("email=").append(user.getEmail()).append(", ");
-			if (user.getFirstName() != null)
-				builder.append("firstName=").append(user.getFirstName()).append(", ");
-			if (user.getLastName() != null)
-				builder.append("lastName=").append(user.getLastName()).append(", ");
-			if (user.getPassword() != null)
-				builder.append("password=").append(user.getPassword()).append(", ");
-			if (user.getPasswordHash() != null)
-				builder.append("passwordHash=").append(user.getPasswordHash() ).append(", ");
-			builder.append("enabled=").append(user.isEnabled()).append(", nameVisible=").append(user.isNameVisible())
-					.append(", emailVisible=").append(user.isEmailVisible()).append(", ");
-			if (user.getCreationDate() != null)
-				builder.append("creationDate=").append(user.getCreationDate()).append(", ");
-			if (user.getModifiedDate() != null)
-				builder.append("modifiedDate=").append(user.getModifiedDate());
-			builder.append("]");
- 
+		logger.debug("Save or update user {} ", user.toString());
 		
-		logger.debug("Save or update {} ", builder.toString());
-		
-		if( user.getUserId() > 0 )
+		if( user.getUserId() > 0 ) {
 			userManager.updateUser(user);
-		
+		}else {
+			userManager.createUser(user);
+		}
 		return Result.newResult();
     }
 	

@@ -146,13 +146,10 @@
 					console.log("set source for editor :");
 					var $this = this;
 					var oldUserId = $this.user.userId ;
+					data.set('password', '');
 					data.copy( $this.user ); 
 					if(  $this.user.userId > 0 ){
-						//$this.set('isNew', false );
-						if( $this.user.userId != oldUserId ){
-						
-						}	
-						console.log("fetching roles only one time.");
+						$this.set('isNew', false );
 						$this.rolesDataSource.fetch(function (e){
 							$this.setUserRoles();
 						});						
@@ -348,7 +345,6 @@
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="user-editor">	
-				<!-- /.modal-content -->	
 				<!-- .modal-header -->
 				<div class="modal-header">
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -375,6 +371,11 @@
 			            <input type="text" class="form-control" placeholder="아이디를 입력하세요" data-bind="value: user.username">
 			             <span class="help-block m-b-none" data-bind="visible:isNew">아이디를 입력하지 않는 경우 메일 주소를 아이디로 사용합니다.</span>
 			          </div>		
+			          <div class="form-group" data-bind="visible:isNew">
+			           	<h6 class="text-light-gray text-semibold">비밀번호</h6>
+			            <input type="password" class="form-control" placeholder="비밀번호를 입력하세요" data-bind="value: user.password">
+			             <span class="help-block m-b-none" data-bind="visible:isNew">비밀번호를 입력하세요.</span>
+			          </div>	
 			          <div class="form-group">
 				          <div class="row">
 				          	<div class="col-sm-4">
@@ -387,13 +388,23 @@
 				          	</div>
 				          </div>
 	  		          </div>	          	            	  		          	          
+			        	  <div class="row" data-bind="invisible:isNew">
+				      	<div class="col-sm-6">
+				      		<h6 class="text-light-gray text-semibold">상태</h6>
+ 							<select class="form-control" data-bind="value: user.status" style="width: 180px">
+							  <option value="NONE">NONE</option>
+							  <option value="APPROVED">APPROVED</option>
+							  <option value="REJECTED">REJECTED</option>
+							  <option value="VALIDATED">VALIDATED</option>
+							  <option value="REGISTERED">REGISTERED</option>
+							</select>
+				      	</div>
+				      	<div class="col-sm-6 text-right">
+ 		          			<h6 class="text-light-gray text-semibold">권한 및 속성 변경</h6>
+							<button type="button" class="btn btn-sm u-btn-outline-red g-ml-10" data-bind="click: showOptions">고급설정</button>								
+				       	</div>
+				      </div>
 			        </form>
-			        	
-			        	<div class="text-right" data-bind="invisible:isNew" >
-			        	<h6 class="text-light-gray text-semibold">권한 및 속성 변경</h6>
-					<button type="button" class="btn btn-sm u-btn-outline-red g-ml-10" data-bind="click: showOptions">고급설정</button>	
-					</div>
-							
 		      	</div><!-- /.modal-body -->		
 		      	<div class="modal-footer">
 			        <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
