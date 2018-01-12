@@ -125,9 +125,11 @@
      	p:diskExpiryThreadIntervalSeconds="0"  
      	p:statisticsEnabled="true" />     
      		     	     	   
-    <beans:bean id="pageService" class="architecture.community.page.DefaultPageService"  />	
-    
-	<!-- ================================= -->
+    <beans:bean id="pageService"
+    	class="architecture.community.page.DefaultPageService"
+    	init-method="initialize" />
+
+    <!-- ================================= -->
     <!-- TAG							 	  -->
     <!-- ================================= -->    
     
