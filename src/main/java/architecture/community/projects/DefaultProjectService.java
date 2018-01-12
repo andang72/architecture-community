@@ -63,7 +63,7 @@ public class DefaultProjectService implements ProjectService {
 				new CacheLoader<Long, Stats>(){			
 					public Stats load(Long projectId) throws Exception {
 						//logger.debug("get role form database by {}", roleId );
-						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "RESOLUTION");
+						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");
 						Stats stats = projectDao.getIssueTypeStats(projectId);
 						int total = 0;
 						for ( CodeSet code : list ) {
@@ -83,7 +83,7 @@ public class DefaultProjectService implements ProjectService {
 				new CacheLoader<Long, Stats>(){
 					@Override
 					public Stats load(Long projectId) throws Exception {
-						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");
+						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "RESOLUTION");
 						Stats stats = projectDao.getResolutionStats(projectId);
 						int total = 0;
 						for ( CodeSet code : list ) {
