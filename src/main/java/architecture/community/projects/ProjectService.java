@@ -1,13 +1,22 @@
 package architecture.community.projects;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import architecture.community.user.User;
 import architecture.community.web.model.json.DataSourceRequest;
 
 public interface ProjectService {
 	
+	public abstract Stats getIssueTypeStats(Project project)  ;
+	
+	public abstract Stats getIssueResolutionStats(Project project)  ;
+	
 	public abstract List<Project> getProjects();
+	
+	public abstract List<Project> getProjects(DataSourceRequest dataSourceRequest);
+	
+	public abstract int getProjectCount(DataSourceRequest dataSourceRequest);
 	
 	public abstract Project getProject(long projectId) throws ProjectNotFoundException ;
 	

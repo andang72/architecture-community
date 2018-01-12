@@ -131,13 +131,16 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	******************************************/
 	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public ItemList getProjects (NativeWebRequest request) {			
+	public ItemList getProjects (@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {			
+		
 		List<Project> list = projectService.getProjects();
 		List<ProjectView> list2 = new ArrayList<ProjectView> ();		
 		
-		for( Project board : list)
+		for( Project project : list)
 		{	
-			ProjectView v = toProjectView(communityAclService, board);
+			ProjectView v = getProjectView(communityAclService, project);
+			v.setIssueTypeStats(projectService.getIssueTypeStats(project));
+			v.setResolutionStats(projectService.getIssueResolutionStats(project));
 			if(v.isReadable())
 				list2.add(v);
 		}
@@ -154,7 +157,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@ResponseBody
 	public ProjectView getProject (@PathVariable Long projectId, NativeWebRequest request) throws NotFoundException {	
 		Project project = projectService.getProject(projectId);
-		ProjectView b = toProjectView(communityAclService, project);
+		ProjectView b = getProjectView(communityAclService, project);
 		return b;
 	}
 	 

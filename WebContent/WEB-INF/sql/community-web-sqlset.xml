@@ -137,6 +137,40 @@
  	ORDER BY MODIFIED_DATE DESC 		
     ]]></sql-query>		   
     
+ 	<sql-query name="COUNT_PROJECT_IDS" description="COUNT_PROJECT_IDS"><![CDATA[    	
+  	SELECT COUNT(PROJECT_ID) FROM MUSI_PROJECT    
+ 	]]><dynamic><![CDATA[     		
+ 	<#if filter??>
+ 	WHERE
+ 	<#list filter.filters as item>
+ 	${item.logic} ${item.field}='${item.value}'
+ 	</#list>
+ 	</#if>
+ 	ORDER BY CREATION_DATE DESC 	
+ 	 ]]></dynamic></sql-query>		
+
+ 	<sql-query name="SELECT_PROJECT_IDS" description="SELECT_PROJECT_IDS"><![CDATA[    	
+  	SELECT PROJECT_ID FROM MUSI_PROJECT
+ 	]]><dynamic><![CDATA[   
+ 	<#if filter??><#list filter.filters as item>
+ 	WHERE
+ 	${item.logic} ${item.field}='${item.value}'
+ 	</#list></#if>
+ 	ORDER BY CREATION_DATE DESC 	
+ 	 ]]></dynamic></sql-query>	    
+
+	<sql-query name="SELECT_ISSUE_TYPE_STATS_BY_PROJECT" description="SELECT_PROJECT_IDS"><![CDATA[        
+	SELECT ISSUE_TYPE , COUNT ( ISSUE_ID ) AS CNT FROM MUSI_ISSUE 
+	WHERE OBJECT_TYPE = 19 AND OBJECT_ID = ?
+	GROUP BY ( ISSUE_TYPE )
+	]]></sql-query>	 
+	
+	<sql-query name="SELECT_RESOLUTION_STATS_BY_PROJECT" description="SELECT_PROJECT_IDS"><![CDATA[    
+	SELECT RESOLUTION , COUNT ( ISSUE_ID ) AS CNT FROM MUSI_ISSUE 
+	WHERE OBJECT_TYPE = 19 AND OBJECT_ID = ?
+	GROUP BY ( RESOLUTION )
+	]]></sql-query>	 
+	    
 	<!--  ====================================  -->
 	<!-- CODESET						 		   -->
 	<!--  ====================================  -->

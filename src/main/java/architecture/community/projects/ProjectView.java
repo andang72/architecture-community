@@ -23,10 +23,32 @@ public class ProjectView {
 	private boolean readComment = false;
 	private boolean createComment = false;
 	private boolean createImage = false;
+	private Stats issueTypeStats;
+	private Stats resolutionStats;
 	
 	
 	public ProjectView( Project project ) {
 		this.project = project;
+	}
+
+	@JsonGetter
+	public Stats getIssueTypeStats() {
+		return issueTypeStats;
+	}
+
+
+	public void setIssueTypeStats(Stats issueTypeStats) {
+		this.issueTypeStats = issueTypeStats;
+	}
+
+	@JsonGetter
+	public Stats getResolutionStats() {
+		return resolutionStats;
+	}
+
+
+	public void setResolutionStats(Stats resolutionStats) {
+		this.resolutionStats = resolutionStats;
 	}
 
 

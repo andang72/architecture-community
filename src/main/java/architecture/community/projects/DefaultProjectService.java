@@ -2,6 +2,8 @@ package architecture.community.projects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -12,11 +14,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import architecture.community.board.BoardThread;
-import architecture.community.board.BoardThreadNotFoundException;
-import architecture.community.board.DefaultBoardMessage;
-import architecture.community.board.dao.BoardDao;
-import architecture.community.codeset.CodeSetNotFoundException;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+
+import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetService;
 import architecture.community.projects.dao.ProjectDao;
 import architecture.community.user.User;
@@ -49,8 +50,68 @@ public class DefaultProjectService implements ProjectService {
 	@Qualifier("codeSetService")
 	private CodeSetService codeSetService;
 	
+	private com.google.common.cache.LoadingCache<Long, Stats> projectIssueTypeStatsCache = null;
+	
+	private com.google.common.cache.LoadingCache<Long, Stats> projectResolutionStatsCache = null;
 	
 	public DefaultProjectService() { 
+		
+	}	
+	public void initialize(){		
+		logger.debug("creating cache ...");		
+		projectIssueTypeStatsCache = CacheBuilder.newBuilder().maximumSize(500).expireAfterAccess( 60 * 100, TimeUnit.MINUTES).build(		
+				new CacheLoader<Long, Stats>(){			
+					public Stats load(Long projectId) throws Exception {
+						//logger.debug("get role form database by {}", roleId );
+						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");
+						Stats stats = projectDao.getResolutionStats(projectId);
+						for ( CodeSet code : list ) {
+							if( !stats.getItems().contains(code.getCode())) {
+								stats.add(code.getCode(), 0);
+							}
+						}
+						return stats;
+					}
+				}
+			);
+		
+		projectIssueTypeStatsCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess( 60 * 100, TimeUnit.MINUTES).build(		
+				new CacheLoader<Long, Stats>(){
+					@Override
+					public Stats load(Long projectId) throws Exception {
+						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "RESOLUTION");
+						Stats stats = projectDao.getIssueTypeStats(projectId);
+						for ( CodeSet code : list ) {
+							if( !stats.getItems().contains(code.getCode())) {
+								stats.add(code.getCode(), 0);
+							}
+						}
+						return stats;					
+					}			
+		});			
+	}
+	
+	public Stats getIssueTypeStats(Project project)  {
+		try {
+			return projectIssueTypeStatsCache.get(project.getProjectId());
+		} catch (ExecutionException e) {
+			return null;
+		}
+	}
+	
+	public Stats getIssueResolutionStats(Project project)  {
+		try {
+			return projectIssueTypeStatsCache.get(project.getProjectId());
+		} catch (ExecutionException e) {
+			return null;
+		}
+	}
+
+	private void clearProjectStats(Long projectId) {
+		if( projectId > 0) {
+			projectIssueTypeStatsCache.invalidate(projectId);
+			projectResolutionStatsCache.invalidate(projectId);
+		}
 	}
  
 	public List<Project> getProjects() {
@@ -65,7 +126,23 @@ public class DefaultProjectService implements ProjectService {
 		}
 		return list;
 	}
+	
+	public List<Project> getProjects(DataSourceRequest dataSourceRequest){
+		List<Long> ids = projectDao.getProjectIds(dataSourceRequest);
+		List<Project> list = new ArrayList<Project>(ids.size());
+		for(Long projectId : ids ) {
+			try {
+				list.add(getProject(projectId));
+			} catch (ProjectNotFoundException e) {
+			}
+		}
+		return list;
+	}
  
+	public int getProjectCount(DataSourceRequest dataSourceRequest){
+		return projectDao.getProjectCount(dataSourceRequest);
+	}
+	
 	public Project getProject(long projectId) throws ProjectNotFoundException {
 		
 		Project project = getProjectInCache(projectId);		
@@ -159,6 +236,7 @@ public class DefaultProjectService implements ProjectService {
 		if( issue.getIssueId() > 0 && projectIssueCache.get(issue.getIssueId()) != null  ) {
 			projectIssueCache.remove(issue.getIssueId());
 		} 
+		clearProjectStats(issue.getObjectId());
 		projectDao.saveOrUpdateIssue(issue);
 	}
 	
@@ -215,6 +293,4 @@ public class DefaultProjectService implements ProjectService {
 			return null;
 		}
 	}
-
-
 }

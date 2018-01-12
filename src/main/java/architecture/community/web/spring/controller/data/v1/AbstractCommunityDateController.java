@@ -55,7 +55,7 @@ public abstract class AbstractCommunityDateController {
 		return boardView;
 	}
 	
-	protected ProjectView toProjectView(JdbcCommunityAclService communityAclService, Project project) {		
+	protected ProjectView getProjectView(JdbcCommunityAclService communityAclService, Project project) {		
 		
 		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();
 		log.debug("Board View : {} {} for {}.", project.getProjectId(),  project.getName(), userDetails.getUsername() );		
