@@ -389,9 +389,9 @@
 						</div>
 					</div>
 					<div class="col-md-1 forum-info">
-						<span class="views-number">0 </span>
+						<span class="views-number">#= issueTypeStats.items[issueTypeStats.items.length - 1].value -  resolutionStats.items[resolutionStats.items.length - 1].value # </span>
 						<div>
-							<small>Remain</small>
+							<small>미처리</small>
 						</div>
 					</div>
 				</div>
