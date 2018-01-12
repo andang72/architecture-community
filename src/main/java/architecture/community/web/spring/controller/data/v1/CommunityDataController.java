@@ -157,8 +157,10 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@ResponseBody
 	public ProjectView getProject (@PathVariable Long projectId, NativeWebRequest request) throws NotFoundException {	
 		Project project = projectService.getProject(projectId);
-		ProjectView b = getProjectView(communityAclService, project);
-		return b;
+		ProjectView v = getProjectView(communityAclService, project);
+		v.setIssueTypeStats(projectService.getIssueTypeStats(project));
+		v.setResolutionStats(projectService.getIssueResolutionStats(project));
+		return v;
 	}
 	 
 	@Secured({ "ROLE_USER" })

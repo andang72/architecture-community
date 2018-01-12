@@ -63,30 +63,38 @@ public class DefaultProjectService implements ProjectService {
 				new CacheLoader<Long, Stats>(){			
 					public Stats load(Long projectId) throws Exception {
 						//logger.debug("get role form database by {}", roleId );
-						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");
-						Stats stats = projectDao.getResolutionStats(projectId);
+						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "RESOLUTION");
+						Stats stats = projectDao.getIssueTypeStats(projectId);
+						int total = 0;
 						for ( CodeSet code : list ) {
-							if( !stats.getItems().contains(code.getCode())) {
-								stats.add(code.getCode(), 0);
-							}
+							stats.add(code.getCode(), 0);
 						}
+						for( Stats.Item item : stats.getItems())
+						{
+							total = total + item.getValue();
+						}
+						stats.add("TOTAL", total);
 						return stats;
 					}
 				}
 			);
 		
-		projectIssueTypeStatsCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess( 60 * 100, TimeUnit.MINUTES).build(		
+		projectResolutionStatsCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess( 60 * 100, TimeUnit.MINUTES).build(		
 				new CacheLoader<Long, Stats>(){
 					@Override
 					public Stats load(Long projectId) throws Exception {
-						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "RESOLUTION");
-						Stats stats = projectDao.getIssueTypeStats(projectId);
+						List<CodeSet> list = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");
+						Stats stats = projectDao.getResolutionStats(projectId);
+						int total = 0;
 						for ( CodeSet code : list ) {
-							if( !stats.getItems().contains(code.getCode())) {
-								stats.add(code.getCode(), 0);
-							}
+							stats.add(code.getCode(), 0);
 						}
-						return stats;					
+						for( Stats.Item item : stats.getItems())
+						{
+							total = total + item.getValue();
+						}
+						stats.add("TOTAL", total);	
+						return stats;
 					}			
 		});			
 	}
@@ -101,7 +109,7 @@ public class DefaultProjectService implements ProjectService {
 	
 	public Stats getIssueResolutionStats(Project project)  {
 		try {
-			return projectIssueTypeStatsCache.get(project.getProjectId());
+			return projectResolutionStatsCache.get(project.getProjectId());
 		} catch (ExecutionException e) {
 			return null;
 		}

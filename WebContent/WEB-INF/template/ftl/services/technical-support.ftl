@@ -104,6 +104,14 @@
 				data.copy($this.currentUser)
 			},
 			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
+				transport:{
+					read:{
+						contentType: "application/json; charset=utf-8"
+					},
+					parameterMap: function (options, operation){		
+						return community.ui.stringify(options)
+					} 			
+				},	
 				schema: {
 					total: "totalCount",
 					data: "items",
@@ -369,15 +377,15 @@
 						#}#
 					</div>
 					<div class="col-md-1 forum-info">
-						<span class="views-number"> 0 </span>
+						<span class="views-number"> #= issueTypeStats.items[issueTypeStats.items.length - 1].value # </span>
 						<div>
-							<small>Defact</small>
+							<small>요청</small>
 						</div>
 					</div>
 					<div class="col-md-1 forum-info">
-						<span class="views-number"> 0  </span>
+						<span class="views-number"> #= resolutionStats.items[resolutionStats.items.length - 1].value # </span>
 						<div>
-							<small>Fixed</small>
+							<small>처리</small>
 						</div>
 					</div>
 					<div class="col-md-1 forum-info">

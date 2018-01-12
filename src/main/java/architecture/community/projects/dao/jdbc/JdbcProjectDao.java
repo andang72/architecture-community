@@ -147,11 +147,11 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		return getExtendedJdbcTemplate().queryForList(getBoundSql("COMMUNITY_WEB.SELECT_PROJECT_IDS").getSql(), Long.class);
 	}
 
-	public Stats getIssueTypeStats(Long projectId) {
+	public Stats getIssueTypeStats(long projectId) {
 		return getStats(projectId, "COMMUNITY_WEB.SELECT_ISSUE_TYPE_STATS_BY_PROJECT");
 	}
 
-	public Stats getResolutionStats(Long projectId) {
+	public Stats getResolutionStats(long projectId) {
 		return getStats(projectId, "COMMUNITY_WEB.SELECT_RESOLUTION_STATS_BY_PROJECT");
 	}
 	
