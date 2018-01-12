@@ -71,7 +71,8 @@ public class DefaultProjectService implements ProjectService {
 						}
 						for( Stats.Item item : stats.getItems())
 						{
-							total = total + item.getValue();
+							if(!StringUtils.equals("ETC", item.getName()))
+								total = total + item.getValue();
 						}
 						stats.add("TOTAL", total);
 						return stats;
@@ -91,7 +92,8 @@ public class DefaultProjectService implements ProjectService {
 						}
 						for( Stats.Item item : stats.getItems())
 						{
-							total = total + item.getValue();
+							if(!StringUtils.equals("ETC", item.getName()))
+								total = total + item.getValue();
 						}
 						stats.add("TOTAL", total);	
 						return stats;
