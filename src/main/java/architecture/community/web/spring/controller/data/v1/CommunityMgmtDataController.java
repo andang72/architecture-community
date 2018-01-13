@@ -75,14 +75,10 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	/**
 	 * CONFIG API 
 	******************************************/
-	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public List<Property> getConfig(@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request){
-
+	
+	private List<Property> getApplicationProperties(){
 		List<String> propertyKeys = configService.getApplicationPropertyNames();
 		List<Property> list = new ArrayList<Property>(); 
-		
 		for( String key : propertyKeys ) {
 			String value = configService.getApplicationProperty(key);
 			list.add(new Property( key, value ));
@@ -90,6 +86,38 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return list ;
 	}
 	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> getConfig(@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request){ 
+		return getApplicationProperties() ;
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/properties/update.json", method = RequestMethod.POST)
+	@ResponseBody
+	public List<Property> updatePageProperties( 
+			@RequestBody List<Property> newProperties, 
+			NativeWebRequest request) throws NotFoundException {
+ 
+		// update or create
+		for (Property property : newProperties) {
+			configService.setApplicationProperty(property.getName(), property.getValue());
+		}		
+		return getApplicationProperties();
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/properties/delete.json", method = { RequestMethod.POST, RequestMethod.DELETE })
+	@ResponseBody
+	public List<Property> deletePageProperties(  
+			@RequestBody List<Property> newProperties, NativeWebRequest request) throws NotFoundException {
+		
+		for (Property property : newProperties) {
+			configService.deleteApplicationProperty(property.getName());
+		}
+		return getApplicationProperties();
+	}
 	/**
 	 * CODESET API 
 	******************************************/

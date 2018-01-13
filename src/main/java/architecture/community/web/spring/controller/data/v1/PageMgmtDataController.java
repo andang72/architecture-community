@@ -207,9 +207,11 @@ public class PageMgmtDataController {
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/{pageId:[\\p{Digit}]+}/properties/update.json", method = RequestMethod.POST)
 	@ResponseBody
-	public List<Property> updatePageProperties(@PathVariable Long pageId,
+	public List<Property> updatePageProperties(
+			@PathVariable Long pageId,
 			@RequestParam(value = "versionId", defaultValue = "1") Integer versionId,
-			@RequestBody List<Property> newProperties, NativeWebRequest request) throws NotFoundException {
+			@RequestBody List<Property> newProperties, 
+			NativeWebRequest request) throws NotFoundException {
 		User user = SecurityHelper.getUser();
 		Page page = pageService.getPage(pageId, versionId);
 		Map<String, String> properties = page.getProperties();
@@ -226,13 +228,14 @@ public class PageMgmtDataController {
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/{pageId:[\\p{Digit}]+}/properties/delete.json", method = { RequestMethod.POST, RequestMethod.DELETE })
 	@ResponseBody
-	public List<Property> deletePageProperties(@PathVariable Long pageId,
+	public List<Property> deletePageProperties(
+			@PathVariable Long pageId,
 			@RequestParam(value = "versionId", defaultValue = "1") Integer versionId,
-			@RequestBody List<Property> newProperties, NativeWebRequest request) throws NotFoundException {
+			@RequestBody List<Property> newProperties, 
+			NativeWebRequest request) throws NotFoundException {
 		User user = SecurityHelper.getUser();
 		Page page = pageService.getPage(pageId, versionId);
 		Map<String, String> properties = page.getProperties();
-
 		for (Property property : newProperties) {
 			properties.remove(property.getName());
 		}

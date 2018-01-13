@@ -50,7 +50,9 @@ public class CommunityFreeMarkerView extends FreeMarkerView {
 		TemplateHashModel staticModels = wrapper.getStaticModels();
 		try {	
 			model.put("SecurityHelper",	staticModels.get("architecture.community.util.SecurityHelper"));
-			model.put("WebApplicationContextUtils",	staticModels.get("org.springframework.web.context.support.WebApplicationContextUtils"));			
+			model.put("CommunityContextHelper",	staticModels.get("architecture.community.util.CommunityContextHelper"));
+			model.put("WebApplicationContextUtils",	staticModels.get("org.springframework.web.context.support.WebApplicationContextUtils"));	
+			
 		} catch (TemplateModelException e) {
 			
 		}			

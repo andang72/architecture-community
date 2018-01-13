@@ -188,8 +188,7 @@
 		}	
 	}
 	
-	function createPropertiesListView ( parentRendorTo, renderTo, page ){
-	
+	function createPropertiesListView ( parentRendorTo, renderTo, page ){ 
 		if( !community.ui.exists(renderTo) ){		
 			console.log("create properties listview.");
 			var listview = community.ui.listview( renderTo, {

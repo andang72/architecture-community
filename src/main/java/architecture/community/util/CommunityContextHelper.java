@@ -13,6 +13,7 @@ import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.viewcount.ViewCountService;
 import architecture.ee.exception.ComponentNotFoundException;
+import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
 
 public final class CommunityContextHelper implements ApplicationContextAware {
@@ -30,11 +31,15 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 			return false;
 		return true;
 	}
+
+	public static ConfigService getConfigService(){
+		return getComponent(ConfigService.class);
+	}
 	
 	public static BoardService getBoardService(){
 		return getComponent(BoardService.class);
-	}
-
+	} 
+	
 	public static CommentService getCommentService(){
 		return getComponent(CommentService.class);
 	}

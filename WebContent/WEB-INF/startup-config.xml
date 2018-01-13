@@ -26,6 +26,13 @@
 	</security>
 	<!--SERVICES SETTING -->
 	<services>
+		<config>
+			<persistence>
+				<jdbc>
+					<enabled>true</enabled>
+				</jdbc>
+			</persistence>
+		</config>
 		<sqlquery>
 			<resource>
 				<location>sql</location>
