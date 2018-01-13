@@ -95,8 +95,12 @@ i.icon-svg {
 }
 
 /* Dusk Icons */
-.icon-svg-dusk-administrative-tools {
-	background-image: url("/images/icons/dusk/administrative-tools.svg");	
+.icon-svg-dusk-attach {
+	background-image: url("/images/icons/dusk/attach.svg");
+}
+
+.icon-svg-dusk-client-base {
+	background-image: url("/images/icons/dusk/client-base.svg");	
 }
 
 .icon-svg-dusk-back {
@@ -110,7 +114,6 @@ i.icon-svg {
 .icon-svg-dusk-close-sign {
 	background-image: url("/images/icons/dusk/close-sign.svg");
 }
-
 
 .icon-svg-dusk-edit {
 	background-image: url("/images/icons/dusk/edit.svg");

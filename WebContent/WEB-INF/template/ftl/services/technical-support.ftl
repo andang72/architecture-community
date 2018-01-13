@@ -237,7 +237,10 @@
                     		<div class="col-lg-12">
                         		<div class="ibox float-e-margins">
                             		<div class="ibox-title">
-                                		<h5>프로젝트</h5>
+                                		<h2>
+                                		<i class="icon-svg icon-svg-sm icon-svg-dusk-client-base "></i>
+                                		</h2>
+                                		 계약된 프로젝트가 보여집니다. 프로젝트를 클릭하면 등록된 이슈들을 열람할 수 있습니다.
                             		</div>
 	                            <div class="ibox-content">
 	                                <div id="project-listview" class="no-border" ></div>
@@ -249,6 +252,49 @@
         		</div>
 	</section>
 	
+
+	<!-- FOOTER START -->   
+	<#include "/includes/user-footer.ftl">
+	<!-- FOOTER END -->  	
+	<script type="text/x-kendo-template" id="template">
+			<div class="forum-item">
+				<div class="row">
+					<div class="col-md-9">
+						<div class="forum-icon">
+ 							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support #if ( new Date() > endDate ) {#g-opacity-0_3#}#"></i>
+						</div>
+						
+						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="/display/pages/issues.html?projectId=#=projectId#" class="btn-link"> #:name# </a></h4>						
+						<div class="g-ml-60 g-mb-5 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
+						
+						#if( isDeveloper() ){ #
+						<div class="g-ml-60 g-mb-5"> 유지보수비용(월) : #: kendo.toString( maintenanceCost, 'c')  #</div>						
+						<div class="g-ml-60 g-mb-5 text-muted">#if(summary != null ){# #:summary # #}#</div>
+						#}#
+					</div>
+					<div class="col-md-1 forum-info">
+						<span class="views-number"> #= issueTypeStats.items[issueTypeStats.items.length - 1].value # </span>
+						<div>
+							<small>요청</small>
+						</div>
+					</div>
+					<div class="col-md-1 forum-info">
+						<span class="views-number"> #= resolutionStats.items[resolutionStats.items.length - 1].value # </span>
+						<div>
+							<small>처리</small>
+						</div>
+					</div>
+					<div class="col-md-1 forum-info">
+						<span class="views-number">#= issueTypeStats.items[issueTypeStats.items.length - 1].value -  resolutionStats.items[resolutionStats.items.length - 1].value # </span>
+						<div>
+							<small>미처리</small>
+						</div>
+					</div>
+				</div>
+			</div>
+    </script> 
+    
+</body>
 	<!-- issue editor modal -->
 	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -359,48 +405,6 @@
 			</div>
 		</div>
 	</div>	 
-	<!-- FOOTER START -->   
-	<#include "/includes/user-footer.ftl">
-	<!-- FOOTER END -->  	
-	<script type="text/x-kendo-template" id="template">
-			<div class="forum-item">
-				<div class="row">
-					<div class="col-md-9">
-						<div class="forum-icon">
- 							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support #if ( new Date() > endDate ) {#g-opacity-0_3#}#"></i>
-						</div>
-						
-						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="/display/pages/issues.html?projectId=#=projectId#" class="btn-link"> #:name# </a></h4>						
-						<div class="g-ml-60 g-mb-5 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
-						
-						#if( isDeveloper() ){ #
-						<div class="g-ml-60 g-mb-5"> 유지보수비용(월) : #: kendo.toString( maintenanceCost, 'c')  #</div>						
-						<div class="g-ml-60 g-mb-5 text-muted">#if(summary != null ){# #:summary # #}#</div>
-						#}#
-					</div>
-					<div class="col-md-1 forum-info">
-						<span class="views-number"> #= issueTypeStats.items[issueTypeStats.items.length - 1].value # </span>
-						<div>
-							<small>요청</small>
-						</div>
-					</div>
-					<div class="col-md-1 forum-info">
-						<span class="views-number"> #= resolutionStats.items[resolutionStats.items.length - 1].value # </span>
-						<div>
-							<small>처리</small>
-						</div>
-					</div>
-					<div class="col-md-1 forum-info">
-						<span class="views-number">#= issueTypeStats.items[issueTypeStats.items.length - 1].value -  resolutionStats.items[resolutionStats.items.length - 1].value # </span>
-						<div>
-							<small>미처리</small>
-						</div>
-					</div>
-				</div>
-			</div>
-    </script> 
-    
-</body>
 </html>
 </#compress>
 
