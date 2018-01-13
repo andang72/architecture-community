@@ -288,7 +288,7 @@
             </div>
 
             <div class="wrapper wrapper-content">
-                <div class="text-center">
+                <div class="">
   					<div class="ibox float-e-margins">
                         			 <div class="ibox-content no-padding g-font-size-20">	 
                         			 	<table class="table no-margins">
