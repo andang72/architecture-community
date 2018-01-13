@@ -553,18 +553,26 @@
 		                   style="width: 100%;"/>
 					</div>	
 
-					<h4 class="text-light-gray text-semibold">처리결과</h4>
-					<div class="form-group">
-						<input data-role="dropdownlist"  
-						   data-placeholder="선택"
-		                   data-auto-bind="true"
-		                   data-value-primitive="true"
-		                   data-text-field="name"
-		                   data-value-field="code"
-		                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource, enabled:editable"
-		                   style="width: 100%;"/>
+						
+					<div class="row" >
+						<div class="col-sm-6">
+							<h4 class="text-light-gray text-semibold">처리결과</h4>
+							<div class="form-group">
+								<input data-role="dropdownlist"  
+								   data-placeholder="선택"
+				                   data-auto-bind="true"
+				                   data-value-primitive="true"
+				                   data-text-field="name"
+				                   data-value-field="code"
+				                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource, enabled:editable"
+				                   style="width: 100%;"/>
+							</div>
+						</div>
+						<div class="col-sm-6">				
+							<h4 class="text-light-gray text-semibold">처리일자</h4>
+							<input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled: editable" style="width: 100%">
+						</div>
 					</div>	
-					
 					<h4 class="text-light-gray text-semibold">상태</h4>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
@@ -575,8 +583,7 @@
 		                   data-value-field="code"
 		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource, enabled:editable"
 		                   style="width: 100%;"/>
-					</div>	
-																																						
+					</div>																													
 				</form>   
 				
 				</div>
