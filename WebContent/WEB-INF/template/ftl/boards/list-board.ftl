@@ -152,8 +152,9 @@
                         		<div class="ibox float-e-margins">
                             		<div class="ibox-title">
                             			<h2>
-                                		<i class="icon-svg icon-svg-sm icon-svg-dusk-community-grants "></i>
+                                		<i class="icon-svg icon-svg-sm icon-svg-dusk-announcement"></i>
                                 		</h2>
+                                		<p> 게시판 이름을 클릭하면 등록된 글들을 열람할 수 있습니다. </p>
                             		</div>
 	                            <div class="ibox-content">
 	                                <div id="thread-listview" class="no-border" ></div>
@@ -172,7 +173,7 @@
 				<div class="row">
 					<div class="col-md-9">
 						<div class="forum-icon">
- 							<i class="icon-svg icon-svg-sm icon-svg-ios-discuss-forum"></i>
+ 							<i class="icon-svg icon-svg-sm icon-svg-dusk-my-space g-opacity-0_5"></i>
 						</div>
 						<a href="<@spring.url "/display/pages/threads.html"/>?boardId=#=boardId#" class="forum-item-title">#:displayName#</a>		
 						<div class="forum-sub-title">#if(description != null ){# #:description # #}#</div>
