@@ -216,11 +216,17 @@
                 		<div class="row">
                     		<div class="col-lg-12">
                         		<div class="ibox float-e-margins">
-                            		<div class="ibox-title">
-                                		<h5 data-bind="text:board.displayName"></h5>
-									<div class="pull-right forum-desc">
-										<samll>Total posts: <span data-bind="text:board.totalMessage"></span></samll>
-									</div>                                		
+                            		<div class="ibox-title g-pl-0">
+                            			<a href="<@spring.url "/display/pages/boards.html" />" class="back">
+                            			<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
+                            			</a>
+                            			<h2 class="g-pl-55">
+                                			<span data-bind="text:board.displayName">&nbsp;</span>
+                                			<div class="g-pt-15 g-pb-15 g-font-size-20 g-font-weight-200"></div>
+										<div class="forum-desc g-font-size-18 g-font-weight-200">
+											<samll>Total posts: <span data-bind="text:board.totalMessage"></span></samll>
+										</div>                                   				
+                                		</h2>
                             		</div>
 								<div class="ibox-content ibox-heading">
                                     <h3>You have meeting today!</h3>

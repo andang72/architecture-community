@@ -151,7 +151,9 @@
                     		<div class="col-lg-12">
                         		<div class="ibox float-e-margins">
                             		<div class="ibox-title">
-                                		<h5>커뮤니티 </h5>
+                            			<h2>
+                                		<i class="icon-svg icon-svg-sm icon-svg-dusk-community-grants "></i>
+                                		</h2>
                             		</div>
 	                            <div class="ibox-content">
 	                                <div id="thread-listview" class="no-border" ></div>

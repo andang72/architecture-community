@@ -487,8 +487,49 @@
                 		</div>
             		</div>
         		</div>
-	</section>
-
+	</section>			
+	<!-- FOOTER START -->   
+	<#include "/includes/user-footer.ftl">
+	<!-- FOOTER END -->  				
+	<script type="text/x-kendo-template" id="template">
+                    <tr>
+                      <td class="align-middle text-center">
+                      ISSUE-#: issueId # 	
+                      </td>
+                      <td class="align-middle">
+                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="javascript:void();" data-action="edit" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
+                      </td>
+                      <td class="align-middle">#: issueTypeName #</td>
+                      <td class="align-middle">#: priorityName #</td>
+                      <td class="align-middle">
+                      	#if ( repoter.userId > 0 ) {#
+                      	#= community.data.getUserDisplayName( repoter ) #
+                      	#} else {#
+                      		
+                      	#}#
+                      </td>
+                      <td class="align-middle">
+                      	#if ( assignee.userId > 0 ) {#
+                      	#= community.data.getUserDisplayName( assignee ) #
+                      	#} else {#
+                      	미지정
+                      	#}#
+                      </td>
+                      <td class="align-middle">
+                       #if ( statusName != null ){# 
+                       #: statusName #
+                       #}#
+                      </td>
+                      <td class="align-middle">
+                      #if( resolutionName != null){#
+                      #: resolutionName #
+                      #}#
+                      </td>
+                      <td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
+                      <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
+                    </tr>
+	</script>
+</body>
 	<!-- issue editor modal -->
 	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -651,50 +692,5 @@
 			</div>
 		</div>
 	</div>	 
-			
-	<!-- FOOTER START -->   
-	<#include "/includes/user-footer.ftl">
-	<!-- FOOTER END -->  
-				
-	<script type="text/x-kendo-template" id="template">
-                    <tr>
-                      <td class="align-middle text-center">
-                      ISSUE-#: issueId # 	
-                      </td>
-                      <td class="align-middle">
-                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="javascript:void();" data-action="edit" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
-                      </td>
-                      <td class="align-middle">#: issueTypeName #</td>
-                      <td class="align-middle">#: priorityName #</td>
-                      <td class="align-middle">
-                      	#if ( repoter.userId > 0 ) {#
-                      	#= community.data.getUserDisplayName( repoter ) #
-                      	#} else {#
-                      		
-                      	#}#
-                      </td>
-                      <td class="align-middle">
-                      	#if ( assignee.userId > 0 ) {#
-                      	#= community.data.getUserDisplayName( assignee ) #
-                      	#} else {#
-                      	미지정
-                      	#}#
-                      </td>
-                      <td class="align-middle">
-                       #if ( statusName != null ){# 
-                       #: statusName #
-                       #}#
-                      </td>
-                      <td class="align-middle">
-                      #if( resolutionName != null){#
-                      #: resolutionName #
-                      #}#
-                      </td>
-                      <td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
-                      <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
-                    </tr>
-	</script>	   
-	 
-</body>
 </html>
 </#compress>

@@ -95,6 +95,14 @@ i.icon-svg {
 }
 
 /* Dusk Icons */
+.icon-svg-dusk-my-space {
+	background-image: url("/images/icons/dusk/my-space.svg");
+}
+
+.icon-svg-dusk-community-grants {
+	background-image: url("/images/icons/dusk/community-grants.svg");
+}
+
 .icon-svg-dusk-announcement {
 	background-image: url("/images/icons/dusk/announcement.svg");
 }
