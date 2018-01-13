@@ -145,7 +145,7 @@
                     </p>
                 </div>
                 <div class="carousel-image wow zoomIn">
-                    <img src="http://webapplayers.com/inspinia_admin-v2.7.1/img/landing/laptop.png" alt="laptop"/>
+                    <img src="/images/blade-runner-guy-red-transparent-bg.png" alt="laptop"/>
                 </div>                
             </div>   
             <!-- Set background for slide in css -->
