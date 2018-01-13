@@ -341,6 +341,7 @@
 			priorityName: { type: "string", defaultValue: null },
 			resolution : { type: "string", defaultValue: null},
 			resolutionName: { type: "string", defaultValue: null },	
+			resolutionDate : { type: "date", defaultValue: null},
 			status : { type: "string", defaultValue: null},
 			statusName: { type: "string", defaultValue: null },				
 			dueDate:{ type: "date", defaultValue: null },	
@@ -367,6 +368,7 @@
 		    	target.set("dueDate",this.get("dueDate") );	
 		    	target.set("modifiedDate",this.get("modifiedDate") );
 		    	target.set("creationDate", this.get("creationDate") );
+		    	target.set("resolutionDate", this.get("resolutionDate") );
 		    	if( typeof this.get("repoter") === 'object' )
 		    		target.set("repoter", this.get("repoter") );
 		    	if( typeof this.get("assignee") === 'object' )
