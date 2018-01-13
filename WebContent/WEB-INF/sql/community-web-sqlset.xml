@@ -45,7 +45,7 @@
  	<#if filter??><#list filter.filters as item>
  	${item.logic} ${item.field}='${item.value}'
  	</#list></#if>
- 	ORDER BY DUE_DATE, RESOLUTION , ISSUE_STATUS 	
+ 	ORDER BY DUE_DATE, RESOLUTION , ISSUE_STATUS, PRIORITY 	
  	 ]]></dynamic></sql-query>	
 
  	<sql-query name="INSERT_ISSUE" description="INSERT_ISSUE"><![CDATA[    	
