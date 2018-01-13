@@ -233,7 +233,7 @@
 				},
 				serverPaging: true,
 				error:handleAjaxError,	
-				pageSize: 10		
+				pageSize: 15		
 		};
 		
 		
