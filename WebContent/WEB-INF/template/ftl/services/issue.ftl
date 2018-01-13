@@ -104,7 +104,11 @@
 			currentUser : new community.model.User(),
 			projectId : __projectId,
 			project : new community.model.Project(),
-			projecPeriod : "",
+			projectPeriod : "",
+			totalIssueCount : 0,
+			errorIssueCount: 0,
+			closeIssueCount: 0,
+			openIssueCount : 0,
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
@@ -115,6 +119,17 @@
 					success: function(data){		
 						$this.set('project', new community.model.Project(data) );		
 						$this.set('projecPeriod' , community.data.getFormattedDate( $this.project.startDate , 'yyyy-MM-dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy-MM-dd' ) );
+						$.each($this.project.issueTypeStats.items , function (index, item ){
+							if( item.name == 'TOTAL' )
+								$this.set('totalIssueCount', item.value );
+							else if ( item.name == '001' )
+								$this.set('errorIssueCount', item.value );	
+						});
+						$.each($this.project.resolutionStats.items , function (index, item ){
+							if( item.name == 'TOTAL' )
+								$this.set('closeIssueCount', item.value );
+						});
+						$this.set('openIssueCount', $this.get('totalIssueCount') - $this.get('closeIssueCount') );
 					}	
 				});
 			},
@@ -125,7 +140,9 @@
 				ISSUE_TYPE : null,
 				PRIORITY : null,
 				RESOLUTION : null,
-				ISSUE_STATUS : null
+				ISSUE_STATUS : null,
+				START_DATE : null,
+				END_DATE : null
 			},
 			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
@@ -172,22 +189,27 @@
 					
 						var filter = {filter:{filters: [], logic: "AND" } };
 						if( observable.filter.ISSUE_TYPE != null && observable.filter.ISSUE_TYPE.length > 0 ){
-							filter.filter.filters.push( {field: "ISSUE_TYPE", operator: "equals", value : observable.filter.ISSUE_TYPE, logic: "AND" } );
+							filter.filter.filters.push( {field: "ISSUE_TYPE", operator: "eq", value : observable.filter.ISSUE_TYPE, logic: "AND" } );
 						}
 						if( observable.filter.PRIORITY != null && observable.filter.PRIORITY.length > 0 ){
-							filter.filter.filters.push( {field: "PRIORITY", operator: "equals", value : observable.filter.PRIORITY, logic: "AND" } );
+							filter.filter.filters.push( {field: "PRIORITY", operator: "eq", value : observable.filter.PRIORITY, logic: "AND" } );
 						}
 						if( observable.filter.RESOLUTION != null && observable.filter.RESOLUTION.length > 0 ){
-							filter.filter.filters.push( {field: "RESOLUTION", operator: "equals", value : observable.filter.RESOLUTION, logic: "AND" } );
+							filter.filter.filters.push( {field: "RESOLUTION", operator: "eq", value : observable.filter.RESOLUTION, logic: "AND" } );
 						}
 						if( observable.filter.ISSUE_STATUS != null && observable.filter.ISSUE_STATUS.length > 0 ){
-							filter.filter.filters.push( {field: "ISSUE_STATUS", operator: "equals", value : observable.filter.ISSUE_STATUS, logic: "AND" } );
+							filter.filter.filters.push( {field: "ISSUE_STATUS", operator: "eq", value : observable.filter.ISSUE_STATUS, logic: "AND" } );
+						}
+						if( observable.filter.START_DATE != null ){
+							filter.filter.filters.push({ field: "START_DATE", operator: "gte", value : community.data.getFormattedDate( observable.filter.START_DATE, 'yyyyMMdd' ), logic: "AND" });
+						}
+						if( observable.filter.END_DATE != null ){
+							filter.filter.filters.push({ field: "END_DATE", operator: "lte", value : community.data.getFormattedDate( observable.filter.END_DATE, 'yyyyMMdd' ), logic: "AND" });
 						}
 						if( filter.filter.filters.length > 0 ){
 							options = $.extend( true, {}, filter, options );
 						}
 						
-						console.log( options );
 						return community.ui.stringify(options)
 					} 				
 				},
@@ -350,9 +372,31 @@
                                 		<h2 class="g-pl-55">
                                 			<span data-bind="text:project.name"></span>
                                 			<div class="g-pt-15 g-pb-15 g-font-size-20 g-font-weight-200" data-bind="html: project.summary"></div>
-                                			<div class="g-font-size-20 g-font-weight-200"><span class="text-warning" data-bind="text: projecPeriod "/></div>
+                                			<div class="g-font-size-20 g-font-weight-200"><span class="text-warning" data-bind="text:projectPeriod"/></div>
                                 		</h5>
-                                		
+                            		
+                            		<div class="text-center">
+                            			<p class="text-warning g-font-weight-100">현제까지 모든 요청사항에 대한 처리 내역입니다.</p>
+					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+					                  <div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount"> </div>
+					                  <span>전체</span>
+					                </div>
+					
+					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+					                  <div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount"> </div>
+					                  <span>오류</span>
+					                </div>
+					
+					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30" ">
+					                  <div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount"></div>
+					                  <span>종결</span>
+					                </div>
+					
+					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+					                  <div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount"></div>
+					                  <span>미처리</span>
+					                </div>
+					              </div>
                             		</div>
                             		<div class="ibox-content ibox-heading">
 									<div class="row">
@@ -398,11 +442,21 @@
 							                   data-bind="source:statusDataSource, value:filter.ISSUE_STATUS"
 							                   style="width: 100%;"/>
 	                            			</div>
+	                            	    </div>		
+	                            		<div class="row">
+	                            				<div class="col-sm-4 g-mb-15">
+	                            					<h5 class="text-light-gray text-semibold"> 시작일 > = 예정일 또는 생성일 </h5>	
+	                            					<input data-role="datepicker" style="width: 100%" data-bind="value:filter.START_DATE" placeholder="시작일">
+	                            				</div>
+	                            				<div class="col-sm-4 g-mb-15">
+	                            					<h5 class="text-light-gray text-semibold">종료일 <= 예정일 또는 생성일 </h5>	
+	                            					<input data-role="datepicker" style="width: 100%" data-bind="value:filter.END_DATE" placeholder="종료일">
+	                            				</div>
+	                            				<div class="col-sm-4 g-mb-15 text-right">
+	                            					<a class="btn btn-primary g-mr-20" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
+												<button type="button" class="btn btn-primary g-mr-20" data-bind="{click:search ">검색</button>
+	                            				</div>
 	                            		</div>
-	                            		<div class="ibox-tools">
-	                            			<a class="btn btn-primary g-mr-20" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
-										<button type="button" class="btn btn-primary g-mr-20" data-bind="{click:search ">검색</button>
-									</div>
 								</div>
 	                             <div class="ibox-content">					                  
 						              <!--Issue ListView-->
@@ -410,11 +464,11 @@
 						                <table class="table table-bordered u-table--v2">
 						                  <thead class="text-uppercase g-letter-spacing-1">
 						                    <tr class="g-height-50">
-						                    	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">ID</th>	
+						                    	  <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">ID</th>	
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
-						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-65">유형</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">유형</th>
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">중요도</th>
-						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">보고자</th>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">리포터</th>
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">담당자</th>
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">상태</th>
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">결과</th>
@@ -476,13 +530,13 @@
 					<div class="form-group">			
 						<div class="row">
 						  	<div class="col-sm-6">
-						  		<h4 class="text-light-gray text-semibold">보고자</h4>		
+						  		<h4 class="text-light-gray text-semibold">리포터</h4>		
 						  		<div data-bind="text:issue.repoter.name"></div>
 						  	</div>
 						    <div class="col-sm-6">
-						    		<span class="help-block m-b-none">이름으로 검색하고 선택하면 보고자가 지정됩니다.</span>
+						    		<span class="help-block m-b-none">이름으로 검색하고 선택하면 리포터가 지정됩니다.</span>
 						    		<input data-role="combobox"
-		                   		 data-placeholder="보고자 이름을 입력하세요."
+		                   		 data-placeholder="리포터 이름을 입력하세요."
 								 data-filter="contains" 
 		                   		 data-text-field="name"
 		                   	 	 data-value-field="username"
@@ -570,7 +624,7 @@
 						</div>
 						<div class="col-sm-6">				
 							<h4 class="text-light-gray text-semibold">처리일자</h4>
-							<input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled: editable" style="width: 100%">
+							<input data-role="datepicker" data-bind="value: issue.resolutionDate, visible: isDeveloper, enabled: editable" style="width: 100%">
 						</div>
 					</div>	
 					<h4 class="text-light-gray text-semibold">상태</h4>
@@ -602,7 +656,7 @@
 	<script type="text/x-kendo-template" id="template">
                     <tr>
                       <td class="align-middle text-center">
-                      #: issueId # 	
+                      ISSUE-#: issueId # 	
                       </td>
                       <td class="align-middle">
                      <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="javascript:void();" data-action="edit" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
