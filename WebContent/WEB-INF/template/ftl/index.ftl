@@ -387,6 +387,8 @@
 		    </div>
 		
 		</section>
-
+	<!-- FOOTER START -->   
+	<#include "/includes/user-footer.ftl">
+	<!-- FOOTER END -->  
 </body>
 </html>

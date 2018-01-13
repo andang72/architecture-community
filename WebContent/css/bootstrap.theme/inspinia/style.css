@@ -7,7 +7,7 @@
  *   version 2.7
  *
 */
-
+	
 h1,
 h2,
 h3,
@@ -7215,7 +7215,7 @@ body.landing-page {
   color: #1ab394 !important;
 }
 .landing-page .contact {
-  background-image: url('../img/landing/word_map.png');
+  background-image: url('../../../images/bg/word_map.png');
   background-position: 50% 50%;
   background-repeat: no-repeat;
   margin-top: 60px;

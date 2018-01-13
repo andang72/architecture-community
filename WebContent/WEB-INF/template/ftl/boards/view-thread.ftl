@@ -569,7 +569,7 @@
 	<!-- NAVBAR START -->   
 	<#include "/includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->   
-	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(https://htmlstream.com/preview/unify-v2.4/assets/img-temp/1920x800/img8.jpg)">      
+	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(/images/bg/BladeRunner-car-1920x1080.jpg)">      
       <div class="container text-center g-bg-cover__inner g-py-150">
         <div class="row justify-content-center">
           <div class="col-lg-6">
@@ -973,7 +973,10 @@
 			</div>
 		</div>
     </div>
-    </script>  	
+    </script>
+ 	<!-- FOOTER START -->   
+	<#include "/includes/user-footer.ftl">
+	<!-- FOOTER END -->       	
 </body>
 </html>
 </#compress>

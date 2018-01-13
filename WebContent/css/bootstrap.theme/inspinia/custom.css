@@ -26,7 +26,7 @@
 }
 
 .landing-page .header-back.one {
-  background: url('../../../images/bg/bg_one.jpg') 50% 0 no-repeat / cover!important; 
+  background: url('../../../images/bg/Blade-Runner-HD.jpg') 50% 0 no-repeat / cover!important; 
 }
 
 .landing-page .header-back.two {
@@ -51,3 +51,7 @@
 .landing-page .navbar.navbar-scroll .back {
 	margin-top: 18px!important;
 }
+
+.landing-page .contact {
+    background-image: none;
+}    

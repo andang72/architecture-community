@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INSPINIA | Register</title>
+    <title>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "") } | 회원가입</title>
 
 	<!-- Bootstrap core CSS -->
 	<link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
@@ -139,13 +139,13 @@
 	</style>
 </head>
 <body class="gray-bg skin-2">
-    <div class="middle-box text-center loginscreen   animated fadeInDown">
+    <div class="middle-box loginscreen   animated fadeInDown">
         <div id="register">
             <div>
-                <h1 class="logo-name">MUSI</h1>
+                <h1 class="logo-name">${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "리플리카") }</h1>
             </div>
-            <h3>Register to MUSI</h3>
-            <p>로그인 정보 및 가입정보를 입력하세요.</p>
+            <h3>Register to ${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "리플리카") }</h3>
+            <p>회원가입을 위하여 다음 가입정보를 입력하세요.</p>
             <form class="m-t" role="form" id="register-form" name="register-form" method="POST" accept-charset="utf-8" >
                 <div class="form-group">
                     <input type="text" class="form-control" name="name" placeholder="이름"  data-bind="enabled: enabled, value:currentUser.name" required data-required-msg="이름을 입력하여 주십시오." >
@@ -170,7 +170,7 @@
                 <p class="text-muted text-center"><small>이미 회원인가요 ?</small></p>
                 <a class="btn btn-sm btn-white btn-block" href="login" data-bind="enabled: enabled">로그인</a>
             </form>
-            <p class="m-t"> <small>Inspinia we app framework base on Bootstrap 3 &copy; 2014</small> </p>
+            <p class="m-t"> <small>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "리플리카") }는 spring, bootstrap 등의 오픈소프 기술을 기반으로 개발되었습니다.</small> </p>
         </div>
     </div>
 </body>

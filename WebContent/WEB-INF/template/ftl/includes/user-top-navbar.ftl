@@ -16,7 +16,7 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li <#if ! __page?? && ( __page.name == "index.html" )>class="active"</#if>><a class="page-scroll" href="/#page-top">Home</a></li>                        
+                        <li <#if ! __page?? && ( __page.name == "index.html" )> class="active"</#if>><a class="page-scroll" href="/#page-top">Home</a></li>                        
                         <li <#if __page?? && ( __page.name == "technical-support.html" || __page.name == "issues.html" ) >class="active"</#if>><a class="page-scroll" href="<@spring.url "/display/pages/technical-support.html"/>">기술지원서비스</a></li>
                         <li <#if __page?? && ( __page.name == "boards.html" || __page.name == "threads.html" || __page.name == "view-thread.html" ) >class="active"</#if>><a class="page-scroll" href="<@spring.url "/display/pages/boards.html"/>">커뮤니티</a></li>
                         <#if !currentUser.anonymous >

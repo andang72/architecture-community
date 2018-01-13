@@ -7,34 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">    
-    <title>Login</title>
-
+    <title>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "") } | 로그인</title>
 	<!-- Bootstrap CSS -->
-	<link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet" type="text/css" />
-	<link href="/fonts/font-awesome.css" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />
 
-	<!-- Bootstrap Inspinia Theme CSS -->
-	<link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet" type="text/css" />
+	<!-- Bootstrap Theme CSS -->
+	<link href="<@spring.url "/css/bootstrap.theme/inspinia/style.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/bootstrap.theme/inspinia/custom.css"/>" rel="stylesheet" type="text/css" />	
 		
 	<!-- Depends CSS -->
-	<link href="/css/animate/animate.css" rel="stylesheet"/>
+	<link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet"/>
+	<!-- Page landing js -->	   	
+	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>  
 </head>
 <body class="gray-bg skin-2">
     <div class="loginColumns animated fadeInDown">
         <div class="row">
             <div class="col-md-6">
-                <h2 class="font-bold">Welcome to MUSI +</h2>
+                <h2 class="font-bold">Welcome to ${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "") }</h2>
                 <p>
-                    Perfectly designed and precisely prepared admin theme with over 50 pages with extra new web app views.
-                </p>
-                <p>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
-                </p>
-                <p>
-                    When an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                </p>
-                <p>
-                    <small>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</small>
+                    서비스 이용하시려면 회원가입이 필요합니다. 아직 아이디가 없으시면 회원가입후 서비스를 이용하세요.
                 </p>
             </div>
             <div class="col-md-6">
@@ -49,7 +42,7 @@
                         <div class="form-group"> 
 					        <div class="checkbox">
 					          <label>
-					            <input type="checkbox" name="remember-me"> 로그인상태유지
+					            <input type="checkbox" name="remember-me">로그인상태유지
 					          </label>
 					        </div>
                         </div>                        
@@ -63,7 +56,7 @@
                         <a class="btn btn-sm btn-white btn-block" href="join">회원가입</a>
                     </form>
                     <p class="m-t">
-                        <small>Inspinia we app framework base on Bootstrap 3 &copy; 2014</small>
+                        <small>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "리플리카") }는 spring, bootstrap 등의 오픈소프 기술을 기반으로 개발되었습니다.</small>
                     </p>
                 </div>
             </div>
@@ -71,7 +64,7 @@
         <hr/>
         <div class="row">
             <div class="col-md-6">
-                Copyright Example Company
+                ${ CommunityContextHelper.getConfigService().getApplicationProperty("website.copyright", "") }
             </div>
             <div class="col-md-6 text-right">
                <small>© 2017 - 2018 </small>
