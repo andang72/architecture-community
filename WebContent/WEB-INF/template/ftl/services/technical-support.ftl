@@ -222,7 +222,7 @@
             </div>
             <!-- Promo Blocks - Input -->
 			<p data-bind="invisible:currentUser.anonymous" >
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous" >기술지원요청하기</a>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" style="display:none;" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous" >기술지원요청하기</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
@@ -236,12 +236,16 @@
                 		<div class="row">
                     		<div class="col-lg-12">
                         		<div class="ibox float-e-margins">
-                            		<div class="ibox-title">
+                            		<div class="ibox-title" data-bind="invisible:currentUser.anonymous" style="display:none;">
                                 		<h2>
                                 		<i class="icon-svg icon-svg-sm icon-svg-dusk-client-base "></i>
                                 		</h2>
-                                		 계약된 프로젝트가 보여집니다. 프로젝트를 클릭하면 등록된 이슈들을 열람할 수 있습니다.
+                                		<p> 프로젝트를 클릭하면 등록된 이슈들을 열람할 수 있습니다. </p>
                             		</div>
+	                            	<div class="ibox-title"  data-bind="visible:currentUser.anonymous" style="display:none;">
+	                            		<i class="icon-svg icon-svg-sm icon-svg-dusk-announcement"></i>
+	                            		<p data-bind="visible:currentUser.anonymous"> <a href="/accounts/login">로그인</a>이 필요한 서비스 입니다. </p>
+	                            	</div>                            		
 	                            <div class="ibox-content">
 	                                <div id="project-listview" class="no-border" ></div>
 	                            </div>
