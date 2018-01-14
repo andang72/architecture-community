@@ -24,7 +24,7 @@ SELECT CORP_TYPE  AS "CENTER"
              , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
              , CASE A.BOARDID 
              	WHEN 'mpva'         THEN 'PODO'       -- 국가보훈처
-             	WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
+             	-- WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
                 WHEN 'knu'          THEN 'PODO'       -- 강남대학교 
                 WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
                 WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
@@ -112,7 +112,7 @@ SELECT CORP_TYPE  AS "CENTER"
              , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
              , CASE A.BOARDID 
              	WHEN 'mpva'         THEN 'PODO'       -- 국가보훈처
-             	WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
+             --	WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
                 WHEN 'knu'          THEN 'PODO'       -- 강남대학교 
                 WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
                 WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
@@ -206,7 +206,7 @@ SELECT CORP_TYPE  AS "CENTER"
              , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
              , CASE A.BOARDID 
              	WHEN 'mpva'         THEN 'PODO'       -- 국가보훈처
-             	WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
+            -- 	WHEN 'sangji'       THEN 'PODO'       -- 상지대학교    
                 WHEN 'knu'          THEN 'PODO'       -- 강남대학교 
                 WHEN 'kai'          THEN 'PODO'       -- 한국항공우주산업 
                 WHEN 'kwu'          THEN 'PODO'       -- 강원대학교  
@@ -297,7 +297,7 @@ SELECT CORP_NAME,
 SELECT BOARDID,
        CASE BOARDID 
              	WHEN 'mpva'         THEN '국가보훈처'      
-             	WHEN 'sangji'       THEN '상지대학교'      
+       --      	WHEN 'sangji'       THEN '상지대학교'      
                 WHEN 'knu'          THEN '강남대학교'     
                 WHEN 'kai'          THEN '한국항공우주산업'   
                 WHEN 'kwu'          THEN '강원대학교'      
@@ -328,7 +328,7 @@ SELECT C.*
                      , CASE A.BOARDID 
              	
              	WHEN 'mpva'         THEN '국가보훈처'      
-             	WHEN 'sangji'       THEN '상지대학교'      
+          --   	WHEN 'sangji'       THEN '상지대학교'      
                 WHEN 'knu'          THEN '강남대학교'     
                 WHEN 'kai'          THEN '한국항공우주산업'   
                 WHEN 'kwu'          THEN '강원대학교'      
@@ -356,7 +356,7 @@ SELECT C.*
 SELECT BOARDID,
                 CASE BOARDID  
              	WHEN 'mpva'         THEN '국가보훈처'      
-             	WHEN 'sangji'       THEN '상지대학교'      
+        --     	WHEN 'sangji'       THEN '상지대학교'      
                 WHEN 'knu'          THEN '강남대학교'     
                 WHEN 'kai'          THEN '한국항공우주산업'   
                 WHEN 'kwu'          THEN '강원대학교'      
@@ -386,7 +386,7 @@ SELECT C.*
                      , DECODE(A.BOARDID,'ientersm','',C.CATEGORYNAME) CATEGORYNAME
                      , CASE A.BOARDID 
              	WHEN 'mpva'         THEN '국가보훈처'      
-             	WHEN 'sangji'       THEN '상지대학교'      
+         --    	WHEN 'sangji'       THEN '상지대학교'      
                 WHEN 'knu'          THEN '강남대학교'     
                 WHEN 'kai'          THEN '한국항공우주산업'   
                 WHEN 'kwu'          THEN '강원대학교'      
