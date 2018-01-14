@@ -66,15 +66,7 @@
 		    		}
 		  	}
 		});		
-        
-        // Page scrolling feature
-        $('a.page-scroll').bind('click', function(event) {
-            var link = $(this);
-            $('html, body').stop().animate({ scrollTop: $(link.attr('href')).offset().top - 50 }, 500);
-            event.preventDefault();
-            $("#navbar").collapse('hide');
-        });
-        
+
         // Topnav animation feature
  		var cbpAnimatedHeader = (function() {
         		var docElem = document.documentElement, header = document.querySelector( '.navbar-default' ), didScroll = false, changeHeaderOn = 200;
@@ -101,7 +93,7 @@
 	        }
         		init();
 		})();
-           		
+          		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
 			setUser : function( data ){
@@ -131,17 +123,13 @@
                     최적화된 유지보수,  지금 만나보십시오!
                     </p>                    
                     <p>
-                    
  					<a href="tel:070-7432-2657" class="btn btn-xl u-btn-pink u-btn-hover-v2-2 g-letter-spacing-0_5 text-uppercase g-rounded-50 g-px-30 g-mr-10 g-mb-15">
                         <span class="pull-left text-left g-font-size-30">
                           070-7432-2657
                           <span class="d-block g-font-size-14">helpdesk@podosw.com</span>
                         </span>
                         <i class="fa fa-volume-control-phone float-right g-font-size-60 g-ml-15"></i>
-                      </a>
-                                                            
-                    
-                                                    
+                      </a>                        
                     </p>
                 </div>
                 <div class="carousel-image wow zoomIn">

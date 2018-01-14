@@ -95,6 +95,10 @@ i.icon-svg {
 }
 
 /* Dusk Icons */
+.icon-svg-dusk-administrative-tools {
+	background-image: url("/images/icons/dusk/administrative-tools.svg");	
+}
+
 .icon-svg-dusk-my-space {
 	background-image: url("/images/icons/dusk/my-space.svg");
 }

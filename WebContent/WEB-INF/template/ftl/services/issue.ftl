@@ -102,6 +102,7 @@
            		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
+			isDeveloper : false,
 			projectId : __projectId,
 			project : new community.model.Project(),
 			projectPeriod : "",
@@ -112,6 +113,7 @@
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
+				$this.set('isDeveloper', isDeveloper() );
 			},
 			loadProjectInfo : function( ){
 				var $this = this;
@@ -376,7 +378,7 @@
                                 		</h5>
                             		
                             		<div class="text-center">
-                            			<p class="text-warning g-font-weight-100">현제까지 모든 요청사항에 대한 처리 내역입니다.</p>
+                            			<p class="text-warning g-font-weight-100">현제까지 모든 요청사항에 대한 처리 현황입니다.</p>
 					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
 					                  <div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount"> </div>
 					                  <span>전체</span>
@@ -452,9 +454,9 @@
 	                            					<h5 class="text-light-gray text-semibold">종료일 <= 예정일 또는 생성일 </h5>	
 	                            					<input data-role="datepicker" style="width: 100%" data-bind="value:filter.END_DATE" placeholder="종료일">
 	                            				</div>
-	                            				<div class="col-sm-4 g-mb-15 text-right">
-	                            					<a class="btn btn-primary g-mr-20" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
-												<button type="button" class="btn btn-primary g-mr-20" data-bind="{click:search ">검색</button>
+	                            				<div class="col-sm-4 g-mb-15 text-center">
+												<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:search ">검색</button>
+												<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
 	                            				</div>
 	                            		</div>
 								</div>

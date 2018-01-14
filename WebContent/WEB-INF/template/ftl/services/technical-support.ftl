@@ -69,7 +69,9 @@
 		  			observable.setUser(e.token);
 		    		}
 		  	}
-		});	        
+		});	     
+		
+		
         // Topnav animation feature
  		var cbpAnimatedHeader = (function() {
         		var docElem = document.documentElement, header = document.querySelector( '.navbar-default' ), didScroll = false, changeHeaderOn = 200;
@@ -99,9 +101,11 @@
            		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
+			isDeveloper : false,
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
+				$this.set('isDeveloper', isDeveloper());
 			},
 			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
 				transport:{
@@ -117,9 +121,38 @@
 					data: "items",
 					model: community.model.Project
 				}
-			})
+			}),
+			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PROJECT/list.json" />' , {} ),
+			filter : {
+				PROJECT_CONTRACT : null,
+				NAME : null
+			},
+			clearFilters : function(){
+				var $this = this ;
+				$this.set('filter.PROJECT_CONTRACT' , null ) ;
+				$this.set('filter.NAME' , null ) ;
+				$this.dataSource.filter( [] );
+			},
+			applyFilters : function(){
+				var $this = this , filters = [];
+				if( $this.filter.PROJECT_CONTRACT != null ){
+					filters.push({ field: "contractState", operator: "eq", value: $this.filter.PROJECT_CONTRACT });
+				}else if ($this.filter.NAME != null ){
+					filters.push({ field: "name", operator: "contains", value: $this.filter.NAME });
+				}
+				$this.dataSource.filter( filters );
+			},
+			showAllOpenIssue: function(e){
+				$('html, body').stop().animate({ scrollTop: $("#worklist").offset().top - 50 }, 500);
+				e.preventDefault();
+				$("#navbar").collapse('hide');
+ 			}
     		});
-    		
+    		observable.bind("change", function(e) { 
+    			if( e.field == 'filter.PROJECT_CONTRACT' || e.field == 'filter.NAME' ) {
+    				observable.applyFilters();
+    			}
+    		});
     		
     		var renderTo = $('#page-top');
     		renderTo.data('model', observable);
@@ -152,7 +185,7 @@
 	}
 	
 	function createOrOpenIssueEditor( data ){
-		console.log( community.ui.stringify(data) );
+		
 		var renderTo = $('#issue-editor-modal');
 		if( !renderTo.data("model") ){
 			var observable = new community.ui.observable({ 
@@ -178,6 +211,11 @@
 			 	},
 				saveOrUpdate : function(e){				
 					var $this = this;
+					if( !$this.get('isDeveloper') && $this.issue.repoter.userId <= 0 )
+					{
+						$this.issue.repoter = $('#page-top').data('model').currentUser ;					
+					}
+					
 					community.ui.progress(renderTo.find('.modal-content'), true);	
 					community.ui.ajax( '<@spring.url "/data/api/v1/issues/save-or-update.json" />', {
 						data: community.ui.stringify($this.issue),
@@ -221,8 +259,8 @@
               <h2 class="g-color-white g-font-weight-200 g-font-size-22 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
             </div>
             <!-- Promo Blocks - Input -->
-			<p data-bind="invisible:currentUser.anonymous" >
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" style="display:none;" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous" >기술지원요청하기</a>
+			<p data-bind="invisible:currentUser.anonymous" style="display:none;">
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous" >기술지원요청하기</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
@@ -236,19 +274,53 @@
                 		<div class="row">
                     		<div class="col-lg-12">
                         		<div class="ibox float-e-margins">
-                            		<div class="ibox-title" data-bind="invisible:currentUser.anonymous" style="display:none;">
-                                		<h2>
-                                		<i class="icon-svg icon-svg-sm icon-svg-dusk-client-base "></i>
-                                		</h2>
-                                		<p> 프로젝트를 클릭하면 등록된 이슈들을 열람할 수 있습니다. </p>
-                            		</div>
 	                            	<div class="ibox-title"  data-bind="visible:currentUser.anonymous" style="display:none;">
 	                            		<i class="icon-svg icon-svg-sm icon-svg-dusk-announcement"></i>
 	                            		<p data-bind="visible:currentUser.anonymous"> <a href="/accounts/login">로그인</a>이 필요한 서비스 입니다. </p>
-	                            	</div>                            		
+	                            	</div>                          		
+                            		<div class="ibox-title" data-bind="visible:isDeveloper" style="display:none;">
+                                		<h2>
+                                		<i class="icon-svg icon-svg-sm icon-svg-dusk-client-base "></i>
+                                		</h2>
+                            		</div>   
+                            		<#if !currentUser.anonymous >
+	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">
+	                            		<p class="g-color-red"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다. 프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</p>
+	                            		<div class="row">
+	                            			<div class="col-sm-4 g-mb-15">
+	                            				<div class="form-group">					    
+												<input data-role="combobox" 
+													data-option-label="계약상태를 선택하세요."
+													data-placeholder="프로젝트 계약상태를 선택하세요."
+													data-value-primitive="true"
+													data-auto-bind="true"
+													data-text-field="name"
+													data-value-field="code"
+													data-bind="value: filter.PROJECT_CONTRACT, source: contractDataSource"
+													style="width: 100%;" />
+								  			</div>	
+								  		</div>
+								 		<div class="col-sm-4 g-mb-15">
+										  	<div class="form-group">
+												<input type="text" class="form-control" placeholder="프로젝트 이름을 입력하세요." data-bind="value:filter.NAME">
+											</div>
+								  		</div>	
+								  		<div class="col-sm-4 g-mb-15">
+								  			<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" data-object-id="0" data-bind="click:clearFilters" >초기화</button>
+								  		</div>
+								  	</div>
+								  	<hr class="g-brd-gray-light-v4 my-0">
+								  	<div class="row">
+	                            			<div class="col-sm-12">
+	                            				<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button"  role="button" data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
+	                            				<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
+	                            			</div>
+	                            	  	</div>	
+	                            	</div>                       		                       		
 	                            <div class="ibox-content">
 	                                <div id="project-listview" class="no-border" ></div>
-	                            </div>
+	                            </div>                            
+	                            </#if>
                         		</div>
                     		</div>
                 		</div>
@@ -256,6 +328,19 @@
         		</div>
 	</section>
 	
+	<section id="worklist" class="gray-section" data-bind="visible:isDeveloper">
+	    <div class="container">
+	        <div class="row">
+	            <div class="col-lg-12 text-center">
+	                <div class="navy-line"></div>
+	                <h1>미완료 이슈</h1>
+	                <p>종결되지 않는 모든 이슈들입니다.</p>
+	            </div>
+	        </div>
+	        <div class="row features-block">
+	        </div>
+	    </div>
+	</section>	
 
 	<!-- FOOTER START -->   
 	<#include "/includes/user-footer.ftl">
@@ -297,7 +382,6 @@
 				</div>
 			</div>
     </script> 
-    
 </body>
 	<!-- issue editor modal -->
 	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -310,7 +394,6 @@
 			        <h2 class="modal-title">기술지원요청</h2>
 		      	</div><!-- /.modal-content -->
 				<div class="modal-body">
-				
 				 <form>
 				 
 				 	<h6 class="text-light-gray text-semibold">프로젝트 <span class="text-danger">*</span></h6>
@@ -411,4 +494,3 @@
 	</div>	 
 </html>
 </#compress>
-

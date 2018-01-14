@@ -398,7 +398,7 @@
 				_photoUrl = _photoUrl + '&thumbnail=true&height=120&width=120&time=' ;
 			}
 			
-			return encodeURIComponent( _photoUrl );
+			return encodeURI( _photoUrl );
 		}
 		return "/images/no-image.jpg";
 	} 

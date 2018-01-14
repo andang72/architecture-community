@@ -124,6 +124,20 @@ button[data-toggle=collapse][aria-expanded=true] i.icons:before {
 .d-inline-block {
 	display: inline-block!important;
 }
+
+.list-inline-item:not(:last-child) {
+    margin-right: 5px;
+}
+.list-inline-item {
+    display: inline-block;
+}
+
+@media (min-width: 992px){
+	.d-lg-flex {
+	    display: -ms-flexbox!important;
+	    display: flex!important;
+	}
+}
 /*------------------------------------
   Kendoui css
 ------------------------------------*/
