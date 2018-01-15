@@ -113,7 +113,17 @@
 	<!-- NAVBAR START -->   
 	<#include "/includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->  
-	
+	<section class="g-brd-bottom g-brd-gray-light-v4">
+      <div class="container g-py-150">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="d-inline-block g-width-80 g-height-4 g-bg-black mb-3"></div>
+            <h2 class="g-color-black g-font-weight-700 g-font-size-50 g-line-height-1 mb-4"><#if __page?? >${__page.title}</#if></h2>
+            <p class="mb-0"><#if __page.summary ?? >${__page.summary}</#if></p>
+          </div>
+        </div>
+      </div>
+    </section>	
 	<!-- FOOTER START -->   
 	<#include "/includes/user-footer.ftl">
 	<!-- FOOTER END -->  
