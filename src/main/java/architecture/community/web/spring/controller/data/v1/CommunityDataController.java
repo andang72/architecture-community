@@ -52,6 +52,7 @@ import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.model.Models;
 import architecture.community.projects.DefaultIssue;
 import architecture.community.projects.Issue;
+import architecture.community.projects.IssueNotFoundException;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.projects.ProjectView;
@@ -227,39 +228,211 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		}else {
 			list = Collections.EMPTY_LIST;
 		}
-		/**
-		if( dataSourceRequest.getPageSize() == 0 && dataSourceRequest.getPage() == 0){
+		return new ItemList(list, totalSize);
+	}
+
+
+	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/attachments/list.json", method = RequestMethod.POST)
+	@ResponseBody
+	public ItemList getIssueAttachmentList(@PathVariable Long issueId, NativeWebRequest request) throws NotFoundException {
+		ItemList list = new ItemList();
+		if (issueId < 1) {
+			return list;
+		}
+		Issue issueToUse = projectService.getIssue(issueId);
+		List<Attachment> attachments = attachmentService.getAttachments(Models.ISSUE.getObjectType(), issueToUse.getIssueId());
+		list.setItems(attachments);
+		list.setTotalCount(attachments.size());
+		return list;
+
+	}
+
+	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/attachments/{attachmentId:[\\p{Digit}]+}/{filename:.+}", method = { RequestMethod.GET, RequestMethod.POST })
+	public void downloadIssueAttachement(
+			@PathVariable Long issueId, 
+			@PathVariable("attachmentId") Long attachmentId,
+			@PathVariable("filename") String filename,
+			@RequestParam(value = "thumbnail", defaultValue = "false", required = false) boolean thumbnail,
+			@RequestParam(value = "width", defaultValue = "150", required = false) Integer width,
+			@RequestParam(value = "height", defaultValue = "150", required = false) Integer height,
+			HttpServletResponse response) throws NotFoundException, IOException {
+		
+		if (issueId > 0 && attachmentId > 0 && !StringUtils.isNullOrEmpty(filename)) {
 			
-			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId());
+			Issue issueToUse = projectService.getIssue(issueId);
+			Attachment attachment = attachmentService.getAttachment(attachmentId);
+			
+			if( thumbnail )
+			{
+				if( attachmentService.hasThumbnail(attachment) ){
+					ThumbnailImage thumbnailImage = new ThumbnailImage();
+					thumbnailImage.setWidth(width);
+					thumbnailImage.setHeight(height);
+					
+					InputStream input = attachmentService.getAttachmentThumbnailInputStream(attachment, thumbnailImage );
+					response.setContentType(thumbnailImage.getContentType());
+				    response.setContentLength((int)thumbnailImage.getSize());
+				    IOUtils.copy(input, response.getOutputStream());
+				    response.flushBuffer();
+				}else{
+				    response.setStatus(301);
+				    String url ="/images/no-image.jpg" ;
+				    response.addHeader("Location", url);
+				}
+			} else {
+				InputStream input = attachmentService.getAttachmentInputStream(attachment);
+				response.setContentType(attachment.getContentType());
+				response.setContentLength(attachment.getSize());
+				IOUtils.copy(input, response.getOutputStream());
+				response.setHeader("contentDisposition", "attachment;filename=" + getEncodedFileName(attachment));
+				response.flushBuffer();					
+			}
+		}		
+		throw new NotFoundException();
+	}
+	
+
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/attachments/upload.json", method = RequestMethod.POST)
+	@ResponseBody
+	public List<Attachment> uploadIssueAttachement(@PathVariable Long issueId, MultipartHttpServletRequest request)
+			throws NotFoundException, UnAuthorizedException, IOException {
+
+		User currentUser = SecurityHelper.getUser();
+		Issue issueToUse = projectService.getIssue(issueId);
 		
-		}else{
-		
-			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId(), dataSourceRequest.getSkip(), dataSourceRequest.getPageSize());
-		
+		if (currentUser.isAnonymous() || issueToUse.getRepoter().getUserId() != currentUser.getUserId()) {
+			throw new UnAuthorizedException();
 		}
-		*/
+
+		if (issueId < 1) {
+			throw new IllegalArgumentException("IssueId Id can't be " + issueId);
+		}
+
+		List<Attachment> list = new ArrayList<Attachment>();
+		Iterator<String> names = request.getFileNames();
+		while (names.hasNext()) {
+			String fileName = names.next();
+			MultipartFile mpf = request.getFile(fileName);
+			InputStream is = mpf.getInputStream();
+			log.debug("upload - file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize(), mpf.getContentType());
+			Attachment attachment = attachmentService.createAttachment(Models.ISSUE.getObjectType(), issueToUse.getIssueId(), mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+			attachment.setUser(currentUser);
+			attachmentService.saveAttachment(attachment);
+			list.add(attachment);
+		}
+		return list;
+	}
+	
+
+	/**
+	 * 
+	 * @return
+	 * @throws BoardMessageNotFoundException
+	 * @throws BoardNotFoundException
+	 */
+	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/add_simple.json", method = {RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Result addCommentToIssueSimple(@PathVariable Long threadId, @PathVariable Long issueId,
+			@RequestParam(value = "name", defaultValue = "", required = false) String name,
+			@RequestParam(value = "email", defaultValue = "", required = false) String email,
+			@RequestParam(value = "text", defaultValue = "", required = true) String text, HttpServletRequest request,
+			ModelMap model) {
+
+		Result result = Result.newResult();
+		try {
+			User user = SecurityHelper.getUser();
+			String address = request.getRemoteAddr();
+
+			Issue issueToUse = projectService.getIssue(issueId);
+			Comment newComment = commentService.createComment(Models.ISSUE.getObjectType(), issueToUse.getIssueId(), user, text);
+
+			newComment.setIPAddress(address);
+			if (!StringUtils.isNullOrEmpty(name))
+				newComment.setName(name);
+			if (!StringUtils.isNullOrEmpty(email))
+				newComment.setEmail(email);
+
+			commentService.addComment(newComment);
+
+			result.setCount(1);
+		} catch (Exception e) {
+			result.setError(e);
+		}
+
+		return result;
+	}
+
+	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Result addCommentToIssue(@PathVariable Long issueId,  @RequestBody DataSourceRequest reqeustData, HttpServletRequest request, ModelMap model) {
+		Result result = Result.newResult();
+		try {
+			User user = SecurityHelper.getUser();
+			String address = request.getRemoteAddr();
+			String name = reqeustData.getDataAsString("name", null);
+			String email = reqeustData.getDataAsString("email", null);
+			String text = reqeustData.getDataAsString("text", null);
+			Long parentCommentId = reqeustData.getDataAsLong("parentCommentId", 0L);
+
+			Issue issueToUse = projectService.getIssue(issueId);
+			Comment newComment = commentService.createComment(Models.ISSUE.getObjectType(), issueToUse.getIssueId(), user, text);
+
+			newComment.setIPAddress(address);
+			if (!StringUtils.isNullOrEmpty(name))
+				newComment.setName(name);
+			if (!StringUtils.isNullOrEmpty(email))
+				newComment.setEmail(email);
+
+			if (parentCommentId > 0) {
+				Comment parentComment = commentService.getComment(parentCommentId);
+				commentService.addComment(parentComment, newComment);
+			} else {
+				commentService.addComment(newComment);
+			}
+			result.setCount(1);
+		} catch (Exception e) {
+			result.setError(e);
+		}
+
+		return result;
+	}
+
+	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getIssueComments(@PathVariable Long issueId, NativeWebRequest request)
+			throws IssueNotFoundException {
+		Issue issueToUse = projectService.getIssue(issueId);
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.ISSUE.getObjectType(), issueToUse.getIssueId());
+		long parentId = -1L;
+		int totalSize = walker.getChildCount(parentId);
+		List<Comment> list = walker.children(parentId, new ObjectLoader<Comment>() {
+			public Comment load(long commentId) throws NotFoundException {
+				return commentService.getComment(commentId);
+			}
+
+		});
 		return new ItemList(list, totalSize);
 	}
-	/*
-	public ItemList getProjectIssues (@PathVariable Long projectId, 
-			@RequestParam(value = "skip", defaultValue = "0", required = false) int skip,
-			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize,
-			NativeWebRequest request) throws NotFoundException {	
-				
-		Project project = projectService.getProject(projectId);
-		List<Issue> list;
+
+	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/{commentId:[\\p{Digit}]+}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getIssueChildComments(@PathVariable Long issueId,
+			@PathVariable Long commentId, NativeWebRequest request) throws IssueNotFoundException {
+
+		Issue issueToUse = projectService.getIssue(issueId);
 		
-		int totalSize = projectService.getIssueCount(Models.PROJECT.getObjectType(), project.getProjectId());
+		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.ISSUE.getObjectType(), issueToUse.getIssueId());
+
+		int totalSize = walker.getChildCount(commentId);
 		
-		if( pageSize == 0 && page == 0){
-			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId());
-		}else{
-			list = projectService.getIssues(Models.PROJECT.getObjectType(), project.getProjectId(), skip, pageSize);
-		}
+		List<Comment> list = walker.children(commentId, new ObjectLoader<Comment>() {
+			public Comment load(long commentId) throws NotFoundException {
+				return commentService.getComment(commentId);
+			}
+		});
 		return new ItemList(list, totalSize);
-	}
-	*/
+	}	
 	
 	/**
 	 * BOARD API 
