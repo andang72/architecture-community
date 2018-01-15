@@ -367,8 +367,8 @@
 		                </ul>
 		            </div>
 		        </div>
-		        <div class="row m-t-lg">
-		            <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg">
+		        <div class="row m-t-lg ">
+		            <div class="col-lg-8 col-lg-offset-2 text-center m-t-lg g-mb-50">
 		                <p>* 소프트웨어 유지보수 대상은 (주)포도소프트웨어에 의하여 구축되었고 현재 운영중인 소프트웨어에 대한 유지보수를 의미합니다.</p>
 		            </div>
 		        </div>
