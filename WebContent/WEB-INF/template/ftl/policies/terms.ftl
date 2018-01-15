@@ -109,7 +109,7 @@
 	});
 	</script>		
 </head>
-<body id="page-top" class="landing-page no-skin-config">
+<body id="page-top" class="landing-page skin-5">
 	<!-- NAVBAR START -->   
 	<#include "/includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->  
