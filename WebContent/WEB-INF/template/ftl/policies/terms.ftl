@@ -119,7 +119,7 @@
           <div class="col-lg-6">
             <div class="d-inline-block g-width-80 g-height-4 g-bg-black mb-3"></div>
             <h2 class="g-color-black g-font-weight-700 g-font-size-50 g-line-height-1 mb-4"><#if __page?? >${__page.title}</#if></h2>
-            <p class="mb-0"><#if __page?? >${__page.summary}</#if></p>
+            <p class="mb-0"><#if __page.summary ?? >${__page.summary}</#if></p>
           </div>
         </div>
       </div>
