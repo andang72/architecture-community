@@ -411,7 +411,7 @@
             </div>
 
             <div class="wrapper wrapper-content">
-                <div class="text-center">                 
+                <div class="">                 
 							<div class="ibox float-e-margins">
                         			 <div class="ibox-content no-padding">	 
                         			 	<table class="table no-margins">
@@ -445,8 +445,6 @@
             </div> 
         </div>
     </div>
-
-
 	<!-- editor modal -->
 	<div class="modal fade" id="pages-editor-modal" tabindex="-1" role="dialog" aria-labelledby="pages-editor-modal-labal" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
