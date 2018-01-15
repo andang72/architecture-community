@@ -6,12 +6,13 @@
               <small class="d-block g-font-size-20 g-mr-10 g-mb-10 g-mb-0--md">2018 © All Rights Reserved.</small>
              
               <ul class="u-list-inline">
+              	<!--
                 <li class="list-inline-item">
                   <a class="g-color-white-opacity-0_8 g-color-white--hover" href="/display/pages/terms.html">서비스약관</a>
                 </li>
                 <li class="list-inline-item">
                   <span>|</span>
-                </li>
+                </li>-->
                 <li class="list-inline-item">
                   <a class="g-color-white-opacity-0_8 g-color-white--hover" href="/display/pages/privacy.html">개인정보처리방침</a>
                 </li>
