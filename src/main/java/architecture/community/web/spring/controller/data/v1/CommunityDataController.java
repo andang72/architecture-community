@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -230,7 +231,41 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		}
 		return new ItemList(list, totalSize);
 	}
+	
+	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/get-with-project.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public IssueWithProject getIssueWithProject(@PathVariable Long issueId, NativeWebRequest request) throws NotFoundException{
+		if( issueId <= 0)
+			throw new IssueNotFoundException();
+		
+		Issue issueToUse = projectService.getIssue(issueId);
+		Project projectToUse = projectService.getProject(issueToUse.getObjectId());
+		return new IssueWithProject(projectToUse, issueToUse);
+		
+	}
 
+	public static class IssueWithProject {
+		private Issue issue ;
+		private Project project;
+		
+		public IssueWithProject(Project project, Issue issue) {
+			this.project = project;
+			this.issue = issue;
+		}
+		public Issue getIssue() {
+			return issue;
+		}
+		public void setIssue(Issue issue) {
+			this.issue = issue;
+		}
+		public Project getProject() {
+			return project;
+		}
+		public void setProject(Project project) {
+			this.project = project;
+		}
+		
+	}
 
 	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/attachments/list.json", method = RequestMethod.POST)
 	@ResponseBody

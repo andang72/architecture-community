@@ -425,6 +425,11 @@
 			renderTo.find('[data-toggle="tooltip"]').tooltip();
 		}
 		
+		/**
+		 * 
+		 * 
+		 * */
+		
 		extend( community.ui , {	
 			guid : kendo.guid,
 			setup : setup,

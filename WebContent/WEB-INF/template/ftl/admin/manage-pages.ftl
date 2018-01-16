@@ -416,12 +416,13 @@
                         			 <div class="ibox-content no-padding">	 
                         			 	<table class="table no-margins">
 			                            <thead>
-			                            <tr>
-			                                <th class="text-left">파일</th>
-			                                <th width="100">작성자</th>
-			                                <th class="text-center" width="100">뎃글</th>
-			                                <th class="text-center" width="100">페이지 뷰</th>
-			                                <th class="text-center" width="150">마지막 수정일</th>
+			                            <tr class="g-height-50">
+			                                <th class="text-left align-middle">파일</th>
+			                                <th class="align-middle" width="100">상태</th>
+			                                <th class="align-middle" width="100">작성자</th>
+			                                <th class="align-middle text-center" width="100">뎃글</th>
+			                                <th class="align-middle text-center" width="100">페이지 뷰</th>
+			                                <th class="align-middle text-center" width="150">마지막 수정일</th>
 			                            </tr>
 			                            </thead>
 			                            <tbody id="pages-listview" class="no-border u-listview" >	
@@ -699,10 +700,7 @@
 		<td class="u-text-left">		
 		<h3 class="g-font-weight-100">
 		#if (secured) { # <i class="icon-lock"></i>  # } else {# <i class="icon-lock-open"></i> #}#
-		<u>#= name #</u> #= title # 
-		<div class="pull-right">		
-		<span class="u-label u-label-default g-mr-10 g-mb-15 g-font-weight-100">#: pageState #</span>
-		</div>	
+		<u>#= name #</u> #= title # 	
 		</h3>
 		<div class="u-visible-on-select">
 			<div class="btn-group">
@@ -711,6 +709,9 @@
 			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-id="#= pageId#" >삭제</button>
 			</div>
 	 	</div>
+		</td>
+		<td>
+			<span class="u-label u-label-default g-mr-10 g-mb-15 g-font-weight-100">#: pageState #</span>
 		</td>
 		<td>
 			<a class="u-avatar u-avatar-sm" href="\\#">
