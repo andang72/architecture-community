@@ -13,6 +13,7 @@
 		ISSUE_TYPE,
 		ISSUE_STATUS,
 		RESOLUTION,
+		RESOLUTION_DATE,
 		PRIORITY	,	
 		COMPONENT,					
 		ASSIGNEE,
@@ -65,12 +66,14 @@
 	 	SUMMARY,
 	 	DESCRIPTION,
 	 	PRIORITY,
+	 	RESOLUTION,
+	 	RESOLUTION_DATE,
 	 	ASSIGNEE,
 	 	REPOTER,
 	 	DUE_DATE,
 		CREATION_DATE,
 		MODIFIED_DATE
-	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
     ]]></sql-query>	
  
 					
@@ -80,6 +83,7 @@
  		ISSUE_TYPE = ?,
  		ISSUE_STATUS = ?,
  		RESOLUTION = ?,
+ 		RESOLUTION_DATE = ?,
 	 	PRIORITY = ?,	 	
 	 	COMPONENT = ?,
 	 	SUMMARY = ?,

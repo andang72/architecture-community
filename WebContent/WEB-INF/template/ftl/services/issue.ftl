@@ -58,11 +58,12 @@
 			"community.ui.core" 			: "/js/community.ui/community.ui.core",
 			"community.data" 			: "/js/community.ui/community.data",
 			"summernote.min"             : "/js/summernote/summernote.min",
-			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"		
+			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR",
+			"dropzone"					: "/js/dropzone/dropzone"
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR"], function($, kendo ) {	
+	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR", "dropzone"], function($, kendo ) {	
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -101,7 +102,7 @@
         		init();
 		})();
            		
-        var featuresTo = ('#features');   		
+        var featuresTo = $('#features');   		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
 			backUrl : "",
@@ -165,8 +166,8 @@
 					success : function(response){
 					}
 				}).always( function () {
-						community.ui.progress(featuresTo, false);
-						renderTo.modal('hide');
+					community.ui.progress(featuresTo, false);
+					$this.cancle();
 				});						
 			},
 			setSource : function( data ){
@@ -203,6 +204,8 @@
 			 		$this.set('isClosed', true);
 			 	} 
 			 	createIssueCommentListView($this.issue); 
+			 	createIssueAttachmentListView($this.issue); 
+			 	createAttachmentDropzone($this.issue); 
 			 	$('#features').find(".nav-tabs a:first").tab('show');	 
 			},
 			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
@@ -284,7 +287,61 @@
 		}else{
 		} 
 	}
+
+	function createIssueAttachmentListView ( model, renderTo ){
+		renderTo = renderTo || $('#issue-attachment-listview');	
+		if( !community.ui.exists( renderTo ) ){		
+			var listview = community.ui.listview( renderTo , {
+				dataSource: community.ui.datasource('/data/api/v1/attachments/list.json', {
+					transport : {
+						parameterMap :  function (options, operation){
+							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 18 , objectId : model.issueId }
+						}
+					},
+					pageSize: 10,
+					schema: {
+						total: "totalCount",
+						data: "items",
+						model : community.model.Attachment
+					}
+				}),
+				template: community.ui.template($("#attachment-template").html()),
+				dataBound: function() {
+			        community.ui.tooltip(renderTo);
+			    }
+			});
+		}
+	}
+
+	function createAttachmentDropzone( model, renderTo ){	
+		renderTo = renderTo || $('#issue-attachment-dropzone');	
+		 	
+		// attachment dorpzone
+		var myDropzone = new Dropzone("#issue-attachment-dropzone", {
+			url: '/data/api/v1/attachments/upload.json',
+			paramName: 'file',
+			maxFilesize: 1,
+			previewsContainer: '#issue-attachment-dropzone .dropzone-previews'	,
+			previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div></div>'
+		});
 		
+		var featuresTo = $('#features');  		
+		myDropzone.on("sending", function(file, xhr, formData) {
+			formData.append("objectType", 18);
+			formData.append("objectId", model.issueId);
+		});			
+		myDropzone.on("success", function(file, response) {
+			file.previewElement.innerHTML = "";
+		});
+		myDropzone.on("addedfile", function(file) {
+			community.ui.progress(featuresTo, true);
+		});		
+		myDropzone.on("complete", function() {
+			community.ui.progress(featuresTo, false);
+			community.ui.listview( $('#issue-attachment-listview') ).dataSource.read();
+		});			
+	}
+					
 	function openMessageCommentModal(actionType , issueId , parentCommentId, targetObject){	
 		targetObject = targetObject || $('#issue-comment-listview');	
 		var renderTo = $('#issue-comment-modal');
@@ -592,6 +649,32 @@
 										<div class="u-heading-v1-4 g-bg-main g-brd-gray-light-v2 g-mb-20">
 					                      	<h2 class="h3 u-heading-v1__title g-mt-0 g-font-size-20">첨부파일</h2>
 										</div>
+										<form action="" method="post" enctype="multipart/form-data" id="issue-attachment-dropzone" class="u-dropzone g-rounded-5 g-brd-style-dashed" data-bind="visible:editMode">
+												<div class="dz-default dz-message">
+					                       	 		<i class="icon-svg icon-svg-dusk-upload"></i>
+					                       	 		<span class="note">업로드를 위하여 이미지를 이곳에 드레그하여 놓아주세요.</span>
+					                       	 	</div>       
+					                       	 	<div class="dropzone-previews">                       	 
+					                       	 	</div>                 
+												 <div class="fallback">
+												     <input name="file" type="file" multiple style="display:none;"/>
+												 </div>
+											</form> 	
+					                     <div class="table-responsive m-t-sm">						
+							                <table class="table  u-table--v1">
+							                	<!--
+							                  	<thead class="text-uppercase g-letter-spacing-1">
+							                    		<tr>
+							                      		<th class="g-font-weight-100 g-color-black" width="60">&nbsp;</th>
+							                      		<th class="g-font-weight-100 g-color-black g-min-width-200">파일</th>
+				                       			 		<th class="g-font-weight-100 g-color-black text-right" width="100">크기(바이트)</th>
+				                    					</tr>
+				                  				</thead>
+				                  			-->	
+				                  				<tbody id="issue-attachment-listview" class="no-border" style="min-height:50px;">		                  			
+							                		</tbody>
+							            		</table>
+							            </div>   										
 									</div>
 								</article>
 								
@@ -613,9 +696,7 @@
 								                      댓글쓰기
 								                    </span>
 								                </a>
-												<div id="issue-comment-listview" class="no-border" style="min-height:50px;"></div>
-												
-												</div>
+												<div id="issue-comment-listview" class="no-border" style="min-height:50px;"></div></div>
 											</div>
 											<div id="editor-options-tab-2" class="tab-pane">
 												<div class="panel-body">
@@ -707,46 +788,7 @@
 	<!-- FOOTER START -->   
 	<#include "/includes/user-footer.ftl">
 	<!-- FOOTER END -->  				
-	<script type="text/x-kendo-template" id="template">
-                    <tr>
-                      <td class="align-middle text-center">
-                      ISSUE-#: issueId # 	
-                      </td>
-                      <td class="align-middle">
-                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="javascript:void();" data-action="edit" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
-                      </td>
-                      <td class="align-middle">#: issueTypeName #</td>
-                      <td class="align-middle">#: priorityName #</td>
-                      <td class="align-middle">
-                      	#if ( repoter.userId > 0 ) {#
-                      	#= community.data.getUserDisplayName( repoter ) #
-                      	#} else {#
-                      		
-                      	#}#
-                      </td>
-                      <td class="align-middle">
-                      	#if ( assignee.userId > 0 ) {#
-                      	#= community.data.getUserDisplayName( assignee ) #
-                      	#} else {#
-                      	미지정
-                      	#}#
-                      </td>
-                      <td class="align-middle">
-                       #if ( statusName != null ){# 
-                       #: statusName #
-                       #}#
-                      </td>
-                      <td class="align-middle">
-                      #if( resolutionName != null){#
-                      #: resolutionName #
-                      #}#
-                      </td>
-                      <td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
-                      <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
-                    </tr>
-	</script>	
-</body>
-	
+
 	<!-- issue comment modal -->
 	<div class="modal fade comment-composer" id="issue-comment-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -936,7 +978,45 @@
 			</div>
 		</div>
 	</div>	
-	
+	<script type="text/x-kendo-template" id="template">
+                    <tr>
+                      <td class="align-middle text-center">
+                      ISSUE-#: issueId # 	
+                      </td>
+                      <td class="align-middle">
+                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="javascript:void();" data-action="edit" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
+                      </td>
+                      <td class="align-middle">#: issueTypeName #</td>
+                      <td class="align-middle">#: priorityName #</td>
+                      <td class="align-middle">
+                      	#if ( repoter.userId > 0 ) {#
+                      	#= community.data.getUserDisplayName( repoter ) #
+                      	#} else {#
+                      		
+                      	#}#
+                      </td>
+                      <td class="align-middle">
+                      	#if ( assignee.userId > 0 ) {#
+                      	#= community.data.getUserDisplayName( assignee ) #
+                      	#} else {#
+                      	미지정
+                      	#}#
+                      </td>
+                      <td class="align-middle">
+                       #if ( statusName != null ){# 
+                       #: statusName #
+                       #}#
+                      </td>
+                      <td class="align-middle">
+                      #if( resolutionName != null){#
+                      #: resolutionName #
+                      #}#
+                      </td>
+                      <td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
+                      <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
+                    </tr>
+	</script>
+		
 	<!-- issue comment template -->
 	<script type="text/x-kendo-template" id="comment-template">
 	<div class="social-talk p-xxs">
@@ -959,6 +1039,29 @@
 				<div class="collapse no-border comment-reply" id="message-#:objectId#-comment-#:commentId#-listview"></div>		
 			</div>
 		</div>
-	</div>		 
+	</div>	
+	</script>  
+    <script type="text/x-kendo-template" id="attachment-template">   
+	<tr>
+		<td class="align-middle text-center" width="50">		
+			#if ( contentType.match("^image") ) {#	
+			<img class="g-width-50 g-height-50" src="#= community.data.getAttachmentThumbnailUrl( data, true) #" />
+			# }else if( contentType === "application/pdf" ){ #		
+			<img class="g-brd-around g-brd-gray-light-v4 g-width-50 g-height-50" src="#= community.data.getAttachmentThumbnailUrl( data, true) #" />
+			# } else { #			
+				<i class="icon-svg icon-svg-sm icon-svg-dusk-attach m-t-xs"></i>
+			# } #
+		</td> 
+		<td class="align-middle">
+			<a class="btn btn-xs icon-svg-btn" href="#: community.data.getAttachmentUrl(data) #" target="_blank" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="첨부파일 다운로드">
+				<i class="icon-svg icon-svg-xs m-t-xs icon-svg-dusk-desktop-download"></i>
+			</a>
+			#: name # 
+		</td>
+		<td class="align-middle text-right"><span class='text-muted'>#: formattedSize() #</span></td>
+	</tr>            	        	        	
+	</script>  
+      		
+</body>     		 
 </html>
 </#compress>

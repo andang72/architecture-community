@@ -59,7 +59,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			issue.setIssueType(rs.getString("ISSUE_TYPE"));
 			issue.setStatus(rs.getString("ISSUE_STATUS"));
 			issue.setResolution(rs.getString("RESOLUTION"));
-			
+			issue.setResolutionDate(rs.getDate("RESOLUTION_DATE"));
 			issue.setSummary(rs.getString("SUMMARY"));
 			issue.setDescription(rs.getString("DESCRIPTION"));
 			issue.setPriority(rs.getString("PRIORITY"));
@@ -187,7 +187,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
-					
+					new SqlParameterValue(Types.VARCHAR, toUse.getResolution()),
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getResolutionDate()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId()),	
 					 
@@ -201,6 +202,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getStatus()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getResolution()),
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getResolutionDate()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),

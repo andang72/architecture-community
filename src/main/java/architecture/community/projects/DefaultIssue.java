@@ -56,7 +56,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	
 	private String statusName;
 	
-	
+	private Date resolutionDate;
 	// 예정일 
 	private Date dueDate;
 	
@@ -72,6 +72,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.description = null;
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
+		this.resolutionDate = null;
 		this.dueDate = null;
 		this.assignee = null;
 		this.repoter = null;
@@ -96,6 +97,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.resolution = null;
 		this.status = null;
 		this.statusName = null;
+		this.resolutionDate = null;
 	}
 	
 	public DefaultIssue(int objectType, long objectId) {
@@ -112,6 +114,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.resolution = null;
 		this.status = null;
 		this.statusName = null;
+		this.resolutionDate = null;
 	}
 	
 	public DefaultIssue(int objectType, long objectId, User repoter) {
@@ -129,6 +132,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.resolutionName = null;
 		this.status = null;
 		this.statusName = null;
+		this.resolutionDate = null;
 	}
 	
 	
@@ -318,6 +322,13 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.statusName = statusName;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getResolutionDate() {
+		return resolutionDate;
+	}
 
-	
+	@JsonDeserialize(using = JsonDateDeserializer.class)
+	public void setResolutionDate(Date resolutionDate) {
+		this.resolutionDate = resolutionDate;
+	} 
 }

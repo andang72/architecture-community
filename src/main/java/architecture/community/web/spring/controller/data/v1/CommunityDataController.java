@@ -183,9 +183,13 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		if(  newIssue.getAssignee().getUserId() > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
 			issueToUse.setAssignee(newIssue.getAssignee());
 		}
-		if( newIssue.getDueDate() != null && newIssue.getDueDate() != issueToUse.getDueDate() )
+		if( newIssue.getDueDate() != null && newIssue.getDueDate() != issueToUse.getDueDate() ) {
 			issueToUse.setDueDate(newIssue.getDueDate());
-		
+		}
+		if( newIssue.getResolutionDate() != null && newIssue.getResolutionDate() != issueToUse.getResolutionDate() ) {
+			issueToUse.setResolutionDate(newIssue.getResolutionDate());
+		}
+		log.debug("{} compare with saved : {}", newIssue.getResolutionDate(), newIssue.getResolutionDate() != issueToUse.getResolutionDate());
 		issueToUse.setComponent(newIssue.getComponent());
 		issueToUse.setSummary(newIssue.getSummary());
 		issueToUse.setDescription(newIssue.getDescription());
