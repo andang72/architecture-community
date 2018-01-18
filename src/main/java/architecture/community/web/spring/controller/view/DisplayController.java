@@ -67,7 +67,7 @@ public class DisplayController {
 	    HttpServletResponse response, 
 	    Model model) 
 	    throws NotFoundException, UnAuthorizedException {	
-		
+		log.debug("page : {} {}", filename, version );
 		Page page = pageService.getPage(filename, version);		
 		log.debug("page : {}", page );
 		model.addAttribute("__page", page); 
