@@ -53,7 +53,7 @@ public class RoleManagerTest {
 		}
 	}
 	
-	@Test
+	 
 	public void testCreateRoleIfNotExist() {		
 		boolean doCreate = false;
 		try {
@@ -82,8 +82,7 @@ public class RoleManagerTest {
 			}	
 		}
 	}
-	
-	@Test
+	 
 	public void testUserRole(){
 		try {
 			
