@@ -50,7 +50,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	@Qualifier("propertyDao")
 	private PropertyDao propertyDao;
 	
-	private String boardPropertyTableName = "MUSI_BOARD_PROPERTY";
+	private String boardPropertyTableName = "REP_BOARD_PROPERTY";
 	private String boardPropertyPrimaryColumnName = "BOARD_ID";
 	
 	

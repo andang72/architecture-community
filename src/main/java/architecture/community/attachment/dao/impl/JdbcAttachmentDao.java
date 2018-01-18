@@ -54,7 +54,7 @@ public class JdbcAttachmentDao extends ExtendedJdbcDaoSupport implements Attachm
 	@Qualifier("propertyDao")
 	private PropertyDao propertyDao;	
 	
-	private String propertyTableName = "MUSI_ATTACHMENT_PROPERTY";
+	private String propertyTableName = "REP_ATTACHMENT_PROPERTY";
 	private String propertyPrimaryColumnName = "ATTACHMENT_ID";
 	
 

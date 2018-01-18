@@ -39,7 +39,7 @@ public class JdbcTagDao extends ExtendedJdbcDaoSupport implements TagDao {
 	@Qualifier("propertyDao")
 	private PropertyDao propertyDao;
 	
-	private String tagPropertyTableName = "MUSI_TAG_PROPERTY";
+	private String tagPropertyTableName = "REP_TAG_PROPERTY";
 	
 	private String tagPropertyPrimaryColumnName = "TAG_ID";
 

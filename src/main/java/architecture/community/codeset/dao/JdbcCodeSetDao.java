@@ -41,7 +41,7 @@ public class JdbcCodeSetDao extends ExtendedJdbcDaoSupport implements CodeSetDao
 	@Qualifier("propertyDao")
 	private PropertyDao propertyDao;
 
-	private String codeSetPropertyTableName = "MUSI_CODESET_PROPERTY";
+	private String codeSetPropertyTableName = "REP_CODESET_PROPERTY";
 
 	private String codeSetPropertyPrimaryColumnName = "CODESET_ID";
 
