@@ -4,21 +4,21 @@
 	<description>COMMUNITY PAGE SUBSYSTEM QUERIES</description>	
 	
 	<sql-query name="COUNT_PAGE_BY_OBJECT_TYPE_AND_OBJECT_ID" description="COUNT_PAGE_BY_OBJECT_TYPE_AND_OBJECT_ID"><![CDATA[    	
- 	SELECT count( PAGE_ID ) FROM MUSI_PAGE 
+ 	SELECT count( PAGE_ID ) FROM REP_PAGE 
  	WHERE 
  		OBJECT_TYPE = ? 
  		AND OBJECT_ID = ?
     ]]></sql-query>	
 	
  	<sql-query name="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID" description="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID"><![CDATA[    	
- 	SELECT PAGE_ID FROM MUSI_PAGE 
+ 	SELECT PAGE_ID FROM REP_PAGE 
  	WHERE 
  		OBJECT_TYPE = ? 
  		AND OBJECT_ID = ?
  	ORDER BY 	MODIFIED_DATE 	DESC	
     ]]></sql-query>		
  	<sql-query name="COUNT_PAGE_BY_OBJECT_TYPE_AND_STATE" description="COUNT_PAGE_BY_OBJECT_TYPE_AND_STATE"><![CDATA[    	
- 	SELECT count( T1.PAGE_ID ) FROM MUSI_PAGE T1, MUSI_PAGE_version t2
+ 	SELECT count( T1.PAGE_ID ) FROM REP_PAGE T1, REP_PAGE_version t2
  	WHERE 
 	    t1.object_type = ?
 	    and t2.state = ?
@@ -27,7 +27,7 @@
     ]]></sql-query>	
 	
  	<sql-query name="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_STATE" description="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_STATE"><![CDATA[    	
-  	SELECT T1.PAGE_ID FROM MUSI_PAGE T1, MUSI_PAGE_version t2
+  	SELECT T1.PAGE_ID FROM REP_PAGE T1, REP_PAGE_version t2
  	WHERE 	    
 	    t1.object_type = ?
 	    and t2.state = ?
@@ -37,7 +37,7 @@
     ]]></sql-query>		    
  
   	<sql-query name="COUNT_PAGE_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_STATE" description="COUNT_PAGE_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_STATE"><![CDATA[    	
- 	SELECT count( T1.PAGE_ID ) FROM MUSI_PAGE T1, MUSI_PAGE_version t2
+ 	SELECT count( T1.PAGE_ID ) FROM REP_PAGE T1, REP_PAGE_version t2
  	WHERE 
 	    t1.object_type = ?
 	    and t1.object_id = ?
@@ -47,7 +47,7 @@
     ]]></sql-query>	
  
   	<sql-query name="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_STATE" description="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_STATE"><![CDATA[    	
-  	SELECT T1.PAGE_ID FROM MUSI_PAGE T1, MUSI_PAGE_version t2
+  	SELECT T1.PAGE_ID FROM REP_PAGE T1, REP_PAGE_version t2
  	WHERE 	    
 	    t1.object_type = ?
 	    and t2.state = ?
@@ -57,7 +57,7 @@
     ]]></sql-query>		
     
   	<sql-query name="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_STATE" description="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_STATE"><![CDATA[    	
-  	SELECT T1.PAGE_ID FROM MUSI_PAGE T1, MUSI_PAGE_version t2
+  	SELECT T1.PAGE_ID FROM REP_PAGE T1, REP_PAGE_version t2
  	WHERE 	    
 	    t1.object_type = ?
 	    and t1.object_id = ?
@@ -69,7 +69,7 @@
     
               
  	<sql-query name="CREATE_PAGE" description="CREATE_PAGE"><![CDATA[    	
-		INSERT INTO MUSI_PAGE (
+		INSERT INTO REP_PAGE (
 			PAGE_ID,
 			OBJECT_TYPE,
 			OBJECT_ID,
@@ -83,7 +83,7 @@
 		)
     ]]></sql-query>	
  	<sql-query name="UPDATE_PAGE" description="UPDATE_PAGE"><![CDATA[    	
-		UPDATE MUSI_PAGE
+		UPDATE REP_PAGE
 		SET 
 			PAGE_ID = ?,
 			OBJECT_TYPE = ?,
@@ -96,7 +96,7 @@
 			PAGE_ID = ?
     ]]></sql-query>	
  	<sql-query name="DELETE_PAGE" description="DELETE_PAGE"><![CDATA[    	
-		DELETE FROM MUSI_PAGE
+		DELETE FROM REP_PAGE
 		WHERE
 			PAGE_ID = ?
     ]]></sql-query>	    
@@ -117,14 +117,14 @@
 			pv.TEMPLATE,
 			pv.SECURED
     	FROM 
-    		MUSI_PAGE p, MUSI_PAGE_VERSION pv
+    		REP_PAGE p, REP_PAGE_VERSION pv
     	WHERE
     		p.PAGE_ID = ?
     		AND pv.VERSION_ID = ?
     		AND p.PAGE_ID = pv.PAGE_ID     
      ]]></sql-query>	       
  	<sql-query name="INSERT_PAGE_VERSION" description="INSERT_PAGE_VERSION"><![CDATA[    	
- 		INSERT INTO MUSI_PAGE_VERSION (
+ 		INSERT INTO REP_PAGE_VERSION (
 			PAGE_ID,
 			VERSION_ID,
 			STATE,
@@ -141,7 +141,7 @@
     ]]></sql-query>	
  	
  	<sql-query name="UPDATE_PAGE_VERSION" description="INSERT_PAGE_VERSION"><![CDATA[    	
- 		UPDATE  MUSI_PAGE_VERSION 
+ 		UPDATE  REP_PAGE_VERSION 
 		SET
 			STATE = ?,
 			TITLE = ?,
@@ -155,7 +155,7 @@
     ]]></sql-query>	
 
  	<sql-query name="UPDATE_PAGE_STATE" description="UPDATE_PAGE_STATE"><![CDATA[    	
- 		UPDATE  MUSI_PAGE_VERSION 
+ 		UPDATE  REP_PAGE_VERSION 
 		SET
 			USER_ID = ?,
 			CREATION_DATE = ?,
@@ -166,7 +166,7 @@
     ]]></sql-query>	
             
  	<sql-query name="DELETE_PAGE_VERSIONS" description="DELETE_PAGE_VERSIONS"><![CDATA[    	
- 		DELETE FROM MUSI_PAGE_VERSION 
+ 		DELETE FROM REP_PAGE_VERSION 
  		WHERE
  			PAGE_ID = ?
     ]]></sql-query>	
@@ -174,7 +174,7 @@
  	<sql-query name="SELECT_PAGE_VERSION_IDS" description="SELECT_PAGE_VERSION_IDS"><![CDATA[    	
  		SELECT 
 			VERSION_ID	
- 		FROM MUSI_PAGE_VERSION 
+ 		FROM REP_PAGE_VERSION 
  		WHERE PAGE_ID = ? 
  		ORDER BY VERSION_ID DESC
     ]]></sql-query>	
@@ -191,7 +191,7 @@
 			USER_ID,
 			CREATION_DATE,
 			MODIFIED_DATE		
- 		FROM MUSI_PAGE_VERSION 
+ 		FROM REP_PAGE_VERSION 
  		WHERE PAGE_ID = ? 
  		ORDER BY VERSION_ID DESC
     ]]></sql-query>	
@@ -201,14 +201,14 @@
 			PROPERTY_NAME,
 			PROPERTY_VALUE 			
  		FROM 
- 			MUSI_PAGE_PROPERTY 
+ 			REP_PAGE_PROPERTY 
   		WHERE 
  			PAGE_ID = ? 
  			AND 	VERSION_ID = ? 			
     ]]></sql-query>	   
     
  	<sql-query name="INSERT_PAGE_PROPERTY" description="INSERT_PAGE_PROPERTIES"><![CDATA[    	
- 		INSERT INTO MUSI_PAGE_PROPERTY (
+ 		INSERT INTO REP_PAGE_PROPERTY (
 			PAGE_ID,
 			VERSION_ID,
 			PROPERTY_NAME,
@@ -219,13 +219,13 @@
     ]]></sql-query>	    
 
  	<sql-query name="DELETE_PAGE_PROPERTIES" description="DELETE_PAGE_PROPERTY"><![CDATA[    	
- 		DELETE FROM MUSI_PAGE_PROPERTY 
+ 		DELETE FROM REP_PAGE_PROPERTY 
  		WHERE 
  			PAGE_ID = ?
     ]]></sql-query>	
     
  	<sql-query name="DELETE_PAGE_PROPERTY_BY_NAME" description="DELETE_PAGE_PROPERTY_BY_NAME"><![CDATA[    	
- 		DELETE FROM MUSI_PAGE_PROPERTY 
+ 		DELETE FROM REP_PAGE_PROPERTY 
  		WHERE 
  			PAGE_ID = ? 
  			AND 	VERSION_ID = ?
@@ -233,7 +233,7 @@
     ]]></sql-query>	
 
  	<sql-query name="UPDATE_PAGE_PROPERTY_BY_NAME" description="UPDATE_PAGE_PROPERTY_BY_NAME"><![CDATA[    	
- 		UPDATE MUSI_PAGE_PROPERTY 
+ 		UPDATE REP_PAGE_PROPERTY 
  		SET  			
  			PROPERTY_VALUE = ?
  		WHERE 
@@ -245,7 +245,7 @@
  	<sql-query name="SELECT_PAGE_ID_BY_NAME" description="SELECT_PAGE_BY_NAME"><![CDATA[    	
  		SELECT 
  			PAGE_ID
-		FROM MUSI_PAGE
+		FROM REP_PAGE
  		WHERE 
  			NAME = ?
     ]]></sql-query>
@@ -254,7 +254,7 @@
  		SELECT 
  			p.PAGE_ID
 			v.VERSION_ID
-		FROM MUSI_PAGE p , MUSI_PAGE_VERSION v 		 
+		FROM REP_PAGE p , REP_PAGE_VERSION v 		 
  		WHERE 
  			p.PAGE_ID = v.PAGE_ID
  			AND p.OBJECT_TYPE = ?
@@ -264,29 +264,29 @@
     ]]></sql-query>
     
  	<sql-query name="SELECT_PUBLISHED_PAGE_VERSION_NUMBER" description="SELECT_PUBLISHED_PAGE_VERSION_NUMBER"><![CDATA[    	
- 		SELECT VERSION_ID FROM MUSI_PAGE_VERSION 
+ 		SELECT VERSION_ID FROM REP_PAGE_VERSION 
  		WHERE STATE  = 'published' AND PAGE_ID = ? 
     ]]></sql-query>	
     
  	<sql-query name="SELECT_MAX_ARCHIVED_PAGE_VERSION_NUMBER" description="SELECT_MAX_ARCHIVED_PAGE_VERSION_NUMBER"><![CDATA[    	
- 		SELECT max(VERSION_ID) FROM MUSI_PAGE_VERSION 
+ 		SELECT max(VERSION_ID) FROM REP_PAGE_VERSION 
  		WHERE PAGE_ID = ? AND STATE  = 'archived' 	
     ]]></sql-query>	
     
  	<sql-query name="SELECT_DRAFT_PAGE_VERSIONS" description="SELECT_DRAFT_PAGE_VERSIONS"><![CDATA[    	
- 		SELECT VERSION_ID FROM MUSI_PAGE_VERSION 
+ 		SELECT VERSION_ID FROM REP_PAGE_VERSION 
  		WHERE 
  			( STATE = 'incomplete' OR STATE = 'approval' OR  STATE = 'rejected' ) 		
  			AND PAGE_ID = ?
     ]]></sql-query>	   
  	
  	<sql-query name="SELECT_MAX_PAGE_VERSION_NUMBER" description="SELECT_MAX_PAGE_VERSION_NUMBER"><![CDATA[    	
- 		SELECT max(VERSION_ID) FROM MUSI_PAGE_VERSION 
+ 		SELECT max(VERSION_ID) FROM REP_PAGE_VERSION 
  		WHERE PAGE_ID = ?
     ]]></sql-query>	
 
  	<sql-query name="UPDATE_PAGE_STATE_TO_ARCHIVED" description="UPDATE_PAGE_STATE_TO_ARCHIVED"><![CDATA[    	
- 		UPDATE MUSI_PAGE_VERSION SET STATE = 'archived' 
+ 		UPDATE REP_PAGE_VERSION SET STATE = 'archived' 
  		WHERE
  			PAGE_ID = ?
  			AND STATE = 'published' 
@@ -294,37 +294,37 @@
     ]]></sql-query>	    
     
  	<sql-query name="UPDATE_PAGE_VISION_NUMBER" description="UPDATE_PAGE_VISION_NUMBER"><![CDATA[    	
- 	UPDATE MUSI_PAGE SET VERSION_ID = ? 
+ 	UPDATE REP_PAGE SET VERSION_ID = ? 
  	WHERE PAGE_ID = ?
     ]]></sql-query>	                    
 
  	<sql-query name="SELETE_PAGE_BODY_ID" description="SELETE_PAGE_BODY_ID"><![CDATA[    	
 	 	SELECT
 	 		BODY_ID
-	 	FROM MUSI_PAGE_BODY_VERSION 
+	 	FROM REP_PAGE_BODY_VERSION 
 	 	WHERE  PAGE_ID = ? AND VERSION_ID = ?
     ]]></sql-query>	
 
  	<sql-query name="SELETE_PAGE_BODY_IDS" description="SELETE_PAGE_BODY_IDS"><![CDATA[    	
 	 	SELECT
 	 		BODY_ID
-	 	FROM MUSI_PAGE_BODY_VERSION 
+	 	FROM REP_PAGE_BODY_VERSION 
 	 	WHERE  PAGE_ID = ?
     ]]></sql-query>	
 
 
  	<sql-query name="DELETE_PAGE_ALL_BODY_VERSIONS" description="DELETE_PAGE_BODY_VERSIONS"><![CDATA[    	
-	 	DELETE FROM MUSI_PAGE_BODY_VERSION 
+	 	DELETE FROM REP_PAGE_BODY_VERSION 
 	 	WHERE  PAGE_ID = ?
     ]]></sql-query>	  
             
  	<sql-query name="DELETE_PAGE_BODY_VERSION" description="DELETE_PAGE_BODY_VERSION"><![CDATA[    	
-	 	DELETE FROM MUSI_PAGE_BODY_VERSION 
+	 	DELETE FROM REP_PAGE_BODY_VERSION 
 	 	WHERE  PAGE_ID = ? AND VERSION_ID = ?
     ]]></sql-query>	  
     
  	<sql-query name="DELETE_PAGE_VERSION" description="UPDATE_PAGE_VISION_NUMBER"><![CDATA[    	
-	  	DELETE FROM MUSI_PAGE_VERSION 
+	  	DELETE FROM REP_PAGE_VERSION 
 	 	WHERE  PAGE_ID = ? AND VERSION_ID = ?	
     ]]></sql-query>	        
     
@@ -334,7 +334,7 @@
 			b.PAGE_ID,
 			b.BODY_TYPE,
 			b.BODY_TEXT 
-		FROM MUSI_PAGE_BODY b , MUSI_PAGE_BODY_VERSION bv 		 
+		FROM REP_PAGE_BODY b , REP_PAGE_BODY_VERSION bv 		 
  		WHERE 
  			b.BODY_ID = bv.BODY_ID
  			AND bv.PAGE_ID = ? 
@@ -342,7 +342,7 @@
     ]]></sql-query>	
     
     <sql-query name="UPDATE_PAGE_BODY" description="UPDATE_PAGE_BODY"><![CDATA[    	
-    	UPDATE MUSI_PAGE_BODY 
+    	UPDATE REP_PAGE_BODY 
     	SET 
     		BODY_TYPE = ?,
     		BODY_TEXT = ?
@@ -351,7 +351,7 @@
     ]]></sql-query>	
     
  	<sql-query name="INSERT_PAGE_BODY" description="INSERT_PAGE_BODY"><![CDATA[    	
-		INSERT INTO MUSI_PAGE_BODY (
+		INSERT INTO REP_PAGE_BODY (
 			BODY_ID,
 			PAGE_ID,
 			BODY_TYPE,
@@ -362,12 +362,12 @@
     ]]></sql-query>	
 
  	<sql-query name="DELETE_PAGE_BODY" description="DELETE_PAGE_BODY"><![CDATA[    	
-	 	DELETE FROM MUSI_PAGE_BODY 
+	 	DELETE FROM REP_PAGE_BODY 
 	 	WHERE  BODY_ID = ?
     ]]></sql-query>	  
         
  	<sql-query name="INSERT_PAGE_BODY_VERSION" description="INSERT_PAGE_BODY_VERSION"><![CDATA[    	
- 		INSERT INTO MUSI_PAGE_BODY_VERSION (
+ 		INSERT INTO REP_PAGE_BODY_VERSION (
 			BODY_ID,
 			PAGE_ID,
 			VERSION_ID 		
