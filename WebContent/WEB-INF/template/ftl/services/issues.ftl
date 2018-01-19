@@ -166,13 +166,21 @@
 				targetObject = community.ui.listview($('#issue-listview')).dataSource.get(objectId);
 			}else{			
 				targetObject = new community.model.Issue();	
+				targetObject.set('issueId', 0);
 				targetObject.set('objectType', 19);
 				targetObject.set('objectId', __projectId);
-			}			
- 			createOrOpenIssueEditor (targetObject);
+			}	
+			if( isDeveloper() )
+ 				createOrOpenIssueEditor (targetObject);
+			else
+				send(targetObject);				
 			return false;		
 		});
 	});
+	
+	function send ( issue ) {
+		community.ui.send("<@spring.url "/display/pages/issue.html" />", { projectId: issue.objectId, issueId: issue.issueId });
+	}
 	
 	function getPageModel(){
 		var renderTo = $('#page-top');

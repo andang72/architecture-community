@@ -436,6 +436,7 @@
 			handleAjaxError : handleAjaxError,
 			error : error,
 			defined : defined,
+			send : redirect,
 			datasource : datasource,
 			datasource_v2 : datasource_v2,
 			ajax : ajax,

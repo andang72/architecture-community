@@ -17,7 +17,6 @@
                   <a class="g-color-white-opacity-0_8 g-color-white--hover" href="/display/pages/privacy.html">개인정보처리방침</a>
                 </li>
               </ul>
-              
             </div>
           </div>
           <div class="col-md-4 align-self-center">이 사이트는 여러 오픈소스기술을 기반으로 개발되었습니다.</div>

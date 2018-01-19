@@ -413,7 +413,7 @@
             <div class="wrapper wrapper-content">
                 <div class="">                 
 							<div class="ibox float-e-margins">
-                        			 <div class="ibox-content no-padding">	 
+                        			 <div class="ibox-content no-padding g-font-size-20"">	 
                         			 	<table class="table no-margins">
 			                            <thead>
 			                            <tr class="g-height-50">
@@ -429,8 +429,8 @@
 			                            </tbody>                            
 			                        </table>          
                         			 </div>
-                        			 <div class="ibox-footer no-padding">  
-	                            		<div id="pages-listview-pager" class="k-pager-wrap no-border" ></div>
+                        			 <div class="ibox-footer no-padding g-brd-top-none">  
+	                            		<div id="pages-listview-pager"></div>
 	                             </div>  
                         		</div>
                         		                    

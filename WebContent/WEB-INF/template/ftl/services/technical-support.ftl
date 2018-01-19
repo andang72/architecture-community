@@ -153,13 +153,10 @@
     				observable.applyFilters();
     			}
     		});
-    		
     		var renderTo = $('#page-top');
     		renderTo.data('model', observable);
     		community.ui.bind(renderTo, observable );	
-    		
     		createProjectListView(observable);
-		
 		renderTo.on("click", "button[data-action=create], a[data-action=create]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
@@ -172,8 +169,7 @@
 			}						
  			createOrOpenIssueEditor (targetObject);		
 			return false;		
-		});				
-		
+		});		
 	});
 	
 	function createProjectListView(observable){
@@ -185,7 +181,6 @@
 	}
 	
 	function createOrOpenIssueEditor( data ){
-		
 		var renderTo = $('#issue-editor-modal');
 		if( !renderTo.data("model") ){
 			var observable = new community.ui.observable({ 
@@ -215,7 +210,6 @@
 					{
 						$this.issue.repoter = $('#page-top').data('model').currentUser ;					
 					}
-					
 					community.ui.progress(renderTo.find('.modal-content'), true);	
 					community.ui.ajax( '<@spring.url "/data/api/v1/issues/save-or-update.json" />', {
 						data: community.ui.stringify($this.issue),
@@ -233,10 +227,8 @@
 			community.ui.bind( renderTo, observable );				
 			renderTo.on('show.bs.modal', function (e) {	});
 		}	
-		
 		if( community.ui.defined(data) ) 
 			renderTo.data("model").setSource(data);
-		
 		renderTo.modal('show');
 	}
  

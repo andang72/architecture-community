@@ -304,8 +304,8 @@
 			                            </tbody>                            
 			                        </table>          
                         			 </div>
-                        			 <div class="ibox-footer no-padding">  
-	                            		<div id="users-listview-pager" class="k-pager-wrap no-border" ></div>
+                        			 <div class="ibox-footer no-padding g-brd-top-none">  
+	                            		<div id="users-listview-pager" ></div>
 	                             </div>  
 					</div>
                 </div>

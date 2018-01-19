@@ -441,17 +441,22 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@ResponseBody
 	public ItemList getIssueComments(@PathVariable Long issueId, NativeWebRequest request)
 			throws IssueNotFoundException {
-		Issue issueToUse = projectService.getIssue(issueId);
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.ISSUE.getObjectType(), issueToUse.getIssueId());
-		long parentId = -1L;
-		int totalSize = walker.getChildCount(parentId);
-		List<Comment> list = walker.children(parentId, new ObjectLoader<Comment>() {
-			public Comment load(long commentId) throws NotFoundException {
-				return commentService.getComment(commentId);
-			}
-
-		});
-		return new ItemList(list, totalSize);
+		ItemList items = new ItemList();
+		if( issueId > 0 ) {		
+			Issue issueToUse = projectService.getIssue(issueId);
+			ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.ISSUE.getObjectType(), issueToUse.getIssueId());
+			long parentId = -1L;
+			int totalSize = walker.getChildCount(parentId);
+			List<Comment> list = walker.children(parentId, new ObjectLoader<Comment>() {
+				public Comment load(long commentId) throws NotFoundException {
+					return commentService.getComment(commentId);
+				}
+	
+			});
+			items.setItems(list);
+			items.setTotalCount(totalSize);
+		}	
+		return items;
 	}
 
 	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/{commentId:[\\p{Digit}]+}/list.json", method = { RequestMethod.POST, RequestMethod.GET })

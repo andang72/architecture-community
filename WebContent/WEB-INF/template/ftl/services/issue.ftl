@@ -116,6 +116,7 @@
 			formatedCreationDate : "",
 		 	editable : false,
 		 	editMode : false,
+		 	editModeForAssignee : false,
 			isDeveloper : false,
 			isNew : false,
 			isOpen : false,
@@ -137,15 +138,38 @@
 					}	
 				});
 			},
+			getProject : function( projectId ){
+				var $this = this;
+				community.ui.ajax('/data/api/v1/projects/'+ projectId +'/info.json/', {
+					success: function(data){		
+						$this.set('project', new community.model.Project(data) );
+						$this.set('projectPeriod', community.data.getFormattedDate( $this.project.startDate , 'yyyy.MM.dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy.MM.dd' ) );
+						$this.set('backUrl', '/display/pages/issues.html?projectId=' + $this.project.projectId );
+						
+						var targetObject = new community.model.Issue();	
+						targetObject.set('issueId', 0);
+						targetObject.set('objectType', 19);
+						targetObject.set('objectId', $this.project.projectId ); 	
+						targetObject.set('repoter', $this.currentUser );
+						$this.setSource(targetObject);
+					}	
+				});
+			},
 			cancle : function(e){
 				var $this = this;
 			 	$this.set('editMode', false );
+			 	$this.set('editModeForAssignee', false );
 			 	var editorTo = $('#issue-description-editor');
 			 	editorTo.summernote('destroy');
 			},
 			edit : function(e){
 			 	var $this = this;
 			 	$this.set('editMode', true );
+			 	if(isDeveloper()){
+			 		$this.set('editModeForAssignee', true );
+			 	}else{
+			 		$this.set('editModeForAssignee', false );
+			 	}
 			 	console.log('summernote create.');
 			 	var editorTo = $('#issue-description-editor');
 			 	editorTo.summernote({
@@ -164,6 +188,10 @@
 					data: community.ui.stringify($this.issue),
 					contentType : "application/json",						
 					success : function(response){
+						if($this.get('isNew')){
+							$this.set('isNew', false );
+							$('html, body').stop().animate({ scrollTop: $("#issue-attachment-dropzone").offset().top - 120 }, 500);
+						}
 					}
 				}).always( function () {
 					community.ui.progress(featuresTo, false);
@@ -179,6 +207,7 @@
 				$this.set('isNew', false );
 				$this.set('editable', false );	
 				$this.set('isAssigned', false);	
+				
 				if(  $this.issue.issueId > 0 ){ 		
 					$this.set('editable', true );
 					$this.set('formatedCreationDate' , community.data.getFormattedDate( $this.issue.creationDate) );
@@ -186,6 +215,7 @@
 				    formatedCreationDate = "";
 					$this.set('isNew', true );	
 					$this.set('editable', false );
+					$this.edit();
 				} 
 				if( $this.issue.repoter.userId > 0){
 					$this.set('repoterAvatarSrc',  community.data.getUserProfileImage( $this.issue.repoter ) );
@@ -214,7 +244,12 @@
 			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} )			
     		});
     		
-		observable.getIssueWithProject(__issueId);
+    		if( __issueId > 0 ){
+    			observable.getIssueWithProject(__issueId);
+    		}else{
+    			observable.getProject(__projectId);
+    		}
+		
 		//createIssueListView(observable);		
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
@@ -560,19 +595,22 @@
 									<div class="g-mb-30">
 										<hr class="g-brd-gray-light-v4 g-mt-0 mb-0">
 										<span data-bind="text:project.name"></span> 
-										<span class="text-warning g-ml-15" data-bind="text:projectPeriod"></span>
+										<span class="text-warning g-ml-15 g-mb-10" data-bind="text:projectPeriod"></span>
+										
+										<h4 class="h6 text-light-gray text-semibold" data-bind="visible:editMode">요약 <span class="text-danger" >*</span></h4>		
 										<h2 class="h4 g-color-black g-font-weight-600 mb-3">						
 											<a class="u-link-v5 g-color-black g-color-primary--hover" href="#!" data-bind="text:issue.summary, invisible:editMode"></a>
 										</h2>
 	 									<div class="form-group" data-bind="visible:editMode">
-								            <input type="text" class="form-control" placeholder="요약" data-bind="value: issue.summary">
+								            <input type="text" class="form-control" placeholder="간략하게 요약해주세요" data-bind="value: issue.summary">
 								        </div>
 										<div class="row">
 								            <div class="col-sm-6">
 								              <!-- Issue Type  -->
-								              <h4 class="h6 g-mb-5">요청구분</h4>
+								              <h4 class="h6 g-mb-5">요청구분 <span class="text-danger" data-bind="visible:editMode">*</span></h4>
 								              <input data-role="dropdownlist"  
-											   data-placeholder="선택"
+								              	placeholder = "어떤종류의 요청인지를 선택하여 주세요"
+											   data-placeholder="어떤종류의 요청인지를 선택하여 주세요"
 							                   data-auto-bind="true"
 							                   data-value-primitive="true"
 							                   data-text-field="name"
@@ -590,7 +628,7 @@
 							                   data-value-primitive="true"
 							                   data-text-field="name"
 							                   data-value-field="code"
-							                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource, enabled:editMode"
+							                   data-bind="value:issue.status, source:statusDataSource, enabled:editModeForAssignee"
 							                   style="width: 100%;"/>
 								              <!-- End Status -->
 								            </div>
@@ -598,8 +636,9 @@
 								         <div class="row">
 								            <div class="col-sm-6">
 								              <!-- Priority Type  -->
-								              <h4 class="h6 g-mb-5">우선순위</h4>
+								              <h4 class="h6 g-mb-5">우선순위 <span class="text-danger" data-bind="visible:editMode">*</span></h4>
 								              <input data-role="dropdownlist"  
+								               placeholder = "우선순위를 선택하여 주세요"
 											   data-placeholder="선택"
 							                   data-auto-bind="true"
 							                   data-value-primitive="true"
@@ -618,22 +657,22 @@
 							                   data-value-primitive="true"
 							                   data-text-field="name"
 							                   data-value-field="code"
-							                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource, enabled:editMode"
+							                   data-bind="value:issue.resolution, source:resolutionDataSource, enabled:editModeForAssignee"
 							                   style="width: 100%;"/>
 								              <!-- End Resolution -->
 								            </div>
 								         </div>
-										 <div class="row">
+										 <div class="row" data-bind="visible: isDeveloper" style="display:none;">
 								            <div class="col-sm-6">
 								              <!-- Priority Type  -->
 								              <h4 class="h6 g-mb-5">완료예정일</h4>
-								              <input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled: editMode" style="width: 100%">
+								              <input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled: editModeForAssignee" style="width: 100%">
 								              <!-- End Priority -->
 								            </div>					
 								            <div class="col-sm-6">
 								              <!- Resolution -->
 								              <h4 class="h6 g-mb-5">처리일자</h4>
-								              <input data-role="datepicker" data-bind="value: issue.resolutionDate, visible: isDeveloper, enabled: editMode" style="width: 100%">
+								              <input data-role="datepicker" data-bind="value: issue.resolutionDate, visible: isDeveloper, enabled: editModeForAssignee" style="width: 100%">
 								              <!-- End Resolution -->
 								            </div>
 								         </div>										         								         
@@ -645,14 +684,14 @@
 										<div id="issue-description-editor" class="hide"></div>
 										<section class="g-mb-15 g-brd-2 g-brd-blue g-rounded-5 g-brd-around--lg g-pa-15" data-bind="html:issue.description, invisible:editMode"></section>
 									</div>
-									<div class="g-mb-30">
+									<div class="g-mb-30" data-bind="invisible:isNew" style="display:none;">
 										<div class="u-heading-v1-4 g-bg-main g-brd-gray-light-v2 g-mb-20">
 					                      	<h2 class="h3 u-heading-v1__title g-mt-0 g-font-size-20">첨부파일</h2>
 										</div>
 										<form action="" method="post" enctype="multipart/form-data" id="issue-attachment-dropzone" class="u-dropzone g-rounded-5 g-brd-style-dashed" data-bind="visible:editMode">
 												<div class="dz-default dz-message">
 					                       	 		<i class="icon-svg icon-svg-dusk-upload"></i>
-					                       	 		<span class="note">업로드를 위하여 이미지를 이곳에 드레그하여 놓아주세요.</span>
+					                       	 		<span class="note">업로드할 이슈 관련 첨부파일은 이곳에 드레그하여 놓아주세요.</span>
 					                       	 	</div>       
 					                       	 	<div class="dropzone-previews">                       	 
 					                       	 	</div>                 
@@ -678,7 +717,7 @@
 									</div>
 								</article>
 								
-								<div class="g-mb-30" data-bind="invisible:isNew">
+								<div class="g-mb-30" data-bind="invisible:isNew" style="display:none;">
 									<div class="u-heading-v1-4 g-bg-main g-brd-gray-light-v2 g-mb-20">
 					                      <h2 class="h3 u-heading-v1__title g-mt-0 g-font-size-20">활동</h2>
 									</div>
@@ -728,7 +767,7 @@
 						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.assignee.name"></span></h4>
 						                    <span class="d-block g-color-gray-dark-v4 g-font-size-12" data-bind="text: formatedCreationDate"></span>                    
 										</div>
-										<span class="help-block">이름 또는 아이디로 검색할 수 있습니다.</span>
+										<span class="help-block" data-bind="visible:isDeveloper">>이름 또는 아이디로 검색할 수 있습니다.</span>
 										<input data-role="combobox"
 				                   		 data-placeholder="담당자 이름을 입력하세요."
 										 data-filter="contains"
@@ -752,7 +791,7 @@
 						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.repoter.name"></span></h4>
 						                    <span class="d-block g-color-gray-dark-v4 g-font-size-12" data-bind="text:formatedCreationDate"></span>                    
 										</div>
-										<span class="help-block">이름 또는 아이디로 검색할 수 있습니다.</span>
+										<span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>
 										<input data-role="combobox"
 				                   		 data-placeholder="리포터 이름을 입력하세요."
 										 data-filter="contains" 

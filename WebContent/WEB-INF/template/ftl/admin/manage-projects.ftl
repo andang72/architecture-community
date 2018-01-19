@@ -300,31 +300,26 @@
             </div>
 
             <div class="wrapper wrapper-content">
-            		<div class="container">            
-                		<div class="row">
-                    		<div class="col-lg-12">
-                        		<div class="ibox float-e-margins">
+ 
+                        		<div class="ibox float-e-margins g-font-size-20">
                         			 <div class="ibox-content no-padding">	 
                         			 	<table class="table no-margins">
 			                            <thead>
-			                            <tr> 
-			                                <th>프로젝트</th>
-			                                <th class="text-center" width="150">비용(월)</th> 
-			                                <th class="text-center" width="200">기간</th> 
-			                                <th class="text-center" width="150">수정일</th>
+			                            <tr class="g-height-50"> 
+			                                <th class="g-valign-middle">프로젝트</th>
+			                                <th class="g-valign-middle text-center" width="150">비용(월)</th> 
+			                                <th class="g-valign-middle text-center" width="200">기간</th> 
+			                                <th class="g-valign-middle text-center" width="150">수정일</th>
 			                            </tr>
 			                            </thead>
 			                            <tbody id="project-listview" class="no-border " >	
 			                            </tbody>                            
 			                        </table>          
                         			 </div>
-                        			 <div class="ibox-footer no-padding">  
-	                            		<div id="project-listview-pager" class="k-pager-wrap no-border"></div>
+                        			 <div class="ibox-footer no-padding g-brd-top-none">  
+	                            		<div id="project-listview-pager" ></div>
 	                             </div>  
-                        		</div>
-                        	</div>
-                    </div>
-                </div>
+ 
             </div>
             <div class="footer">
                 <div class="pull-right">
