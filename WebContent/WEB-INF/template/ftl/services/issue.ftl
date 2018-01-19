@@ -793,7 +793,7 @@
 				                   		 data-bind="value: issue.assignee,
 			                              source: userDataSource,
 			                              visible: isDeveloper,
-			                              enabled: editable"
+			                              enabled: editModeForAssignee"
 			                   			 style=""/>			
 									</div>
 								</div>
@@ -817,10 +817,10 @@
 				                   		 data-bind="value: issue.repoter,
 			                              source: userDataSource,
 			                              visible: isDeveloper,
-			                              enabled: editable"
+			                              enabled: editModeForAssignee"
 			                   			 style=""/>			
 									</div>
-								</div>
+								</div>	                   			 
 								<!-- End Repoter -->
 								<hr class="g-brd-gray-light-v4 g-my-50">
 								<!-- Tags -->
