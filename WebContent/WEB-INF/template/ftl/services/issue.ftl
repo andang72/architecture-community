@@ -241,7 +241,24 @@
 			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
 			resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
-			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} )			
+			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} )	,
+			userDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/users/find.json" />' , {
+			 	serverFiltering: true,
+			 	transport: {
+				 	parameterMap: function (options, operation){
+	                    	if (community.ui.defined(options.filter)) {
+							return { nameOrEmail: options.filter.filters[0].value };
+						}else{
+							return {};
+						}
+					}
+				},
+			 	schema: {
+					total: "totalCount",
+					data: "items",
+					model: community.model.User
+				}
+			})		
     		});
     		
     		if( __issueId > 0 ){
