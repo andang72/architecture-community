@@ -802,7 +802,7 @@
 			                              source: userDataSource,
 			                              visible: isDeveloper,
 			                              enabled: editModeForAssignee,
-			                              events:{ select : selectAssignee }"
+			                              events:{ change : selectAssignee }"
 			                   			 style=""/>			
 									</div>
 								</div>
@@ -827,7 +827,7 @@
 			                              source: userDataSource,
 			                              visible: isDeveloper,
 			                              enabled: editModeForAssignee,
-			                              events:{ select : selectRepoter }"
+			                              events:{ change : selectRepoter }"
 			                   			 style=""/>			
 									</div>
 								</div>	                   			 
@@ -933,7 +933,7 @@
 								 data-filter="contains" 
 		                   		 data-text-field="name"
 		                   	 	 data-value-field="username"
-		                   		 data-bind="value: issue.repoter,
+		                   		 data-bind="value: issue.repotes,
 	                              source: userDataSource,
 	                              visible: isDeveloper,
 	                              enabled: editable"
@@ -955,7 +955,7 @@
 								 data-filter="contains"
 		                   		 data-text-field="name"
 		                   	 	 data-value-field="username"
-		                   		 data-bind="value: issue.assignee,
+		                   		 data-bind="value: issue.assignees,
 	                              source: userDataSource,
 	                              visible: isDeveloper,
 	                              enabled: editable"
