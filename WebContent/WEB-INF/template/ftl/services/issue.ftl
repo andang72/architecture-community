@@ -798,7 +798,7 @@
 										 data-filter="contains"
 				                   		 data-text-field="name"
 				                   	 	 data-value-field="username"
-				                   		 data-bind="
+				                   		 data-bind="value: issue.assignee, 
 			                              source: userDataSource,
 			                              visible: isDeveloper,
 			                              enabled: editModeForAssignee,
@@ -823,7 +823,7 @@
 										 data-filter="contains" 
 				                   		 data-text-field="name"
 				                   	 	 data-value-field="username"
-				                   		 data-bind="
+				                   		 data-bind="value:issue.repoter, 
 			                              source: userDataSource,
 			                              visible: isDeveloper,
 			                              enabled: editModeForAssignee,
