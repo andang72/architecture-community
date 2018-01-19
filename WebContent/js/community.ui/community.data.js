@@ -373,9 +373,7 @@
 		    		target.set("repoter", this.get("repoter") );
 		    	if( typeof this.get("assignee") === 'object' )
 		    		target.set("assignee", this.get("assignee") );
-		}		
-		
-		
+		}			
 	});
 	
 	
@@ -392,10 +390,12 @@
 	
 	function getAttachmentThumbnailUrl ( attachment , thumbnail ){	
 		if( attachment.attachmentId > 0 ){
-			var _photoUrl = '/download/files/' + attachment.attachmentId + '/' + attachment.name + '?time=' + kendo.guid() ;	
+			var _photoUrl = '/download/files/' + attachment.attachmentId + '/' + attachment.name  ;	
 			
 			if( thumbnail ){
-				_photoUrl = _photoUrl + '&thumbnail=true&height=120&width=120&time=' ;
+				_photoUrl = _photoUrl + '?thumbnail=true&height=120&width=120&time=' + kendo.guid() ;
+			}else{
+				_photoUrl = _photoUrl + '?time=' + kendo.guid() ;
 			}
 			
 			return encodeURI( _photoUrl );
