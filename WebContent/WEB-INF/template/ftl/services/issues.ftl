@@ -157,11 +157,12 @@
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	
 		
-		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=edit]", function(e){			
+		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=edit], a[data-action=view]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
-			var targetObject = new community.model.Issue();	
+			var targetObject = new community.model.Issue();
+				
 			if( objectId > 0 ){
 				targetObject = community.ui.listview($('#issue-listview')).dataSource.get(objectId);
 			}else{			
@@ -170,10 +171,17 @@
 				targetObject.set('objectType', 19);
 				targetObject.set('objectId', __projectId);
 			}	
+			
+			if( actionType == 'view'){
+				send(targetObject);	
+				return false;	
+			}
+			
 			if( isDeveloper() )
  				createOrOpenIssueEditor (targetObject);
 			else
 				send(targetObject);				
+			
 			return false;		
 		});
 	});
@@ -507,7 +515,7 @@
                       ISSUE-#: issueId # 	
                       </td>
                       <td class="align-middle">
-                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="/display/pages/issue.html?issueId=#=issueId#" data-action="view" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
+                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
                       </td>
                       <td class="align-middle">#: issueTypeName #</td>
                       <td class="align-middle">#: priorityName #</td>
