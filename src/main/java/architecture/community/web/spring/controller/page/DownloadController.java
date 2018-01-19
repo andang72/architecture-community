@@ -127,8 +127,16 @@ public class DownloadController {
 		    HttpServletResponse response) throws IOException {
 
 		try {
-		    if (fileId > 0 && !StringUtils.isNullOrEmpty(filename)) {		    	
+		    if (fileId > 0 && !StringUtils.isNullOrEmpty(filename)) {
+		    	
+		    		log.debug("name {} decoded {}.", filename, ServletUtils.getEncodedFileName(filename));
+		    		
 		    		Attachment attachment = 	attachmentService.getAttachment(fileId);
+		    	
+		    		log.debug("checking equals plain : {} , decoded : {} ", 
+		    				org.apache.commons.lang3.StringUtils.equals(filename, attachment.getName()) , 
+		    				org.apache.commons.lang3.StringUtils.equals(ServletUtils.getEncodedFileName(filename), attachment.getName()));
+		    		
 		    		if (org.apache.commons.lang3.StringUtils.equals(filename, attachment.getName())) {
 		    			if ( thumbnail ) {		    	
 		    				boolean noThumbnail = false;		    				
