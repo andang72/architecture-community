@@ -68,6 +68,14 @@ public class ServletUtils {
 			return name;
 		}
 	}
+	public static String getDecodedFileName(String name) {
+		try {
+			return java.net.URLDecoder.decode(name, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return name;
+		}
+	}
+	
 	
 	
 }

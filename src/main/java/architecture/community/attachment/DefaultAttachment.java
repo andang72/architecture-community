@@ -53,6 +53,8 @@ public class DefaultAttachment extends PropertyAwareSupport implements Attachmen
 	@JsonIgnore
 	private InputStream inputStream;
 	
+	private String extrnalLink;
+	
 	private Date creationDate;
 	
 	private Date modifiedDate;
@@ -67,8 +69,7 @@ public class DefaultAttachment extends PropertyAwareSupport implements Attachmen
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = this.creationDate;
 	}
-
-
+	
 	public User getUser() {
 		return user;
 	}
@@ -169,6 +170,14 @@ public class DefaultAttachment extends PropertyAwareSupport implements Attachmen
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public String getExtrnalLink() {
+		return extrnalLink;
+	}
+
+	public void setExtrnalLink(String extrnalLink) {
+		this.extrnalLink = extrnalLink;
 	}
 
 	public String toString() {

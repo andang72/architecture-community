@@ -34,7 +34,15 @@ public class SecurePageDisplayController {
     @Qualifier("configService")
     private ConfigService configService;
 	
-	
+	@Secured({ "ROLE_ADMINISTRATOR"})
+	@RequestMapping(value = "/view/{filename:.+}", method = { RequestMethod.POST, RequestMethod.GET })
+    public String page(@PathVariable String filename, 
+	    HttpServletRequest request, 
+	    HttpServletResponse response, 
+	    Model model) throws NotFoundException, IOException {		
+		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);		
+		return filename;
+    }
 	
 	@Secured({ "ROLE_USER" , "ROLE_ADMINISTRATOR"})
 	@RequestMapping(value = "/{filename:.+}", method = { RequestMethod.POST, RequestMethod.GET })
