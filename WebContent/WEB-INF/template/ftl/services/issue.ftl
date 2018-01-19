@@ -474,7 +474,7 @@
 			 		serverFiltering: true,
 			 		transport: {
 				 		parameterMap: function (options, operation){
-	                        	if (community.ui.defined(options.filter)) {
+	                        	if (community.ui.defined(options.filter) && options.filter.filters.length > 0 ) {
 									return { nameOrEmail: options.filter.filters[0].value };
 								}else{
 									return { };
