@@ -122,6 +122,14 @@
 			isOpen : false,
 			isClosed : false,		 
 			isAssigned : false,	
+			selectAssignee: function(e) {
+			    var item = e.item;
+			    console.log( kendo.stringify( item ) );
+			},
+			selectRepoter: function(e) {
+			    var item = e.item;
+			    console.log( kendo.stringify( item ) );
+			},
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
@@ -790,10 +798,11 @@
 										 data-filter="contains"
 				                   		 data-text-field="name"
 				                   	 	 data-value-field="username"
-				                   		 data-bind="value: issue.assignee,
+				                   		 data-bind="
 			                              source: userDataSource,
 			                              visible: isDeveloper,
-			                              enabled: editModeForAssignee"
+			                              enabled: editModeForAssignee,
+			                              events:{ select : selectAssignee }"
 			                   			 style=""/>			
 									</div>
 								</div>
@@ -814,10 +823,11 @@
 										 data-filter="contains" 
 				                   		 data-text-field="name"
 				                   	 	 data-value-field="username"
-				                   		 data-bind="value: issue.repoter,
+				                   		 data-bind="
 			                              source: userDataSource,
 			                              visible: isDeveloper,
-			                              enabled: editModeForAssignee"
+			                              enabled: editModeForAssignee,
+			                              events:{ select : selectRepoter }"
 			                   			 style=""/>			
 									</div>
 								</div>	                   			 
