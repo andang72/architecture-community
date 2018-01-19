@@ -102,10 +102,10 @@
         		init();
 		})();
            		
-        var featuresTo = $('#features');   		
+        var featuresTo = $('#features');   	
+       
 		var observable = new community.ui.observable({ 
-			currentUser : new community.model.User(),
-			backUrl : "",
+			currentUser : new community.model.User(),			
 			isDeveloper : false,
 			issue : new community.model.Issue(),
 			project : new community.model.Project(),
@@ -124,18 +124,16 @@
 			isAssigned : false,	
 			selectAssignee: function(e) {
 			    var item = e.item;
-			    console.log( kendo.stringify( item ) );
 			},
 			selectRepoter: function(e) {
 			    var item = e.item;
-			    console.log( kendo.stringify( item ) );
 			},
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
 				$this.set('isDeveloper', isDeveloper());
 			},
-			getIssueWithProject : function( issueId ){
+			setupWithIssueAndProject : function( issueId ){
 				var $this = this;
 				community.ui.ajax('/data/api/v1/issues/'+ issueId +'/get-with-project.json', {
 					success: function(data){	
@@ -146,14 +144,12 @@
 					}	
 				});
 			},
-			getProject : function( projectId ){
+			setupWithProject : function( projectId ){
 				var $this = this;
 				community.ui.ajax('/data/api/v1/projects/'+ projectId +'/info.json/', {
 					success: function(data){		
 						$this.set('project', new community.model.Project(data) );
 						$this.set('projectPeriod', community.data.getFormattedDate( $this.project.startDate , 'yyyy.MM.dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy.MM.dd' ) );
-						$this.set('backUrl', '/display/pages/issues.html?projectId=' + $this.project.projectId );
-						
 						var targetObject = new community.model.Issue();	
 						targetObject.set('issueId', 0);
 						targetObject.set('objectType', 19);
@@ -163,8 +159,17 @@
 					}	
 				});
 			},
+			back : function(){
+				var $this = this;
+				community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: $this.project.projectId });
+				return false;
+			},
 			cancle : function(e){
 				var $this = this;
+				if($this.get('isNew')){
+					$this.back();
+					return ;
+				}
 			 	$this.set('editMode', false );
 			 	$this.set('editModeForAssignee', false );
 			 	var editorTo = $('#issue-description-editor');
@@ -188,43 +193,47 @@
 				editorTo.summernote('code', $this.issue.get('description'));	
 		 	},
 		 	saveOrUpdate : function(e){				
-				var $this = this;
-				community.ui.progress(featuresTo, true);	
-				var editorTo = $('#issue-description-editor');
-				$this.issue.set('description', editorTo.summernote('code') );	
-				community.ui.ajax( '<@spring.url "/data/api/v1/issues/save-or-update.json" />', {
-					data: community.ui.stringify($this.issue),
-					contentType : "application/json",						
-					success : function(response){
-						if($this.get('isNew')){
-							$this.set('isNew', false );
-							$('html, body').stop().animate({ scrollTop: $("#issue-attachment-dropzone").offset().top - 120 }, 500);
-						}
+				var $this = this;		
+				var stopEditMode = true;				
+				var validator = community.ui.validator($("#issue-edit-form"), {});								
+				if (validator.validate()) {	
+					var editorTo = $('#issue-description-editor');
+					if( editorTo.summernote('code') == null || editorTo.summernote('code').length == 0 ){
+						editorTo.summernote('focus');
+						return ;
 					}
-				}).always( function () {
-					community.ui.progress(featuresTo, false);
-					$this.cancle();
-				});						
+					console.log("now save or update.");
+					community.ui.progress(featuresTo, true);						
+					$this.issue.set('description', editorTo.summernote('code') );	
+					community.ui.ajax( '<@spring.url "/data/api/v1/issues/save-or-update.json" />', {
+						data: community.ui.stringify($this.issue),
+						contentType : "application/json",						
+						success : function(response){
+							// do after create new issue !
+							if($this.get('isNew')){
+								$this.set('isNew', false );
+								stopEditMode = false
+								var createdIssue = new community.issue(response);
+								createdIssue.copy( $this.issue );
+								$this.refreshAdditionalInfo();
+								createAttachmentDropzone($this.issue); 
+								$('html, body').stop().animate({ scrollTop: $("#issue-attachment-dropzone").offset().top - 120 }, 500);
+							}
+						}
+					}).always( function () {
+						community.ui.progress(featuresTo, false);
+						if(stopEditMode)
+							$this.cancle();
+					});
+				}					
 			},
-			setSource : function( data ){
-			 	var $this = this;
-				var orgIssueId = $this.issue.issueId ;
-				data.copy( $this.issue ); 
-				$this.set('isOpen', false);
-				$this.set('isClosed', false);
-				$this.set('isNew', false );
-				$this.set('editable', false );	
-				$this.set('isAssigned', false);	
-				
-				if(  $this.issue.issueId > 0 ){ 		
-					$this.set('editable', true );
+			refreshAdditionalInfo(){
+				var $this = this;				
+				if(  $this.issue.issueId > 0 ){ 	
 					$this.set('formatedCreationDate' , community.data.getFormattedDate( $this.issue.creationDate) );
 				}else{
-				    formatedCreationDate = "";
-					$this.set('isNew', true );	
-					$this.set('editable', false );
-					$this.edit();
-				} 
+					$this.set('formatedCreationDate', "");
+				}
 				if( $this.issue.repoter.userId > 0){
 					$this.set('repoterAvatarSrc',  community.data.getUserProfileImage( $this.issue.repoter ) );
 				}else{
@@ -235,16 +244,34 @@
 					$this.set('assigneeAvatarSrc',  community.data.getUserProfileImage( $this.issue.assignee ) );
 				}else{	
 					$this.set('assigneeAvatarSrc',  "/images/no-avatar.png" );
-				} 
+				} 	
 				if($this.issue.status == '001' || $this.issue.status == '002' || $this.issue.status == '003' || $this.issue.status == '004' ){
 			 		$this.set('isOpen', true);
 			 	}else if($this.issue.status == '005' ){
 			 		$this.set('isClosed', true);
-			 	} 
-			 	createIssueCommentListView($this.issue); 
-			 	createIssueAttachmentListView($this.issue); 
-			 	createAttachmentDropzone($this.issue); 
-			 	$('#features').find(".nav-tabs a:first").tab('show');	 
+			 	}											
+			},
+			setSource : function( data ){
+			 	var $this = this;
+				var orgIssueId = $this.issue.issueId ;
+				data.copy( $this.issue ); 
+				$this.set('isOpen', false);
+				$this.set('isClosed', false);
+				$this.set('isNew', false );
+				$this.set('editable', false );	
+				$this.set('isAssigned', false);
+				$this.refreshAdditionalInfo();
+				if(  $this.issue.issueId > 0 ){ 		
+					$this.set('editable', true );
+					createIssueCommentListView($this.issue); 
+				 	createIssueAttachmentListView($this.issue); 
+				 	createAttachmentDropzone($this.issue); 
+				 	$('#features').find(".nav-tabs a:first").tab('show');	 
+				}else{
+					$this.set('isNew', true );	
+					$this.set('editable', false );
+					$this.edit();
+				}
 			},
 			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
@@ -270,11 +297,11 @@
     		});
     		
     		if( __issueId > 0 ){
-    			observable.getIssueWithProject(__issueId);
+    			observable.setupWithIssueAndProject(__issueId);
     		}else{
-    			observable.getProject(__projectId);
-    		}
-		
+    			observable.setupWithProject(__projectId);
+    		} 
+    		
 		//createIssueListView(observable);		
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
@@ -284,7 +311,13 @@
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
-			var targetObject = new community.model.Issue();	
+			var targetObject = new community.model.Issue();
+			targetObject.set('issueId', objectId);
+			targetObject.set('objectType', 19);
+			targetObject.set('objectId', observable.project.projectId ); 	
+			targetObject.set('repoter', observable.currentUser );
+			observable.setSource(targetObject);
+			/*
 			if( objectId > 0 ){
 				targetObject = community.ui.listview($('#issue-listview')).dataSource.get(objectId);
 			}else{			
@@ -293,6 +326,7 @@
 				targetObject.set('objectId', observable.project.projectId );
 			}			
  			createOrOpenIssueEditor (targetObject);
+ 			*/
 			return false;		
 		}); 
 		
@@ -571,7 +605,16 @@
 		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
 	} 
  			
-	</script>		
+	</script>	
+	<style>
+	.k-widget.k-tooltip-validation {
+		background-color: transparent;
+	    border: 0;
+	    color: red;
+	    font-weight: 100;
+	    padding-top: 5px;	
+	}
+	</style>	
 </head>
 <body id="page-top" class="landing-page no-skin-config">
 	<!-- NAVBAR START -->   
@@ -601,7 +644,7 @@
                     		<div class="col-lg-12">
                         		<div class="ibox g-mb-0">
                             		<div class="ibox-title g-pl-0 g-pb-0">
-	                            		<a href="<@spring.url "/display/pages/issues.html" />" class="back" data-bind="attr:{ href: backUrl  }">
+	                            		<a href="#" class="back" data-bind="click:back">
 									<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
 									</a>
 									<div class="text-right">
@@ -616,7 +659,7 @@
 						<div class="col-lg-9 g-mb-80">
 							<div class="g-pr-20--lg">
 								<!-- Issue Blocks -->
-								<article class="g-mb-100">
+								<article class="g-mb-100" id="issue-edit-form">
 									<div class="g-mb-30">
 										<hr class="g-brd-gray-light-v4 g-mt-0 mb-0">
 										<span data-bind="text:project.name"></span> 
@@ -627,21 +670,24 @@
 											<a class="u-link-v5 g-color-black g-color-primary--hover" href="#!" data-bind="text:issue.summary, invisible:editMode"></a>
 										</h2>
 	 									<div class="form-group" data-bind="visible:editMode">
-								            <input type="text" class="form-control" placeholder="간략하게 요약해주세요" data-bind="value: issue.summary">
+								            <input type="text" name="issue-summary" class="form-control" placeholder="간략하게 요약해주세요" data-bind="value: issue.summary" required validationMessage="요약정보를 입력하여주세요." />
 								        </div>
 										<div class="row">
 								            <div class="col-sm-6">
 								              <!-- Issue Type  -->
 								              <h4 class="h6 g-mb-5">요청구분 <span class="text-danger" data-bind="visible:editMode">*</span></h4>
-								              <input data-role="dropdownlist"  
-								              	placeholder = "어떤종류의 요청인지를 선택하여 주세요"
+								              <input name="issue-type"
+								               data-role="dropdownlist"  
+								               placeholder = "어떤종류의 요청인지를 선택하여 주세요"
 											   data-placeholder="어떤종류의 요청인지를 선택하여 주세요"
 							                   data-auto-bind="true"
 							                   data-value-primitive="true"
 							                   data-text-field="name"
 							                   data-value-field="code"
 							                   data-bind="value:issue.issueType, source:issueTypeDataSource, enabled:editMode"
-							                   style="width:100%;"/>	
+							                   required data-required-msg="어떤 종류의 요청인지를 선택하여 주세요"
+							                   style="width:100%;"/>
+							                   <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg" data-for="issue-type" role="alert" style="display:none;"></span>							                    
 								              <!-- End Issue Type -->
 								            </div>					
 								            <div class="col-sm-6">
@@ -723,8 +769,10 @@
 												 <div class="fallback">
 												     <input name="file" type="file" multiple style="display:none;"/>
 												 </div>
-											</form> 	
+										</form> 	
+										
 					                     <div class="table-responsive m-t-sm">						
+					                     	<button class="btn u-btn-outline-blue g-mr-10 g-mb-15 pull-right" type="button" role="button" data-bind="click:cancle, visible:editMode" style="">확인</button>	
 							                <table class="table  u-table--v1">
 							                	<!--
 							                  	<thead class="text-uppercase g-letter-spacing-1">
@@ -792,7 +840,7 @@
 						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.assignee.name"></span></h4>
 						                    <span class="d-block g-color-gray-dark-v4 g-font-size-12" data-bind="text: formatedCreationDate"></span>                    
 										</div>
-										<span class="help-block" data-bind="visible:isDeveloper">>이름 또는 아이디로 검색할 수 있습니다.</span>
+										<span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>
 										<input data-role="combobox"
 				                   		 data-placeholder="담당자 이름을 입력하세요."
 										 data-filter="contains"

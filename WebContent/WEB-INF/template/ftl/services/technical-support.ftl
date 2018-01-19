@@ -102,10 +102,12 @@
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
 			isDeveloper : false,
+			enabled : false,
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
 				$this.set('isDeveloper', isDeveloper());
+				$this.set('enabled', true);
 			},
 			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
 				transport:{
@@ -157,13 +159,22 @@
     		renderTo.data('model', observable);
     		community.ui.bind(renderTo, observable );	
     		createProjectListView(observable);
-		renderTo.on("click", "button[data-action=create], a[data-action=create]", function(e){			
+		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
+			if( actionType == 'view'){
+				community.ui.send("<@spring.url "/display/pages/issues.html" />", { 'projectId': objectId });
+				return;	
+			}else if ( actionType == 'create' && !isDeveloper() ){
+				if( observable.dataSource.total() == 1 ){
+					community.ui.send("<@spring.url "/display/pages/issue.html" />", { 'projectId': observable.dataSource.at(0).projectId });
+					return;
+				}	
+			}
+			// only for developers and client who has many projects.	
 			var targetObject = new community.model.Issue();	
 			targetObject.set('objectType', 19 );
-			console.log( "total: " + observable.dataSource.total() );
 			if( observable.dataSource.total() == 1 ){
 				targetObject.set('objectId', observable.dataSource.at(0).projectId);
 			}						
@@ -171,7 +182,11 @@
 			return false;		
 		});		
 	});
-	
+
+	function send ( data ) {
+		community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: data.projectId });
+	}
+			
 	function createProjectListView(observable){
 		var renderTo = $('#project-listview');	    		
 			community.ui.listview( renderTo , {
@@ -252,7 +267,7 @@
             </div>
             <!-- Promo Blocks - Input -->
 			<p data-bind="invisible:currentUser.anonymous" style="display:none;">
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous" >기술지원요청하기</a>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous, enabled: enabled" >기술지원요청하기</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
@@ -270,14 +285,15 @@
 	                            		<i class="icon-svg icon-svg-sm icon-svg-dusk-announcement"></i>
 	                            		<p data-bind="visible:currentUser.anonymous"> <a href="/accounts/login">로그인</a>이 필요한 서비스 입니다. </p>
 	                            	</div>                          		
-                            		<div class="ibox-title" data-bind="visible:isDeveloper" style="display:none;">
+                            		<div class="ibox-title" data-bind="invisible:currentUser.anonymous" style="display:none;">
                                 		<h2>
                                 		<i class="icon-svg icon-svg-sm icon-svg-dusk-client-base "></i>
                                 		</h2>
+                                		<p>프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</p>
                             		</div>   
-                            		<#if !currentUser.anonymous >
+                            		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">
-	                            		<p class="g-color-red"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다. 프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</p>
+	                            		<p class="g-color-red"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다.</p>
 	                            		<div class="row">
 	                            			<div class="col-sm-4 g-mb-15">
 	                            				<div class="form-group">					    
@@ -302,13 +318,16 @@
 								  		</div>
 								  	</div>
 								  	<hr class="g-brd-gray-light-v4 my-0">
+								  	
 								  	<div class="row">
 	                            			<div class="col-sm-12">
 	                            				<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button"  role="button" data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
 	                            				<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
 	                            			</div>
 	                            	  	</div>	
-	                            	</div>                       		                       		
+	                            	</div>
+	                            	</#if> 
+	                            	<#if !currentUser.anonymous >                      		                       		
 	                            <div class="ibox-content">
 	                                <div id="project-listview" class="no-border" ></div>
 	                            </div>                            
@@ -318,8 +337,8 @@
                 		</div>
             		</div>
         		</div>
-	</section>
-	
+	</section>	
+	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 	<section id="worklist" class="gray-section" data-bind="visible:isDeveloper">
 	    <div class="container">
 	        <div class="row">
@@ -333,7 +352,7 @@
 	        </div>
 	    </div>
 	</section>	
-
+	</#if>
 	<!-- FOOTER START -->   
 	<#include "/includes/user-footer.ftl">
 	<!-- FOOTER END -->  	
@@ -345,7 +364,7 @@
  							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support #if ( new Date() > endDate ) {#g-opacity-0_3#}#"></i>
 						</div>
 						
-						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="/display/pages/issues.html?projectId=#=projectId#" class="btn-link"> #:name# </a></h4>						
+						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="\\#" data-action="view" data-object-id="#=projectId#" data-kind="project" class="btn-link"> #:name# </a></h4>						
 						<div class="g-ml-60 g-mb-5 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
 						
 						#if( isDeveloper() ){ #

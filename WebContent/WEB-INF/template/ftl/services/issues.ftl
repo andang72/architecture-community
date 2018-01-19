@@ -171,7 +171,7 @@
 				targetObject.set('objectType', 19);
 				targetObject.set('objectId', __projectId);
 			}	
-			
+			/**
 			if( actionType == 'view'){
 				send(targetObject);	
 				return false;	
@@ -180,8 +180,8 @@
 			if( isDeveloper() )
  				createOrOpenIssueEditor (targetObject);
 			else
-				send(targetObject);				
-			
+			*/			
+			send(targetObject);	
 			return false;		
 		});
 	});

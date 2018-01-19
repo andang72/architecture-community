@@ -163,7 +163,14 @@
 			return (typeof x != UNDEFINED);
 		};
 		
-			
+		function validator(renderTo, options){
+			options = options || {};		
+			if(!renderTo.data("kendoValidator")){			
+				 renderTo.kendoValidator(options);
+			}		
+			return renderTo.data("kendoValidator");
+		}
+		
 		function grid(renderTo, options){
 			options = options || {};		
 			if(!renderTo.data("kendoGrid")){			
@@ -442,6 +449,7 @@
 			ajax : ajax,
 			listview : listview,
 			listbox : listbox,
+			validator: validator,
 			grid :  grid,
 			pager :  pager,
 			fx : kendo.fx,
