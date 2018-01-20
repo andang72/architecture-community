@@ -234,17 +234,19 @@
 				}else{
 					$this.set('formatedCreationDate', "");
 				}
-				if( $this.issue.repoter.userId > 0){
+				if( $this.issue.repoter != null && $this.issue.repoter.userId > 0){
 					$this.set('repoterAvatarSrc',  community.data.getUserProfileImage( $this.issue.repoter ) );
 				}else{
 					$this.set('repoterAvatarSrc',  "/images/no-avatar.png" );
-				}	
-				if( $this.issue.assignee.userId > 0){
+				}
+					
+				if( $this.issue.assignee != null && $this.issue.assignee.userId > 0){
 					$this.set('isAssigned', true);
 					$this.set('assigneeAvatarSrc',  community.data.getUserProfileImage( $this.issue.assignee ) );
 				}else{	
 					$this.set('assigneeAvatarSrc',  "/images/no-avatar.png" );
 				} 	
+				
 				if($this.issue.status == '001' || $this.issue.status == '002' || $this.issue.status == '003' || $this.issue.status == '004' ){
 			 		$this.set('isOpen', true);
 			 	}else if($this.issue.status == '005' ){
