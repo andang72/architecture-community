@@ -213,7 +213,7 @@
 							if($this.get('isNew')){
 								$this.set('isNew', false );
 								stopEditMode = false
-								var createdIssue = new community.issue(response);
+								var createdIssue = new community.model.Issue(response);
 								createdIssue.copy( $this.issue );
 								$this.refreshAdditionalInfo();
 								createAttachmentDropzone($this.issue); 

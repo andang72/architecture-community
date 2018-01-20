@@ -118,6 +118,7 @@
 						return community.ui.stringify(options)
 					} 			
 				},	
+				serverPaging:false,
 				schema: {
 					total: "totalCount",
 					data: "items",
