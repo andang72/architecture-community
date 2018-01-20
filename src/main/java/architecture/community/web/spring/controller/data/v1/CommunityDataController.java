@@ -180,8 +180,11 @@ private Logger log = LoggerFactory.getLogger(getClass());
 			issueToUse = projectService.createIssue(newIssue.getObjectType(), newIssue.getObjectId(), user );
 		}
 		
-		if(  newIssue.getAssignee().getUserId() > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
+		if( newIssue.getAssignee() != null && newIssue.getAssignee().getUserId() > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
 			issueToUse.setAssignee(newIssue.getAssignee());
+		}
+		if( newIssue.getRepoter() != null && newIssue.getRepoter().getUserId() > 0 && issueToUse.getRepoter().getUserId() != newIssue.getRepoter().getUserId() ) {
+			issueToUse.setRepoter(newIssue.getRepoter());
 		}
 		if( newIssue.getDueDate() != null && newIssue.getDueDate() != issueToUse.getDueDate() ) {
 			issueToUse.setDueDate(newIssue.getDueDate());

@@ -122,11 +122,17 @@
 			isOpen : false,
 			isClosed : false,		 
 			isAssigned : false,	
-			selectAssignee: function(e) {
-			    var item = e.item;
+			assignMe : function(){
+				var $this = this;
+				$this.set( 'issue.assignee', $this.currentUser );				
+				$this.set('assigneeAvatarSrc',  community.data.getUserProfileImage( $this.issue.assignee ) );
+				$this.set('isAssigned', true);
 			},
-			selectRepoter: function(e) {
-			    var item = e.item;
+			selectAssignee: function() {
+			  	console.log( kendo.stringify (this.issue.assignee) );  
+			},
+			selectRepoter: function() {
+				
 			},
 			setUser : function( data ){
 				var $this = this;
@@ -842,12 +848,16 @@
 						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.assignee.name"></span></h4>
 						                    <span class="d-block g-color-gray-dark-v4 g-font-size-12" data-bind="text: formatedCreationDate"></span>                    
 										</div>
+										
 										<span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>
+										<button class="btn btn-xs u-btn-outline-blue g-mb-15 g-mr-10 " type="button" role="button" data-bind="click: assignMe, visible:isDeveloper">나를 담당자로 지정합니다.</button>
+										
 										<input data-role="combobox"
 				                   		 data-placeholder="담당자 이름을 입력하세요."
 										 data-filter="contains"
 				                   		 data-text-field="name"
 				                   	 	 data-value-field="username"
+				                   	 	 data-autoBind: false,
 				                   		 data-bind="value: issue.assignee, 
 			                              source: userDataSource,
 			                              visible: isDeveloper,
