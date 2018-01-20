@@ -178,14 +178,24 @@ private Logger log = LoggerFactory.getLogger(getClass());
 			issueToUse = projectService.getIssue(newIssue.getIssueId());
 		}else {
 			issueToUse = projectService.createIssue(newIssue.getObjectType(), newIssue.getObjectId(), user );
+		}		
+		if( newIssue.getAssignee() != null && newIssue.getAssignee().getUserId() > 0	) {			
+			if( issueToUse.getAssignee() != null && issueToUse.getAssignee().getUserId()  > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
+				issueToUse.setAssignee(newIssue.getAssignee());
+			}
+			if( issueToUse.getAssignee() == null ) {
+				issueToUse.setAssignee(newIssue.getAssignee());
+			}
+		}	
+		if( newIssue.getRepoter() != null && newIssue.getRepoter().getUserId() > 0	) {			
+			if( issueToUse.getRepoter() != null && issueToUse.getRepoter().getUserId()  > 0 && issueToUse.getRepoter().getUserId() != newIssue.getRepoter().getUserId() ) {
+				issueToUse.setRepoter(newIssue.getAssignee());
+			}
+			if( issueToUse.getRepoter() == null ) {
+				issueToUse.setRepoter(newIssue.getRepoter());
+			}
 		}
-		
-		if( newIssue.getAssignee() != null && newIssue.getAssignee().getUserId() > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
-			issueToUse.setAssignee(newIssue.getAssignee());
-		}
-		if( newIssue.getRepoter() != null && newIssue.getRepoter().getUserId() > 0 && issueToUse.getRepoter().getUserId() != newIssue.getRepoter().getUserId() ) {
-			issueToUse.setRepoter(newIssue.getRepoter());
-		}
+
 		if( newIssue.getDueDate() != null && newIssue.getDueDate() != issueToUse.getDueDate() ) {
 			issueToUse.setDueDate(newIssue.getDueDate());
 		}

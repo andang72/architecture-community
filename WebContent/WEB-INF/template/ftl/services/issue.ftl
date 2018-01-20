@@ -160,6 +160,7 @@
 						targetObject.set('issueId', 0);
 						targetObject.set('objectType', 19);
 						targetObject.set('objectId', $this.project.projectId ); 	
+						targetObject.set('status', '001');
 						targetObject.set('repoter', $this.currentUser );
 						$this.setSource(targetObject);
 					}	
@@ -324,6 +325,7 @@
 			targetObject.set('objectType', 19);
 			targetObject.set('objectId', observable.project.projectId ); 	
 			targetObject.set('repoter', observable.currentUser );
+			targetObject.set('status', '001');
 			observable.setSource(targetObject);
 			/*
 			if( objectId > 0 ){
@@ -780,7 +782,7 @@
 										</form> 	
 										
 					                     <div class="table-responsive m-t-sm">						
-					                     	<button class="btn u-btn-outline-blue g-mr-10 g-mb-15 pull-right" type="button" role="button" data-bind="click:cancle, visible:editMode" style="">확인</button>	
+					                     	<button class="btn u-btn-outline-blue g-mr-10 g-mb-15 pull-right" type="button" role="button" data-bind="click:back, visible:editMode" style="">확인</button>	
 							                <table class="table  u-table--v1">
 							                	<!--
 							                  	<thead class="text-uppercase g-letter-spacing-1">
