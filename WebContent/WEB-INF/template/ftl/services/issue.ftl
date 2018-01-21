@@ -122,6 +122,7 @@
 			isOpen : false,
 			isClosed : false,		 
 			isAssigned : false,	
+			isNewAndSaved : false,
 			assignMe : function(){
 				var $this = this;
 				$this.set( 'issue.assignee', $this.currentUser );				
@@ -223,6 +224,7 @@
 								var createdIssue = new community.model.Issue(response);
 								createdIssue.copy( $this.issue );
 								$this.refreshAdditionalInfo();
+								$this.set('isNewAndSaved', true );
 								createAttachmentDropzone($this.issue); 
 								$('html, body').stop().animate({ scrollTop: $("#issue-attachment-dropzone").offset().top - 120 }, 500);
 							}
@@ -235,7 +237,7 @@
 				}					
 			},
 			refreshAdditionalInfo(){
-				var $this = this;				
+				var $this = this;		
 				if(  $this.issue.issueId > 0 ){ 	
 					$this.set('formatedCreationDate' , community.data.getFormattedDate( $this.issue.creationDate) );
 				}else{
@@ -245,15 +247,13 @@
 					$this.set('repoterAvatarSrc',  community.data.getUserProfileImage( $this.issue.repoter ) );
 				}else{
 					$this.set('repoterAvatarSrc',  "/images/no-avatar.png" );
-				}
-					
+				}					
 				if( $this.issue.assignee != null && $this.issue.assignee.userId > 0){
 					$this.set('isAssigned', true);
 					$this.set('assigneeAvatarSrc',  community.data.getUserProfileImage( $this.issue.assignee ) );
 				}else{	
 					$this.set('assigneeAvatarSrc',  "/images/no-avatar.png" );
-				} 	
-				
+				} 					
 				if($this.issue.status == '001' || $this.issue.status == '002' || $this.issue.status == '003' || $this.issue.status == '004' ){
 			 		$this.set('isOpen', true);
 			 	}else if($this.issue.status == '005' ){
@@ -267,8 +267,10 @@
 				$this.set('isOpen', false);
 				$this.set('isClosed', false);
 				$this.set('isNew', false );
+				$this.set('isNewAndSaved', false );
 				$this.set('editable', false );	
 				$this.set('isAssigned', false);
+				
 				$this.refreshAdditionalInfo();
 				if(  $this.issue.issueId > 0 ){ 		
 					$this.set('editable', true );
@@ -782,7 +784,7 @@
 										</form> 	
 										
 					                     <div class="table-responsive m-t-sm">						
-					                     	<button class="btn u-btn-outline-blue g-mr-10 g-mb-15 pull-right" type="button" role="button" data-bind="click:back, visible:editMode" style="">확인</button>	
+					                     	<button class="btn u-btn-outline-blue g-mr-10 g-mb-15 pull-right" type="button" role="button" data-bind="click:back, visible:isNewAndSaved" style="">확인</button>	
 							                <table class="table  u-table--v1">
 							                	<!--
 							                  	<thead class="text-uppercase g-letter-spacing-1">
@@ -832,9 +834,9 @@
 						</div>
 						<div class="col-lg-3 g-brd-left--lg g-brd-gray-light-v4 g-mb-80">
 							<div class="g-pl-20--lg">
-								<!-- Links -->
+								<!-- Buttons  -->
 								<div class="g-mb-50">
-									<h3 class="h5 g-color-black g-font-weight-600 mb-4">Links</h3>
+									<h3 class="h5 g-color-black g-font-weight-600 mb-4"></h3>
 									<button class="btn u-btn-outline-blue g-mr-10 g-mb-15" type="button" role="button" data-bind="click:edit, visible:editable, invisible:editMode" style="display:none;">수정</button>
 									<button class="btn u-btn-outline-blue g-mr-10 g-mb-15" type="button" role="button" data-bind="click:saveOrUpdate, visible:editMode" style="display:none;">저장</button>
 									<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" data-bind="click:cancle, visible:editMode" style="display:none;">최소</button>
@@ -852,7 +854,7 @@
 										</div>
 										
 										<span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>
-										<button class="btn btn-xs u-btn-outline-blue g-mb-15 g-mr-10 " type="button" role="button" data-bind="click: assignMe, visible:isDeveloper">나를 담당자로 지정합니다.</button>
+										<button class="btn btn-xs u-btn-outline-blue g-mb-15 g-mr-10 " type="button" role="button" data-bind="click: assignMe, visible:isDeveloper, invisible:isAssigned">나를 담당자로 지정합니다.</button>
 										
 										<input data-role="combobox"
 				                   		 data-placeholder="담당자 이름을 입력하세요."
@@ -897,13 +899,20 @@
 								<hr class="g-brd-gray-light-v4 g-my-50">
 								<!-- Tags -->
 								<div class="g-mb-40">
-									<h3 class="h5 g-color-black g-font-weight-600 mb-4">Tags</h3>
+									<h3 class="h5 g-color-black g-font-weight-600 mb-4"></h3>
 									<!--
 									<ul class="u-list-inline mb-0">
 									<li class="list-inline-item g-mb-10">
 									<a class="u-tags-v1 g-color-gray-dark-v4 g-color-white--hover g-bg-gray-light-v5 g-bg-primary--hover g-font-size-12 g-rounded-50 g-py-4 g-px-15" href="#!">Design</a>
 									</li>
 									</ul>-->
+									<!-- Buttons  -->
+									<div class="g-mb-50">
+										<button class="btn u-btn-outline-blue g-mr-10 g-mb-15" type="button" role="button" data-bind="click:edit, visible:editable, invisible:editMode" style="display:none;">수정</button>
+										<button class="btn u-btn-outline-blue g-mr-10 g-mb-15" type="button" role="button" data-bind="click:saveOrUpdate, visible:editMode" style="display:none;">저장</button>
+										<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" data-bind="click:cancle, visible:editMode" style="display:none;">최소</button>
+									</div>
+									<!-- End Links -->
 								</div>
 								<!-- End Tags -->
 							</div>

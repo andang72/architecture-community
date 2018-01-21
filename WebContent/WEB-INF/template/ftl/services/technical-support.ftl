@@ -294,7 +294,7 @@
                             		</div>   
                             		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">
-	                            		<p class="g-color-red"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다.</p>
+	                            		<p class="g-color-red g-mb-15"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다.</p>
 	                            		<div class="row">
 	                            			<div class="col-sm-4 g-mb-15">
 	                            				<div class="form-group">					    
