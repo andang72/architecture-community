@@ -663,8 +663,6 @@
 		                   data-bind="source:methodsDataSource, visible: isDeveloper, enabled:editable"
 		                   style="width: 100%;"/>
 					</div>	
-
-						
 					<div class="row" >
 						<div class="col-sm-6">
 							<h4 class="text-light-gray text-semibold">처리결과</h4>

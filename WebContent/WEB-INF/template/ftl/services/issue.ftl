@@ -169,8 +169,11 @@
 			},
 			back : function(){
 				var $this = this;
+				/*
 				community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: $this.project.projectId });
 				return false;
+				*/
+				window.history.back();
 			},
 			cancle : function(e){
 				var $this = this;

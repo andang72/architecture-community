@@ -175,14 +175,18 @@
     		community.ui.bind(renderTo, observable );	
     		createProjectListView(observable);
     		
-		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view]", function(e){			
+		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view], a[data-action=view2]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
 			if( actionType == 'view'){
 				community.ui.send("<@spring.url "/display/pages/issues.html" />", { 'projectId': objectId });
 				return;	
-			}else if ( actionType == 'create' && !isDeveloper() ){
+			}else if( actionType == 'view2'){
+				community.ui.send("<@spring.url "/display/pages/issue.html" />", { 'issueId': objectId });
+				return;	
+			}
+			else if ( actionType == 'create' && !isDeveloper() ){
 				if( observable.dataSource.total() == 1 ){
 					community.ui.send("<@spring.url "/display/pages/issue.html" />", { 'projectId': observable.dataSource.at(0).projectId });
 					return;
@@ -202,7 +206,7 @@
 	function send ( data ) {
 		community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: data.projectId });
 	}
-			
+ 		
 	function createProjectListView(observable){
 		var renderTo = $('#project-listview');	    		
 		community.ui.listview( renderTo , {
@@ -392,7 +396,7 @@
 	            <div class="col-lg-12 text-center">
 	                <div class="navy-line"></div>
 	                <h1>미완료 이슈</h1>
-	                <p>종결되지 않는 모든 이슈들입니다.</p>
+	                <p class="g-mb-15">지금까지 종결되지 않는 모든 이슈들입니다.</p>
 					<div class="btn-group" data-toggle="buttons">
 					  <label class="btn btn-primary">
 					    <input type="radio" name="issueAssigneeFilter" value="0" autocomplete="off"  data-bind="checked:filter2.ASSIGNEE_TYPE">전체
@@ -418,6 +422,8 @@
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-80">프로젝트</th>
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">유형</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">우선순위</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">담당자</th>
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
 							</tr>
 						</thead>	
@@ -435,12 +441,24 @@
 	<script type="text/x-kendo-template" id="template-issue">
 	<tr>
 		<td class="align-middle text-center"> ISSUE-#: issueId # </td>
-    		<td class="align-middle text-center">#: project.name #</td>
     		<td class="align-middle">
-        		<a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view" data-object-id="#= issueId #" data-action-target="issue" >#: summary # </a>
-        		# if ( new Date() > dueDate ) {# * #} else { #  # } # 
+    		<a href="\\#" class="btn-link" data-action="view" data-object-id="#: project.projectId#" data-kind="project">
+    		#: project.name #
+    		</a>
+    		</td>
+    		<td class="align-middle">
+    			# if ( new Date() >= new Date(dueDate) ) {# <i class="fa fa-exclamation-triangle g-color-red" aria-hidden="true"></i> #} else { #  # } # 
+        		<a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view2" data-object-id="#= issueId #" data-kind="issue" >#: summary # </a>        		
  		</td>
     		<td class="align-middle">#: issueTypeName #</td>
+    		<td class="align-middle">#: priorityName #</td>
+    		<td class="align-middle">
+		#if ( assignee != null && assignee.userId > 0 ) {#
+		#= community.data.getUserDisplayName( assignee ) #
+		#} else {#
+			미지정
+		#}#
+		</td>
     		<td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
     	</tr>	
 	</script>	
