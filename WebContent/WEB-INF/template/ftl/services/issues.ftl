@@ -203,8 +203,7 @@
 					read:{
 						contentType: "application/json; charset=utf-8"
 					},
-					parameterMap: function (options, operation){		
-					
+					parameterMap: function (options, operation){							
 						var filter = {filter:{filters: [], logic: "AND" } };
 						if( observable.filter.ISSUE_TYPE != null && observable.filter.ISSUE_TYPE.length > 0 ){
 							filter.filter.filters.push( {field: "ISSUE_TYPE", operator: "eq", value : observable.filter.ISSUE_TYPE, logic: "AND" } );
@@ -226,8 +225,7 @@
 						}
 						if( filter.filter.filters.length > 0 ){
 							options = $.extend( true, {}, filter, options );
-						}
-						
+						}						
 						return community.ui.stringify(options)
 					} 				
 				},

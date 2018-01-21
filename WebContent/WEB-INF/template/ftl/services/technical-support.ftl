@@ -108,6 +108,9 @@
 				data.copy($this.currentUser)
 				$this.set('isDeveloper', isDeveloper());
 				$this.set('enabled', true);
+				if($this.get('isDeveloper')){
+					createIssueListView($this);
+				}
 			},
 			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
 				transport:{
@@ -145,21 +148,33 @@
 				}
 				$this.dataSource.filter( filters );
 			},
+			filter2 : {
+				ASSIGNEE_TYPE : 1
+			},
+			doFilter2 : function(){ 
+				var $this = this , filters = [];
+				filters.push({ field: "ISSUE_STATUS", operator: "neq", value: "005" ,logic: "AND" });
+				filters.push({ field: "assigneeType", operator: "eq", value: $this.filter2.ASSIGNEE_TYPE, logic: "AND" });
+				community.ui.listview($('#issue-listview')).dataSource.filter( filters );
+			},
 			showAllOpenIssue: function(e){
 				$('html, body').stop().animate({ scrollTop: $("#worklist").offset().top - 50 }, 500);
 				e.preventDefault();
-				$("#navbar").collapse('hide');
+				$("#navbar").collapse('hide');				
  			}
     		});
     		observable.bind("change", function(e) { 
     			if( e.field == 'filter.PROJECT_CONTRACT' || e.field == 'filter.NAME' ) {
     				observable.applyFilters();
+    			}else if (e.field == 'filter2.ASSIGNEE_TYPE'){
+    				observable.doFilter2();  				
     			}
     		});
     		var renderTo = $('#page-top');
     		renderTo.data('model', observable);
     		community.ui.bind(renderTo, observable );	
     		createProjectListView(observable);
+    		
 		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
@@ -190,10 +205,41 @@
 			
 	function createProjectListView(observable){
 		var renderTo = $('#project-listview');	    		
-			community.ui.listview( renderTo , {
+		community.ui.listview( renderTo , {
 			dataSource: observable.dataSource,
 			template: community.ui.template($("#template").html())
 		}); 	
+	}
+	
+	function createIssueListView(observable){
+		var renderTo = $('#issue-listview');	 	
+		if( !community.ui.exists(renderTo) ){
+			console.log("create listview for issues.");
+			var listview = community.ui.listview( renderTo , {	
+				dataSource: community.ui.datasource('<@spring.url "/data/api/v1/issues/list.json"/>', {
+					transport:{
+						read:{ contentType: "application/json; charset=utf-8" },
+						parameterMap: function (options, operation){	
+							return community.ui.stringify(options);
+						} 			
+					},	
+					serverFiltering: true,
+					serverPaging: true,		
+					filter: { logic: "and", filters: [ 
+						{ field: "ISSUE_STATUS", operator: "neq", value: "005" ,logic: "AND" },
+						{ field: "assigneeType", operator: "eq", value: "1",logic: "AND" } 
+					] },	
+					schema: {
+						total: "totalCount",
+						data: "items"
+					}
+				}),
+				template: community.ui.template($("#template-issue").html())
+			});
+			community.ui.pager( $("#issue-listview-pager"), {
+            		dataSource: listview.dataSource
+       	 	});  
+		}		
 	}
 	
 	function createOrOpenIssueEditor( data ){
@@ -347,16 +393,57 @@
 	                <div class="navy-line"></div>
 	                <h1>미완료 이슈</h1>
 	                <p>종결되지 않는 모든 이슈들입니다.</p>
+					<div class="btn-group" data-toggle="buttons">
+					  <label class="btn btn-primary">
+					    <input type="radio" name="issueAssigneeFilter" value="0" autocomplete="off"  data-bind="checked:filter2.ASSIGNEE_TYPE">전체
+					  </label>
+					  <label class="btn btn-primary active">
+					    <input type="radio" name="issueAssigneeFilter" value="1" autocomplete="off" data-bind="checked:filter2.ASSIGNEE_TYPE">내가 담당
+					  </label>
+					  <label class="btn btn-primary">
+					    <input type="radio" name="issueAssigneeFilter" value="2" autocomplete="off"  data-bind="checked:filter2.ASSIGNEE_TYPE">타인이 담당
+					  </label>
+					  <label class="btn btn-primary">
+					    <input type="radio" name="issueAssigneeFilter" value="3" autocomplete="off"  data-bind="checked:filter2.ASSIGNEE_TYPE">미배정
+					  </label>
+					</div>
 	            </div>
 	        </div>
-	        <div class="row features-block">
+	        <div class="row features-block g-mb-50">
+	        		<div class="table-responsive">
+	        			<table class="table table-bordered u-table--v2 g-mb-0">
+						<thead class="text-uppercase g-letter-spacing-1">
+							<tr class="g-height-50">
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">ID</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-80">프로젝트</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">유형</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
+							</tr>
+						</thead>	
+	        				<tbody id="issue-listview" ></tbody>
+	        			</table>
+	        		</div>
+	        		<div id="issue-listview-pager" class="g-bg-transparent  g-brd-top-none"></div>
 	        </div>
 	    </div>
 	</section>	
 	</#if>
 	<!-- FOOTER START -->   
 	<#include "/includes/user-footer.ftl">
-	<!-- FOOTER END -->  	
+	<!-- FOOTER END -->  
+	<script type="text/x-kendo-template" id="template-issue">
+	<tr>
+		<td class="align-middle text-center"> ISSUE-#: issueId # </td>
+    		<td class="align-middle text-center">#: project.name #</td>
+    		<td class="align-middle">
+        		<a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view" data-object-id="#= issueId #" data-action-target="issue" >#: summary # </a>
+        		# if ( new Date() > dueDate ) {# * #} else { #  # } # 
+ 		</td>
+    		<td class="align-middle">#: issueTypeName #</td>
+    		<td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
+    	</tr>	
+	</script>	
 	<script type="text/x-kendo-template" id="template">
 			<div class="forum-item">
 				<div class="row">

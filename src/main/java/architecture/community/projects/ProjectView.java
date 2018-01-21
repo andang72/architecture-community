@@ -16,14 +16,23 @@ public class ProjectView {
 	private Project project;
 	
 	private boolean writable = false ;	
+	
 	private boolean readable = false ;
+	
 	private boolean createThreadMessage = false;
+	
 	private boolean createThread = false;
+	
 	private boolean createAttachement = false ;
+	
 	private boolean readComment = false;
+	
 	private boolean createComment = false;
+	
 	private boolean createImage = false;
+	
 	private Stats issueTypeStats;
+	
 	private Stats resolutionStats;
 	
 	

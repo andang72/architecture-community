@@ -21,6 +21,7 @@ import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.model.Models;
 import architecture.community.projects.DefaultIssue;
 import architecture.community.projects.Issue;
+import architecture.community.projects.IssueSummary;
 import architecture.community.projects.Project;
 import architecture.community.projects.Stats;
 import architecture.community.projects.dao.ProjectDao;
@@ -267,12 +268,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	public int getIssueCount(DataSourceRequest dataSourceRequest) {
 		
 		int objectType = dataSourceRequest.getDataAsInteger("objectType", -1);
-		long objectId = dataSourceRequest.getDataAsLong("objectId", -1L);		
-		Map<String, Object> additionalParameter = new HashMap<String, Object>();
-		additionalParameter.put("filter", dataSourceRequest.getFilter());
-		additionalParameter.put("sort", dataSourceRequest.getSort());
-		
-		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.COUNT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID", additionalParameter);
+		long objectId = dataSourceRequest.getDataAsLong("objectId", -1L);	
+		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.COUNT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID", getAdditionalParameter(dataSourceRequest));
 		return getExtendedJdbcTemplate().queryForObject(
 				sqlSource.getSql(), 
 				Integer.class,
@@ -280,15 +277,11 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 				new SqlParameterValue(Types.NUMERIC, objectId )
 			);
 	}
-
-	@Override
+ 
 	public List<Long> getIssueIds(DataSourceRequest dataSourceRequest) {
 		int objectType = dataSourceRequest.getDataAsInteger("objectType", -1);
 		long objectId = dataSourceRequest.getDataAsLong("objectId", -1L);		
-		Map<String, Object> additionalParameter = new HashMap<String, Object>();
-		additionalParameter.put("filter", dataSourceRequest.getFilter());
-		additionalParameter.put("sort", dataSourceRequest.getSort());
-		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.SELECT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID", additionalParameter);
+		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.SELECT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID", getAdditionalParameter(dataSourceRequest));
 		if( dataSourceRequest.getPageSize() > 0 )
 		{	
 			return getExtendedJdbcTemplate().query(
@@ -300,7 +293,6 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, objectId )
 			);			
 		}else {
-			getBoundSql("COMMUNITY_WEB.SELECT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID", dataSourceRequest.getFilter(), dataSourceRequest.getSort());
 			return getExtendedJdbcTemplate().queryForList(
 					sqlSource.getSql(), 
 					Long.class,
@@ -312,10 +304,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 
 	
 	public List<Long> getProjectIds(DataSourceRequest dataSourceRequest) {
-		Map<String, Object> additionalParameter = new HashMap<String, Object>();
-		additionalParameter.put("filter", dataSourceRequest.getFilter());
-		additionalParameter.put("sort", dataSourceRequest.getSort());
-		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.SELECT_PROJECT_IDS", additionalParameter);
+		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.SELECT_PROJECT_IDS", getAdditionalParameter(dataSourceRequest));
 		if( dataSourceRequest.getPageSize() > 0 )
 		{	
 			return getExtendedJdbcTemplate().query(
@@ -325,7 +314,6 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					Long.class
 			);			
 		}else {
-			getBoundSql("COMMUNITY_WEB.SELECT_PROJECT_IDS", dataSourceRequest.getFilter(), dataSourceRequest.getSort());
 			return getExtendedJdbcTemplate().queryForList(
 					sqlSource.getSql(), 
 					Long.class
@@ -335,15 +323,65 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 
  
 	public int getProjectCount(DataSourceRequest dataSourceRequest) {
-		Map<String, Object> additionalParameter = new HashMap<String, Object>();
-		additionalParameter.put("filter", dataSourceRequest.getFilter());
-		additionalParameter.put("sort", dataSourceRequest.getSort());		
-		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.COUNT_PROJECT_IDS", additionalParameter);
+		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.COUNT_PROJECT_IDS", getAdditionalParameter(dataSourceRequest));
 		return getExtendedJdbcTemplate().queryForObject(
 				sqlSource.getSql(), 
 				Integer.class
 			);
 	}
 
-	
+ 
+	private final RowMapper<IssueSummary> summaryMapper = new RowMapper<IssueSummary>() {				
+		public IssueSummary mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			IssueSummary issue = new IssueSummary(rs.getLong("ISSUE_ID"));			
+			issue.setProject( new Project( rs.getLong("PROJECT_ID") ) );
+			issue.getProject().setName(rs.getString("PROJECT_NAME"));
+			issue.setIssueType(rs.getString("ISSUE_TYPE"));
+			issue.setStatus(rs.getString("ISSUE_STATUS"));
+			issue.setResolution(rs.getString("ISSUE_RESOLUTION"));
+			issue.setResolutionDate(rs.getDate("RESOLUTION_DATE"));
+			issue.setSummary(rs.getString("ISSUE_SUMMARY"));
+			issue.setPriority(rs.getString("ISSUE_PRIORITY"));			
+			issue.setAssignee(new UserTemplate(rs.getLong("ASSIGNEE")));
+			issue.setRepoter(new UserTemplate(rs.getLong("REPOTER")));			
+			issue.setDueDate(rs.getDate("DUE_DATE"));			
+			issue.setCreationDate(rs.getDate("CREATION_DATE"));
+			issue.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
+			return issue;
+		}		
+	};
+	 
+	public int getIssueSummaryCount(DataSourceRequest dataSourceRequest) { 
+		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.COUNT_ISSUE_SUMMARY_BY_REQUEST", getAdditionalParameter(dataSourceRequest));
+		return getExtendedJdbcTemplate().queryForObject(
+				sqlSource.getSql(), 
+				Integer.class
+			);
+	}
+		
+	public List<IssueSummary> getIssueSummary(DataSourceRequest dataSourceRequest) { 
+		BoundSql sqlSource = getBoundSqlWithAdditionalParameter("COMMUNITY_WEB.SELECT_ISSUE_SUMMARY_BY_REQUEST", getAdditionalParameter(dataSourceRequest));
+		if( dataSourceRequest.getPageSize() > 0 )
+		{	
+			return getExtendedJdbcTemplate().query(
+					sqlSource.getSql(), 
+					dataSourceRequest.getSkip(), 
+					dataSourceRequest.getPageSize(), 
+					summaryMapper
+			);			
+		}else {
+			return getExtendedJdbcTemplate().query(
+					sqlSource.getSql(), 
+					summaryMapper
+			);
+		}
+	}
+
+	private Map<String, Object> getAdditionalParameter( DataSourceRequest dataSourceRequest ){
+		Map<String, Object> additionalParameter = new HashMap<String, Object>();
+		additionalParameter.put("filter", dataSourceRequest.getFilter());
+		additionalParameter.put("sort", dataSourceRequest.getSort());		
+		additionalParameter.put("user", dataSourceRequest.getUser());		
+		return additionalParameter;
+	}
 }

@@ -291,8 +291,7 @@ public class DefaultProjectService implements ProjectService {
 	 * @param code
 	 * @return
 	 */
-	private String getCodeText( String group, String code ) {
-		
+	private String getCodeText( String group, String code ) {		
 		if( StringUtils.isEmpty(group) || StringUtils.isEmpty(code))
 			return null;
 		
@@ -302,5 +301,37 @@ public class DefaultProjectService implements ProjectService {
 			logger.error(e.getMessage(), e);
 			return null;
 		}
+	}
+
+	
+	public int getIssueSummaryCount(DataSourceRequest dataSourceRequest) {
+		return projectDao.getIssueSummaryCount(dataSourceRequest);
+	}
+
+	public List<IssueSummary> getIssueSummary(DataSourceRequest dataSourceRequest) {
+		
+		List<IssueSummary> list = projectDao.getIssueSummary(dataSourceRequest);
+		for( IssueSummary summary : list )
+		{
+			if( summary.getAssignee().getUserId() > 0)
+				summary.setAssignee( userManager.getUser(summary.getAssignee()));
+				
+			if( summary.getRepoter().getUserId() > 0)
+				summary.setRepoter( userManager.getUser(summary.getRepoter()));				
+			
+			if( StringUtils.isNotEmpty( summary.getIssueType() ))
+				summary.setIssueTypeName(getCodeText( "ISSUE_TYPE", summary.getIssueType()));
+			
+			if( StringUtils.isNotEmpty( summary.getPriority() ))
+				summary.setPriorityName(getCodeText( "PRIORITY", summary.getPriority()));		
+			
+			if( StringUtils.isNotEmpty( summary.getStatus() ))
+				summary.setStatusName(getCodeText( "ISSUE_STATUS", summary.getStatus()));
+			
+			if( StringUtils.isNotEmpty( summary.getResolution() ))
+				summary.setResolutionName(getCodeText( "RESOLUTION", summary.getResolution()));
+			
+		}
+		return list;
 	}
 }

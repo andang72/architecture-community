@@ -8,6 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import architecture.community.model.json.JsonUserDeserializer;
+import architecture.community.user.User;
 
 public class DataSourceRequest {
 
@@ -28,6 +32,8 @@ public class DataSourceRequest {
 	private List<GroupDescriptor> group;
 	
     private List<AggregateDescriptor> aggregate;
+    
+    private User user;
 	
 	public DataSourceRequest() {
 		filter = new FilterDescriptor();
@@ -36,9 +42,20 @@ public class DataSourceRequest {
 		pageSize = 0;
 		take = 0;
 		skip = 0;
+		user = null;
 	}
 
 	
+	public User getUser() {
+		return user;
+	}
+
+	@JsonDeserialize(using = JsonUserDeserializer.class)
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+
 	public List<SortDescriptor> getSort() {
 		if( sort == null )
 			return Collections.EMPTY_LIST;

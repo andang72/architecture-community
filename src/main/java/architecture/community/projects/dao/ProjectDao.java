@@ -3,6 +3,7 @@ package architecture.community.projects.dao;
 import java.util.List;
 
 import architecture.community.projects.Issue;
+import architecture.community.projects.IssueSummary;
 import architecture.community.projects.Project;
 import architecture.community.projects.Stats;
 import architecture.community.web.model.json.DataSourceRequest;
@@ -36,5 +37,12 @@ public interface ProjectDao {
 	public abstract List<Long> getIssueIds(DataSourceRequest dataSourceRequest);
 	
 	public abstract List<Long> getIssueIds(int objectType, long objectId, int startIndex, int numResults);
+	
+	/*
+	 * IssueSummary API
+	 * */
+	public abstract int getIssueSummaryCount(DataSourceRequest dataSourceRequest);
+	
+	public abstract List<IssueSummary> getIssueSummary(DataSourceRequest dataSourceRequest);
 	
 }

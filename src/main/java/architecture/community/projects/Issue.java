@@ -2,14 +2,7 @@ package architecture.community.projects;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import architecture.community.model.ModelObjectAware;
-import architecture.community.model.json.JsonDateDeserializer;
-import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.user.User;
 
 public interface Issue extends ModelObjectAware { 

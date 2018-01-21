@@ -38,5 +38,11 @@ public interface ProjectService {
 	
 	public abstract List<Issue> getIssues(int objectType, long objectId, int startIndex, int numResults);
 	
- 
+	/*
+	 * IssueSummary API
+	 * */
+	public abstract int getIssueSummaryCount(DataSourceRequest dataSourceRequest);
+	
+	public abstract List<IssueSummary> getIssueSummary(DataSourceRequest dataSourceRequest); 
+	
 }

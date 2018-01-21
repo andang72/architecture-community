@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +53,7 @@ import architecture.community.model.Models;
 import architecture.community.projects.DefaultIssue;
 import architecture.community.projects.Issue;
 import architecture.community.projects.IssueNotFoundException;
+import architecture.community.projects.IssueSummary;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.projects.ProjectView;
@@ -216,6 +216,41 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		return issueToUse;
 	}	 
 	
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/issues/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getIssueSummaries(
+			@RequestBody DataSourceRequest dataSourceRequest,
+			NativeWebRequest request) {
+		ItemList items = new ItemList();
+		User currentUser = SecurityHelper.getUser();
+		dataSourceRequest.setUser(currentUser);		
+		int totalSize = projectService.getIssueSummaryCount(dataSourceRequest);
+		if( totalSize > 0) {
+			List<IssueSummary> list = projectService.getIssueSummary(dataSourceRequest);
+			items.setTotalCount(totalSize);
+			items.setItems(list);
+		}		
+		return items;
+	}
+	
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/issues/me/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getMyIssueSummaries(
+			@RequestBody DataSourceRequest dataSourceRequest,
+			NativeWebRequest request) {
+		ItemList items = new ItemList();
+		User currentUser = SecurityHelper.getUser();
+		dataSourceRequest.setUser(currentUser);
+		int totalSize = projectService.getIssueSummaryCount(dataSourceRequest);
+		if( totalSize > 0) {
+			List<IssueSummary> list = projectService.getIssueSummary(dataSourceRequest);
+			items.setTotalCount(totalSize);
+			items.setItems(list);
+		}		
+		return items;
+	}
 	
 	/**
 	 * 프로젝트 이슈 목록
@@ -234,7 +269,6 @@ private Logger log = LoggerFactory.getLogger(getClass());
 				
 		Project project = projectService.getProject(projectId);
 		List<Issue> list ;
-		
 		log.debug("DataSourceRequest: {}", dataSourceRequest );
 		
 		dataSourceRequest.getData().put("objectType", Models.PROJECT.getObjectType());

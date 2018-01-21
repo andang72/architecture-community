@@ -5,7 +5,6 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -63,7 +62,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	private Date creationDate;
 	
 	private Date modifiedDate;
-	
+		
 	public DefaultIssue() {
 		super(-1, -1L);
 		this.issueId = -1L;
