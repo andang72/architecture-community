@@ -483,7 +483,7 @@
 	                             <div class="ibox-content">					                  
 						              <!--Issue ListView-->
 						              <div class="table-responsive">
-						                <table class="table table-bordered u-table--v2">
+						                <table class="table table-bordered u-table--v2 g-mb-0">
 						                  <thead class="text-uppercase g-letter-spacing-1">
 						                    <tr class="g-height-50">
 						                    	 <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">ID</th>	
@@ -500,8 +500,8 @@
 						                  </thead>
 						                  <tbody id="issue-listview" ></tbody>
 						                </table>
-						                <div id="issue-listview-pager" class="g-bg-transparent g-brd-none"></div>
 						              </div>
+						              <div id="issue-listview-pager" class="g-brd-top-none"></div>
 						              <!--End Issue ListView -->
 	                            </div>
                         		</div>
