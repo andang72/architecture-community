@@ -241,7 +241,11 @@
 					model : community.model.Issue
 				}
 			}),
-			template: community.ui.template($("#template").html())
+			template: community.ui.template($("#template").html()),
+			dataBound: function() {
+				if( this.items().length == 0)
+			    		renderTo.html('<tr class="g-height-50"><td colspan="10" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
+			}
 		});	
 		community.ui.pager( $("#issue-listview-pager"), {
             dataSource: listview.dataSource

@@ -250,7 +250,7 @@
 				}),
 				template: community.ui.template($("#template-issue").html()),
 				dataBound: function() {
-					if( this.items.length == 0)
+					if( this.items().length == 0)
 			        		renderTo.html('<tr class="g-height-50"><td colspan="7" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
 			    }
 			});
