@@ -401,11 +401,11 @@
 	                <p class="g-mb-15">지금까지 완료되지 않은 모든 이슈들입니다.</p>
 					<ul class="list-inline">
 			            <li>
-			              	<input type="checkbox" id="eq1" class="k-checkbox" checked="checked:filter2.TILL_THIS_WEEK">
+			              	<input type="checkbox" id="eq1" class="k-checkbox" ata-bind="checked:filter2.TILL_THIS_WEEK">
 			          		<label class="k-checkbox-label" for="eq1">금주에 할일만 포함</label>
 			            </li>
 			            <li>
-			              	<input type="checkbox" id="eq2" class="k-checkbox" checked="checked:filter2.STATUS_ISNULL">
+			              	<input type="checkbox" id="eq2" class="k-checkbox" ata-bind="checked:filter2.STATUS_ISNULL">
 			          		<label class="k-checkbox-label" for="eq2">진행상태가 없는 이슈 포함</label>
 			            </li>
 			        </ul>	                
