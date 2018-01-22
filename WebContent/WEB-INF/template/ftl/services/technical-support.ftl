@@ -344,6 +344,13 @@
                             		</div>   
                             		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">
+								  	<div class="row">
+	                            			<div class="col-sm-12">
+	                            				<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button"  role="button" data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
+	                            				<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
+	                            			</div>
+	                            	  	</div>		                            	
+	                            		<hr class="g-brd-gray-light-v4 my-0">
 	                            		<p class="g-color-red g-mb-15"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다.</p>
 	                            		<div class="row">
 	                            			<div class="col-sm-4 g-mb-15">
@@ -368,14 +375,6 @@
 								  			<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" data-object-id="0" data-bind="click:clearFilters" >초기화</button>
 								  		</div>
 								  	</div>
-								  	<hr class="g-brd-gray-light-v4 my-0">
-								  	
-								  	<div class="row">
-	                            			<div class="col-sm-12">
-	                            				<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button"  role="button" data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
-	                            				<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
-	                            			</div>
-	                            	  	</div>	
 	                            	</div>
 	                            	</#if> 
 	                            	<#if !currentUser.anonymous >                      		                       		
