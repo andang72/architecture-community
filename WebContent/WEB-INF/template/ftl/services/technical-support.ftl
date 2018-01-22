@@ -122,6 +122,7 @@
 					} 			
 				},	
 				serverPaging:false,
+				pageSize : 100,
 				schema: {
 					total: "totalCount",
 					data: "items",
