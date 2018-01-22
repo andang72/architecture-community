@@ -59,7 +59,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		if (template.getUserId() > 0L) {
 			user = getUserInCache(template.getUserId());
 			if (user == null) {
-				log.debug("user {} cache does not exist", user.getUserId() );
+				log.debug("user {} cache does not exist", template.getUserId() );
 				try {
 					user = userDao.getUserById(template.getUserId());
 					updateCaches(user);
