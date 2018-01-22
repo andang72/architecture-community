@@ -40,7 +40,7 @@ public class UserManagerTest {
 	@Test
 	public void testUserDaoByUsername() {
 		try {
-			log.debug("USER" + userManager.getUser("test"));
+			log.debug("USER" + userManager.getUser("king"));
 		} catch (UserNotFoundException e) {
 			log.error("ERROR" , e);
 		}
