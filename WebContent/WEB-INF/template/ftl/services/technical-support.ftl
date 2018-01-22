@@ -357,7 +357,7 @@
 								  	<div class="row">
 	                            			<div class="col-sm-12">
 	                            				<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button"  role="button" data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
-	                            				<button class="btn u-btn-primary g-mr-10 g-mb-15" type="button"  role="button">통계</button>
+	                            				<button class="btn u-btn-outline-purple g-mr-10 g-mb-15" type="button"  role="button">통계</button>
 	                            				<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
 	                            			</div>
 	                            	  	</div>		                            	
