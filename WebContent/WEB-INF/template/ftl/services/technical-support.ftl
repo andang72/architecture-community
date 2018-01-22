@@ -150,7 +150,9 @@
 				$this.dataSource.filter( filters );
 			},
 			filter2 : {
-				ASSIGNEE_TYPE : 1
+				ASSIGNEE_TYPE : 1,
+				TILL_THIS_WEEK : true,
+				STATUS_ISNULL : false
 			},
 			doFilter2 : function(){ 
 				var $this = this , filters = [];
@@ -396,7 +398,17 @@
 	            <div class="col-lg-12 text-center">
 	                <div class="navy-line"></div>
 	                <h1>미완료 이슈</h1>
-	                <p class="g-mb-15">지금까지 종결되지 않는 모든 이슈들입니다.</p>
+	                <p class="g-mb-15">지금까지 완료되지 않은 모든 이슈들입니다.</p>
+					<ul class="list-inline">
+			            <li>
+			              	<input type="checkbox" id="eq1" class="k-checkbox" checked="checked:filter2.TILL_THIS_WEEK">
+			          		<label class="k-checkbox-label" for="eq1">금주에 할일만 포함</label>
+			            </li>
+			            <li>
+			              	<input type="checkbox" id="eq2" class="k-checkbox" checked="checked:filter2.STATUS_ISNULL">
+			          		<label class="k-checkbox-label" for="eq2">진행상태가 없는 이슈 포함</label>
+			            </li>
+			        </ul>	                
 					<div class="btn-group" data-toggle="buttons">
 					  <label class="btn btn-primary">
 					    <input type="radio" name="issueAssigneeFilter" value="0" autocomplete="off"  data-bind="checked:filter2.ASSIGNEE_TYPE">전체
