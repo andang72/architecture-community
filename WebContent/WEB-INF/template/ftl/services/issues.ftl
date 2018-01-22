@@ -106,6 +106,7 @@
 			projectId : __projectId,
 			project : new community.model.Project(),
 			projectPeriod : "",
+			enabled : false,
 			totalIssueCount : 0,
 			errorIssueCount: 0,
 			closeIssueCount: 0,
@@ -117,23 +118,26 @@
 			},
 			loadProjectInfo : function( ){
 				var $this = this;
-				community.ui.ajax('/data/api/v1/projects/'+ observable.get('projectId') +'/info.json/', {
-					success: function(data){		
-						$this.set('project', new community.model.Project(data) );		
-						$this.set('projecPeriod' , community.data.getFormattedDate( $this.project.startDate , 'yyyy-MM-dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy-MM-dd' ) );
-						$.each($this.project.issueTypeStats.items , function (index, item ){
-							if( item.name == 'TOTAL' )
-								$this.set('totalIssueCount', item.value );
-							else if ( item.name == '001' )
-								$this.set('errorIssueCount', item.value );	
-						});
-						$.each($this.project.resolutionStats.items , function (index, item ){
-							if( item.name == 'TOTAL' )
-								$this.set('closeIssueCount', item.value );
-						});
-						$this.set('openIssueCount', $this.get('totalIssueCount') - $this.get('closeIssueCount') );
-					}	
-				});
+				if( observable.get('projectId') > 0 ){ 
+					community.ui.ajax('/data/api/v1/projects/'+ observable.get('projectId') +'/info.json/', {
+						success: function(data){		
+							$this.set('project', new community.model.Project(data) );		
+							$this.set('projecPeriod' , community.data.getFormattedDate( $this.project.startDate , 'yyyy-MM-dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy-MM-dd' ) );
+							$.each($this.project.issueTypeStats.items , function (index, item ){
+								if( item.name == 'TOTAL' )
+									$this.set('totalIssueCount', item.value );
+								else if ( item.name == '001' )
+									$this.set('errorIssueCount', item.value );	
+							});
+							$.each($this.project.resolutionStats.items , function (index, item ){
+								if( item.name == 'TOTAL' )
+									$this.set('closeIssueCount', item.value );
+							});
+							$this.set('openIssueCount', $this.get('totalIssueCount') - $this.get('closeIssueCount') );
+							$this.set('enabled', true);
+						}	
+					});
+				}
 			},
 			search : function(){
 				community.ui.listview( $('#issue-listview') ).dataSource.read();
@@ -151,6 +155,7 @@
 			resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
 			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} )			
     		});
+    		
 		observable.loadProjectInfo();
 		createIssueListView(observable);		
 		var renderTo = $('#page-top');
@@ -469,8 +474,8 @@
 	                            					<input data-role="datepicker" style="width: 100%" data-bind="value:filter.END_DATE" placeholder="종료일">
 	                            				</div>
 	                            				<div class="col-sm-4 g-mb-15 text-center">
-												<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:search ">검색</button>
-												<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
+												<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:search, visible:enabled}">검색</button>
+												<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="visible:enabled">기술지원요청하기</a>
 	                            				</div>
 	                            		</div>
 								</div>
