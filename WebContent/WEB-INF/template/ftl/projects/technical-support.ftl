@@ -111,7 +111,7 @@
     		});
     		
     		var renderTo = $('#project-listview');	    		
-			community.ui.listview( renderTo , {
+		community.ui.listview( renderTo , {
 			dataSource: observable.dataSource,
 			template: community.ui.template($("#template").html())
 		}); 
