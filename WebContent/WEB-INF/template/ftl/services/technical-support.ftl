@@ -184,7 +184,7 @@
 				community.ui.send("<@spring.url "/display/pages/issues.html" />", { 'projectId': objectId });
 				return;	
 			}else if( actionType == 'view2'){
-				community.ui.send("<@spring.url "/display/pages/issue.html" />", { 'issueId': objectId });
+				community.ui.send("<@spring.url "/display/pages/issue.html" />", { 'issueId': objectId , url : "${__page.name}"});
 				return;	
 			}
 			else if ( actionType == 'create' && !isDeveloper() ){

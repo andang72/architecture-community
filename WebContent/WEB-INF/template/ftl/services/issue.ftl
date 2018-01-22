@@ -40,6 +40,8 @@
 	
 	var __issueId = <#if RequestParameters.issueId?? >${RequestParameters.issueId}<#else>0</#if>;
 	var __projectId = <#if RequestParameters.projectId?? >${RequestParameters.projectId}<#else>0</#if>;
+	var __back_page = <#if RequestParameters.url?? >'${RequestParameters.url}'<#else>''</#if>;
+	
 	
 	require.config({
 		shim : {
@@ -169,9 +171,14 @@
 			},
 			back : function(){
 				var $this = this;
-				community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: $this.project.projectId });
-				return false;
+				//community.ui.send("<@spring.url "/display/pages/" />" + __page , { projectId: $this.project.projectId });				
 				//window.history.back();
+				if( __back_page != null && __back_page.length > 0 ){
+					community.ui.send("<@spring.url "/display/pages/" />" + __back_page , { projectId: $this.project.projectId });
+				}else{
+					community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: $this.project.projectId });
+				}
+				return false;
 			},
 			cancle : function(e){
 				var $this = this;
