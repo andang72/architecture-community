@@ -135,6 +135,7 @@
 							});
 							$this.set('openIssueCount', $this.get('totalIssueCount') - $this.get('closeIssueCount') );
 							$this.set('enabled', true);
+							createIssueListView($this);
 						}	
 					});
 				}
@@ -157,7 +158,7 @@
     		});
     		
 		observable.loadProjectInfo();
-		createIssueListView(observable);		
+
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	
