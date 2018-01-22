@@ -116,6 +116,7 @@
 			repoterAvatarSrc : "/images/no-avatar.png",
 			assigneeAvatarSrc : "/images/no-avatar.png",
 			formatedCreationDate : "",
+			formatedModifiedDate: "",
 		 	editable : false,
 		 	editMode : false,
 		 	editModeForAssignee : false,
@@ -125,6 +126,7 @@
 			isClosed : false,		 
 			isAssigned : false,	
 			isNewAndSaved : false,
+			isHurry : false,
 			assignMe : function(){
 				var $this = this;
 				$this.set( 'issue.assignee', $this.currentUser );				
@@ -247,9 +249,16 @@
 			refreshAdditionalInfo(){
 				var $this = this;		
 				if(  $this.issue.issueId > 0 ){ 	
+					$this.set('isAssigned', false);
+					if ($this.issue.status != '005' && new Date() >= $this.issue.dueDate )
+					{
+						$this.set('isHurry', true);
+					}
 					$this.set('formatedCreationDate' , community.data.getFormattedDate( $this.issue.creationDate) );
+					$this.set('formatedModifiedDate' , community.data.getFormattedDate( $this.issue.modifiedDate) );
 				}else{
 					$this.set('formatedCreationDate', "");
+					$this.set('formatedModifiedDate', "");
 				}
 				if( $this.issue.repoter != null && $this.issue.repoter.userId > 0){
 					$this.set('repoterAvatarSrc',  community.data.getUserProfileImage( $this.issue.repoter ) );
@@ -262,11 +271,11 @@
 				}else{	
 					$this.set('assigneeAvatarSrc',  "/images/no-avatar.png" );
 				} 					
-				if($this.issue.status == '001' || $this.issue.status == '002' || $this.issue.status == '003' || $this.issue.status == '004' ){
-			 		$this.set('isOpen', true);
-			 	}else if($this.issue.status == '005' ){
+				if($this.issue.status == '005' ){
 			 		$this.set('isClosed', true);
-			 	}											
+			 	}else{
+			 		$this.set('isOpen', true);
+			 	}									
 			},
 			setSource : function( data ){
 			 	var $this = this;
@@ -278,7 +287,7 @@
 				$this.set('isNewAndSaved', false );
 				$this.set('editable', false );	
 				$this.set('isAssigned', false);
-				
+				$this.set('isHurry', false);
 				$this.refreshAdditionalInfo();
 				if(  $this.issue.issueId > 0 ){ 		
 					$this.set('editable', true );
@@ -669,7 +678,8 @@
 									</a>
 									<div class="text-right">
 										<i class="icon-svg icon-svg-sm icon-svg-dusk-close-sign" data-bind="visible:isClosed" style="display: none;"></i>
-										<i class="icon-svg icon-svg-sm icon-svg-dusk-open-sign" data-bind="visible:isOpen" style="display: none;"></i>									
+										<i class="icon-svg icon-svg-sm icon-svg-dusk-open-sign" data-bind="visible:isOpen" style="display: none;"></i>		
+										<i class="icon-svg icon-svg-sm icon-svg-dusk-warn" data-bind="visible:isHurry" style="display: none;"></i>									
 									</div>
                             		</div>	                            
                         		</div>
@@ -814,7 +824,7 @@
 									<div class="u-heading-v1-4 g-bg-main g-brd-gray-light-v2 g-mb-20">
 					                      <h2 class="h3 u-heading-v1__title g-mt-0 g-font-size-20">활동</h2>
 									</div>
-									<div class="tabs-container">
+									<div class="tabs-container g-brd-grayblue">
 										<ul class="nav nav-tabs">
 											<li><a data-toggle="tab" href="#editor-options-tab-1" aria-expanded="false" data-kind="comments">댓글</a></li>
 											<li><a data-toggle="tab" href="#editor-options-tab-2" aria-expanded="false" data-kind="properties">속성</a></li>
@@ -822,12 +832,14 @@
 										<div class="tab-content">
 											<div id="editor-options-tab-1" class="tab-pane active">
 												<div class="panel-body">
-												<a href="#!" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15 pull-right" data-kind="comment" data-action="create" data-target="#issue-comment-listview"  data-object-id="0" data-parent-comment-id="0" >
+												<div class="text-right g-brd-grayblue g-brd-1 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-mb-15">
+												<a href="#!" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-kind="comment" data-action="create" data-target="#issue-comment-listview"  data-object-id="0" data-parent-comment-id="0" >
 								                    	<span class="">
 								                      <i class="icon-bubble g-mr-3"></i>
 								                      댓글쓰기
 								                    </span>
 								                </a>
+												</div>
 												<div id="issue-comment-listview" class="no-border" style="min-height:50px;"></div></div>
 											</div>
 											<div id="editor-options-tab-2" class="tab-pane">
@@ -844,6 +856,12 @@
 							<div class="g-pl-20--lg">
 								<!-- Buttons  -->
 								<div class="g-mb-50">
+									<p data-bind="invisible:isNew" class="g-font-size-17">
+									생성일 : <span class="g-color-gray-dark-v4 " data-bind="text: formatedCreationDate"></span>  
+									</p>	  
+									<p data-bind="invisible:isNew" class="g-font-size-17">
+									마지막 수정일 : <span class="g-color-gray-dark-v4" data-bind="text: formatedModifiedDate"></span>  
+									</p>	   
 									<h3 class="h5 g-color-black g-font-weight-600 mb-4"></h3>
 									<button class="btn u-btn-outline-blue g-mr-10 g-mb-15" type="button" role="button" data-bind="click:edit, visible:editable, invisible:editMode" style="display:none;">수정</button>
 									<button class="btn u-btn-outline-blue g-mr-10 g-mb-15" type="button" role="button" data-bind="click:saveOrUpdate, visible:editMode" style="display:none;">저장</button>
@@ -857,13 +875,10 @@
 									<div class="media g-mb-25">
                   						<img data-bind="attr:{ src: assigneeAvatarSrc  }"  width="64" height="64" src="/images/no-avatar.png" class="d-flex g-width-40 g-height-40 rounded-circle mr-2" alt="image">
 										<div class="media-body">
-						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.assignee.name"></span></h4>
-						                    <span class="d-block g-color-gray-dark-v4 g-font-size-12" data-bind="text: formatedCreationDate"></span>                    
+						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.assignee.name"></span></h4>						                                 
 										</div>
-										
 										<span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>
 										<button class="btn btn-xs u-btn-outline-blue g-mb-15 g-mr-10 " type="button" role="button" data-bind="click: assignMe, visible:isDeveloper, invisible:isAssigned">나를 담당자로 지정합니다.</button>
-										
 										<input data-role="combobox"
 				                   		 data-placeholder="담당자 이름을 입력하세요."
 										 data-filter="contains"
@@ -887,9 +902,8 @@
                   						<img data-bind="attr:{ src: repoterAvatarSrc  }"  width="64" height="64" src="/images/no-avatar.png" class="d-flex g-width-40 g-height-40 rounded-circle mr-2" alt="image">
 										<div class="media-body">
 						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.repoter.name"></span></h4>
-						                    <span class="d-block g-color-gray-dark-v4 g-font-size-12" data-bind="text:formatedCreationDate"></span>                    
+						                    <span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>             
 										</div>
-										<span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>
 										<input data-role="combobox"
 				                   		 data-placeholder="리포터 이름을 입력하세요."
 										 data-filter="contains" 

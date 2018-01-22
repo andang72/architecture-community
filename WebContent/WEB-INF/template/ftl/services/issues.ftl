@@ -513,7 +513,8 @@
                       ISSUE-#: issueId # 	
                       </td>
                       <td class="align-middle">
-                     <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
+                      # if ( status != '005' && new Date() >= dueDate ) {# <i class="fa fa-exclamation-triangle g-color-red" aria-hidden="true"></i> #} else { #  # } # 
+                      <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
                       </td>
                       <td class="align-middle">#: issueTypeName #</td>
                       <td class="align-middle">#: priorityName #</td>

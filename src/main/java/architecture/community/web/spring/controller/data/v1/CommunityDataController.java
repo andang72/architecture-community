@@ -2,8 +2,11 @@ package architecture.community.web.spring.controller.data.v1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -216,6 +219,13 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		return issueToUse;
 	}	 
 	
+	
+	/**
+	 * STATUS_ISNULL, TILL_THIS_WEEK 
+	 * @param dataSourceRequest
+	 * @param request
+	 * @return
+	 */
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/issues/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
@@ -224,6 +234,11 @@ private Logger log = LoggerFactory.getLogger(getClass());
 			NativeWebRequest request) {
 		ItemList items = new ItemList();
 		User currentUser = SecurityHelper.getUser();
+		if( dataSourceRequest.getDataAsBoolean("TILL_THIS_WEEK", false) ) {
+			dataSourceRequest.getData().put("TILL_THIS_WEEK", getThisSaturday());
+		}{
+			dataSourceRequest.getData().put("TILL_THIS_WEEK", null);
+		}
 		dataSourceRequest.setUser(currentUser);		
 		int totalSize = projectService.getIssueSummaryCount(dataSourceRequest);
 		if( totalSize > 0) {
@@ -232,6 +247,14 @@ private Logger log = LoggerFactory.getLogger(getClass());
 			items.setItems(list);
 		}		
 		return items;
+	}
+	
+	private String getThisSaturday() {
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY );
+		Date sat = c.getTime();	
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+		return formatter.format(sat);
 	}
 	
 	@Secured({ "ROLE_USER" })

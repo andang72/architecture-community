@@ -103,12 +103,15 @@
 		T1.OBJECT_TYPE = 19
 		AND T1.OBJECT_ID = T2.PROJECT_ID
  	]]><dynamic><![CDATA[    	
- 	<#if filter??>
- 	<#list filter.filters as item >
- 		<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE is null </#if>
- 		<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
- 	</#list>
- 	</#if> 	
+ 	<#if TILL_THIS_WEEK??> AND ( to_char( T1.DUE_DATE, 'yyyyMMdd') <= '${TILL_THIS_WEEK}' or ( T1.DUE_DATE is null AND to_char( T1.CREATION_DATE, 'yyyyMMdd') <= '${TILL_THIS_WEEK}' ) )</#if>
+ 	<#if filter??><#list filter.filters as item >
+ 	<#if item.filters?has_content >
+ 	${item.logic} ( 	<#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
+ 	<#else>
+	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE is null </#if>
+ 	<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
+ 	</#if>
+ 	</#list></#if>
  	 ]]></dynamic></sql-query>		
 
  	<sql-query name="SELECT_ISSUE_SUMMARY_BY_REQUEST" description="SELECT_ISSUE_SUMMARY_BY_REQUEST"><![CDATA[    	
@@ -132,12 +135,15 @@
 		T1.OBJECT_TYPE = 19
 		AND T1.OBJECT_ID = T2.PROJECT_ID
  	]]><dynamic><![CDATA[ 
- 	<#if filter??>
- 	<#list filter.filters as item >
- 		<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE is null </#if>
- 		<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
- 	</#list>
+ 	<#if TILL_THIS_WEEK??>AND ( to_char( T1.DUE_DATE, 'yyyyMMdd') <= '${TILL_THIS_WEEK}' or ( T1.DUE_DATE is null AND to_char( T1.CREATION_DATE, 'yyyyMMdd') <= '${TILL_THIS_WEEK}' ) )</#if>
+ 	<#if filter??><#list filter.filters as item >
+ 	<#if item.filters?has_content >
+ 	${item.logic} ( 	<#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
+ 	<#else>
+	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE is null </#if>
+ 	<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
  	</#if>
+ 	</#list></#if>
  	ORDER BY T1.OBJECT_ID, T1.ISSUE_ID, T1.ISSUE_TYPE 	
  	 ]]></dynamic></sql-query>	        
 	<!--  ====================================  -->

@@ -59,6 +59,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		if (template.getUserId() > 0L) {
 			user = getUserInCache(template.getUserId());
 			if (user == null) {
+				log.debug("user {} cache does not exist", user.getUserId() );
 				try {
 					user = userDao.getUserById(template.getUserId());
 					updateCaches(user);
@@ -177,10 +178,17 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 
 	protected void updateCaches(User user) {
 		if (user != null) {
+			log.debug("update cahce {}, {}", user.getUserId(), user.getUsername());
 			if (user.getUserId() > 0 && StringUtils.isNullOrEmpty(user.getUsername())) {
-				userIdCache.remove(user.getUsername());
+				
+				if(userIdCache.get(user.getUsername()) != null)
+					userIdCache.remove(user.getUsername());
+				
 				userIdCache.put(new Element(user.getUsername(), user.getUserId()));
-				userCache.remove(user.getUserId());
+				
+				if(userCache.get(user.getUserId()) != null)
+					userCache.remove(user.getUserId());				
+				
 				userCache.put(new Element(user.getUserId(), user));
 
 			}

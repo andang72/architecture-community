@@ -150,15 +150,20 @@
 				$this.dataSource.filter( filters );
 			},
 			filter2 : {
-				ASSIGNEE_TYPE : 1,
+				ASSIGNEE_TYPE : "1",
 				TILL_THIS_WEEK : true,
 				STATUS_ISNULL : false
 			},
 			doFilter2 : function(){ 
 				var $this = this , filters = [];
-				filters.push({ field: "ISSUE_STATUS", operator: "neq", value: "005" ,logic: "AND" });
+				if( observable.filter2.STATUS_ISNULL ){
+					filters.push({ logic: "AND" , filters:[{ field: "ISSUE_STATUS", operator: "neq", value: "005" },{field: "ISSUE_STATUS", operator: "eq", logic: "OR" } ] } );
+				}else{
+					filters.push({ logic: "AND" , filters:[{ field: "ISSUE_STATUS", operator: "neq", value: "005" }]});
+				}				
 				filters.push({ field: "assigneeType", operator: "eq", value: $this.filter2.ASSIGNEE_TYPE, logic: "AND" });
 				community.ui.listview($('#issue-listview')).dataSource.filter( filters );
+				return false;
 			},
 			showAllOpenIssue: function(e){
 				$('html, body').stop().animate({ scrollTop: $("#worklist").offset().top - 50 }, 500);
@@ -227,13 +232,15 @@
 					transport:{
 						read:{ contentType: "application/json; charset=utf-8" },
 						parameterMap: function (options, operation){	
+							options.data = options.data || {} ;
+							options.data.TILL_THIS_WEEK = observable.filter2.TILL_THIS_WEEK;
 							return community.ui.stringify(options);
 						} 			
 					},	
 					serverFiltering: true,
 					serverPaging: true,		
-					filter: { logic: "and", filters: [ 
-						{ field: "ISSUE_STATUS", operator: "neq", value: "005" ,logic: "AND" },
+					filter: { filters: [
+						{ field: "ISSUE_STATUS", operator: "neq", value: "005",logic: "AND" },
 						{ field: "assigneeType", operator: "eq", value: "1",logic: "AND" } 
 					] },	
 					schema: {
@@ -401,12 +408,15 @@
 	                <p class="g-mb-15">지금까지 완료되지 않은 모든 이슈들입니다.</p>
 					<ul class="list-inline">
 			            <li>
-			              	<input type="checkbox" id="eq1" class="k-checkbox" ata-bind="checked:filter2.TILL_THIS_WEEK">
+			              	<input type="checkbox" id="eq1" class="k-checkbox" data-bind="checked: filter2.TILL_THIS_WEEK" checked>
 			          		<label class="k-checkbox-label" for="eq1">금주에 할일만 포함</label>
 			            </li>
 			            <li>
-			              	<input type="checkbox" id="eq2" class="k-checkbox" ata-bind="checked:filter2.STATUS_ISNULL">
+			              	<input type="checkbox" id="eq2" class="k-checkbox" data-bind="checked: filter2.STATUS_ISNULL" >
 			          		<label class="k-checkbox-label" for="eq2">진행상태가 없는 이슈 포함</label>
+			            </li>
+			            <li>
+			            		<a class="btn btn-sm u-btn-outline-bluegray g-ml-25 g-mr-10 g-mb-5" href="#" role="button" data-bind="click:doFilter2">새로고침</a>
 			            </li>
 			        </ul>	                
 					<div class="btn-group" data-toggle="buttons">
@@ -480,11 +490,9 @@
 					<div class="col-md-9">
 						<div class="forum-icon">
  							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support #if ( new Date() > endDate ) {#g-opacity-0_3#}#"></i>
-						</div>
-						
+						</div>						
 						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="\\#" data-action="view" data-object-id="#=projectId#" data-kind="project" class="btn-link"> #:name# </a></h4>						
 						<div class="g-ml-60 g-mb-5 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
-						
 						#if( isDeveloper() ){ #
 						<div class="g-ml-60 g-mb-5"> 유지보수비용(월) : #: kendo.toString( maintenanceCost, 'c')  #</div>						
 						<div class="g-ml-60 g-mb-5 text-muted">#if(summary != null ){# #:summary # #}#</div>

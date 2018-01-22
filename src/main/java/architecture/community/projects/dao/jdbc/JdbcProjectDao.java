@@ -381,6 +381,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		Map<String, Object> additionalParameter = new HashMap<String, Object>();
 		additionalParameter.put("filter", dataSourceRequest.getFilter());
 		additionalParameter.put("sort", dataSourceRequest.getSort());		
+		additionalParameter.put("data", dataSourceRequest.getData());		
 		additionalParameter.put("user", dataSourceRequest.getUser());		
 		return additionalParameter;
 	}
