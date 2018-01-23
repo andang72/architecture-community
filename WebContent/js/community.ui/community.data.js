@@ -247,8 +247,7 @@
 			bodyType:{ type: "string", defaultValue: "FREEMARKER" },
 			pageId: { type: "number", defaultValue: 0 }	
 		}
-	});	
-	
+	});	 
 	
 	community.model.Page = Model.define({ 		
 		id: "pageId",
@@ -295,8 +294,7 @@
 		    	if( typeof this.get("user") === 'object' )
 		    		target.set("user", this.get("user") );
 		    	if( typeof this.get("bodyContent") === 'object' )
-		    		target.set("bodyContent", this.get("bodyContent") );
-		    	
+		    		target.set("bodyContent", this.get("bodyContent") ); 
 		}
 	});
 	
@@ -326,8 +324,7 @@
 		}
 	});	
 	
-	community.model.Issue = Model.define({ 		
-		
+	community.model.Issue = Model.define({  
 		id: "issueId",
 		fields: { 	
 			issueId: { type: "number", defaultValue: -1 },	
@@ -390,14 +387,12 @@
 	
 	function getAttachmentThumbnailUrl ( attachment , thumbnail ){	
 		if( attachment.attachmentId > 0 ){
-			var _photoUrl = '/download/files/' + attachment.attachmentId + '/' + attachment.name  ;	
-			
+			var _photoUrl = '/download/files/' + attachment.attachmentId + '/' + attachment.name  ; 
 			if( thumbnail ){
 				_photoUrl = _photoUrl + '?thumbnail=true&height=120&width=120&time=' + kendo.guid() ;
 			}else{
 				_photoUrl = _photoUrl + '?time=' + kendo.guid() ;
-			}
-			
+			} 
 			return encodeURI( _photoUrl );
 		}
 		return "/images/no-image.jpg";
@@ -421,8 +416,7 @@
 		if( typeof(date) == 'string')			
 			return kendo.toString(new Date( date ) , format);
 		return kendo.toString(date, format);
-    }
-	
+    } 
 	
 	function bytesToSize(bytes) {
 		var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];

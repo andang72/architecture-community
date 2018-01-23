@@ -2,11 +2,8 @@ package architecture.community.web.spring.controller.data.v1;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,13 +50,6 @@ import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.model.Models;
-import architecture.community.projects.DefaultIssue;
-import architecture.community.projects.Issue;
-import architecture.community.projects.IssueNotFoundException;
-import architecture.community.projects.IssueSummary;
-import architecture.community.projects.Project;
-import architecture.community.projects.ProjectService;
-import architecture.community.projects.ProjectView;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
@@ -73,7 +63,7 @@ import architecture.ee.util.StringUtils;
 @RequestMapping("/data/api/v1")
 public class CommunityDataController extends AbstractCommunityDateController {
 
-private Logger log = LoggerFactory.getLogger(getClass());	
+	private Logger log = LoggerFactory.getLogger(getClass());	
 	
 	@Inject
 	@Qualifier("boardService")
@@ -95,11 +85,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@Inject
 	@Qualifier("communityAclService")
 	private JdbcCommunityAclService communityAclService;
-	
-	@Inject
-	@Qualifier("projectService")
-	private ProjectService projectService;
-		
+
 	@Inject
 	@Qualifier("codeSetService")
 	private CodeSetService codeSetService;
@@ -130,424 +116,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		}
 		return codes ;
 	}
-	
-	/**
-	 * PROJECT & ISSUE API 
-	******************************************/
-	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET})
-	@ResponseBody
-	public ItemList getProjects (@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {			
-		
-		List<Project> list = projectService.getProjects();
-		List<ProjectView> list2 = new ArrayList<ProjectView> ();		
-		
-		for( Project project : list)
-		{	
-			ProjectView v = getProjectView(communityAclService, project);
-			v.setIssueTypeStats(projectService.getIssueTypeStats(project));
-			v.setResolutionStats(projectService.getIssueResolutionStats(project));
-			if(v.isReadable())
-				list2.add(v);
-		}
-		return new ItemList(list2, list2.size());
-	}
-	
-	/**
-	 * 프로젝트 정보 리턴 
-	 * @param request
-	 * @return
-	 * @throws BoardNotFoundException 
-	 */
-	@RequestMapping(value = { "/projects/{projectId:[\\p{Digit}]+}/info.json",  "/projects/{projectId:[\\p{Digit}]+}/get.json" }, method = { RequestMethod.POST, RequestMethod.GET})
-	@ResponseBody
-	public ProjectView getProject (@PathVariable Long projectId, NativeWebRequest request) throws NotFoundException {	
-		Project project = projectService.getProject(projectId);
-		ProjectView v = getProjectView(communityAclService, project);
-		v.setIssueTypeStats(projectService.getIssueTypeStats(project));
-		v.setResolutionStats(projectService.getIssueResolutionStats(project));
-		return v;
-	}
-	 
-	@Secured({ "ROLE_USER" })
-	@RequestMapping(value = "/issues/save-or-update.json", method = { RequestMethod.POST })
-	@ResponseBody
-	public Issue saveOrUpdateIssue(@RequestBody DefaultIssue newIssue, NativeWebRequest request) throws NotFoundException {
 
-		User user = SecurityHelper.getUser();
-		
-		log.debug("ISSUE : " + newIssue.toString() );
-		Issue issueToUse ;
-		if ( newIssue.getIssueId() > 0) {
-			issueToUse = projectService.getIssue(newIssue.getIssueId());
-		}else {
-			issueToUse = projectService.createIssue(newIssue.getObjectType(), newIssue.getObjectId(), user );
-		}		
-		if( newIssue.getAssignee() != null && newIssue.getAssignee().getUserId() > 0	) {			
-			if( issueToUse.getAssignee() != null && issueToUse.getAssignee().getUserId()  > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
-				issueToUse.setAssignee(newIssue.getAssignee());
-			}
-			if( issueToUse.getAssignee() == null ) {
-				issueToUse.setAssignee(newIssue.getAssignee());
-			}
-		}	
-		if( newIssue.getRepoter() != null && newIssue.getRepoter().getUserId() > 0	) {			
-			if( issueToUse.getRepoter() != null && issueToUse.getRepoter().getUserId()  > 0 && issueToUse.getRepoter().getUserId() != newIssue.getRepoter().getUserId() ) {
-				issueToUse.setRepoter(newIssue.getAssignee());
-			}
-			if( issueToUse.getRepoter() == null ) {
-				issueToUse.setRepoter(newIssue.getRepoter());
-			}
-		}
-
-		if( newIssue.getDueDate() != null && newIssue.getDueDate() != issueToUse.getDueDate() ) {
-			issueToUse.setDueDate(newIssue.getDueDate());
-		}
-		if( newIssue.getResolutionDate() != null && newIssue.getResolutionDate() != issueToUse.getResolutionDate() ) {
-			issueToUse.setResolutionDate(newIssue.getResolutionDate());
-		}
-		log.debug("{} compare with saved : {}", newIssue.getResolutionDate(), newIssue.getResolutionDate() != issueToUse.getResolutionDate());
-		issueToUse.setComponent(newIssue.getComponent());
-		issueToUse.setSummary(newIssue.getSummary());
-		issueToUse.setDescription(newIssue.getDescription());
-		issueToUse.setIssueType(newIssue.getIssueType());
-		issueToUse.setStatus(newIssue.getStatus());
-		issueToUse.setResolution(newIssue.getResolution());
-		issueToUse.setPriority(newIssue.getPriority());
-		
-		projectService.saveOrUpdateIssue(newIssue);
-		
-		return issueToUse;
-	}	 
-	
-	
-	/**
-	 * STATUS_ISNULL, TILL_THIS_WEEK 
-	 * @param dataSourceRequest
-	 * @param request
-	 * @return
-	 */
-	@Secured({ "ROLE_USER" })
-	@RequestMapping(value = "/issues/list.json", method = { RequestMethod.POST, RequestMethod.GET})
-	@ResponseBody
-	public ItemList getIssueSummaries(
-			@RequestBody DataSourceRequest dataSourceRequest,
-			NativeWebRequest request) {
-		ItemList items = new ItemList();
-		User currentUser = SecurityHelper.getUser();
-		if( dataSourceRequest.getDataAsBoolean("TILL_THIS_WEEK", false) ) {
-			dataSourceRequest.getData().put("TILL_THIS_WEEK", getThisSaturday());
-		}{
-			dataSourceRequest.getData().put("TILL_THIS_WEEK", null);
-		}
-		dataSourceRequest.setUser(currentUser);		
-		int totalSize = projectService.getIssueSummaryCount(dataSourceRequest);
-		if( totalSize > 0) {
-			List<IssueSummary> list = projectService.getIssueSummary(dataSourceRequest);
-			items.setTotalCount(totalSize);
-			items.setItems(list);
-		}		
-		return items;
-	}
-	
-	private String getThisSaturday() {
-		Calendar c = Calendar.getInstance();
-		c.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY );
-		Date sat = c.getTime();	
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-		return formatter.format(sat);
-	}
-	
-	@Secured({ "ROLE_USER" })
-	@RequestMapping(value = "/issues/me/list.json", method = { RequestMethod.POST, RequestMethod.GET})
-	@ResponseBody
-	public ItemList getMyIssueSummaries(
-			@RequestBody DataSourceRequest dataSourceRequest,
-			NativeWebRequest request) {
-		ItemList items = new ItemList();
-		User currentUser = SecurityHelper.getUser();
-		dataSourceRequest.setUser(currentUser);
-		int totalSize = projectService.getIssueSummaryCount(dataSourceRequest);
-		if( totalSize > 0) {
-			List<IssueSummary> list = projectService.getIssueSummary(dataSourceRequest);
-			items.setTotalCount(totalSize);
-			items.setItems(list);
-		}		
-		return items;
-	}
-	
-	/**
-	 * 프로젝트 이슈 목록
-	 * /data/boards/{boardId}/threads/list.json
-	 * 
-	 * @param boardId
-	 * @param request
-	 * @return
-	 * @throws BoardNotFoundException
-	 */
-	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/issues/list.json", method = { RequestMethod.POST, RequestMethod.GET})
-	@ResponseBody
-	public ItemList getProjectIssues (@PathVariable Long projectId, 
-			@RequestBody DataSourceRequest dataSourceRequest,
-			NativeWebRequest request) throws NotFoundException {	
-				
-		Project project = projectService.getProject(projectId);
-		List<Issue> list ;
-		log.debug("DataSourceRequest: {}", dataSourceRequest );
-		
-		dataSourceRequest.getData().put("objectType", Models.PROJECT.getObjectType());
-		dataSourceRequest.getData().put("objectId", project.getProjectId());
-		
-		int totalSize = projectService.getIssueCount(dataSourceRequest);
-		if( totalSize > 0) {
-			list = projectService.getIssues(dataSourceRequest);
-		}else {
-			list = Collections.EMPTY_LIST;
-		}
-		return new ItemList(list, totalSize);
-	}
-	
-	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/get-with-project.json", method = { RequestMethod.POST, RequestMethod.GET})
-	@ResponseBody
-	public IssueWithProject getIssueWithProject(@PathVariable Long issueId, NativeWebRequest request) throws NotFoundException{
-		if( issueId <= 0)
-			throw new IssueNotFoundException();
-		
-		Issue issueToUse = projectService.getIssue(issueId);
-		Project projectToUse = projectService.getProject(issueToUse.getObjectId());
-		return new IssueWithProject(projectToUse, issueToUse);
-		
-	}
-
-	public static class IssueWithProject {
-		private Issue issue ;
-		private Project project;
-		
-		public IssueWithProject(Project project, Issue issue) {
-			this.project = project;
-			this.issue = issue;
-		}
-		public Issue getIssue() {
-			return issue;
-		}
-		public void setIssue(Issue issue) {
-			this.issue = issue;
-		}
-		public Project getProject() {
-			return project;
-		}
-		public void setProject(Project project) {
-			this.project = project;
-		}
-		
-	}
-
-	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/attachments/list.json", method = RequestMethod.POST)
-	@ResponseBody
-	public ItemList getIssueAttachmentList(@PathVariable Long issueId, NativeWebRequest request) throws NotFoundException {
-		ItemList list = new ItemList();
-		if (issueId < 1) {
-			return list;
-		}
-		Issue issueToUse = projectService.getIssue(issueId);
-		List<Attachment> attachments = attachmentService.getAttachments(Models.ISSUE.getObjectType(), issueToUse.getIssueId());
-		list.setItems(attachments);
-		list.setTotalCount(attachments.size());
-		return list;
-
-	}
-
-	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/attachments/{attachmentId:[\\p{Digit}]+}/{filename:.+}", method = { RequestMethod.GET, RequestMethod.POST })
-	public void downloadIssueAttachement(
-			@PathVariable Long issueId, 
-			@PathVariable("attachmentId") Long attachmentId,
-			@PathVariable("filename") String filename,
-			@RequestParam(value = "thumbnail", defaultValue = "false", required = false) boolean thumbnail,
-			@RequestParam(value = "width", defaultValue = "150", required = false) Integer width,
-			@RequestParam(value = "height", defaultValue = "150", required = false) Integer height,
-			HttpServletResponse response) throws NotFoundException, IOException {
-		
-		if (issueId > 0 && attachmentId > 0 && !StringUtils.isNullOrEmpty(filename)) {
-			
-			Issue issueToUse = projectService.getIssue(issueId);
-			Attachment attachment = attachmentService.getAttachment(attachmentId);
-			
-			if( thumbnail )
-			{
-				if( attachmentService.hasThumbnail(attachment) ){
-					ThumbnailImage thumbnailImage = new ThumbnailImage();
-					thumbnailImage.setWidth(width);
-					thumbnailImage.setHeight(height);
-					
-					InputStream input = attachmentService.getAttachmentThumbnailInputStream(attachment, thumbnailImage );
-					response.setContentType(thumbnailImage.getContentType());
-				    response.setContentLength((int)thumbnailImage.getSize());
-				    IOUtils.copy(input, response.getOutputStream());
-				    response.flushBuffer();
-				}else{
-				    response.setStatus(301);
-				    String url ="/images/no-image.jpg" ;
-				    response.addHeader("Location", url);
-				}
-			} else {
-				InputStream input = attachmentService.getAttachmentInputStream(attachment);
-				response.setContentType(attachment.getContentType());
-				response.setContentLength(attachment.getSize());
-				IOUtils.copy(input, response.getOutputStream());
-				response.setHeader("contentDisposition", "attachment;filename=" + getEncodedFileName(attachment));
-				response.flushBuffer();					
-			}
-		}		
-		throw new NotFoundException();
-	}
-	
-
-	@Secured({ "ROLE_USER" })
-	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/attachments/upload.json", method = RequestMethod.POST)
-	@ResponseBody
-	public List<Attachment> uploadIssueAttachement(@PathVariable Long issueId, MultipartHttpServletRequest request)
-			throws NotFoundException, UnAuthorizedException, IOException {
-
-		User currentUser = SecurityHelper.getUser();
-		Issue issueToUse = projectService.getIssue(issueId);
-		
-		if (currentUser.isAnonymous() || issueToUse.getRepoter().getUserId() != currentUser.getUserId()) {
-			throw new UnAuthorizedException();
-		}
-
-		if (issueId < 1) {
-			throw new IllegalArgumentException("IssueId Id can't be " + issueId);
-		}
-
-		List<Attachment> list = new ArrayList<Attachment>();
-		Iterator<String> names = request.getFileNames();
-		while (names.hasNext()) {
-			String fileName = names.next();
-			MultipartFile mpf = request.getFile(fileName);
-			InputStream is = mpf.getInputStream();
-			log.debug("upload - file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize(), mpf.getContentType());
-			Attachment attachment = attachmentService.createAttachment(Models.ISSUE.getObjectType(), issueToUse.getIssueId(), mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
-			attachment.setUser(currentUser);
-			attachmentService.saveAttachment(attachment);
-			list.add(attachment);
-		}
-		return list;
-	}
-	
-
-	/**
-	 * 
-	 * @return
-	 * @throws BoardMessageNotFoundException
-	 * @throws BoardNotFoundException
-	 */
-	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/add_simple.json", method = {RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public Result addCommentToIssueSimple(@PathVariable Long threadId, @PathVariable Long issueId,
-			@RequestParam(value = "name", defaultValue = "", required = false) String name,
-			@RequestParam(value = "email", defaultValue = "", required = false) String email,
-			@RequestParam(value = "text", defaultValue = "", required = true) String text, HttpServletRequest request,
-			ModelMap model) {
-
-		Result result = Result.newResult();
-		try {
-			User user = SecurityHelper.getUser();
-			String address = request.getRemoteAddr();
-
-			Issue issueToUse = projectService.getIssue(issueId);
-			Comment newComment = commentService.createComment(Models.ISSUE.getObjectType(), issueToUse.getIssueId(), user, text);
-
-			newComment.setIPAddress(address);
-			if (!StringUtils.isNullOrEmpty(name))
-				newComment.setName(name);
-			if (!StringUtils.isNullOrEmpty(email))
-				newComment.setEmail(email);
-
-			commentService.addComment(newComment);
-
-			result.setCount(1);
-		} catch (Exception e) {
-			result.setError(e);
-		}
-
-		return result;
-	}
-
-	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/add.json", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public Result addCommentToIssue(@PathVariable Long issueId,  @RequestBody DataSourceRequest reqeustData, HttpServletRequest request, ModelMap model) {
-		Result result = Result.newResult();
-		try {
-			User user = SecurityHelper.getUser();
-			String address = request.getRemoteAddr();
-			String name = reqeustData.getDataAsString("name", null);
-			String email = reqeustData.getDataAsString("email", null);
-			String text = reqeustData.getDataAsString("text", null);
-			Long parentCommentId = reqeustData.getDataAsLong("parentCommentId", 0L);
-
-			Issue issueToUse = projectService.getIssue(issueId);
-			Comment newComment = commentService.createComment(Models.ISSUE.getObjectType(), issueToUse.getIssueId(), user, text);
-
-			newComment.setIPAddress(address);
-			if (!StringUtils.isNullOrEmpty(name))
-				newComment.setName(name);
-			if (!StringUtils.isNullOrEmpty(email))
-				newComment.setEmail(email);
-
-			if (parentCommentId > 0) {
-				Comment parentComment = commentService.getComment(parentCommentId);
-				commentService.addComment(parentComment, newComment);
-			} else {
-				commentService.addComment(newComment);
-			}
-			result.setCount(1);
-		} catch (Exception e) {
-			result.setError(e);
-		}
-
-		return result;
-	}
-
-	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/list.json", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public ItemList getIssueComments(@PathVariable Long issueId, NativeWebRequest request)
-			throws IssueNotFoundException {
-		ItemList items = new ItemList();
-		if( issueId > 0 ) {		
-			Issue issueToUse = projectService.getIssue(issueId);
-			ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.ISSUE.getObjectType(), issueToUse.getIssueId());
-			long parentId = -1L;
-			int totalSize = walker.getChildCount(parentId);
-			List<Comment> list = walker.children(parentId, new ObjectLoader<Comment>() {
-				public Comment load(long commentId) throws NotFoundException {
-					return commentService.getComment(commentId);
-				}
-	
-			});
-			items.setItems(list);
-			items.setTotalCount(totalSize);
-		}	
-		return items;
-	}
-
-	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/comments/{commentId:[\\p{Digit}]+}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public ItemList getIssueChildComments(@PathVariable Long issueId,
-			@PathVariable Long commentId, NativeWebRequest request) throws IssueNotFoundException {
-
-		Issue issueToUse = projectService.getIssue(issueId);
-		
-		ModelObjectTreeWalker walker = commentService.getCommentTreeWalker(Models.ISSUE.getObjectType(), issueToUse.getIssueId());
-
-		int totalSize = walker.getChildCount(commentId);
-		
-		List<Comment> list = walker.children(commentId, new ObjectLoader<Comment>() {
-			public Comment load(long commentId) throws NotFoundException {
-				return commentService.getComment(commentId);
-			}
-		});
-		return new ItemList(list, totalSize);
-	}	
-	
 	/**
 	 * BOARD API 
 	******************************************/
@@ -565,7 +134,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 		
 		for( Board board : list)
 		{	
-			BoardView v = getBoardView(board);
+			BoardView v = getBoardView(communityAclService, boardService, board);
 			if(v.isReadable())
 				list2.add(v);
 		}
@@ -583,7 +152,7 @@ private Logger log = LoggerFactory.getLogger(getClass());
 	@ResponseBody
 	public Board getBoard (@PathVariable Long boardId, NativeWebRequest request) throws BoardNotFoundException {	
 		Board board = boardService.getBoardById(boardId);
-		BoardView b = getBoardView(board);
+		BoardView b = getBoardView(communityAclService, boardService, board);
 		return b;
 	}
 	

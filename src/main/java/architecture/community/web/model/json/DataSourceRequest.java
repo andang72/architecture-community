@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import architecture.community.model.json.JsonUserDeserializer;
+import architecture.community.query.ParameterValue;
 import architecture.community.user.User;
 
 public class DataSourceRequest {
@@ -34,6 +35,8 @@ public class DataSourceRequest {
     private List<AggregateDescriptor> aggregate;
     
     private User user;
+    
+    List<ParameterValue> parameters;
 	
 	public DataSourceRequest() {
 		filter = new FilterDescriptor();
@@ -43,6 +46,7 @@ public class DataSourceRequest {
 		take = 0;
 		skip = 0;
 		user = null;
+		parameters = new ArrayList<ParameterValue>();
 	}
 
 	
@@ -138,6 +142,16 @@ public class DataSourceRequest {
 	public void setSkip(int skip) {
 		this.skip = skip;
 	}
+
+	public List<ParameterValue> getParameters() {
+		return parameters;
+	}
+
+
+	public void setParameters(List<ParameterValue> parameters) {
+		this.parameters = parameters;
+	}
+
 
 	@JsonAnySetter
 	public void handleUnknown(String key, Object value) {

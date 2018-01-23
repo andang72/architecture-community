@@ -25,19 +25,14 @@ public abstract class AbstractCommunityDateController {
 
 	protected Logger log = LoggerFactory.getLogger(getClass());	
 	
-	protected abstract BoardService getBoardService();
-	
-	protected abstract JdbcCommunityAclService getCommunityAclService (); 	
-	
-	
-	protected boolean hasPermission ( int objectType , long objectId,  CommunityPermissions permission ) {	
-		return getCommunityAclService().isPermissionGrantedFinally(SecurityHelper.getAuthentication(), Models.valueOf(objectType).getObjectClass(), objectId, Arrays.asList( (Permission) permission));
+	protected boolean hasPermission (JdbcCommunityAclService communityAclService, int objectType , long objectId,  CommunityPermissions permission ) {	
+		return communityAclService.isPermissionGrantedFinally(SecurityHelper.getAuthentication(), Models.valueOf(objectType).getObjectClass(), objectId, Arrays.asList( (Permission) permission));
 	}
 	
-	protected BoardView getBoardView(Board board) {		
+	protected BoardView getBoardView(JdbcCommunityAclService communityAclService, BoardService boardService , Board board) {		
 		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();
 		log.debug("Board View : {} {} for {}.", board.getBoardId(),  board.getName(), userDetails.getUsername() );		
-		PermissionsBundle bundle = getCommunityAclService().getPermissionBundle(SecurityHelper.getAuthentication(), Board.class, board.getBoardId());				
+		PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Board.class, board.getBoardId());				
 		BoardView boardView = new BoardView(board);
  
 		boardView.setWritable(bundle.isWrite());
@@ -48,8 +43,8 @@ public abstract class AbstractCommunityDateController {
 		boardView.setCreateImage(bundle.isCreateImage());
 		boardView.setCreateThread(bundle.isCreateThread());
 		boardView.setCreateThreadMessage(bundle.isCreateThreadMessage());
-		int totalThreadCount = getBoardService().getBoardThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
-		int totalMessageCount = getBoardService().getBoardMessageCount(board);	
+		int totalThreadCount = boardService.getBoardThreadCount(Models.BOARD.getObjectType(), board.getBoardId());
+		int totalMessageCount = boardService.getBoardMessageCount(board);	
 		boardView.setTotalMessage(totalMessageCount);
 		boardView.setTotalThreadCount(totalThreadCount);		
 		return boardView;

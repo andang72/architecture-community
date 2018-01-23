@@ -42,7 +42,7 @@ public class AggregateDataController {
 			@RequestBody List<ParameterValue> params,
 			NativeWebRequest request)
 			throws NotFoundException {
-		List list = customQueryService.list(source, statement, params );		
+		List list = customQueryService.list( statement, params );		
 		return new ItemList(list, list.size());		
 	}
 	

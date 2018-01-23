@@ -81,7 +81,7 @@
 					that.complete = false;		
 				that._features();
 				that.bind(that.events, options);
-				that.complete = true;	
+				that.complete = true;
 			},
 			events : [ AUTHENTICATE ],
 			_features: function(){
@@ -112,6 +112,10 @@
 			} 		
 		});
 		
+		// check if browser support HTML5 local storage
+		function localStorageSupport() {
+		    return (('localStorage' in window) && window['localStorage'] !== null)
+		}
 		
 		function handleAjaxError(xhr) {	
 			
