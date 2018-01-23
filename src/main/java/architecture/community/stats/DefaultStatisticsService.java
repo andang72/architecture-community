@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.SqlParameterValue;
 
+import architecture.community.query.ParameterValue;
 import architecture.community.util.CommunityContextHelper;
 import architecture.ee.jdbc.sqlquery.factory.Configuration;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
@@ -18,9 +19,7 @@ public class DefaultStatisticsService implements StatisticsService {
 
 	@Autowired
 	@Qualifier("sqlConfiguration")
-	private Configuration sqlConfiguration;
-	
-	
+	private Configuration sqlConfiguration; 
 	
 	public List<Map<String, Object>> stat(String target , String statName, List<ParameterValue> values) {	
 		

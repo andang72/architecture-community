@@ -1,4 +1,4 @@
-package architecture.community.stats;
+package architecture.community.query;
 
 public class ParameterValue {
 

@@ -17,7 +17,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import architecture.community.board.BoardMessageNotFoundException;
 import architecture.community.board.BoardThreadNotFoundException;
-import architecture.community.stats.ParameterValue;
+import architecture.community.query.ParameterValue;
 import architecture.community.stats.StatisticsService;
 import architecture.community.web.model.ItemList;
 
