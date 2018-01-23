@@ -183,7 +183,7 @@
     		community.ui.bind(renderTo, observable );	
     		createProjectListView(observable);
     		
-		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view], a[data-action=view2]", function(e){			
+		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view], a[data-action=view2], button[data-action=overviewstats]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
