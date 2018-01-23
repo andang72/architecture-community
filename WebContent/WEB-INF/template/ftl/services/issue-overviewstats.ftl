@@ -105,7 +105,36 @@
      	var renderTo = $('#page-top');
     		renderTo.data('model', observable);
     		community.ui.bind(renderTo, observable );	
+    		
+    		createSummaryListView(observable);
+    		
 	});
+	
+	function createSummaryListView( observable ){
+		console.log("create listview.");
+		var renderTo = $('#summary-listview');
+		var listview = community.ui.listview( renderTo , {
+			dataSource: community.ui.datasource( '<@spring.url "/data/api/v1/issues/overviewstats/list.json" />' , {
+	    			transport:{
+					read:{
+						contentType: "application/json; charset=utf-8"
+					},
+					parameterMap: function (options, operation){		
+						return community.ui.stringify( options );
+					}
+				},
+				schema: {
+					total: "totalCount",
+					data: "items"
+				}	
+	    		}),
+			template: community.ui.template($("#template").html()),
+			dataBound: function() {
+				if( this.items().length == 0)
+			    		renderTo.html('<div class="forum-item">결과가 없습니다.</div>');
+			}
+		});
+	}	
 	</script>		
 </head>
 <body id="page-top" class="landing-page skin-5">
@@ -124,11 +153,43 @@
       </div>
     </section>
 	<section class="container g-py-100">
-	
+		<div class="row">	
+			<div class="col-12">
+				<div id="summary-listview" class="no-border"></div>			
+			</div>
+		</div>	
   	</section>    	
 	<!-- FOOTER START -->   
 	<#include "/includes/user-footer.ftl">
 	<!-- FOOTER END -->  
+	<script type="text/x-kendo-template" id="template">
+	<div class="forum-item">
+		<div class="row">
+			<div class="col-md-9">
+				<div class="forum-icon"><i class="icon-svg icon-svg-sm icon-svg-ios-customer-support g-opacity-0_3"></i></div>
+				<h2 class="g-ml-60 g-font-weight-100">루이까또즈 유지보수</h2>
+			</div>
+			<div class="col-md-1 forum-info">
+				<span class="views-number">#: issueCount #</span>
+				<div>
+					<small>요청</small>
+				</div>
+			</div>
+			<div class="col-md-1 forum-info">
+				<span class="views-number">#: resolutionCount #</span>
+				<div>
+					<small>처리</small>
+				</div>
+			</div>
+			<div class="col-md-1 forum-info">
+				<span class="views-number">0 </span>
+				<div>
+					<small>미처리</small>
+				</div>
+			</div>
+		</div>
+	</div>
+	</script>
 </body>
 </html>	
 </#compress>
