@@ -710,19 +710,19 @@
 			</div>
 	 	</div>
 		</td>
-		<td>
-			<span class="u-label u-label-default g-mr-10 g-mb-15 g-font-weight-100">#: pageState #</span>
+		<td class="text-center">
+			#: pageState #
 		</td>
 		<td>
-			<a class="u-avatar u-avatar-sm" href="\\#">
+			<a class="u-avatar u-avatar-sm btn-link" href="\\#">
 			<img width="64" height="64" src="#= community.data.getUserProfileImage(user) #" class="u-avatar-img" alt="image">
-			#: user.username #
+			#: user.name # (#:user.username #)
 			</a>
 		</td>
 		<td class="text-center"> #: commentCount # </td>
 		<td class="text-center"> #: viewCount # </td>
 		<td class="text-center">
- 		<small>#: community.data.getFormattedDate( modifiedDate)  #</small>
+ 		 #: community.data.getFormattedDate( modifiedDate)  # 
 		</td>
 	</tr>				                      
     </script>          
