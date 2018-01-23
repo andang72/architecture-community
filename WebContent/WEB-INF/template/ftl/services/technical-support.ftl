@@ -193,8 +193,10 @@
 			}else if( actionType == 'view2'){
 				community.ui.send("<@spring.url "/display/pages/issue.html" />", { 'issueId': objectId , url : "${__page.name}"});
 				return;	
-			}
-			else if ( actionType == 'create' && !isDeveloper() ){
+			}else if( actionType == 'overviewstats'){
+				community.ui.send("<@spring.url "/display/pages/issue-overviewstats.html" />");
+				return;	
+			} else if ( actionType == 'create' && !isDeveloper() ){
 				if( observable.dataSource.total() == 1 ){
 					community.ui.send("<@spring.url "/display/pages/issue.html" />", { 'projectId': observable.dataSource.at(0).projectId });
 					return;
@@ -361,7 +363,7 @@
 								  	<div class="row">
 	                            			<div class="col-sm-12">
 	                            				<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button"  role="button" data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
-	                            				<button class="btn u-btn-outline-purple g-mr-10 g-mb-15" type="button"  role="button">통계</button>
+	                            				<button class="btn u-btn-outline-purple g-mr-10 g-mb-15" type="button"  role="button" data-object-id="0" data-action="overviewstats">통계</button>
 	                            				<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
 	                            			</div>
 	                            	  	</div>		                            	
