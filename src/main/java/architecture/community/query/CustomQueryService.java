@@ -26,8 +26,17 @@ public interface CustomQueryService {
 	 */
 	public <T> List<T> list( String statement, List<ParameterValue> values, RowMapper<T> rowmapper);
 	
+	
+	
 	public List<Map<String, Object>> list(String statement, List<ParameterValue> values) ;
 
+	/**
+	 * 
+	 * @param source
+	 * @param statement
+	 * @param values
+	 * @return
+	 */
 	public List<Map<String, Object>> list(String source, String statement, List<ParameterValue> values) ;
 
 }

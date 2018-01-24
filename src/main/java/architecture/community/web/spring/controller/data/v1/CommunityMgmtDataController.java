@@ -209,7 +209,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		List<Board> list = boardService.getAllBoards();
 		List<Board> list2 = new ArrayList<Board>(list.size());
 		for (Board board : list) {
-			list2.add(getBoardView(board));
+			list2.add(getBoardView(communityAclService, boardService, board));
 		}
 		return new ItemList(list2, list2.size());
 	}
