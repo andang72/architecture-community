@@ -13,8 +13,6 @@
 
 	<beans:bean id="communityContextHelper" class="architecture.community.util.CommunityContextHelper" />
 	
-	<beans:bean id="statsService" class="architecture.community.stats.DefaultStatisticsService" />
-	
 	<beans:bean id="customQueryService" class="architecture.community.query.CommunityCustomQueryService" />
 	
 </beans:beans> 
