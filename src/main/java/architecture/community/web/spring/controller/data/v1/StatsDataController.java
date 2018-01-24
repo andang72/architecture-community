@@ -17,8 +17,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import architecture.community.board.BoardMessageNotFoundException;
 import architecture.community.board.BoardThreadNotFoundException;
+import architecture.community.query.CustomQueryService;
 import architecture.community.query.ParameterValue;
-import architecture.community.stats.StatisticsService;
 import architecture.community.web.model.ItemList;
 
 @Controller("community-data-v1-stats-controller")
@@ -26,10 +26,11 @@ import architecture.community.web.model.ItemList;
 public class StatsDataController {
 	
 	private Logger log = LoggerFactory.getLogger(getClass());	
-	
+
 	@Inject
-	@Qualifier("statsService")
-	private StatisticsService statsService;
+	@Qualifier("customQueryService")
+	private CustomQueryService customQueryService;
+	
 	
 	@RequestMapping(value = "/stats/{target}/{statement}/list.json", method = {RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
@@ -38,11 +39,9 @@ public class StatsDataController {
 			@PathVariable String statement, 
 			@RequestBody List<ParameterValue> params,
 			NativeWebRequest request)
-			throws BoardThreadNotFoundException, BoardMessageNotFoundException {
-
-		List list = statsService.stat(target, statement, params );		
+			throws BoardThreadNotFoundException, BoardMessageNotFoundException { 
+		List list = customQueryService.list(target, statement, params);	
 		return new ItemList(list, list.size());
-		
 	}
 	
 }

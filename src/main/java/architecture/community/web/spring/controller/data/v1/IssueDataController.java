@@ -251,7 +251,8 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		NativeWebRequest request) {
 		ItemList items = new ItemList();
 		List<CodeSet> issueTypes = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");		
-		List<IssueSummary> summaries = customQueryService.list (dataSourceRequest, "COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD", new RowMapper<IssueSummary>() {
+		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD");
+		List<IssueSummary> summaries = customQueryService.list (dataSourceRequest, new RowMapper<IssueSummary>() {
 			public IssueSummary mapRow(ResultSet rs, int rowNum) throws SQLException {
 				IssueSummary issue = new IssueSummary(rs.getLong("ISSUE_ID"));			
 				issue.setProject( new Project( rs.getLong("PROJECT_ID") ) );

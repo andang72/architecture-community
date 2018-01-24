@@ -36,7 +36,9 @@ public class DataSourceRequest {
     
     private User user;
     
-    List<ParameterValue> parameters;
+    private List<ParameterValue> parameters;
+    
+    private String statement;
 	
 	public DataSourceRequest() {
 		filter = new FilterDescriptor();
@@ -46,6 +48,7 @@ public class DataSourceRequest {
 		take = 0;
 		skip = 0;
 		user = null;
+		statement = null;
 		parameters = new ArrayList<ParameterValue>();
 	}
 
@@ -142,6 +145,16 @@ public class DataSourceRequest {
 	public void setSkip(int skip) {
 		this.skip = skip;
 	}
+
+	public String getStatement() {
+		return statement;
+	}
+
+
+	public void setStatement(String statement) {
+		this.statement = statement;
+	}
+
 
 	public List<ParameterValue> getParameters() {
 		return parameters;
