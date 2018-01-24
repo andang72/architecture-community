@@ -166,7 +166,7 @@
 	<div class="forum-item">
 		<div class="row">
 			<div class="col-md-9">
-				<div class="forum-icon"><i class="icon-svg icon-svg-sm icon-svg-ios-customer-support g-opacity-0_3"></i></div>
+				<div class="forum-icon"><i class="icon-svg icon-svg-sm icon-svg-dusk-stats g-opacity-0_3"></i></div>
 				<h2 class="g-ml-60 g-font-weight-100">#: project.name #</h2>
 				<div class="g-ml-60 g-mb-5">
 					<ul class="list-inline">
