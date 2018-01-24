@@ -3,6 +3,7 @@ package architecture.community.query;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
 import architecture.community.web.model.json.DataSourceRequest;
@@ -16,6 +17,15 @@ public interface CustomQueryService {
 	 * @return
 	 */
 	public <T> List<T> list( DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper);
+	
+	
+	
+	public <T> T list(DataSourceRequest dataSourceRequest, ResultSetExtractor<T> extractor) ;
+	
+	
+	
+	
+	
 	
 	/**
 	 * 

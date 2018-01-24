@@ -3,7 +3,7 @@
 	<name>COMMUNITY_CUSTOM</name>
 	<description>COMMUNITY CUSTOM SUBSYSTEM QUERIES</description>	
 	
-	<sql-query name="SELECT_ISSUE_SUMMARY_BY_PERIOD" description="SELECT_ISSUE_SUMMARY_BY_PERIOD"><![CDATA[
+	<sql-query name="SELECT_ISSUE_SUMMARY_BY_PERIOD" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[
 	SELECT  
 			T2.PROJECT_ID, 
 			T2.NAME AS PROJECT_NAME ,
@@ -28,5 +28,22 @@
 	   OR ( T1.DUE_DATE IS NOT NULL AND TO_CHAR( T1.DUE_DATE , 'YYYYMMDD' ) BETWEEN '20180115' AND '20180124' ) 
 	)
     ]]></sql-query>	
-    	
+	
+	<sql-query name="SELECT_ISSUE_REMAILS_BY_DATE" description="특정 일자 이전까지 미처리 건수 조회"><![CDATA[
+	SELECT  
+		T2.PROJECT_ID,
+      	T2.NAME AS PROJECT_NAME ,
+      	count( T1.ISSUE_ID ) as CNT
+	FROM REP_ISSUE T1 , REP_PROJECT T2
+	WHERE 
+		T1.OBJECT_TYPE = 19
+		AND T1.OBJECT_ID = T2.PROJECT_ID
+	  	AND ( T1.ISSUE_STATUS != '005' OR T1.ISSUE_STATUS IS NULL )
+		AND (
+		      ( T1.DUE_DATE IS NULL AND TO_CHAR( T1.CREATION_DATE , 'YYYYMMDD' ) <= '20180124' )  
+		   OR ( T1.DUE_DATE IS NOT NULL AND TO_CHAR( T1.DUE_DATE , 'YYYYMMDD' ) <= '20180124' ) 
+		)
+		GROUP BY T2.PROJECT_ID, T2.NAME 
+    ]]></sql-query>	
+        	
 </sqlset>

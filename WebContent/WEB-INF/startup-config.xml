@@ -49,6 +49,7 @@
 			<pooledDataSourceProvider>
 				<driverClassName>oracle.jdbc.OracleDriver</driverClassName>
 				<url>jdbc:oracle:thin:@//222.122.47.196:1521/PODODB</url>
+				<username>U_HELPDESK</username>
 				<username>U_PORTAL</username>
 				<password>podoq23$</password>
 				<connectionProperties>
@@ -63,7 +64,7 @@
 					<validationQuery>select 1 from dual</validationQuery>
 				</connectionProperties>
 			</pooledDataSourceProvider>
-			-
+			
 		</default>
 
 		<!-- podo csr site -->

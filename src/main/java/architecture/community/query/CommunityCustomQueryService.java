@@ -7,9 +7,12 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.poi.ss.formula.functions.T;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
@@ -21,6 +24,8 @@ import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 
 public class CommunityCustomQueryService implements CustomQueryService {
 
+	private Logger logger = LoggerFactory.getLogger(getClass()) ;
+	
 	@Autowired
 	@Qualifier("sqlConfiguration")
 	private Configuration sqlConfiguration;
@@ -30,9 +35,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	private DataSource dataSource;
 	
 	public CommunityCustomQueryService() {
-
 	}
-	
 	
 	public List<Map<String, Object>> list( String statement, List<ParameterValue> values) {
 		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
@@ -51,7 +54,6 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
 		else
 			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql());
-
 	}
 
 	public <T> List<T> list( String statement, List<ParameterValue> values, RowMapper<T> rowmapper) {
@@ -62,6 +64,37 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		else
 			return dao.getExtendedJdbcTemplate().query(dao.getBoundSql(statement).getSql(), rowmapper);
 	}
+	
+	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {		
+		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
+		dao.setDataSource(dataSource);				
+		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
+		if( dataSourceRequest.getParameters().size() > 0 )
+			return dao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+		else	
+			return dao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType );
+	}
+	
+	public <T> T queryForObject (DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper) {		
+		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
+		dao.setDataSource(dataSource);				
+		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
+		if( dataSourceRequest.getParameters().size() > 0 )
+			return dao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+		else	
+			return dao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper );
+	}
+	
+	public Map<String, Object> queryForMap (DataSourceRequest dataSourceRequest) {		
+		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
+		dao.setDataSource(dataSource);				
+		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
+		if( dataSourceRequest.getParameters().size() > 0 )
+			return dao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql(), getSqlParameterValues( dataSourceRequest.getParameters() ) );
+		else	
+			return dao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql() );
+	}
+
 	
 	public <T> List<T> list(DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper) {		
 		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
@@ -79,6 +112,17 @@ public class CommunityCustomQueryService implements CustomQueryService {
 				return dao.getExtendedJdbcTemplate().query(sqlSource.getSql(), rowmapper );
 		}
 	}
+	
+	public <T> T list(DataSourceRequest dataSourceRequest, ResultSetExtractor<T> extractor) {		
+		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
+		dao.setDataSource(dataSource);				
+		logger.debug("Paging not support yet.");		
+		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
+		if( dataSourceRequest.getParameters().size() > 0 )
+			return dao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+		else	
+			return dao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor );
+	}	
 	
 	/**
 	 * 외부에서 전달된 인자들을 스프링이 인식하는 형식의 값을 변경하여 처리한다.

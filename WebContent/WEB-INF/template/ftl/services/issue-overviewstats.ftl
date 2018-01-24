@@ -167,18 +167,16 @@
 		<div class="row">
 			<div class="col-md-9">
 				<div class="forum-icon"><i class="icon-svg icon-svg-sm icon-svg-ios-customer-support g-opacity-0_3"></i></div>
-				<h2 class="g-ml-60 g-font-weight-100">루이까또즈 유지보수</h2>
+				<h2 class="g-ml-60 g-font-weight-100">#: project.name #</h2>
 				<div class="g-ml-60 g-mb-5">
 					<ul class="list-inline">
-						<li>오류: </li>
-						<li>데이터작업 : #: 002 #</li>						
-						<li>기능변경</li>
-						<li>추가개발</li>
-						<li>기술지원</li>
-						<li>영업지원</li>
+						<li>오류: #= aggregate["001"] #</li>
+						<li>데이터작업 : #: aggregate["002"] #</li>						
+						<li>기능변경 : #: aggregate["003"] #</li>
+						<li>추가개발 : #: aggregate["004"] #</li>
+						<li>기술지원 : #: aggregate["005"] #</li>
+						<li>영업지원 : #: aggregate["006"] #</li>						
 					</ul>
-					
-				
 				</div>
 			</div>
 			<div class="col-md-1 forum-info">
@@ -194,9 +192,9 @@
 				</div>
 			</div>
 			<div class="col-md-1 forum-info">
-				<span class="views-number">0 </span>
+				<span class="views-number g-color-red">#: unclosedTotalCount #</span>
 				<div>
-					<small>누적 미처리</small>
+					<small class="g-color-red">누적 미처리</small>
 				</div>
 			</div>
 		</div>

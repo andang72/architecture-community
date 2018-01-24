@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -57,7 +59,6 @@ import architecture.community.projects.ProjectService;
 import architecture.community.projects.ProjectView;
 import architecture.community.projects.Stats;
 import architecture.community.query.CustomQueryService;
-import architecture.community.query.ParameterValue;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
@@ -252,6 +253,7 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		ItemList items = new ItemList();
 		List<CodeSet> issueTypes = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");		
 		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD");
+		
 		List<IssueSummary> summaries = customQueryService.list (dataSourceRequest, new RowMapper<IssueSummary>() {
 			public IssueSummary mapRow(ResultSet rs, int rowNum) throws SQLException {
 				IssueSummary issue = new IssueSummary(rs.getLong("ISSUE_ID"));			
@@ -270,33 +272,48 @@ public class IssueDataController extends AbstractCommunityDateController  {
 				issue.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
 				return issue;
 		}});
-		Map<Long, OverviewStats > map = new HashMap<Long, OverviewStats>();
+		
+		Map<Long, OverviewStats > overviewStats = new HashMap<Long, OverviewStats>();
+		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_REMAILS_BY_DATE");
+		List<OverviewStats> map = customQueryService.list(dataSourceRequest, new RowMapper<OverviewStats>() { 
+			public OverviewStats mapRow(ResultSet rs, int rowNum) throws SQLException {
+				OverviewStats os = new OverviewStats( new Project( rs.getLong("PROJECT_ID") ) );
+				os.getProject().setName(rs.getString("PROJECT_NAME"));
+				os.setUnclosedTotalCount(rs.getInt("CNT"));
+				return os;
+		}});		
+		for( OverviewStats overview : map ) {
+			for( CodeSet code : issueTypes ) {
+				overview.stats.add(code.getCode(), 0);
+			}
+			overviewStats.put(overview.project.getProjectId(), overview);
+		}		
 		for( IssueSummary summary : summaries )
 		{
-			OverviewStats stats = map.get(summary.getProject().getProjectId());
-			if( stats == null ) {
-				stats = new OverviewStats ( summary.getProject() );
+			OverviewStats overview = overviewStats.get(summary.getProject().getProjectId());
+			if( overview == null ) {
+				overview = new OverviewStats ( summary.getProject() );
 				for( CodeSet code : issueTypes ) {
-					stats.stats.add(code.getCode(), 0);
+					overview.stats.add(code.getCode(), 0);
 				}
-				map.put(stats.project.getProjectId(), stats);
+				overviewStats.put(overview.project.getProjectId(), overview);
 			}
-			stats.issueCount = stats.issueCount + 1;
+			overview.issueCount = overview.issueCount + 1;
 			if( org.apache.commons.lang3.StringUtils.isNotEmpty( summary.getIssueType() ) )
 			{
-				stats.stats.add(summary.getIssueType(), 1 );
+				overview.stats.add(summary.getIssueType(), 1 );
 			}
 			if( org.apache.commons.lang3.StringUtils.equals( summary.getStatus() , "005" ) )
 			{
-				stats.resolutionCount = stats.resolutionCount + 1 ;
+				overview.resolutionCount = overview.resolutionCount + 1 ;
 			}
-		}
-		List<OverviewStats> list = new ArrayList<OverviewStats>(map.values());
-		for( OverviewStats stats : list ){			
-			for(Stats.Item item : stats.stats.getItems()) {
-				stats.aggregate.put(item.getName(), item.getValue());
+		} 
+		List<OverviewStats> list = new ArrayList<OverviewStats>(overviewStats.values());
+		for( OverviewStats overview : list ){			
+			for(Stats.Item item : overview.stats.getItems()) {
+				overview.aggregate.put(item.getName(), item.getValue());
 			}
-		}
+		} 		
 		items.setItems(list);
 		items.setTotalCount(list.size());
 		return items;
@@ -310,6 +327,8 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		
 		int resolutionCount ;
 		
+		int unclosedTotalCount;
+		
 		Map<String , Integer > aggregate ;
 		
 		Stats stats ;
@@ -318,6 +337,9 @@ public class IssueDataController extends AbstractCommunityDateController  {
 			this.project = project;
 			aggregate = new HashMap<String , Integer >();
 			stats = new Stats();
+			unclosedTotalCount = 0 ;
+			issueCount = 0 ;
+			resolutionCount = 0;
 		}
 
 		public Project getProject() {
@@ -346,6 +368,14 @@ public class IssueDataController extends AbstractCommunityDateController  {
 
 		public Map<String, Integer> getAggregate() {
 			return aggregate;
+		}
+
+		public int getUnclosedTotalCount() {
+			return unclosedTotalCount;
+		}
+
+		public void setUnclosedTotalCount(int unclosedTotalCount) {
+			this.unclosedTotalCount = unclosedTotalCount;
 		}
 
 		public void setAggregate(Map<String, Integer> aggregate) {
