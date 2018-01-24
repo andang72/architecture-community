@@ -11,7 +11,7 @@
     <title><#if __page?? >${__page.title}</#if></title>
  	
  	<!-- Kendoui with bootstrap theme CSS -->			
-	<!--<link href="/css/kendo.ui.core/web/kendo.common-bootstrap.core.css" rel="stylesheet" type="text/css" />-->
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common-bootstrap.core.css"/>" rel="stylesheet" type="text/css" />
 	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	 
 	
 	<!-- Bootstrap core CSS -->
@@ -99,6 +99,11 @@
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser);
+			},
+			startDate: getLastSaturday(),
+			endDate : getThisFriday(),			
+			search : function(){
+				community.ui.listview( $('#summary-listview') ).dataSource.read(); 
 			}
     		});
      	
@@ -110,6 +115,23 @@
     		
 	});
 	
+	function getFirstDayOfWeek(){
+		var now = new Date();	
+		var day = now.getDay(), diff = now.getDate() - day + (day == 0 ? -6 : 1 ); 
+		return new Date(now.setDate(diff));
+	}
+	
+	function getLastSaturday(){
+		var now = getFirstDayOfWeek();
+		return new Date(now.setDate(now.getDate() - 2));
+	}
+	
+	function getThisFriday(){
+		var now = new Date();	
+		var day = now.getDay(), diff = now.getDate() - day + 5; 
+		return new Date(now.setDate(diff));
+	}
+		
 	function createSummaryListView( observable ){
 		console.log("create listview.");
 		var renderTo = $('#summary-listview');
@@ -120,6 +142,8 @@
 						contentType: "application/json; charset=utf-8"
 					},
 					parameterMap: function (options, operation){		
+						options.startDate = community.data.getFormattedDate(observable.get("startDate"), "yyyyMMdd" )	;
+						options.endDate = community.data.getFormattedDate(observable.get("endDate"), "yyyyMMdd" )	;
 						return community.ui.stringify( options );
 					}
 				},
@@ -153,6 +177,29 @@
       </div>
     </section>
 	<section class="container g-py-100">
+		<div class="row">
+			<div class="col-lg-12 g-mb-15">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content ibox-heading">
+						<div class="row">
+							<div class="col-sm-4 g-mb-15">
+								<h5 class="text-light-gray text-semibold"> 시작일 </h5>	
+								<input data-role="datepicker" style="width: 100%" data-bind="value:startDate" placeholder="시작일">
+							</div>
+							<div class="col-sm-4 g-mb-15">
+								<h5 class="text-light-gray text-semibold">종료일  </h5>	
+								<input data-role="datepicker" style="width: 100%" data-bind="value:endDate" placeholder="종료일">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-12 text-right">
+							<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:search}">검색</button>
+							</div>
+						</div>		
+					</div>
+				</div>			
+			</div>
+		</div>
 		<div class="row">	
 			<div class="col-12">
 				<div id="summary-listview" class="no-border"></div>			
@@ -171,11 +218,11 @@
 				<div class="g-ml-60 g-mb-5">
 					<ul class="list-inline">
 						<li>오류: #= aggregate["001"] #</li>
-						<li>데이터작업 : #: aggregate["002"] #</li>						
-						<li>기능변경 : #: aggregate["003"] #</li>
-						<li>추가개발 : #: aggregate["004"] #</li>
-						<li>기술지원 : #: aggregate["005"] #</li>
-						<li>영업지원 : #: aggregate["006"] #</li>						
+						<li>데이터작업 : #= aggregate["002"] #</li>						
+						<li>기능변경 : #= aggregate["003"] #</li>
+						<li>추가개발 : #= aggregate["004"] #</li>
+						<li>기술지원 : #= aggregate["005"] #</li>
+						<li>영업지원 : #= aggregate["006"] #</li>						
 					</ul>
 				</div>
 			</div>
