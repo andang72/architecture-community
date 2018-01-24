@@ -50,6 +50,9 @@ i.icon-svg {
 }
 
 /* IOS Icons */
+.icon-svg-ios-stats {
+	background-image: url("/images/icons/ios/stats.svg");	
+}
 
 .icon-svg-ios-administrative-tools {
 	background-image: url("/images/icons/ios/administrative-tools.svg");	
@@ -95,6 +98,10 @@ i.icon-svg {
 }
 
 /* Dusk Icons */
+.icon-svg-dusk-stats {
+	background-image: url("/images/icons/dusk/stats.svg");	
+}
+
 .icon-svg-dusk-warn {
 	background-image: url("/images/icons/dusk/warn.svg");	
 }
