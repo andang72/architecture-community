@@ -13,6 +13,8 @@
 
 	<beans:bean id="communityContextHelper" class="architecture.community.util.CommunityContextHelper" />
 	
+	<beans:bean id="customQueryJdbcDao" class="architecture.community.query.dao.CustomQueryJdbcDao" p:dataSource-ref="dataSource" />
+	
 	<beans:bean id="customQueryService" class="architecture.community.query.CommunityCustomQueryService" />
 	
 </beans:beans> 

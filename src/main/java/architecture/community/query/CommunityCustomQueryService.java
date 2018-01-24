@@ -11,11 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
+import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.util.CommunityContextHelper;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.ee.jdbc.sqlquery.factory.Configuration;
@@ -31,19 +31,18 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	private Configuration sqlConfiguration;
 
 	@Autowired
-	@Qualifier("dataSource")
-	private DataSource dataSource;
+	@Qualifier("customQueryJdbcDao")
+	private CustomQueryJdbcDao customQueryJdbcDao;
+	
 	
 	public CommunityCustomQueryService() {
 	}
 	
 	public List<Map<String, Object>> list( String statement, List<ParameterValue> values) {
-		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
-		dao.setDataSource(dataSource);
 		if (values.size() > 0)
-			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
 		else
-			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql());
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql());
 	}
 	
 	public List<Map<String, Object>> list(String source, String statement, List<ParameterValue> values) {
@@ -57,71 +56,59 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	}
 
 	public <T> List<T> list( String statement, List<ParameterValue> values, RowMapper<T> rowmapper) {
-		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
-		dao.setDataSource(dataSource);
 		if (values.size() > 0)
-			return dao.getExtendedJdbcTemplate().query(dao.getBoundSql(statement).getSql(), rowmapper, getSqlParameterValues(values).toArray());
+			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper, getSqlParameterValues(values).toArray());
 		else
-			return dao.getExtendedJdbcTemplate().query(dao.getBoundSql(statement).getSql(), rowmapper);
+			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper);
 	}
 	
-	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {		
-		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
-		dao.setDataSource(dataSource);				
-		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
+	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {				
+		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
 		if( dataSourceRequest.getParameters().size() > 0 )
-			return dao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType, getSqlParameterValues( dataSourceRequest.getParameters() ) );
 		else	
-			return dao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType );
 	}
 	
-	public <T> T queryForObject (DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper) {		
-		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
-		dao.setDataSource(dataSource);				
-		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
+	public <T> T queryForObject (DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper) {			
+		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
 		if( dataSourceRequest.getParameters().size() > 0 )
-			return dao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper, getSqlParameterValues( dataSourceRequest.getParameters() ) );
 		else	
-			return dao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper );
 	}
 	
-	public Map<String, Object> queryForMap (DataSourceRequest dataSourceRequest) {		
-		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
-		dao.setDataSource(dataSource);				
-		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
+	public Map<String, Object> queryForMap (DataSourceRequest dataSourceRequest) {				
+		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
 		if( dataSourceRequest.getParameters().size() > 0 )
-			return dao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql(), getSqlParameterValues( dataSourceRequest.getParameters() ) );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql(), getSqlParameterValues( dataSourceRequest.getParameters() ) );
 		else	
-			return dao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql() );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql() );
 	}
 
 	
-	public <T> List<T> list(DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper) {		
-		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
-		dao.setDataSource(dataSource);				
-		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
+	public <T> List<T> list(DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper) {			
+		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
 		if( dataSourceRequest.getPageSize() > 0 ){	
 			if( dataSourceRequest.getParameters().size() > 0 )
-				return dao.getExtendedJdbcTemplate().query( sqlSource.getSql(), dataSourceRequest.getSkip(),  dataSourceRequest.getPageSize(), rowmapper , getSqlParameterValues( dataSourceRequest.getParameters() ) );		
+				return customQueryJdbcDao.getExtendedJdbcTemplate().query( sqlSource.getSql(), dataSourceRequest.getSkip(),  dataSourceRequest.getPageSize(), rowmapper , getSqlParameterValues( dataSourceRequest.getParameters() ) );		
 			else
-				return dao.getExtendedJdbcTemplate().query( sqlSource.getSql(), dataSourceRequest.getSkip(),  dataSourceRequest.getPageSize(), rowmapper );					
+				return customQueryJdbcDao.getExtendedJdbcTemplate().query( sqlSource.getSql(), dataSourceRequest.getSkip(),  dataSourceRequest.getPageSize(), rowmapper );					
 		}else {
 			if( dataSourceRequest.getParameters().size() > 0 )
-				return dao.getExtendedJdbcTemplate().query(sqlSource.getSql(), rowmapper, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+				return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), rowmapper, getSqlParameterValues( dataSourceRequest.getParameters() ) );
 			else	
-				return dao.getExtendedJdbcTemplate().query(sqlSource.getSql(), rowmapper );
+				return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), rowmapper );
 		}
 	}
 	
-	public <T> T list(DataSourceRequest dataSourceRequest, ResultSetExtractor<T> extractor) {		
-		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
-		dao.setDataSource(dataSource);				
+	public <T> T list(DataSourceRequest dataSourceRequest, ResultSetExtractor<T> extractor) {				
 		logger.debug("Paging not support yet.");		
-		BoundSql sqlSource = dao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
+		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
 		if( dataSourceRequest.getParameters().size() > 0 )
-			return dao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor, getSqlParameterValues( dataSourceRequest.getParameters() ) );
 		else	
-			return dao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor );
 	}	
 	
 	/**
