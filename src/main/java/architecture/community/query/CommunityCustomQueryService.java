@@ -38,7 +38,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
 		dao.setDataSource(dataSource);
 		if (values.size() > 0)
-			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql(), getSqlParameterValues(values));
+			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
 		else
 			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql());
 	}
@@ -48,7 +48,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
 		dao.setDataSource(dataSource);
 		if (values.size() > 0)
-			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql(), getSqlParameterValues(values));
+			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
 		else
 			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql());
 
@@ -58,7 +58,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
 		dao.setDataSource(dataSource);
 		if (values.size() > 0)
-			return dao.getExtendedJdbcTemplate().query(dao.getBoundSql(statement).getSql(), rowmapper, getSqlParameterValues(values));
+			return dao.getExtendedJdbcTemplate().query(dao.getBoundSql(statement).getSql(), rowmapper, getSqlParameterValues(values).toArray());
 		else
 			return dao.getExtendedJdbcTemplate().query(dao.getBoundSql(statement).getSql(), rowmapper);
 	}
