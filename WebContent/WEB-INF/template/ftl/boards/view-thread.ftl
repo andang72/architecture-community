@@ -112,6 +112,10 @@
 			autherAvatarSrc : "/images/no-avatar.png",
 			autherJoinDate : "",
 			editalbe : false,
+			back : function () {
+				community.ui.send("<@spring.url "/display/pages/view-thread.html?" />", { threadId: __threadId });
+				return false;
+			},
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
@@ -592,6 +596,9 @@
                     		<div class="col-lg-12">
                         		<div class="ibox float-e-margins">
                             		<div class="ibox-title">
+                            			<a href="#" class="back" data-bind="click:back">
+										<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
+									</a>
                                 		<h5 data-bind="text:board.displayName"></h5>
 									<div class="pull-right forum-desc">
 										<samll>Total posts: <span data-bind="text:thread.messageCount"></span></samll>
