@@ -50,6 +50,13 @@ i.icon-svg {
 }
 
 /* IOS Icons */
+.icon-svg-ios-smile {
+	background-image: url("/images/icons/ios/smile.svg");	
+}
+.icon-svg-ios-angry {
+	background-image: url("/images/icons/ios/angry.svg");	
+}
+
 .icon-svg-ios-stats {
 	background-image: url("/images/icons/ios/stats.svg");	
 }
@@ -98,6 +105,10 @@ i.icon-svg {
 }
 
 /* Dusk Icons */
+.icon-svg-dusk-angry {
+	background-image: url("/images/icons/dusk/angry.svg");	
+}
+
 .icon-svg-dusk-stats {
 	background-image: url("/images/icons/dusk/stats.svg");	
 }
