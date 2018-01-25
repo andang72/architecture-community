@@ -221,12 +221,9 @@
                             			<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
                             			</a>
                             			<h2 class="g-pl-55">
-                                			<span data-bind="text:board.displayName">&nbsp;</span>
-                                			<div class="g-pt-15 g-pb-15 g-font-size-20 g-font-weight-200"></div>
-										<div class="forum-desc g-font-size-18 g-font-weight-200">
-											<samll>Total posts: <span data-bind="text:board.totalMessage"></span></samll>
-										</div>                                   				
-                                		</h2>
+										<span data-bind="text:board.displayName"></span>
+										<div class="g-pt-15 g-pb-15 g-font-size-20 g-font-weight-200">Total posts: <span data-bind="text:board.totalMessage"></span></div>
+									</h2>
                             		</div>
 								<div class="ibox-content ibox-heading">
                                     <h3>You have meeting today!</h3>
