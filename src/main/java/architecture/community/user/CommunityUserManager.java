@@ -179,7 +179,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 	protected void updateCaches(User user) {
 		if (user != null) {
 			log.debug("update cahce {}, {}", user.getUserId(), user.getUsername());
-			if (user.getUserId() > 0 && StringUtils.isNullOrEmpty(user.getUsername())) {
+			if (user.getUserId() > 0 && !StringUtils.isNullOrEmpty(user.getUsername())) {
 				
 				if(userIdCache.get(user.getUsername()) != null)
 					userIdCache.remove(user.getUsername());
