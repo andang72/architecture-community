@@ -827,7 +827,8 @@
 									<div class="tabs-container g-brd-grayblue">
 										<ul class="nav nav-tabs">
 											<li><a data-toggle="tab" href="#editor-options-tab-1" aria-expanded="false" data-kind="comments">댓글</a></li>
-											<li><a data-toggle="tab" href="#editor-options-tab-2" aria-expanded="false" data-kind="properties">속성</a></li>
+											<li><a data-toggle="tab" href="#editor-options-tab-2" aria-expanded="false" data-kind="activities">속성</a></li>
+											<li><a data-toggle="tab" href="#editor-options-tab-3" aria-expanded="false" data-kind="properties">속성</a></li>
 										</ul>
 										<div class="tab-content">
 											<div id="editor-options-tab-1" class="tab-pane active">
@@ -844,6 +845,12 @@
 											</div>
 											<div id="editor-options-tab-2" class="tab-pane">
 												<div class="panel-body">
+												아직 지원하지 않는 기능입니다. 
+												</div>
+											</div>
+											<div id="editor-options-tab-3" class="tab-pane">
+												<div class="panel-body">
+												아직 지원하지 않는 기능입니다. 
 												</div>
 											</div>
 										</div>
