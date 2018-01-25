@@ -130,6 +130,7 @@
 			}),
 			getThreadInfo : function ( handler ) {
 				var $this = this;
+				community.ui.progress($("#features"), true);
 				community.ui.ajax('/data/api/v1/threads/' + $this.get('thread.threadId') + '/info.json', {
 					success: function(data){						
 						if( handler != null && $.isFunction(handler) ){
@@ -141,6 +142,8 @@
 							$this.set('autherJoinDate',  community.data.getFormattedDate( $this.thread.rootMessage.user.creationDate)  );  
 						}
 					}
+				}).always( function () {
+					community.ui.progress($("#features"), false);
 				});		
 			}
     		});   
@@ -153,6 +156,7 @@
 				observable.set('board', new community.model.Board(data) );			
 				if(observable.board.readable)	
 				{
+					
 			    		observable.getThreadInfo( function ( data ) {    		
 			    			var t = new community.model.Thread(data) ;
 			    			t.copy( observable.get('thread') );			 
@@ -163,7 +167,8 @@
 			    			if(observable.board.readComment){
 			    				createMessageCommentListView(observable.thread.rootMessage);
 			    			} 
-			    		});					
+			    		});	
+			    						
 				}
 			}
 		});	
