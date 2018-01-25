@@ -214,7 +214,7 @@
 		<div class="row">
 			<div class="col-md-9">
 				<div class="forum-icon">
-				<i class="icon-svg icon-svg-sm #if( unclosedTotalCount > 0 ){# icon-svg-ios-angry #}else{# icon-svg-ios-smile #}# g-opacity-0_3"></i>				
+				<i class="icon-svg icon-svg-sm #if( unclosedTotalCount > 0 ){# icon-svg-ios-angry #}else{# icon-svg-ios-smile #}# g-opacity-0_9"></i>				
 				</div>
 				<h2 class="g-ml-60 g-font-weight-100">#: project.name #</h2>
 				<div class="g-ml-60 g-mb-5">
