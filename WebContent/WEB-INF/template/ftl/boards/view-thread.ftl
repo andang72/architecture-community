@@ -113,7 +113,8 @@
 			autherJoinDate : "",
 			editalbe : false,
 			back : function () {
-				community.ui.send("<@spring.url "/display/pages/view-thread.html?" />", { threadId: __threadId });
+				var $this = this;
+				community.ui.send("<@spring.url "/display/pages/threads.html?" />", { boardId: $this.board.boardId }); 
 				return false;
 			},
 			setUser : function( data ){
