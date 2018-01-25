@@ -73,6 +73,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		if (user == null && !StringUtils.isNullOrEmpty(template.getUsername())) {
 			String nameToUse = template.getUsername();
 			long userIdToUse = getUserIdInCache(nameToUse);
+			log.debug("found {} in cache", template.getUserId() );
 			if (userIdToUse > 0L) {
 				user = getUserInCache(template.getUserId());
 			}
