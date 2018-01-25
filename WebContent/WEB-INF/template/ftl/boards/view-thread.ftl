@@ -599,7 +599,6 @@
                             			<a href="#" class="back" data-bind="click:back">
 										<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
 									</a>
-                                		<h5 data-bind="text:board.displayName"></h5>
 									<div class="pull-right forum-desc">
 										<samll>Total posts: <span data-bind="text:thread.messageCount"></span></samll>
 									</div>                                		
@@ -614,6 +613,7 @@
 		                                    </div>
 		                                </a>
 		                                <div class="media-body">
+		                                	   <span data-bind="text:board.displayName" ></span>
 		                                    <h2 class="media-heading" data-bind="html: thread.rootMessage.subject" ></h2>
 		                                    <div class="message-body" data-bind="html: thread.rootMessage.body"></div>
 		                                    <!--
