@@ -1193,7 +1193,7 @@
 			<div class="media-body">
 				<span class="font-bold">#= community.data.getUserDisplayName( user ) #</span>
 				<span class="text-muted">#: kendo.toString( new Date(creationDate), "g") #</span>
-				<div class="social-content">
+				<div class="social-content g-font-size-16">
               	#= body #	
 				</div>
 				<div class="g-mb-5">
