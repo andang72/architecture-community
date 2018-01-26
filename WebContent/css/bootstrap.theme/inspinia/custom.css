@@ -72,6 +72,10 @@
 	z-index: 2050;
 }
 
+.issue-body p, .social-content p {
+	font-size: 1.1 em;
+	margin: 0 0 0 5px;
+}
 
 /** grayblue border tabs */
 .tabs-container.g-brd-grayblue .panel-body {

@@ -783,7 +783,7 @@
 					                     	<h2 class="h3 u-heading-v1__title g-mt-0 g-font-size-20">설명</h2>
 										</div>
 										<div id="issue-description-editor" class="hide"></div>
-										<section class="g-mb-15 g-brd-2 g-brd-blue g-rounded-5 g-brd-around--lg g-pa-15" data-bind="html:issue.description, invisible:editMode"></section>
+										<section class="g-mb-15 g-brd-2 g-brd-blue g-rounded-5 g-brd-around--lg g-pa-15 issue-body" data-bind="html:issue.description, invisible:editMode"></section>
 									</div>
 									<div class="g-mb-30" data-bind="invisible:isNew" style="display:none;">
 										<div class="u-heading-v1-4 g-bg-main g-brd-gray-light-v2 g-mb-20">
@@ -1196,7 +1196,7 @@
 				<div class="social-content">
               	#= body #	
 				</div>
-				<div class="m-t-xs">
+				<div class="g-mb-5">
 					<button class="btn btn-sm btn-link" type="button" 
 						data-kind="comment" data-action="list" data-object-id="#:objectId#" data-comment-id="#:commentId#" data-target="\\#message-#:objectId#-comment-#:commentId#-listview" aria-expanded="false" aria-controls="message-#:objectId#-comment-#:commentId#-listview"> <i class="icon-bubbles"></i> 답글보기 (<span>#: replyCount #</span>)</button>
 					<button class="btn btn-sm btn-link" type="button" 
