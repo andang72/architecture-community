@@ -76,8 +76,11 @@
 	font-size: 1.1em;
 	margin: 0 0 0 5px;
 }
+.social-talk .social-content {
+	font-size: 1.1em;
+}
+
 .social-content p {
-	font-size: 1.0em!important;
 	margin: 0 0 0 5px;
 }
 
