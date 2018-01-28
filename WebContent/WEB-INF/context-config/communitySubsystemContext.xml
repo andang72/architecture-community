@@ -305,6 +305,8 @@
 	<!-- ================================= -->
 	
 	<beans:bean id="imageDao" class="architecture.community.image.dao.jdbc.JdbcImageDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="imageLinkDao" class="architecture.community.image.dao.jdbc.JdbcImageLinkDao" p:dataSource-ref="dataSource" />
 
 	<beans:bean id="logoImageIdsCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean"
 		p:cacheName="logoImageIdsCache" 
@@ -339,6 +341,28 @@
 		p:diskExpiryThreadIntervalSeconds="0"
 		p:statisticsEnabled="true" />
 
+	<beans:bean id="imageLinkCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="imageLinkCache" 
+		p:maxElementsInMemory="5000"
+		p:diskPersistent="false" 
+		p:overflowToDisk="false" 
+     	p:timeToIdle="1800"   
+     	p:timeToLive="3600"
+		p:eternal="false" 
+		p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />
+		
+	<beans:bean id="imageLinkIdCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="imageLinkIdCache" 
+		p:maxElementsInMemory="5000"
+		p:diskPersistent="false" 
+		p:overflowToDisk="false" 
+     	p:timeToIdle="1800"   
+     	p:timeToLive="3600"
+		p:eternal="false" 
+		p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />	
+			
 	<beans:bean id="imageService" class="architecture.community.image.DefaultImageService" />
 
 	<!-- ================================= -->

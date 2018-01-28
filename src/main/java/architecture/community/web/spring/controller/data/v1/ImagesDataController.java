@@ -38,9 +38,14 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
+import architecture.community.image.DefaultImage;
 import architecture.community.image.Image;
+import architecture.community.image.ImageLink;
 import architecture.community.image.ImageService;
+import architecture.community.link.ExternalLink;
 import architecture.community.link.ExternalLinkService;
+import architecture.community.model.ModelObjectAwareSupport;
+import architecture.community.model.Models;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 import architecture.ee.service.ConfigService;
@@ -92,12 +97,48 @@ public class ImagesDataController {
 		return list;
     }
 
-	
-	/**
+ 
 	@Secured({ "ROLE_USER" })
     @RequestMapping(value = "/upload_image_and_link.json", method = RequestMethod.POST)
     @ResponseBody
-    public ExternalLink uploadAndShare(
+    public List<ImageLink> uploadImageAndRetureLink(
+    		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
+    		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
+    		@RequestParam(value = "imageId", defaultValue = "0", required = false) Long imageId,
+    		MultipartHttpServletRequest request) throws NotFoundException, IOException, UnAuthorizedException {
+
+		User user = SecurityHelper.getUser();
+		if( user.isAnonymous() )
+		    throw new UnAuthorizedException();
+		
+		List<ImageLink> list = new ArrayList<ImageLink>();
+			
+		Iterator<String> names = request.getFileNames();		
+		while (names.hasNext()) {
+		    String fileName = names.next();
+		    MultipartFile mpf = request.getFile(fileName);
+		    InputStream is = mpf.getInputStream();
+		    log.debug("upload image {}, file:{}, size:{}, type:{} ", imageId,  mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
+		    Image image;
+		    if (imageId > 0) {
+			    	image = imageService.getImage(imageId);			
+			    	((DefaultImage) image).setName(mpf.getOriginalFilename());
+			    	((DefaultImage) image).setInputStream(is);
+			    	((DefaultImage) image).setSize((int) mpf.getSize());
+		    } else {
+			    	image = imageService.createImage(objectType, objectId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+			    	image.setUser(user);
+		    }		    
+		    imageService.saveImage(image);
+		    list.add( imageService.getImageLink(image, true) ) ;
+		}			
+		return list ;//externalLinkService.getExternalLink(new ModelObjectAwareSupport(Models.IMAGE.getObjectType(), imageToUse.getImageId()), true);
+    }
+
+	@Secured({ "ROLE_USER" })
+    @RequestMapping(value = "/upload_image_and_external_link.json", method = RequestMethod.POST)
+    @ResponseBody
+    public List<ExternalLink> uploadImageAndRetureExternalLink(
     		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
     		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
     		@RequestParam(value = "imageId", defaultValue = "0", required = false) Long imageId,
@@ -109,6 +150,7 @@ public class ImagesDataController {
 	
 		Image imageToUse = null ;		
 		Iterator<String> names = request.getFileNames();		
+		List<ExternalLink> list = new ArrayList<ExternalLink>();
 		while (names.hasNext()) {
 		    String fileName = names.next();
 		    MultipartFile mpf = request.getFile(fileName);
@@ -116,23 +158,22 @@ public class ImagesDataController {
 		    log.debug("upload image {}, file:{}, size:{}, type:{} ", imageId,  mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
 		    Image image;
 		    if (imageId > 0) {
-		    	image = imageService.getImage(imageId);			
-		    	((DefaultImage) image).setName(mpf.getOriginalFilename());
-		    	((DefaultImage) image).setInputStream(is);
-		    	((DefaultImage) image).setSize((int) mpf.getSize());
+			    	image = imageService.getImage(imageId);			
+			    	((DefaultImage) image).setName(mpf.getOriginalFilename());
+			    	((DefaultImage) image).setInputStream(is);
+			    	((DefaultImage) image).setSize((int) mpf.getSize());
 		    } else {
-		    	image = imageService.createImage(objectType, objectId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
-		    	image.setUser(user);
+			    	image = imageService.createImage(objectType, objectId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+			    	image.setUser(user);
 		    }		    
 		    imageService.saveImage(image);
 		    imageToUse = image;
+		    list.add(externalLinkService.getExternalLink(new ModelObjectAwareSupport(Models.IMAGE.getObjectType(), imageToUse.getImageId()), true) );
 		}			
-		//return new ExternalLink( "", objectType, objectId, true);
-		return externalLinkService.getExternalLink(new ModelObjectAwareSupport(Models.IMAGE.getObjectType(), imageToUse.getImageId()), true);
+		return list ;
     }
-
 	
-	
+	/*
 	@Secured({ "ROLE_USER" })
     @RequestMapping(value = "/upload_image.json", method = RequestMethod.POST)
     @ResponseBody

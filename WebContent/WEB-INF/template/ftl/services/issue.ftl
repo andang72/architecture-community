@@ -206,10 +206,15 @@
 			 	editorTo.summernote({
 					placeholder: '자세하게 기술하여 주세요.',
 					dialogsInBody: false,
-					height: 300
+					height: 300,
+					callbacks: {
+						onImageUpload : function(files, editor, welEditable) {
+				            sendFile(files[0], editorTo );
+				        }
+			        }
 				});			 	
 				editorTo.summernote('code', $this.issue.get('description'));	
-		 	},
+		 	},	 	
 		 	saveOrUpdate : function(e){				
 				var $this = this;		
 				var stopEditMode = true;				
@@ -375,6 +380,28 @@
 			return false;		
 		});	 		
 	});
+
+	function sendFile(file, editor ) {
+	    data = new FormData();
+	    	data.append("file", file);
+	    $.ajax({
+	        data: data,
+	        type: "POST",
+	        url: '<@spring.url "/data/api/v1/images/upload_image_and_link.json" />',
+	        cache: false,
+	        contentType: false,
+	        processData: false,
+	        success: function (response) {	        		
+	        		$.each( response, function( index , item  ) {
+		            var url = '<@spring.url "/download/images/" />' + item.linkId;
+		            editor.summernote('insertImage', url, function ($image) {
+		              $image.addClass('img-responsive');
+					  $image.attr('data-public-shared', response.publicShared );
+					});				  
+				});
+	        }
+	    });
+	}
 
 	function createIssueCommentListView( model, renderTo ){			
 		renderTo = renderTo || $('#issue-comment-listview');	
@@ -827,7 +854,7 @@
 									<div class="tabs-container g-brd-grayblue">
 										<ul class="nav nav-tabs">
 											<li><a data-toggle="tab" href="#editor-options-tab-1" aria-expanded="false" data-kind="comments">댓글</a></li>
-											<li><a data-toggle="tab" href="#editor-options-tab-2" aria-expanded="false" data-kind="activities">속성</a></li>
+											<li><a data-toggle="tab" href="#editor-options-tab-2" aria-expanded="false" data-kind="activities">활동</a></li>
 											<li><a data-toggle="tab" href="#editor-options-tab-3" aria-expanded="false" data-kind="properties">속성</a></li>
 										</ul>
 										<div class="tab-content">

@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import architecture.community.attachment.AbstractAttachmentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.image.dao.ImageDao;
+import architecture.community.image.dao.ImageLinkDao;
 import architecture.community.util.CommunityConstants.Platform;
 import architecture.ee.exception.RuntimeError;
 import architecture.ee.service.Repository;
@@ -64,6 +66,10 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	private ImageDao imageDao;
 
 	@Inject
+	@Qualifier("imageLinkDao")
+	private ImageLinkDao imageLinkDao;
+	
+	@Inject
 	@Qualifier("logoImageIdsCache")
 	private Cache logoImageIdsCache;
 
@@ -75,10 +81,14 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	@Qualifier("imageCache")
 	private Cache imageCache;
 
-/*	@Inject
+	@Inject
 	@Qualifier("imageLinkIdCache")
-	private Cache imageLinkIdCache;
-	*/
+    private Cache imageLinkIdCache;
+	
+	@Inject
+	@Qualifier("imageLinkCache")
+    private Cache imageLinkCache;
+ 
 	private ImageConfig imageConfig;;
 
 	private File imageDir;
@@ -513,6 +523,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	public void deleteImage(Image image) {
 		Image imageToUse = imageDao.getImageById(image.getImageId());
 		imageDao.deleteImage(imageToUse);
+		removeImageLink(imageToUse);
+		
 		File dir = new File(getImageDir(), "cache");
 		File imageFile = new File(dir, (new StringBuilder()).append(imageToUse.getImageId()).append(".bin").toString());
 		if (imageFile.exists())
@@ -669,7 +681,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 			throw new RuntimeError(e.getMessage(), e);
 		}
 	}
-/*
+
 	public Image getImageByImageLink(String linkId) throws NotFoundException {
 		Long imageIdToUse = -1L;
 		if (imageLinkIdCache.get(linkId) == null) {
@@ -682,7 +694,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				throw new NotFoundException(msg, e);
 			}
 		} else {
-			imageIdToUse = (Long) imageLinkIdCache.get(linkId).getValue();
+			imageIdToUse = (Long) imageLinkIdCache.get(linkId).getObjectValue();
 		}
 		return getImage(imageIdToUse);
 	}
@@ -700,7 +712,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				throw new NotFoundException(msg, e);
 			}
 		} else {
-			link = (ImageLink) imageLinkCache.get(imageIdToUse).getValue();
+			link = (ImageLink) imageLinkCache.get(imageIdToUse).getObjectValue();
 		}
 		return link;
 	}
@@ -730,7 +742,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		} catch (NotFoundException e) {
 		}
 	}
-*/
+
+
 	/**
 	 * 
 	 * @param image

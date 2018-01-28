@@ -113,6 +113,15 @@ public interface ImageService {
 	public abstract InputStream getImageThumbnailInputStream(Image image, int width, int height ) ;
 	
 	
+	/** IMAGE LINK API **/
+	
+	public Image getImageByImageLink(String linkId ) throws NotFoundException ;
+	
+	public ImageLink getImageLink( Image image ) throws NotFoundException ;
+	
+	public ImageLink getImageLink( Image image , boolean createIfNotExist  ) throws NotFoundException ;
+	
+	public void removeImageLink( Image image ) ;
 	
 		
 }

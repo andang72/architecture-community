@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.exception.NotFoundException;
+import architecture.community.image.Image;
 import architecture.community.image.ImageService;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.link.ExternalLinkService;
@@ -157,7 +158,7 @@ public class DownloadController {
 			    			}		    				
 		    				if(noThumbnail) {
 			    				response.setStatus(301);
-			    				String url = configService.getApplicationProperty("components.download.images.no-avatar-url", "/images/no-avatar.png");
+			    				String url = configService.getApplicationProperty("components.download.attachments.no-attachment-url", "/images/no-image.jpg");
 			    				response.addHeader("Location", url);
 			    			}		    				
 		    			} else {
@@ -179,6 +180,42 @@ public class DownloadController {
 		}
 
 	    }
+	
+	@RequestMapping(value = "/images/{linkId}", method = RequestMethod.GET)
+	@ResponseBody
+	public void downloadImage(
+			@PathVariable("linkId") String linkId, 
+			@RequestParam(value = "width", defaultValue = "0", required = false) Integer width,
+			@RequestParam(value = "height", defaultValue = "0", required = false) Integer height,
+			HttpServletResponse response) throws IOException {
+		try {
+			
+			Image image = imageService.getImageByImageLink(linkId);
+			if (image != null) {
+				InputStream input;
+				String contentType;
+				int contentLength;
+				if (width > 0 && width > 0) {
+					input = imageService.getImageThumbnailInputStream(image, width, height);
+					contentType = image.getThumbnailContentType();
+					contentLength = image.getThumbnailSize();
+				} else {
+					input = imageService.getImageInputStream(image);
+					contentType = image.getContentType();
+					contentLength = image.getSize();
+				}
+				response.setContentType(contentType);
+				response.setContentLength(contentLength);
+				IOUtils.copy(input, response.getOutputStream());
+				response.flushBuffer();
+			}
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
+			response.setStatus(301);
+			String url = configService.getApplicationProperty("components.download.images.no-image-url", "/images/no-image.jpg");
+			response.addHeader("Location", url);
+		}
+	}
 	
 	/**
 	@RequestMapping(value = "/images/{externalId}", method = RequestMethod.GET)

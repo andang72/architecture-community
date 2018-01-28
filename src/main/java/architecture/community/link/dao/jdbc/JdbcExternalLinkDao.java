@@ -55,7 +55,7 @@ public class JdbcExternalLinkDao extends ExtendedJdbcDaoSupport implements Exter
  
 	public ExternalLink getExternalLink(String linkId) {
 		ExternalLink link =  getExtendedJdbcTemplate().queryForObject(
-				getBoundSql("COMMUNITY_WEB.SELECT_EXTERNAL_LINK_BY_LINK_ID").getSql(), 
+				getBoundSql("COMMUNITY_WEB.SELECT_IMAGE_LINK_BY_LINK_ID").getSql(), 
 				externalLinkMapper, 
 				new SqlParameterValue (Types.VARCHAR, linkId ));			
 		return link;		
