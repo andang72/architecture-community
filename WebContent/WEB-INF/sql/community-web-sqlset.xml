@@ -52,7 +52,7 @@
  	<#else>
  	${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'
  	</#if></#list></#if>
- 	ORDER BY CREATION_DATE ASC
+ 	ORDER BY MODIFIED_DATE DESC
  	 ]]></dynamic></sql-query>	
 
  	<sql-query name="INSERT_ISSUE" description="INSERT_ISSUE"><![CDATA[    	
