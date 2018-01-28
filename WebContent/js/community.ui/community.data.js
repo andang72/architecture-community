@@ -426,7 +426,31 @@
 		    return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
 	}
 	
+	function uploadImageAndInsertLink( file, editor , url ) {
+		url = url || '/data/api/v1/images/upload_image_and_link.json'
+	    data = new FormData();
+	    	data.append("file", file);
+	    $.ajax({
+	        data: data,
+	        type: "POST",
+	        url: url,
+	        cache: false,
+	        contentType: false,
+	        processData: false,
+	        success: function (response) {	        		
+	        		$.each( response, function( index , item  ) {
+		            var url = '/download/images/' + item.linkId;
+		            editor.summernote('insertImage', url, function ($image) {
+		              $image.addClass('img-responsive');
+					  $image.attr('data-public-shared', response.publicShared );
+					});				  
+				});
+	        }
+	    });
+	}	
+	
 	extend(community.data, {	
+		uploadImageAndInsertLink: uploadImageAndInsertLink,
 		getFormattedDate : getFormattedDate,
 		getAttachmentUrl : getAttachmentThumbnailUrl,
 		getAttachmentThumbnailUrl :getAttachmentThumbnailUrl,

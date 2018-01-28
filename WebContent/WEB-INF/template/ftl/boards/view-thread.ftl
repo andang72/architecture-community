@@ -196,9 +196,7 @@
 					});
 				}
 			}	
-			
 			openMessageEditorModal( actionType , observable.board, message );	
-					
 			return false;		
 		});			
 		
@@ -395,7 +393,12 @@
 			editorTenderTo.summernote({
 				dialogsInBody: true,
 				height: 300,
-				lang: 'ko-KR'
+				lang: 'ko-KR',
+				callbacks: {
+					onImageUpload : function(files, editor, welEditable) {
+				        community.data.uploadImageAndInsertLink(files[0], editorTenderTo );
+				    }
+			    }
 			});
 			
 			// attachment dorpzone
@@ -571,6 +574,28 @@
 		}		
 		renderTo.modal('show');
 	}
+	
+	function sendFile(file, editor ) {
+	    data = new FormData();
+	    	data.append("file", file);
+	    $.ajax({
+	        data: data,
+	        type: "POST",
+	        url: '<@spring.url "/data/api/v1/images/upload_image_and_link.json" />',
+	        cache: false,
+	        contentType: false,
+	        processData: false,
+	        success: function (response) {	        		
+	        		$.each( response, function( index , item  ) {
+		            var url = '<@spring.url "/download/images/" />' + item.linkId;
+		            editor.summernote('insertImage', url, function ($image) {
+		              $image.addClass('img-responsive');
+					  $image.attr('data-public-shared', response.publicShared );
+					});				  
+				});
+	        }
+	    });
+	}	
 	
 	</script>
     

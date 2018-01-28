@@ -209,7 +209,7 @@
 					height: 300,
 					callbacks: {
 						onImageUpload : function(files, editor, welEditable) {
-				            sendFile(files[0], editorTo );
+				            community.data.uploadImageAndInsertLink(files[0], editorTo );
 				        }
 			        }
 				});			 	
