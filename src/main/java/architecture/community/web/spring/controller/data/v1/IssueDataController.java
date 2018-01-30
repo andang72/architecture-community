@@ -203,13 +203,17 @@ public class IssueDataController extends AbstractCommunityDateController  {
 			NativeWebRequest request) {
 		ItemList items = new ItemList();
 		User currentUser = SecurityHelper.getUser();
+		
+		log.debug( "1.TILL_THIS_WEEK : {} > {}" , dataSourceRequest.getDataAsBoolean("TILL_THIS_WEEK", false), getThisSaturday());
+		
 		if( dataSourceRequest.getDataAsBoolean("TILL_THIS_WEEK", false) ) {
-			dataSourceRequest.getData().put("TILL_THIS_WEEK", getThisSaturday());
-		}{
-			dataSourceRequest.getData().put("TILL_THIS_WEEK", null);
+			dataSourceRequest.setData("TILL_THIS_WEEK", getThisSaturday());
+		}else{
+			dataSourceRequest.setData("TILL_THIS_WEEK", null);
 		}
 		dataSourceRequest.setUser(currentUser);		
 		int totalSize = projectService.getIssueSummaryCount(dataSourceRequest);
+		
 		if( totalSize > 0) {
 			List<IssueSummary> list = projectService.getIssueSummary(dataSourceRequest);
 			items.setTotalCount(totalSize);

@@ -17,7 +17,7 @@ public class CustomQueryJdbcDao extends ExtendedJdbcDaoSupport  {
 	public CustomQueryJdbcDao() {
 	}
 
-	public long getNextId( Models model){
+	public long getNextId(Models model){
 		return sequencerFactory.getNextValue(model.getObjectType(), model.name());
 	}	
 	

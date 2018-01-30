@@ -383,6 +383,9 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		additionalParameter.put("sort", dataSourceRequest.getSort());		
 		additionalParameter.put("data", dataSourceRequest.getData());		
 		additionalParameter.put("user", dataSourceRequest.getUser());		
+		
+		logger.debug("data {}", dataSourceRequest.getData());
+		
 		return additionalParameter;
 	}
 }

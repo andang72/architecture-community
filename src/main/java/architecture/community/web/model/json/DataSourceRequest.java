@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import architecture.community.model.json.JsonUserDeserializer;
@@ -175,6 +176,11 @@ public class DataSourceRequest {
 		return data;
 	}
 
+	@JsonIgnore
+	public void setData(String key, Object value) {
+		data.put(key, value);
+	}
+	
 	public String getDataAsString(String key, String defaultValue) {
 		if (data.containsKey(key)) {
 			try {

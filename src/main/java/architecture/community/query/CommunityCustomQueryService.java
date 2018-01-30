@@ -38,29 +38,6 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	public CommunityCustomQueryService() {
 	}
 	
-	public List<Map<String, Object>> list( String statement, List<ParameterValue> values) {
-		if (values.size() > 0)
-			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
-		else
-			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql());
-	}
-	
-	public List<Map<String, Object>> list(String source, String statement, List<ParameterValue> values) {
-		DataSource dataSource = CommunityContextHelper.getComponent(source, DataSource.class);
-		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
-		dao.setDataSource(dataSource);
-		if (values.size() > 0)
-			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
-		else
-			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql());
-	}
-
-	public <T> List<T> list( String statement, List<ParameterValue> values, RowMapper<T> rowmapper) {
-		if (values.size() > 0)
-			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper, getSqlParameterValues(values).toArray());
-		else
-			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper);
-	}
 	
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {				
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
@@ -111,6 +88,33 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor );
 	}	
 	
+	
+
+	public List<Map<String, Object>> list( String statement, List<ParameterValue> values) {
+		if (values.size() > 0)
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
+		else
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql());
+	}
+	
+	public List<Map<String, Object>> list(String source, String statement, List<ParameterValue> values) {
+		DataSource dataSource = CommunityContextHelper.getComponent(source, DataSource.class);
+		ExtendedJdbcDaoSupport dao = new ExtendedJdbcDaoSupport(sqlConfiguration);
+		dao.setDataSource(dataSource);
+		if (values.size() > 0)
+			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql(), getSqlParameterValues(values).toArray());
+		else
+			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql());
+	}
+
+	public <T> List<T> list( String statement, List<ParameterValue> values, RowMapper<T> rowmapper) {
+		if (values.size() > 0)
+			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper, getSqlParameterValues(values).toArray());
+		else
+			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper);
+	}
+	
+	
 	/**
 	 * 외부에서 전달된 인자들을 스프링이 인식하는 형식의 값을 변경하여 처리한다.
 	 * @param values
@@ -130,7 +134,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	 * @param dataSourceRequest
 	 * @return
 	 */
-	private Map<String, Object> getAdditionalParameter( DataSourceRequest dataSourceRequest ){
+	protected Map<String, Object> getAdditionalParameter( DataSourceRequest dataSourceRequest ){
 		Map<String, Object> additionalParameter = new HashMap<String, Object>();
 		additionalParameter.put("filter", dataSourceRequest.getFilter());
 		additionalParameter.put("sort", dataSourceRequest.getSort());		

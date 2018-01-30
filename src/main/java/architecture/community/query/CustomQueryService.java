@@ -10,22 +10,37 @@ import architecture.community.web.model.json.DataSourceRequest;
 
 public interface CustomQueryService {
 	
+	
+	/**
+	 *  
+	 * API using DataSourceRequest 
+	 *
+	 */
+	
 	/**
 	 * 
 	 * @param dataSourceRequest
-	 * @param rowmapper 결과 데이터처 처리자 
+	 * @param rowmapper Row 단위 결과 데이터 처리자 
 	 * @return
 	 */
 	public <T> List<T> list( DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper);
 	
 	
-	
+	/**
+	 * 
+	 * @param dataSourceRequest
+	 * @param extractor 결과 데이터 처리자 
+	 * @return
+	 */
 	public <T> T list(DataSourceRequest dataSourceRequest, ResultSetExtractor<T> extractor) ;
+	 
 	
 	
-	
-	
-	
+	/**
+	 *  
+	 * Old style API
+	 *
+	 */
 	
 	/**
 	 * 
@@ -37,14 +52,19 @@ public interface CustomQueryService {
 	public <T> List<T> list( String statement, List<ParameterValue> values, RowMapper<T> rowmapper);
 	
 	
-	
+	/**
+	 * 
+	 * @param statement 쿼리 키
+	 * @param values 파라메터 값 
+	 * @return 
+	 */
 	public List<Map<String, Object>> list(String statement, List<ParameterValue> values) ;
 
 	/**
 	 * 
-	 * @param source
-	 * @param statement
-	 * @param values
+	 * @param source 데이터소스 이름 
+	 * @param statement 쿼리 키
+	 * @param values 파라메터 값
 	 * @return
 	 */
 	public List<Map<String, Object>> list(String source, String statement, List<ParameterValue> values) ;

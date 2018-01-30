@@ -181,6 +181,7 @@
     		var renderTo = $('#page-top');
     		renderTo.data('model', observable);
     		community.ui.bind(renderTo, observable );	
+    		community.ui.tooltip(renderTo);
     		createProjectListView(observable);
     		
 		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view], a[data-action=view2], button[data-action=overviewstats]", function(e){			
@@ -224,7 +225,25 @@
 			template: community.ui.template($("#template").html())
 		}); 	
 	}
+
+	function getFirstDayOfWeek(){
+		var now = new Date();	
+		var day = now.getDay(), diff = now.getDate() - day + (day == 0 ? -6 : 1 ); 
+		return new Date(now.setDate(diff));
+	}
 	
+	function getLastSaturday(){
+		var now = getFirstDayOfWeek();
+		return new Date(now.setDate(now.getDate() - 2));
+	}
+	
+	function getThisFriday(){
+		var now = new Date();	
+		var day = now.getDay(), diff = now.getDate() - day + 5; 
+		return new Date(now.setDate(diff));
+	}
+	
+			
 	function createIssueListView(observable){
 		var renderTo = $('#issue-listview');	 	
 		if( !community.ui.exists(renderTo) ){
@@ -334,7 +353,7 @@
             </div>
             <!-- Promo Blocks - Input -->
 			<p data-bind="invisible:currentUser.anonymous" style="display:none;">
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous, enabled: enabled" >기술지원요청하기</a>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" role="button" data-toggle="tooltip" data-placement="bottom" data-original-title="새로운 이슈를 등록합니다." data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous, enabled: enabled" >기술지원요청하기</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
@@ -356,14 +375,13 @@
                                 		<h2>
                                 		<i class="icon-svg icon-svg-sm icon-svg-dusk-client-base "></i>
                                 		</h2>
-                                		<p>프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</p>
                             		</div>   
                             		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">
 								  	<div class="row">
 	                            			<div class="col-sm-12">
-	                            				<button class="btn btn-lg u-btn-outline-darkgray g-mr-10 g-mb-15" type="button"  role="button" data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
-	                            				<button class="btn btn-lg u-btn-outline-purple g-mr-10 g-mb-15" type="button"  role="button" data-object-id="0" data-action="overviewstats">통계</button>
+	                            				<button class="btn btn-lg u-btn-outline-darkgray g-mr-10 g-mb-15" type="button"  role="button" role="button" data-toggle="tooltip" data-placement="bottom" data-original-title="내가 담당하고 있는 모든 미처리 이슈들을 확인합니다." data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
+	                            				<button class="btn btn-lg u-btn-outline-purple g-mr-10 g-mb-15" type="button"  role="button" role="button" data-toggle="tooltip" data-placement="top" data-original-title="기간별 이슈 처리현황을 확인합니다." data-object-id="0" data-action="overviewstats">통계</button>
 	                            				<a class="btn btn-lg u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
 	                            			</div>
 	                            	  	</div>		                            	
@@ -389,13 +407,14 @@
 											</div>
 								  		</div>	
 								  		<div class="col-sm-4 g-mb-15">
-								  			<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" data-object-id="0" data-bind="click:clearFilters" >초기화</button>
+								  			<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" role="button" data-toggle="tooltip" data-placement="bottom" data-original-title="적용된 필터를 제거합니다." data-object-id="0" data-bind="click:clearFilters" >초기화</button>
 								  		</div>
 								  	</div>
 	                            	</div>
 	                            	</#if> 
 	                            	<#if !currentUser.anonymous >                      		                       		
 	                            <div class="ibox-content">
+	                            		<p>프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</p>
 	                                <div id="project-listview" class="no-border" ></div>
 	                            </div>                            
 	                            </#if>
@@ -423,7 +442,7 @@
 			          		<label class="k-checkbox-label" for="eq2">진행상태가 없는 이슈 포함</label>
 			            </li>
 			            <li>
-			            		<a class="btn btn-sm u-btn-outline-bluegray g-ml-25 g-mr-10 g-mb-5" href="#" role="button" data-bind="click:doFilter2">새로고침</a>
+			            		<button type="button" class="btn btn-sm u-btn-outline-bluegray g-ml-25 g-mr-10 g-mb-5" href="#" role="button" role="button" data-bind="click:doFilter2">새로고침</button>
 			            </li>
 			        </ul>	                
 					<div class="btn-group" data-toggle="buttons">
