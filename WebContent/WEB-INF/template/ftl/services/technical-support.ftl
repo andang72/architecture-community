@@ -167,7 +167,7 @@
 			},
 			showAllOpenIssue: function(e){
 				$('html, body').stop().animate({ scrollTop: $("#worklist").offset().top - 50 }, 500);
-				e.preventDefault();
+				//e.preventDefault();
 				$("#navbar").collapse('hide');				
  			}
     		});
