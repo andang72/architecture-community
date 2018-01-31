@@ -274,11 +274,12 @@
 				dataBound: function() {		
 					if( this.items().length == 0)
 			        		renderTo.html('<tr class="g-height-50"><td colspan="7" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
-			    
-				    if(observable.isDeveloper && firstTime )
-	       	 				observable.showAllOpenIssue();       	 
-	       	 					
-						firstTime = false;
+				    if(observable.isDeveloper && firstTime ){
+	       	 			setTimeout(function() {
+						  observable.showAllOpenIssue(); 
+						}, 500);
+	       	 		}		
+					firstTime = false;
 			    }
 			});
 			community.ui.pager( $("#issue-listview-pager"), {
