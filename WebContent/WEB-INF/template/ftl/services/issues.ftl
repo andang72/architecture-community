@@ -162,12 +162,27 @@
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	
+		community.ui.tooltip(renderTo);
 		
-		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=edit], a[data-action=view]", function(e){			
+		renderTo.on("click", "button[data-action=create], button[data-action=update], a[data-action=create], a[data-action=edit], a[data-action=view]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
+			if( actionType == 'update'){
+				var selected = [];
+				$.each( $('#issue-listview input[type=checkbox]:checked'), function ( index, item ){
+					selected.push( community.ui.listview($('#issue-listview')).dataSource.get($(item).data('object-id' )) );
+				}); 	
+				
+				if( selected.length > 0 ){			
+					createOrOpenIssueUpdater(observable, selected);
+				}else{
+					kendo.alert("선택된 이슈가 없습니다.<br/> 원하시는 이슈의 체크박스를 체크하여 이슈를 선택한 다음 '이슈상태변경' 버튼을 다시 클릭해주세요.");
+				}
+				return false;	
+			}		
+			
 			var objectId = $this.data("object-id");		
-			var targetObject = new community.model.Issue();
+			var targetObject = new community.model.Issue();	
 				
 			if( objectId > 0 ){
 				targetObject = community.ui.listview($('#issue-listview')).dataSource.get(objectId);
@@ -244,14 +259,52 @@
 			template: community.ui.template($("#template").html()),
 			dataBound: function() {
 				if( this.items().length == 0)
-			    		renderTo.html('<tr class="g-height-50"><td colspan="10" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
+			    		renderTo.html('<tr class="g-height-50"><td colspan="11" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
 			}
 		});	
 		community.ui.pager( $("#issue-listview-pager"), {
             dataSource: listview.dataSource
         });   
 	} 
- 
+ 	
+ 	function createOrOpenIssueUpdater (parent, data){ 	
+ 		var renderTo = $('#isses-update-modal');
+ 		if( !renderTo.data("model") ){
+ 		
+ 			var observable = new community.ui.observable({ 
+ 				issueStatus : null,
+ 				resolution : null,
+ 				resolutionDate : null,
+ 				setSource : function( data ){
+					$this = this;
+					$this.set('issueStatus', null);
+					$this.set('resolution', null);
+					$this.set('resolutionDate', new Date());
+					$this.issues.data(data);
+ 				},
+ 				statusDataSource : parent.statusDataSource,
+ 				resolutionDataSource : parent.resolutionDataSource,
+ 				issues: community.ui.datasource_v2({
+ 				    data:[]
+		        })    
+ 			});
+ 			
+ 			renderTo.data("model", observable );	
+			community.ui.bind( renderTo, observable );				
+			renderTo.on('show.bs.modal', function (e) {	
+			
+			});
+			
+			renderTo.on('hide.bs.modal', function (e) {	
+			
+			});	
+ 		} 		
+ 		if( community.ui.defined(data) ) 
+			renderTo.data("model").setSource(data); 
+ 		renderTo.modal('show');
+ 	}
+ 	
+ 	
 	function createOrOpenIssueEditor( data ){ 
 		var renderTo = $('#issue-editor-modal');
 		var editorTo = renderTo.find('.text-editor');
@@ -263,7 +316,7 @@
 				isOpen : false,
 				isClosed : false,
 				issue : new community.model.Issue(),
-				issueTypeDataSource : getPageModel().issueTypeDataSource ,
+				issueTypeDataSource : getPageModel().issueTypeDataSource,
 				priorityDataSource  : getPageModel().priorityDataSource,
 			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
 			 	resolutionDataSource : getPageModel().resolutionDataSource,
@@ -361,7 +414,15 @@
 		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
 	} 
  			
-	</script>		
+	</script>
+	<style>
+	.k-checkbox-label, .k-radio-label {
+    		padding-left: 16px;
+    }	
+    .k-alert .k-window-titlebar {
+    		display:none;
+    }
+	</style>		
 </head>
 <body id="page-top" class="landing-page no-skin-config">
 	<!-- NAVBAR START -->   
@@ -377,14 +438,13 @@
             </div>
             <!-- Promo Blocks - Input -->
 			<p>
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" data-toggle="tooltip" data-placement="bottom" data-original-title="새로운 이슈를 등록합니다." data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>
 			</p>            
             <!-- End Promo Blocks - Input -->
-          </div>
-        </div>
-      </div>
+          </div><!-- /.col-lg-6 -->
+        </div><!-- /.row -->
+      </div><!-- /.container -->
     </section>
-
 	<section id="features" class="container services">
 		<div class="wrapper wrapper-content">
 			<div class="container">            
@@ -418,7 +478,7 @@
 					                  <span>종결</span>
 					                </div>
 					
-					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30" >
 					                  <div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount"></div>
 					                  <span>미처리</span>
 					                </div>
@@ -479,8 +539,9 @@
 	                            					<input data-role="datepicker" style="width: 100%" data-bind="value:filter.END_DATE" placeholder="종료일">
 	                            				</div>
 	                            				<div class="col-sm-4 g-mb-15 text-center">
-												<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:search, visible:enabled}">검색</button>
-												<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="visible:enabled">기술지원요청하기</a>
+												<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-toggle="tooltip" data-placement="top" data-original-title="조건에 해당하는 이슈들을 검색합니다." data-bind="{click:search, visible:enabled}">검색</button>
+												<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="visible:enabled">새로운이슈등록하기</a>
+	                            					<button type="button" class="btn u-btn-outline-pink g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="update" data-action-target="issue" data-toggle="tooltip" data-placement="bottom" data-original-title="체크된 이슈들의 상태를 한꺼번에 변경할 수 있습니다." data-bind="visible:isDeveloper">이슈상태변경</button>
 	                            				</div>
 	                            		</div>
 								</div>
@@ -490,6 +551,7 @@
 						                <table class="table table-bordered u-table--v2 g-mb-0">
 						                  <thead class="text-uppercase g-letter-spacing-1">
 						                    <tr class="g-height-50">
+						                    	 <th class="align-middle g-font-weight-300 g-color-black g-min-width-20"></th>	
 						                    	 <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">ID</th>	
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">유형</th>
@@ -518,7 +580,11 @@
 	<#include "/includes/user-footer.ftl">
 	<!-- FOOTER END -->  				
 	<script type="text/x-kendo-template" id="template">
-                    <tr>
+	<tr>
+                    	 <td class="align-middle text-center">
+                    	 	<input type="checkbox" id="selected-#= issueId #" class="k-checkbox" data-object-kind="issue" data-object-id="#= issueId #">
+                    	 	<label class="k-checkbox-label" for="selected-#= issueId #"></label>
+                    	 </td> 	 	
                       <td class="align-middle text-center">
                       ISSUE-#: issueId # 	
                       </td>
@@ -554,9 +620,82 @@
                       </td>
                       <td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
                       <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
-                    </tr>
+ 	</tr>
 	</script>
-</body>
+	<script type="text/x-kendo-template" id="selected-template" >
+	<tr class="g-height-50">
+		<td class="align-middle text-center"> ISSUE-#: issueId # 	 </td>
+		<td class="align-middle">#: summary #</td>
+	</tr>
+	</script>	
+	<!-- issue state modify modal -->
+	<div class="modal fade" id="isses-update-modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
+			        </button>
+			        <h2 class="modal-title">
+			        		이슈상태변경
+			        	</h2>
+		      	</div>
+				<div class="modal-body g-pa-25">	         
+					<table class="table u-table--v2 g-mb-150">
+						<thead class="text-uppercase g-letter-spacing-1">
+							<tr class="g-height-50">
+								<th class="align-middle text-center g-font-weight-300 g-color-black g-width-80">ID</th>	
+						    		<th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
+							</tr>
+						</thead>
+						<tbody data-role="listview"
+			                 data-template="selected-template"
+			                 data-bind="source:issues"
+			                 class = "no-border"
+			                 style="height: 200px; overflow: auto">
+			                  
+			             </tbody>
+					</table>
+					<p class="g-font-size-24 g-color-red">아직 지원하고 있지 않는 기능입니다. 2월 중에 지원 예정입니다.</p>
+					<div class="g-brd-blue g-brd-2 g-brd-style-solid g-mt-300 g-pa-25 g-rounded-10 ">
+					<form> 
+						<div class="form-group"> 
+							<h4 class="h6 g-mb-5">상태</h4>
+							<input data-role="combobox"  
+							   data-placeholder="진행상태를 선택하여 주세요."
+			                   data-auto-bind="true"
+			                   data-value-primitive="true"
+			                   data-text-field="name"
+			                   data-value-field="code"
+			                   data-bind="value:issueStatus, source:statusDataSource"
+			                   style="width: 100%;"/>
+						</div> 
+						<div class="form-group"> 
+							<h4 class="h6 g-mb-5">결과</h4>
+							<input id="input-update-resolution"
+								data-role="combobox"	
+								data-placeholder="처리결과를 선택하여 주세요"
+							    data-auto-bind="true"
+							    data-value-primitive="true"
+							    data-text-field="name"
+						        data-value-field="code"
+						        data-bind="value:resolution, source:resolutionDataSource"
+						        style="width: 100%;"/>
+						</div>
+						<div class="form-group"> 
+							<h4 class="h6 g-mb-5">처리일자</h4>
+							<input id="input-update-resolutionDate" data-role="datepicker" data-bind="value: resolutionDate" style="width: 100%">
+						</div>
+					</form>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+					<!-- <button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate">확인</button>	-->
+				</div>
+			</div><!-- /.modal-content -->
+		</div>
+	</div>							
 	<!-- issue editor modal -->
 	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -716,6 +855,7 @@
 				</div>
 			</div>
 		</div>
-	</div>	 
+	</div>	
+</body>	 
 </html>
 </#compress>

@@ -27,7 +27,7 @@
  	WHERE 
  		ISSUE_ID = ?
     ]]></sql-query>		
-		
+    	
  	<sql-query name="COUNT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID" description="COUNT_ISSUE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID"><![CDATA[    	
   	SELECT COUNT(ISSUE_ID) FROM REP_ISSUE    
  	WHERE OBJECT_TYPE = ? AND OBJECT_ID = ?
@@ -35,7 +35,7 @@
  	<#if filter??><#list filter.filters as item ><#if item.field == "START_DATE">
  	${item.logic} ( CREATION_DATE >= '${item.value}' OR DUE_DATE >= '${item.value}' )
  	<#elseif item.field == "END_DATE">
- 	${item.logic} ( CREATION_DATE <= '${item.value}' OR DUE_DATE <= '${item.value}' )
+ 	${item.logic} ( ( DUE_DATE is null AND CREATION_DATE <= '${item.value}' ) OR ( DUE_DATE <= '${item.value}' ) )
  	<#else>
  	${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'
  	</#if></#list></#if>
@@ -48,7 +48,7 @@
  	<#if filter??><#list filter.filters as item ><#if item.field == "START_DATE">
  	${item.logic} ( CREATION_DATE >= '${item.value}' OR DUE_DATE >= '${item.value}' )
  	<#elseif item.field == "END_DATE">
- 	${item.logic} ( CREATION_DATE <= '${item.value}' OR DUE_DATE <= '${item.value}' )
+ 	${item.logic} ( ( DUE_DATE is null AND CREATION_DATE <= '${item.value}' ) OR ( DUE_DATE <= '${item.value}' ) )
  	<#else>
  	${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'
  	</#if></#list></#if>
