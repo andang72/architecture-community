@@ -167,7 +167,7 @@
 			},
 			showAllOpenIssue: function(e){
 				$('html, body').stop().animate({ scrollTop: $("#worklist").offset().top - 50 }, 500);
-				e.preventDefault();
+				//e.preventDefault();
 				$("#navbar").collapse('hide');				
  			}
     		});
@@ -258,7 +258,7 @@
 							options.data.TILL_THIS_WEEK = observable.filter2.TILL_THIS_WEEK;
 							return community.ui.stringify(options);
 						} 			
-					},	
+					},
 					serverFiltering: true,
 					serverPaging: true,		
 					filter: { filters: [
@@ -271,12 +271,14 @@
 					}
 				}),
 				template: community.ui.template($("#template-issue").html()),
-				dataBound: function() {					
-					if(observable.isDeveloper && firstTime )
-       	 				observable.showAllOpenIssue();       	 		
-					firstTime = false;
+				dataBound: function() {		
 					if( this.items().length == 0)
 			        		renderTo.html('<tr class="g-height-50"><td colspan="7" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
+			    
+				    if(observable.isDeveloper && firstTime )
+	       	 				observable.showAllOpenIssue();       	 
+	       	 					
+						firstTime = false;
 			    }
 			});
 			community.ui.pager( $("#issue-listview-pager"), {
