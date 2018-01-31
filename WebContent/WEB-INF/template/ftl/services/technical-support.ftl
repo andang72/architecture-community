@@ -110,6 +110,7 @@
 				$this.set('enabled', true);
 				if($this.get('isDeveloper')){
 					createIssueListView($this);
+					$this.showAllOpenIssue();
 				}
 			},
 			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
