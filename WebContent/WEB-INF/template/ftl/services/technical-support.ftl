@@ -248,6 +248,7 @@
 		var renderTo = $('#issue-listview');	 	
 		if( !community.ui.exists(renderTo) ){
 			console.log("create listview for issues.");
+			var firstTime = true;
 			var listview = community.ui.listview( renderTo , {	
 				dataSource: community.ui.datasource('<@spring.url "/data/api/v1/issues/list.json"/>', {
 					transport:{
@@ -270,7 +271,10 @@
 					}
 				}),
 				template: community.ui.template($("#template-issue").html()),
-				dataBound: function() {
+				dataBound: function() {					
+					if(observable.isDeveloper && firstTime )
+       	 				observable.showAllOpenIssue();       	 		
+					firstTime = false;
 					if( this.items().length == 0)
 			        		renderTo.html('<tr class="g-height-50"><td colspan="7" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
 			    }
@@ -278,9 +282,6 @@
 			community.ui.pager( $("#issue-listview-pager"), {
             		dataSource: listview.dataSource
        	 	});  
-       	 	
-       	 	if(observable.isDeveloper)
-       	 		observable.showAllOpenIssue();
 		}		
 	}
 	
