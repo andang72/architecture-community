@@ -380,7 +380,7 @@
 	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">
 								  	<div class="row">
 	                            			<div class="col-sm-12">
-	                            				<button class="btn btn-lg u-btn-outline-red g-mr-10 g-mb-15" type="button"  role="button" role="button" data-bind="click: showAllOpenIssue" >전체 미완료 이슈 확인하기</button>
+	                            				<button class="btn btn-lg u-btn-outline-red g-mr-10 g-mb-15" type="button"  role="button" role="button" data-bind="click: showAllOpenIssue" >금주 나에게 배정된 업무 확인하기</button>
 	                            				<button class="btn btn-lg u-btn-outline-purple g-mr-10 g-mb-15" type="button"  role="button" role="button" data-toggle="tooltip" data-placement="top" data-original-title="기간별 이슈 처리현황을 확인합니다." data-object-id="0" data-action="overviewstats">통계</button>
 	                            				<a class="btn btn-lg u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
 	                            			</div>
@@ -430,8 +430,8 @@
 	        <div class="row">
 	            <div class="col-lg-12 text-center">
 	                <div class="navy-line"></div>
-	                <h1>미완료 이슈</h1>
-	                <p class="g-mb-15">지금까지 완료되지 않은 모든 이슈들입니다.</p>
+	                <h1>금주 나에게 배정된 업무</h1>
+	                <p class="g-mb-15">금주에 처리해야할 업무입니다.</p>
 					<ul class="list-inline">
 			            <li>
 			              	<input type="checkbox" id="eq1" class="k-checkbox" data-bind="checked: filter2.TILL_THIS_WEEK" checked>
