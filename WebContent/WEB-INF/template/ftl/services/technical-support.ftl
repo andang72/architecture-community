@@ -109,8 +109,7 @@
 				$this.set('isDeveloper', isDeveloper());
 				$this.set('enabled', true);
 				if($this.get('isDeveloper')){
-					createIssueListView($this);
-					$this.showAllOpenIssue();
+					createIssueListView($this);					
 				}
 			},
 			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
@@ -279,6 +278,9 @@
 			community.ui.pager( $("#issue-listview-pager"), {
             		dataSource: listview.dataSource
        	 	});  
+       	 	
+       	 	if(observable.isDeveloper)
+       	 		observable.showAllOpenIssue();
 		}		
 	}
 	
