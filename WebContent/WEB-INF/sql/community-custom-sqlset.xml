@@ -27,6 +27,7 @@
 	AND (
 	      ( T1.DUE_DATE IS NULL AND TO_CHAR( T1.CREATION_DATE , 'YYYYMMDD' ) BETWEEN '${data.startDate}' AND '${data.endDate}' )  
 	   OR ( T1.DUE_DATE IS NOT NULL AND TO_CHAR( T1.DUE_DATE , 'YYYYMMDD' ) BETWEEN '${data.startDate}' AND '${data.endDate}' ) 
+	   OR ( T1.RESOLUTION_DATE IS NOT NULL AND TO_CHAR( T1.RESOLUTION_DATE , 'YYYYMMDD' ) BETWEEN '${data.startDate}' AND '${data.endDate}' ) 
 	)
  	 ]]></dynamic></sql-query>
  	 	
