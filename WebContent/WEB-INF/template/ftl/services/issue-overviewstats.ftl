@@ -105,10 +105,15 @@
 			search : function(){
 				community.ui.listview( $('#summary-listview') ).dataSource.read(); 
 			},
+			back : function(){
+				community.ui.send("<@spring.url "/display/pages/technical-support.html" />" );
+				return false;
+			},
 			withinPeriodIssueCount : 0,
 			resolutionCount : 0,
 			unclosedTotalCount : 0
     		});     	
+    		
      	var renderTo = $('#page-top');
     		renderTo.data('model', observable);
     		community.ui.bind(renderTo, observable );	    		
@@ -189,6 +194,11 @@
 		<div class="row">
 			<div class="col-lg-12 g-mb-15">
 				<div class="ibox float-e-margins">
+					<div class="ibox-title g-pl-0 g-pb-0">
+						<a href="#" class="back" data-bind="click:back">
+							<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
+						</a>
+					</div>				
 					<div class="ibox-content ibox-heading">
 						<div class="row">
 							<div class="col-sm-4 g-mb-15">
