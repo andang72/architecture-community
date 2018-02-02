@@ -104,16 +104,17 @@
 			endDate : getThisFriday(),			
 			search : function(){
 				community.ui.listview( $('#summary-listview') ).dataSource.read(); 
-			}
-    		});
-     	
+			},
+			withinPeriodIssueCount : 0,
+			resolutionCount : 0,
+			unclosedTotalCount : 0
+    		});     	
      	var renderTo = $('#page-top');
     		renderTo.data('model', observable);
-    		community.ui.bind(renderTo, observable );	
-    		
+    		community.ui.bind(renderTo, observable );	    		
     		createSummaryListView(observable);
     		
-	});
+	});				
 	
 	function getFirstDayOfWeek(){
 		var now = new Date();	
@@ -150,12 +151,20 @@
 				schema: {
 					total: "totalCount",
 					data: "items"
+				},
+				aggregate : {					
+					{ field: "withinPeriodIssueCount", aggregate: "sum" },
+					{ field: "resolutionCount", aggregate: "sum" },
+					{ field: "unclosedTotalCount", aggregate: "sum" }
 				}	
 	    		}),
 			template: community.ui.template($("#template").html()),
 			dataBound: function() {
 				if( this.items().length == 0)
 			    		renderTo.html('<div class="forum-item">결과가 없습니다.</div>');
+			    observable.set('withinPeriodIssueCount', listview.dataSource.aggregates().withinPeriodIssueCount.sum );	
+			    observable.set('resolutionCount', listview.dataSource.aggregates().resolutionCount.sum );	
+			    observable.set('unclosedTotalCount', listview.dataSource.aggregates().unclosedTotalCount.sum );	
 			}
 		});
 	}	
@@ -176,6 +185,31 @@
         </div>
       </div>
     </section>
+	<section class="g-bg-gray-dark-v1 g-color-white g-py-100">
+    		<div class="container">
+        		<div class="row text-center text-uppercase">
+                <div class="col-lg-3 col-sm-6 g-brd-right g-brd-white-opacity-0_2 g-mb-50">
+                  <div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:withinPeriodIssueCount">0</div>
+                  <h4 class="h5 g-color-white-opacity-0_6">요청</h4>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 g-brd-right--lg g-brd-white-opacity-0_2 g-mb-50">
+                  <div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:resolutionCount">0</div>
+                  <h4 class="h5 g-color-white-opacity-0_6">처리</h4>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 g-brd-right g-brd-white-opacity-0_2 g-mb-50">
+                  <div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7">미지원</div>
+                  <h4 class="h5 g-color-white-opacity-0_6">작업시간</h4>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 g-mb-50">
+                  <div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:unclosedTotalCount">0</div>
+                  <h4 class="h5 g-color-white-opacity-0_6">누적 미처리</h4>
+                </div>
+            </div>
+        </div>
+    </section> 
 	<section class="container g-py-100">
 		<div class="row">
 			<div class="col-lg-12 g-mb-15">
