@@ -142,14 +142,31 @@ public class IssueDataController extends AbstractCommunityDateController  {
 	public Issue saveOrUpdateIssue(@RequestBody DefaultIssue newIssue, NativeWebRequest request) throws NotFoundException {
 
 		User user = SecurityHelper.getUser();
+		String statusCodeToUse = newIssue.getStatus() ;
 		
-		log.debug("ISSUE : " + newIssue.toString() );
-		Issue issueToUse ;
+		Issue issueToUse ;		
 		if ( newIssue.getIssueId() > 0) {
-			issueToUse = projectService.getIssue(newIssue.getIssueId());
+			issueToUse = projectService.getIssue(newIssue.getIssueId());			
 		}else {
 			issueToUse = projectService.createIssue(newIssue.getObjectType(), newIssue.getObjectId(), user );
-		}		
+			if( StringUtils.isNullOrEmpty(newIssue.getStatus()))
+				statusCodeToUse = "001";
+		}	
+		
+		if( !StringUtils.isNullOrEmpty(newIssue.getResolution()))
+		{
+			if( newIssue.getResolutionDate() == null ) {
+				newIssue.setResolutionDate(new Date());
+			}	
+			if(!org.apache.commons.lang3.StringUtils.equals(issueToUse.getStatus(), "005")) {
+				statusCodeToUse = "005";
+			}
+		}
+		
+		if( newIssue.getResolutionDate() != null && newIssue.getResolutionDate() != issueToUse.getResolutionDate() ) {
+			issueToUse.setResolutionDate(newIssue.getResolutionDate());
+		}
+		
 		if( newIssue.getAssignee() != null && newIssue.getAssignee().getUserId() > 0	) {			
 			if( issueToUse.getAssignee() != null && issueToUse.getAssignee().getUserId()  > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
 				issueToUse.setAssignee(newIssue.getAssignee());
@@ -170,17 +187,15 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		if( newIssue.getDueDate() != null && newIssue.getDueDate() != issueToUse.getDueDate() ) {
 			issueToUse.setDueDate(newIssue.getDueDate());
 		}
-		if( newIssue.getResolutionDate() != null && newIssue.getResolutionDate() != issueToUse.getResolutionDate() ) {
-			issueToUse.setResolutionDate(newIssue.getResolutionDate());
-		}
-		log.debug("{} compare with saved : {}", newIssue.getResolutionDate(), newIssue.getResolutionDate() != issueToUse.getResolutionDate());
+		
+		issueToUse.setStatus(statusCodeToUse);
 		issueToUse.setComponent(newIssue.getComponent());
 		issueToUse.setSummary(newIssue.getSummary());
 		issueToUse.setDescription(newIssue.getDescription());
 		issueToUse.setIssueType(newIssue.getIssueType());
 		issueToUse.setStatus(newIssue.getStatus());
-		issueToUse.setResolution(newIssue.getResolution());
-		issueToUse.setPriority(newIssue.getPriority());
+		issueToUse.setResolution(newIssue.getResolution());		
+		issueToUse.setPriority(newIssue.getPriority());	
 		
 		projectService.saveOrUpdateIssue(newIssue);
 		
