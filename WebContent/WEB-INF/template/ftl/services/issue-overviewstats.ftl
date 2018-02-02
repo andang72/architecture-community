@@ -185,31 +185,6 @@
         </div>
       </div>
     </section>
-	<section class="g-bg-gray-dark-v1 g-color-white g-py-100">
-    		<div class="container">
-        		<div class="row text-center text-uppercase">
-                <div class="col-lg-3 col-sm-6 g-brd-right g-brd-white-opacity-0_2 g-mb-50">
-                  <div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:withinPeriodIssueCount">0</div>
-                  <h4 class="h5 g-color-white-opacity-0_6">요청</h4>
-                </div>
-
-                <div class="col-lg-3 col-sm-6 g-brd-right--lg g-brd-white-opacity-0_2 g-mb-50">
-                  <div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:resolutionCount">0</div>
-                  <h4 class="h5 g-color-white-opacity-0_6">처리</h4>
-                </div>
-
-                <div class="col-lg-3 col-sm-6 g-brd-right g-brd-white-opacity-0_2 g-mb-50">
-                  <div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7">미지원</div>
-                  <h4 class="h5 g-color-white-opacity-0_6">작업시간</h4>
-                </div>
-
-                <div class="col-lg-3 col-sm-6 g-mb-50">
-                  <div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:unclosedTotalCount">0</div>
-                  <h4 class="h5 g-color-white-opacity-0_6">누적 미처리</h4>
-                </div>
-            </div>
-        </div>
-    </section> 
 	<section class="container g-py-100">
 		<div class="row">
 			<div class="col-lg-12 g-mb-15">
@@ -234,6 +209,24 @@
 				</div>			
 			</div>
 		</div>
+		<div class="row text-center text-uppercase g-brd-gray g-brd-top-0 g-brd-left-0 g-brd-right-0  g-brd-style-solid  g-brd-3">
+			<div class="col-lg-3 col-sm-6 g-brd-right g-brd-white-opacity-0_2 g-mb-25">
+				<div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:withinPeriodIssueCount">9</div>
+				<h4 class="h5 g-color-gray-dark-v4 g-mb-5">요청</h4>
+			</div>
+			<div class="col-lg-3 col-sm-6 g-brd-right--lg g-brd-white-opacity-0_2 g-mb-25">
+				<div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:resolutionCount">9</div>
+				<h4 class="h5 g-color-gray-dark-v4 g-mb-5">처리</h4>
+			</div>
+			<div class="col-lg-3 col-sm-6 g-brd-right g-brd-white-opacity-0_2 g-mb-25">
+				<div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7">미지원</div>
+				<h4 class="h5 g-color-gray-dark-v4 g-mb-5">작업시간</h4>
+			</div>
+			<div class="col-lg-3 col-sm-6 g-mb-25">
+				<div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:unclosedTotalCount">2</div>
+				<h4 class="h5 g-color-gray-dark-v4 g-mb-5">누적 미처리</h4>
+			</div>
+		</div>		
 		<div class="row">	
 			<div class="col-12">
 				<div id="summary-listview" class="no-border"></div>			
