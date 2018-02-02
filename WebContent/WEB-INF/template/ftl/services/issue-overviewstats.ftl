@@ -152,11 +152,11 @@
 					total: "totalCount",
 					data: "items"
 				},
-				aggregate : {					
+				aggregate : [					
 					{ field: "withinPeriodIssueCount", aggregate: "sum" },
 					{ field: "resolutionCount", aggregate: "sum" },
 					{ field: "unclosedTotalCount", aggregate: "sum" }
-				}	
+				]	
 	    		}),
 			template: community.ui.template($("#template").html()),
 			dataBound: function() {
