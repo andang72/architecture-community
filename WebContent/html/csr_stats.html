@@ -87,12 +87,12 @@
 									index: 1,								
 									name: "startDate",									
 									jdbcType : 12,									
-									valueText: getModelData().get("startDate")							
+									valueText:  kendo.toString(getModelData().get("startDate"), "yyyymmdd" )							
 								}, {
 									index: 2	,						
 									name:"endDate",									
 									jdbcType:12,									
-									valueText:getModelData().get("endDate")											
+									valueText:kendo.toString(getModelData().get("endDate"), "yyyymmdd" )													
 								}]		
 							);
 						}
