@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -258,6 +257,14 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		List<CodeSet> issueTypes = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");		
 		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD");
 		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");		
+		Date startDate = null;
+		Date endDate = null;		
+		try {
+			startDate = simpleDateFormat.parse(dataSourceRequest.getDataAsString("startDate", null));
+			endDate = simpleDateFormat.parse(dataSourceRequest.getDataAsString("endDate", null));
+		} catch (ParseException e) {}
+		
 		List<IssueSummary> summaries = customQueryService.list (dataSourceRequest, new RowMapper<IssueSummary>() {
 			public IssueSummary mapRow(ResultSet rs, int rowNum) throws SQLException {
 				IssueSummary issue = new IssueSummary(rs.getLong("ISSUE_ID"));			
@@ -275,8 +282,7 @@ public class IssueDataController extends AbstractCommunityDateController  {
 				issue.setCreationDate(rs.getDate("CREATION_DATE"));
 				issue.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
 				return issue;
-		}});
-		
+		}});		
 		Map<Long, OverviewStats > overviewStats = new HashMap<Long, OverviewStats>();
 		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_REMAILS_BY_DATE");
 		List<OverviewStats> map = customQueryService.list(dataSourceRequest, new RowMapper<OverviewStats>() { 
@@ -285,13 +291,13 @@ public class IssueDataController extends AbstractCommunityDateController  {
 				os.getProject().setName(rs.getString("PROJECT_NAME"));
 				os.setUnclosedTotalCount(rs.getInt("CNT"));
 				return os;
-		}});		
-		for( OverviewStats overview : map ) {
+		}});			
+		for( OverviewStats overview : map ) {			
 			for( CodeSet code : issueTypes ) {
 				overview.stats.add(code.getCode(), 0);
 			}
 			overviewStats.put(overview.project.getProjectId(), overview);
-		}		
+		}			
 		for( IssueSummary summary : summaries )
 		{
 			OverviewStats overview = overviewStats.get(summary.getProject().getProjectId());
@@ -301,15 +307,24 @@ public class IssueDataController extends AbstractCommunityDateController  {
 					overview.stats.add(code.getCode(), 0);
 				}
 				overviewStats.put(overview.project.getProjectId(), overview);
-			}
-			overview.issueCount = overview.issueCount + 1;
+			}			
+			// issue count
+			overview.issueCount = overview.issueCount + 1;						
+			boolean isWithin = isWithinPeriod(summary, startDate, endDate);			
+			if( isWithin )
+				overview.withinPeriodIssueCount ++;			
+			// issue type 
 			if( org.apache.commons.lang3.StringUtils.isNotEmpty( summary.getIssueType() ) )
 			{
 				overview.stats.add(summary.getIssueType(), 1 );
-			}
+			}			
+			// issue resolution..
 			if( org.apache.commons.lang3.StringUtils.equals( summary.getStatus() , "005" ) )
 			{
 				overview.resolutionCount = overview.resolutionCount + 1 ;
+				// issue within period 				
+				if( isWithin )
+					overview.withinPeriodResolutionCount ++;
 			}
 		} 
 		List<OverviewStats> list = new ArrayList<OverviewStats>(overviewStats.values());
@@ -323,6 +338,24 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		return items;
 	}
 	
+	
+	private boolean isWithinPeriod(IssueSummary summary, Date start, Date end ) {
+		if( start == null || end == null )
+			return false;
+		
+		Date dateToUse ;
+		if( summary.getDueDate() == null ) {
+			dateToUse = summary.getCreationDate();
+		}else {
+			dateToUse = summary.getDueDate();
+		}
+		if( dateToUse.compareTo(start) < 0 ) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
 	public static class OverviewStats {
 		
 		private Project project;
@@ -332,6 +365,10 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		int resolutionCount ;
 		
 		int unclosedTotalCount;
+		
+		int withinPeriodIssueCount ;
+		
+		int withinPeriodResolutionCount;
 		
 		Map<String , Integer > aggregate ;
 		
@@ -384,6 +421,22 @@ public class IssueDataController extends AbstractCommunityDateController  {
 
 		public void setAggregate(Map<String, Integer> aggregate) {
 			this.aggregate = aggregate;
+		}
+
+		public int getWithinPeriodIssueCount() {
+			return withinPeriodIssueCount;
+		}
+
+		public void setWithinPeriodIssueCount(int withinPeriodIssueCount) {
+			this.withinPeriodIssueCount = withinPeriodIssueCount;
+		}
+
+		public int getWithinPeriodResolutionCount() {
+			return withinPeriodResolutionCount;
+		}
+
+		public void setWithinPeriodResolutionCount(int withinPeriodResolutionCount) {
+			this.withinPeriodResolutionCount = withinPeriodResolutionCount;
 		}
 		
 	}

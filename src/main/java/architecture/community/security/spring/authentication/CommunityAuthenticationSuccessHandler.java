@@ -48,7 +48,7 @@ public class CommunityAuthenticationSuccessHandler extends SimpleUrlAuthenticati
 		}
 		
 		String targetUrlParameter = getTargetUrlParameter();		
-		logger.debug("checing parameters {0}", (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) );
+		logger.debug("target parameters {0}", (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) );
 		
 		if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
 			requestCache.removeRequest(request, response);

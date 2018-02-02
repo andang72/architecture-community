@@ -229,21 +229,21 @@
 				</div>
 			</div>
 			<div class="col-md-1 forum-info">
-				<span class="views-number">#: issueCount #</span>
+				<span class="views-number">#: withinPeriodIssueCount #</span>
 				<div>
-					<small>요청</small>
+					<small>기간내 요청건</small>
 				</div>
 			</div>
 			<div class="col-md-1 forum-info">
 				<span class="views-number">#: resolutionCount #</span>
 				<div>
-					<small>처리</small>
+					<small>기간내 처리건</small>
 				</div>
 			</div>
 			<div class="col-md-1 forum-info">
 				<span class="views-number g-color-red">#: unclosedTotalCount #</span>
 				<div>
-					<small class="g-color-red">누적 미처리</small>
+					<small class="g-color-red">누적 미처리건</small>
 				</div>
 			</div>
 		</div>
