@@ -342,7 +342,7 @@
 
 		
 		function redirect (target, values, method ){
-			method = method || POST ;
+			method = method || GET ;
 			method = (method && method.toUpperCase() == GET) ? GET : POST;		
 			
 			if (!values)
