@@ -359,8 +359,18 @@
               <h2 class="g-color-white g-font-weight-200 g-font-size-22 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
             </div>
             <!-- Promo Blocks - Input -->
-			<p data-bind="invisible:currentUser.anonymous" style="display:none;">
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" role="button" data-toggle="tooltip" data-placement="bottom" data-original-title="새로운 이슈를 등록합니다." data-object-id="0" data-action="create" data-action-target="issue" data-bind="disabled:currentUser.anonymous, enabled: enabled" >기술지원요청하기</a>
+			<p data-bind="invisible:currentUser.anonymous" style="display:none;">				
+				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" role="button" 
+					data-toggle="tooltip" data-placement="bottom" data-original-title="새로운 이슈를 등록합니다." 
+					data-action="create" data-action-target="issue" data-object-id="0" data-bind="disabled:currentUser.anonymous, enabled: enabled" >기술지원요청하기</a>
+				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
+				<button class="btn btn-lg u-btn-red g-mr-10 g-mt-25 g-font-weight-200" type="button"  role="button" 
+					data-toggle="tooltip" data-placement="bottom" data-original-title="이번주에 내가 처리할 업무를 확인합니다." 
+					data-bind="click: showAllOpenIssue" >금주 나에게 배정된 업무 확인하기</button>
+	            <button class="btn btn-lg u-btn-purple g-mr-10 g-mt-25 g-font-weight-200" type="button"  role="button" 
+	            		data-toggle="tooltip" data-placement="top" data-original-title="기간별 이슈 처리현황을 확인합니다." 
+	            		data-object-id="0" data-action="overviewstats">통계</button>	                            				                				
+				</#if> 
 			</p>            
             <!-- End Promo Blocks - Input -->
           </div>
@@ -384,14 +394,7 @@
                                 		</h2>
                             		</div>   
                             		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">
-								  	<div class="row">
-	                            			<div class="col-sm-12">
-	                            				<button class="btn btn-lg u-btn-outline-red g-mr-10 g-mb-15" type="button"  role="button" role="button" data-bind="click: showAllOpenIssue" >금주 나에게 배정된 업무 확인하기</button>
-	                            				<button class="btn btn-lg u-btn-outline-purple g-mr-10 g-mb-15" type="button"  role="button" role="button" data-toggle="tooltip" data-placement="top" data-original-title="기간별 이슈 처리현황을 확인합니다." data-object-id="0" data-action="overviewstats">통계</button>
-	                            				<a class="btn btn-lg u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>
-	                            			</div>
-	                            	  	</div>		                            	
+	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">	                            	
 	                            		<hr class="g-brd-gray-light-v4 my-0">
 	                            		<p class="g-color-red g-mb-15"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다.</p>
 	                            		<div class="row">
@@ -414,7 +417,10 @@
 											</div>
 								  		</div>	
 								  		<div class="col-sm-4 g-mb-15">
-								  			<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" role="button" data-toggle="tooltip" data-placement="bottom" data-original-title="적용된 필터를 제거합니다." data-object-id="0" data-bind="click:clearFilters" >초기화</button>
+								  			<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" role="button" 
+								  				data-toggle="tooltip" data-placement="bottom" data-original-title="적용된 필터 조건을 초기화합니다." 
+								  				data-object-id="0" data-bind="click:clearFilters" >초기화</button>
+								  			<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" >새로운 이슈 등록하기</a>	
 								  		</div>
 								  	</div>
 	                            	</div>
