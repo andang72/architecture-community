@@ -378,7 +378,7 @@
       </div>
     </section>
 
-	<section id="features" class="container services">
+	<section id="features" class="services">
 		<div class="wrapper wrapper-content">
             		<div class="container">            
                 		<div class="row">
@@ -387,15 +387,14 @@
 	                            	<div class="ibox-title"  data-bind="visible:currentUser.anonymous" style="display:none;">
 	                            		<i class="icon-svg icon-svg-sm icon-svg-dusk-announcement"></i>
 	                            		<p data-bind="visible:currentUser.anonymous"> <a href="/accounts/login">로그인</a>이 필요한 서비스 입니다. </p>
-	                            	</div>                          		
+	                            	</div>     
                             		<div class="ibox-title" data-bind="invisible:currentUser.anonymous" style="display:none;">
                                 		<h2>
                                 		<i class="icon-svg icon-svg-sm icon-svg-dusk-client-base "></i>
                                 		</h2>
-                            		</div>   
+                            		</div>                               		
                             		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-	                            	<div class="ibox-content ibox-heading" data-bind="visible:isDeveloper" sytle="display:none;">	                            	
-	                            		<hr class="g-brd-gray-light-v4 my-0">
+	                            	<div class="ibox-content ibox-heading g-pb-0" data-bind="visible:isDeveloper" sytle="display:none;">	                            	
 	                            		<p class="g-color-red g-mb-15"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다.</p>
 	                            		<div class="row">
 	                            			<div class="col-sm-4 g-mb-15">

@@ -693,14 +693,14 @@
         </div>
       </div>
     </section>
-	<section id="features" class="container services">
+	<section id="features" class="services">
 		<div class="wrapper wrapper-content">
             		<div class="container">            
                 		<div class="row">
                     		<div class="col-lg-12">
                         		<div class="ibox g-mb-0">
                             		<div class="ibox-title g-pl-0 g-pb-0">
-	                            		<a href="#" class="back" data-bind="click:back">
+	                            		<a href="#" class="back" data-bind="click:back" data-toggle="tooltip" data-placement="bottom" data-original-title="목록으로 이동합니다.">
 									<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
 									</a>
 									<div class="text-right">
@@ -890,10 +890,10 @@
 							<div class="g-pl-20--lg">
 								<!-- Buttons  -->
 								<div class="g-mb-50">
-									<p data-bind="invisible:isNew" class="g-font-size-17">
-									생성일 : <span class="g-color-gray-dark-v4 " data-bind="text: formatedCreationDate"></span>  
+									<p class="g-font-size-17">
+									등록일 : <span class="g-color-gray-dark-v4 " data-bind="text: formatedCreationDate"></span>  
 									</p>	  
-									<p data-bind="invisible:isNew" class="g-font-size-17">
+									<p data-bind="invisible:isNew" class="g-font-size-17" style="display:none;">
 									마지막 수정일 : <span class="g-color-gray-dark-v4" data-bind="text: formatedModifiedDate"></span>  
 									</p>	   
 									<h3 class="h5 g-color-black g-font-weight-600 mb-4"></h3>
@@ -911,8 +911,9 @@
 										<div class="media-body">
 						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.assignee.name"></span></h4>						                                 
 										</div>
+										<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 										<span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>
-										<button class="btn btn-xs u-btn-outline-blue g-mb-15 g-mr-10 " type="button" role="button" data-bind="click: assignMe, visible:isDeveloper, invisible:isAssigned">나를 담당자로 지정합니다.</button>
+										<button class="btn btn-xs u-btn-outline-blue g-mb-15 g-mr-10 " type="button" role="button" data-bind="click:assignMe, invisible:isAssigned">나를 담당자로 지정합니다.</button>
 										<input data-role="combobox"
 				                   		 data-placeholder="담당자 이름을 입력하세요."
 										 data-filter="contains"
@@ -924,7 +925,8 @@
 			                              visible: isDeveloper,
 			                              enabled: editModeForAssignee,
 			                              events:{ change : selectAssignee }"
-			                   			 style=""/>			
+			                   			 style=""/>		
+			                   			 </#if>	
 									</div>
 								</div>
 								<!-- End Repoter -->

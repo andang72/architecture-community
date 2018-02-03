@@ -267,6 +267,7 @@
         });   
 	} 
  	
+ 	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
  	function createOrOpenIssueUpdater (parent, data){ 	
  		var renderTo = $('#isses-update-modal');
  		if( !renderTo.data("model") ){
@@ -303,7 +304,7 @@
 			renderTo.data("model").setSource(data); 
  		renderTo.modal('show');
  	}
- 	
+ 	</#if>
  	
 	function createOrOpenIssueEditor( data ){ 
 		var renderTo = $('#issue-editor-modal');
@@ -445,14 +446,15 @@
         </div><!-- /.row -->
       </div><!-- /.container -->
     </section>
-	<section id="features" class="container services">
+	<section id="features" class="services">
 		<div class="wrapper wrapper-content">
-			<div class="container">            
+			<div class="container">
 				<div class="row">
 					<div class="col-lg-12">
+						<!-- ibox -->
 						<div class="ibox float-e-margins">
 							<div class="ibox-title g-pl-0">
-	                            	<a href="<@spring.url "/display/pages/technical-support.html" />" class="back">
+	                            	<a href="<@spring.url "/display/pages/technical-support.html" />" class="back" data-toggle="tooltip" data-placement="right" data-original-title="목록으로 이동합니다.">
 									<i class="icon-svg icon-svg-sm icon-svg-ios-back"></i>
 								</a>
                                 	<h2 class="g-pl-55">
@@ -460,33 +462,10 @@
                                 		<div class="g-pt-15 g-pb-15 g-font-size-20 g-font-weight-200" data-bind="html: project.summary"></div>
                                 		<div class="g-font-size-20 g-font-weight-200"><span class="text-warning" data-bind="text:projectPeriod"/></div>
                                 	</h2>
-                            		
-                            		<div class="text-center">
-                            			<p class="text-warning g-font-weight-100">현제까지 모든 요청사항에 대한 처리 현황입니다.</p>
-					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
-					                  <div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount"> </div>
-					                  <span>전체</span>
-					                </div>
-					
-					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
-					                  <div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount"> </div>
-					                  <span>오류</span>
-					                </div>
-					
-					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30" ">
-					                  <div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount"></div>
-					                  <span>종결</span>
-					                </div>
-					
-					                <div class="d-inline-block g-px-40 g-mx-15 g-mb-30" >
-					                  <div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount"></div>
-					                  <span>미처리</span>
-					                </div>
-					              </div>
-                            		</div>
-                            		<div class="ibox-content ibox-heading">
-									<div class="row">
-	                            			<div class="col-sm-4 g-mb-15">
+                            	</div>
+                            	<div class="ibox-content ibox-heading g-pb-0">
+								<div class="row">
+	                            		<div class="col-sm-4 g-mb-15">
 	                            			<input data-role="combobox"  
 										  	data-placeholder="요청구분"
 						                   	data-auto-bind="true"
@@ -495,8 +474,8 @@
 						                   	data-value-field="code"
 						                   	data-bind="source:issueTypeDataSource, value:filter.ISSUE_TYPE "
 						                   	style="width:100%;"/>	
-	                            			</div>
-	                            			<div class="col-sm-4 g-mb-15">
+	                            		</div>
+	                            		<div class="col-sm-4 g-mb-15">
 	                            			<input data-role="combobox"  
 										   	data-placeholder="우선순위"
 						                   	data-auto-bind="true"
@@ -505,10 +484,8 @@
 						                   	data-value-field="code"
 						                   	data-bind="source: priorityDataSource, value:filter.PRIORITY"
 						                   	style="width:100%;"/>
-	                            			</div>
 	                            		</div>
-	                            		<div class="row">
-	                            			<div class="col-sm-4 g-mb-15">
+	                            		<div class="col-sm-4 g-mb-15">
 	                            			<input data-role="combobox"  
 											   data-placeholder="처리결과"
 							                   data-auto-bind="true"
@@ -517,8 +494,18 @@
 							                   data-value-field="code"
 							                   data-bind="source:resolutionDataSource, value:filter.RESOLUTION"
 							                   style="width: 100%;"/>
-	                            			</div>
-	                            			<div class="col-sm-4 g-mb-15">
+	                            		</div>
+	                            	</div>
+	                            	<div class="row">
+	                            		<div class="col-sm-4 g-mb-15">
+	                            			<input data-role="datepicker" style="width: 100%" data-bind="value:filter.START_DATE" placeholder="시작일">
+	                            			<span class="help-block text-info">시작일 <= 등록일 또는 예정일 조건에 해당하는 이슈</span>
+	                            		</div>
+	                            		<div class="col-sm-4 g-mb-15">
+	                            			<input data-role="datepicker" style="width: 100%" data-bind="value:filter.END_DATE" placeholder="종료일">
+	                            			<span class="help-block text-info">등록일 또는 예정일 <= 종료일 조건에 해당하는 이슈</span> 
+	                            		</div>
+	                            		<div class="col-sm-4 g-mb-15">
 	                            			<input data-role="combobox"  
 											   data-placeholder="상태"
 							                   data-auto-bind="true"
@@ -526,32 +513,50 @@
 							                   data-text-field="name"
 							                   data-value-field="code"
 							                   data-bind="source:statusDataSource, value:filter.ISSUE_STATUS"
-							                   style="width: 100%;"/>
-	                            			</div>
-	                            	    </div>		
-	                            		<div class="row">
-	                            				<div class="col-sm-4 g-mb-15">
-	                            					<h5 class="text-light-gray text-semibold"> 시작일 > = 예정일 또는 생성일 </h5>	
-	                            					<input data-role="datepicker" style="width: 100%" data-bind="value:filter.START_DATE" placeholder="시작일">
-	                            				</div>
-	                            				<div class="col-sm-4 g-mb-15">
-	                            					<h5 class="text-light-gray text-semibold">종료일 <= 예정일 또는 생성일 </h5>	
-	                            					<input data-role="datepicker" style="width: 100%" data-bind="value:filter.END_DATE" placeholder="종료일">
-	                            				</div>
-	                            				<div class="col-sm-4 g-mb-15 text-center">
-												<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-toggle="tooltip" data-placement="top" data-original-title="조건에 해당하는 이슈들을 검색합니다." data-bind="{click:search, visible:enabled}">검색</button>
-												<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="visible:enabled">새로운이슈등록하기</a>
-	                            					<button type="button" class="btn u-btn-outline-pink g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="update" data-action-target="issue" data-toggle="tooltip" data-placement="bottom" data-original-title="체크된 이슈들의 상태를 한꺼번에 변경할 수 있습니다." data-bind="visible:isDeveloper">이슈상태변경</button>
-	                            				</div>
+							                   style="width: 100%;"/>							                  
 	                            		</div>
-								</div>
-	                             <div class="ibox-content">					                  
-						              <!--Issue ListView-->
-						              <div class="table-responsive">
-						                <table class="table table-bordered u-table--v2 g-mb-0">
-						                  <thead class="text-uppercase g-letter-spacing-1">
-						                    <tr class="g-height-50">
+	                            	 </div>
+                            	</div>
+                            	<div class="ibox-content text-right">					                  
+						    		<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-toggle="tooltip" data-placement="top" data-original-title="조건에 해당하는 이슈들을 검색합니다." data-bind="{click:search, visible:enabled}">검색</button>
+							 	<button type="button" class="btn u-btn-outline-pink g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="update" data-action-target="issue" 
+	                           	 		data-toggle="tooltip" data-placement="bottom" data-original-title="체크된 이슈들의 상태를 한꺼번에 변경할 수 있습니다." data-bind="visible:isDeveloper">이슈상태변경</button>
+	                        		<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="visible:enabled">새로운이슈등록하기</a>
+	                         </div>								
+						</div>	
+						<!-- /.ibox -->
+					</div>
+				</div>	           		
+            		<!-- Start Issue Summary -->
+            		<div class="row text-center text-uppercase g-bord-radias g-brd-gray g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">				
+					<p class="text-warning g-font-weight-100">오늘까지 요청사항에 대한 누적 현황입니다.</p>
+					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+					<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div>
+					<span>전체</span>
+					</div>
+					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+					<div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount">0</div>
+					<span>오류</span>
+					</div>
+					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30" "="">
+					<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount">0</div>
+					<span>종결</span>
+					</div>
+					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+					<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div>
+					<span>미처리</span>
+					</div>						
+				</div><!-- Start Issue Summary -->
+				<div class="row">
+					<div class="col-12">
+						<!--Issue ListView-->
+						<div class="table-responsive">
+							<table class="table table-bordered u-table--v2 g-mb-0">
+						    		<thead class="text-uppercase g-letter-spacing-1">
+						        		<tr class="g-height-50">
+						        			<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >			
 						                    	 <th class="align-middle g-font-weight-300 g-color-black g-min-width-20"></th>	
+						                </#if>    	 
 						                    	 <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">ID</th>	
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">유형</th>
@@ -561,19 +566,16 @@
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-40">상태</th>
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-50">결과</th>
 						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
-						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">생성일</th>
-						                    </tr>
-						                  </thead>
-						                  <tbody id="issue-listview" ></tbody>
-						                </table>
-						              </div>
-						              <div id="issue-listview-pager" class="g-brd-top-none"></div>
-						              <!--End Issue ListView -->
-	                            </div>
-                        		</div>
-                    		</div>
-                		</div>
-            		</div>
+						                      <th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">등록일</th>
+						        		</tr>
+						        	</thead>
+						    		<tbody id="issue-listview" ></tbody>
+							</table>
+						</div>
+						<div id="issue-listview-pager" class="g-brd-top-none"></div>
+						<!--End Issue ListView -->
+					</div>
+				</div>
         		</div>
 	</section>			
 	<!-- FOOTER START -->   
@@ -581,10 +583,12 @@
 	<!-- FOOTER END -->  				
 	<script type="text/x-kendo-template" id="template">
 	<tr>
-                    	 <td class="align-middle text-center">
+		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >			
+                    	 <td class="align-middle text-center">                    	 	
                     	 	<input type="checkbox" id="selected-#= issueId #" class="k-checkbox" data-object-kind="issue" data-object-id="#= issueId #">
                     	 	<label class="k-checkbox-label" for="selected-#= issueId #"></label>
-                    	 </td> 	 	
+                    	 </td>
+		</#if>	 	
                       <td class="align-middle text-center">
                       ISSUE-#: issueId # 	
                       </td>
@@ -622,12 +626,16 @@
                       <td class="align-middle">#: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') #</td>
  	</tr>
 	</script>
+	
+	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
+	
 	<script type="text/x-kendo-template" id="selected-template" >
 	<tr class="g-height-50">
 		<td class="align-middle text-center"> ISSUE-#: issueId # 	 </td>
 		<td class="align-middle">#: summary #</td>
 	</tr>
 	</script>	
+	
 	<!-- issue state modify modal -->
 	<div class="modal fade" id="isses-update-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -695,7 +703,8 @@
 				</div>
 			</div><!-- /.modal-content -->
 		</div>
-	</div>							
+	</div>			
+	</#if>				
 	<!-- issue editor modal -->
 	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
