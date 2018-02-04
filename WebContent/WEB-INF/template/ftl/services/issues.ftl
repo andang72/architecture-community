@@ -141,6 +141,13 @@
 				}
 			},
 			search : function(){
+				var $this = this;
+				$this.filter.NO_CLOSED_ISSUE = false;
+				community.ui.listview( $('#issue-listview') ).dataSource.read();
+			},
+			findNotClosed : function(){
+				var $this = this;
+				$this.filter.NO_CLOSED_ISSUE = true;
 				community.ui.listview( $('#issue-listview') ).dataSource.read();
 			},
 			filter : {
@@ -149,7 +156,8 @@
 				RESOLUTION : null,
 				ISSUE_STATUS : null,
 				START_DATE : null,
-				END_DATE : null
+				END_DATE : null,
+				NO_CLOSED_ISSUE : false
 			},
 			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
@@ -174,7 +182,7 @@
 				}); 	
 				
 				if( selected.length > 0 ){			
-					createOrOpenIssueUpdater(observable, selected);
+					createOrOpenIssueBatchEditor(observable, selected);
 				}else{
 					kendo.alert("선택된 이슈가 없습니다.<br/> 원하시는 이슈의 체크박스를 체크하여 이슈를 선택한 다음 '이슈상태변경' 버튼을 다시 클릭해주세요.");
 				}
@@ -226,6 +234,9 @@
 					},
 					parameterMap: function (options, operation){							
 						var filter = {filter:{filters: [], logic: "AND" } };
+						if( observable.filter.NO_CLOSED_ISSUE ){
+							filter.filter.filters.push( {field: "RESOLUTION", operator: "eq", logic: "AND" } );
+						}						
 						if( observable.filter.ISSUE_TYPE != null && observable.filter.ISSUE_TYPE.length > 0 ){
 							filter.filter.filters.push( {field: "ISSUE_TYPE", operator: "eq", value : observable.filter.ISSUE_TYPE, logic: "AND" } );
 						}
@@ -268,7 +279,7 @@
 	} 
  	
  	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
- 	function createOrOpenIssueUpdater (parent, data){ 	
+ 	function createOrOpenIssueBatchEditor (parent, data){ 	
  		var renderTo = $('#isses-update-modal');
  		if( !renderTo.data("model") ){
  		
@@ -287,7 +298,27 @@
  				resolutionDataSource : parent.resolutionDataSource,
  				issues: community.ui.datasource_v2({
  				    data:[]
-		        })    
+		        }),
+		        batchUpdate : function(){
+					var $this = this;
+					community.ui.progress(renderTo.find('.modal-content'), true);	
+					community.ui.ajax( '<@spring.url "/data/api/v1/issues/batch-save-or-update.json" />', {
+						data: community.ui.stringify({ 
+							issues : $this.issues.data(),
+							status : $this.issueStatus,
+							resolution : $this.resolution,
+							resolutionDate : $this.resolutionDate
+						}),
+						contentType : "application/json",						
+						success : function(response){
+							community.ui.listview( $('#issue-listview') ).dataSource.read();
+						}
+					}).always( function () {
+						community.ui.progress(renderTo.find('.modal-content'), false);
+						$('#issue-listview input[type=checkbox]:checked').click();
+						renderTo.modal('hide');
+					});	
+		        }    
  			});
  			
  			renderTo.data("model", observable );	
@@ -518,9 +549,17 @@
 	                            	 </div>
                             	</div>
                             	<div class="ibox-content text-right">					                  
-						    		<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-toggle="tooltip" data-placement="top" data-original-title="조건에 해당하는 이슈들을 검색합니다." data-bind="{click:search, visible:enabled}">검색</button>
+						    		<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" 
+						    			data-toggle="tooltip" data-placement="top" data-original-title="조건에 해당하는 이슈들을 검색합니다." 
+						    			data-bind="{click:search, visible:enabled}">검색</button>
+							 	
+							 	<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" 
+						    			data-toggle="tooltip" data-placement="top" data-original-title="미완료된 모든 요청건들을 불러옵니다." 
+						    			data-bind="{click:findNotClosed, visible:enabled}">미완료건 불러오기</button>
+						    		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
 							 	<button type="button" class="btn u-btn-outline-pink g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="update" data-action-target="issue" 
 	                           	 		data-toggle="tooltip" data-placement="bottom" data-original-title="체크된 이슈들의 상태를 한꺼번에 변경할 수 있습니다." data-bind="visible:isDeveloper">이슈상태변경</button>
+	                           	</#if>	 		
 	                        		<a class="btn u-btn-outline-blue g-mr-10 g-mb-15" href="#" role="button" data-object-id="0" data-action="create" data-action-target="issue" data-bind="visible:enabled">새로운이슈등록하기</a>
 	                         </div>								
 						</div>	
@@ -660,11 +699,12 @@
 			                 data-template="selected-template"
 			                 data-bind="source:issues"
 			                 class = "no-border"
-			                 style="height: 200px; overflow: auto">
-			                  
+			                 style="height: 150px; overflow: auto">			                  
 			             </tbody>
 					</table>
-					<p class="g-font-size-24 g-color-red">아직 지원하고 있지 않는 기능입니다. 2월 중에 지원 예정입니다.</p>
+					<p class="g-font-size-24 g-color-red">
+					선택된 이슈들에 대한 상태를 한꺼번에 변경할 수 있습니다. 
+								아직 지원하고 있지 않는 기능입니다. 2월 중에 지원 예정입니다.</p>
 					<div class="g-brd-blue g-brd-2 g-brd-style-solid g-mt-300 g-pa-25 g-rounded-10 ">
 					<form> 
 						<div class="form-group"> 
@@ -699,7 +739,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
-					<!-- <button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate">확인</button>	-->
+					<button type="button" class="btn btn-primary" data-bind="click:batchUpdate">확인</button>
 				</div>
 			</div><!-- /.modal-content -->
 		</div>

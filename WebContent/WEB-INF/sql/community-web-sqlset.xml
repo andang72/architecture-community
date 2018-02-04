@@ -37,7 +37,7 @@
  	<#elseif item.field == "END_DATE">
  	${item.logic} ( ( DUE_DATE is null AND CREATION_DATE <= '${item.value}' ) OR ( DUE_DATE <= '${item.value}' ) )
  	<#else>
- 	${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'
+ 	${item.logic} ${item.field}<#if item.operator == "eq" ><#if item.value??>=<#else> IS NULL</#if><#elseif item.operator == "neq"><#if item.value??>!=<#else> IS NOT NULL</#if><#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if><#if item.value?? >'${item.value}'</#if>
  	</#if></#list></#if>
  	 ]]></dynamic></sql-query>		
 
@@ -50,7 +50,7 @@
  	<#elseif item.field == "END_DATE">
  	${item.logic} ( ( DUE_DATE is null AND CREATION_DATE <= '${item.value}' ) OR ( DUE_DATE <= '${item.value}' ) )
  	<#else>
- 	${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'
+ 	${item.logic} ${item.field}<#if item.operator == "eq" ><#if item.value??>=<#else> IS NULL</#if><#elseif item.operator == "neq"><#if item.value??>!=<#else> IS NOT NULL</#if><#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if><#if item.value?? >'${item.value}'</#if>
  	</#if></#list></#if>
  	ORDER BY MODIFIED_DATE DESC
  	 ]]></dynamic></sql-query>	

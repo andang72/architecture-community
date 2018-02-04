@@ -1,5 +1,6 @@
 package architecture.community.projects.dao.jdbc;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
@@ -102,8 +104,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	public void saveOrUpdateProject(Project project) {
 		Project toUse = project;
 		if (toUse.getProjectId() < 1L) {
-			toUse.setProjectId(getNextProjectId());
-		
+			toUse.setProjectId(getNextProjectId());		
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_PROJECT").getSql(),
 					new SqlParameterValue(Types.NUMERIC, toUse.getProjectId()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getName()),
@@ -218,6 +219,34 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			
 		}	
 		
+	}
+	
+	public void saveOrUpdateIssues(List<Issue> issue) {
+		final List<Issue> updates = issue;
+		getExtendedJdbcTemplate().batchUpdate(
+			    getBoundSql("COMMUNITY_WEB.UPDATE_ISSUE").getSql(),
+			    new BatchPreparedStatementSetter() {
+				public void setValues(PreparedStatement ps, int i) throws SQLException {
+					Issue toUse = updates.get(i);
+					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType());
+					new SqlParameterValue(Types.VARCHAR, toUse.getStatus());
+					new SqlParameterValue(Types.VARCHAR, toUse.getResolution());
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getResolutionDate());
+					new SqlParameterValue(Types.VARCHAR, toUse.getPriority());
+					new SqlParameterValue(Types.VARCHAR, toUse.getComponent());
+					new SqlParameterValue(Types.VARCHAR, toUse.getSummary());
+					new SqlParameterValue(Types.VARCHAR, toUse.getDescription());					
+					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId());
+					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId());
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate());
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate());
+					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId());		
+				}
+
+				public int getBatchSize() {
+				    return updates.size();
+				}
+	    });
 	}
  
 	public Issue getIssueById(long issueId) {

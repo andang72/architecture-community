@@ -35,6 +35,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.board.BoardMessageNotFoundException;
@@ -48,6 +50,7 @@ import architecture.community.exception.UnAuthorizedException;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
+import architecture.community.model.json.JsonDateDeserializer;
 import architecture.community.model.Models;
 import architecture.community.projects.DefaultIssue;
 import architecture.community.projects.Issue;
@@ -197,11 +200,97 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		issueToUse.setResolution(newIssue.getResolution());		
 		issueToUse.setPriority(newIssue.getPriority());	
 		
-		projectService.saveOrUpdateIssue(newIssue);
+		projectService.saveOrUpdateIssue(issueToUse);
 		
 		return issueToUse;
 	}	 
 	
+
+	
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/issues/batch-save-or-update.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public Result saveOrUpdateIssue(@RequestBody BatchUpdateIssues batchUpdateIssues, NativeWebRequest request) throws NotFoundException {
+		Result result = new Result();
+		
+		List<DefaultIssue> issues = batchUpdateIssues.issues;
+		String status = batchUpdateIssues.status;
+		String resolution = batchUpdateIssues.resolution;
+		Date resolutionDate = batchUpdateIssues.resolutionDate;
+		
+		if(StringUtils.isNullOrEmpty(status))
+			throw new IllegalArgumentException("status can not be null.");
+		
+		boolean hasResolutioin = false;
+		if( !StringUtils.isNullOrEmpty(resolution)) {
+			
+			hasResolutioin = true; 
+			if(resolutionDate == null )
+				resolutionDate = new Date();
+			if(!org.apache.commons.lang3.StringUtils.equals(status, "005")) {
+				status = "005";
+			}
+		}
+		
+		List<Issue> updates = new ArrayList<Issue>(issues.size());
+		for ( Issue issue : issues )
+		{
+			if( hasResolutioin ) {
+				issue.setResolution(resolution);
+				issue.setResolutionDate(resolutionDate);
+			}
+			issue.setStatus(status);
+			updates.add(issue);
+		}
+		projectService.saveOrUpdateIssues( updates );
+		return result;
+	}	
+	
+
+	public static class BatchUpdateIssues {
+		
+		private List<DefaultIssue> issues;
+		
+		private String status ;
+		
+		private String resolution ;
+		
+		private Date resolutionDate ;
+
+		public List<DefaultIssue> getIssues() {
+			return issues;
+		}
+
+		public void setIssues(List<DefaultIssue> issues) {
+			this.issues = issues;
+		}
+
+		public String getStatus() {
+			return status;
+		}
+
+		public void setStatus(String status) {
+			this.status = status;
+		}
+
+		public String getResolution() {
+			return resolution;
+		}
+
+		public void setResolution(String resolution) {
+			this.resolution = resolution;
+		}
+
+		public Date getResolutionDate() {
+			return resolutionDate;
+		}
+
+		@JsonDeserialize(using = JsonDateDeserializer.class)
+		public void setResolutionDate(Date resolutionDate) {
+			this.resolutionDate = resolutionDate;
+		}
+		
+	}
 	
 	/**
 	 * STATUS_ISNULL, TILL_THIS_WEEK 

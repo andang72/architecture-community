@@ -56,7 +56,7 @@
                         <a class="btn btn-sm btn-white btn-block" href="join">회원가입</a>
                     </form>
                     <p class="m-t">
-                        <small>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "리플리카") }는 spring, bootstrap 등의 오픈소프 기술을 기반으로 개발되었습니다.</small>
+                        <small>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "리플리카") } 서비스는 여러 오픈소프 기술을 기반으로 개발되었습니다.</small>
                     </p>
                 </div>
             </div>

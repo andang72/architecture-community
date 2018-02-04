@@ -240,6 +240,15 @@ public class DefaultProjectService implements ProjectService {
 		}
 		return list;
 	}
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void saveOrUpdateIssues(List<Issue> issues) {
+		for(Issue issue : issues) {
+			projectIssueCache.remove(issue.getIssueId());
+			clearProjectStats(issue.getObjectId());
+		}
+		projectDao.saveOrUpdateIssues(issues);
+	}
 	 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdateIssue(Issue issue) {

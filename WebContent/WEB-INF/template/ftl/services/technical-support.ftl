@@ -274,12 +274,13 @@
 				dataBound: function() {		
 					if( this.items().length == 0)
 			        		renderTo.html('<tr class="g-height-50"><td colspan="7" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
-				    if(observable.isDeveloper && firstTime ){
+				    /*if(observable.isDeveloper && firstTime ){
 	       	 			setTimeout(function() {
 						  observable.showAllOpenIssue(); 
 						}, 500);
 	       	 		}		
 					firstTime = false;
+					*/
 			    }
 			});
 			community.ui.pager( $("#issue-listview-pager"), {
@@ -454,7 +455,9 @@
 			          		<label class="k-checkbox-label" for="eq2">진행상태가 없는 이슈 포함</label>
 			            </li>
 			            <li>
-			            		<button type="button" class="btn btn-sm u-btn-outline-bluegray g-ml-25 g-mr-10 g-mb-5" href="#" role="button" role="button" data-bind="click:doFilter2">새로고침</button>
+			            		<button type="button" class="btn btn-sm u-btn-outline-bluegray g-ml-25 g-mr-10 g-mb-5" role="button" role="button" 
+			            			data-toggle="tooltip" data-placement="top" data-original-title="조건을 변경한 후에는 새로고침을 실행합니다." 
+			            			data-bind="click:doFilter2">새로고침</button>
 			            </li>
 			        </ul>	                
 					<div class="btn-group" data-toggle="buttons">

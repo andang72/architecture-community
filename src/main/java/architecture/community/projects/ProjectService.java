@@ -21,7 +21,9 @@ public interface ProjectService {
 	public abstract Project getProject(long projectId) throws ProjectNotFoundException ;
 	
 	public abstract void saveOrUpdateProject(Project project);
-	 
+	
+	public abstract void saveOrUpdateIssues(List<Issue> issue) ;
+	
 	public abstract Issue createIssue(int objectType, long objectId, User repoter);
 	
 	public abstract void saveOrUpdateIssue(Issue issue);
