@@ -357,7 +357,7 @@
           <div class="col-lg-6">
             <div class="mb-5">
               <h1 class="g-color-white g-font-size-60 mb-4"><#if __page?? >${__page.title}</#if></h1>
-              <h2 class="g-color-white g-font-weight-200 g-font-size-22 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
+              <h2 class="g-color-white g-font-weight-200 g-font-size-25 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
             </div>
             <!-- Promo Blocks - Input -->
 			<p data-bind="invisible:currentUser.anonymous" style="display:none;">				
@@ -379,7 +379,7 @@
       </div>
     </section>
 
-	<section id="features" class="services">
+	<section id="features" class="services g-font-size-25">
 		<div class="wrapper wrapper-content">
             		<div class="container">            
                 		<div class="row">
@@ -438,7 +438,7 @@
         		</div>
 	</section>	
 	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-	<section id="worklist" class="gray-section" data-bind="visible:isDeveloper">
+	<section id="worklist" class="gray-section g-font-size-25" data-bind="visible:isDeveloper">
 	    <div class="container">
 	        <div class="row">
 	            <div class="col-lg-12 text-center">
