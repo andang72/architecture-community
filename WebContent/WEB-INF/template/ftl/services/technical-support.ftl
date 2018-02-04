@@ -379,7 +379,7 @@
       </div>
     </section>
 
-	<section id="features" class="services g-font-size-25">
+	<section id="features" class="services">
 		<div class="wrapper wrapper-content">
             		<div class="container">            
                 		<div class="row">
@@ -438,7 +438,7 @@
         		</div>
 	</section>	
 	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-	<section id="worklist" class="gray-section g-font-size-25" data-bind="visible:isDeveloper">
+	<section id="worklist" class="gray-section" data-bind="visible:isDeveloper">
 	    <div class="container">
 	        <div class="row">
 	            <div class="col-lg-12 text-center">
