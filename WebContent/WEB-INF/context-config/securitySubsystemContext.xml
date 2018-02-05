@@ -35,14 +35,12 @@
 		<intercept-url pattern="/secure/data/**" 		access="hasRole('ROLE_USER')" /> 
 		
 		<!-- 로그인 페이지 지정 -->
-        <form-login 
-        	login-page="/accounts/login" 
-        	username-parameter="username" 
-        	password-parameter="password"
-        	login-processing-url="/accounts/auth/login_check"
-        	authentication-success-handler-ref="authenticationSuccessHandler"
-        	authentication-failure-url="/accounts/login?error=true" />
-        	
+		<form-login login-page="/accounts/login"
+			username-parameter="username" password-parameter="password"
+			login-processing-url="/accounts/auth/login_check"
+			authentication-success-handler-ref="authenticationSuccessHandler"
+			authentication-failure-handler-ref="authenticationFailureHandler" />
+
 		<http-basic />
 		
 		<!-- 로그아웃 설정  -->
@@ -73,6 +71,9 @@
 	<beans:bean id="authenticationProvider" class="architecture.community.security.spring.authentication.CommunityAuthenticationProvider" p:passwordEncoder-ref="passwordEncoder" p:userDetailsService-ref="userDetailsService" />
 	
 	<beans:bean id="authenticationSuccessHandler" class="architecture.community.security.spring.authentication.CommunityAuthenticationSuccessHandler" p:targetUrlParameter="targetUrl" />
+	
+	<beans:bean id="authenticationFailureHandler" class="architecture.community.security.spring.authentication.CommunityAuthenticationFailureHandler" p:defaultFailureUrl="/accounts/login?error" />
+	
 	
 	<beans:bean id="userDetailsService" class="architecture.community.security.spring.userdetails.CommunityUserDetailsService" />
 	
