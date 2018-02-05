@@ -2,6 +2,9 @@
 /**
  * Custom css for Inspinia
  */
+ 
+
+
 .skin-1 .pace .pace-progress  {
 	background: #0e9aef;
 }
@@ -71,9 +74,11 @@
 .note-popover {
 	z-index: 2050;
 }
-
+ 
 .issue-body p {
-	font-size: 1.1em;
+	color: #676a6c!important;
+	font-size: 1.1em!important;
+	line-height:1.3em;
 	margin: 0 0 0 5px;
 }
 

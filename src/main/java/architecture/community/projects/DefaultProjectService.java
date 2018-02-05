@@ -256,6 +256,9 @@ public class DefaultProjectService implements ProjectService {
 			projectIssueCache.remove(issue.getIssueId());
 		} 
 		clearProjectStats(issue.getObjectId());
+		
+		logger.debug("save or update user {}" , issue );
+		
 		projectDao.saveOrUpdateIssue(issue);
 	}
 	

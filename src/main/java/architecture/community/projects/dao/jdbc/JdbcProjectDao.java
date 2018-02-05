@@ -175,24 +175,24 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	public void saveOrUpdateIssue(Issue issue) {
  
 		Issue toUse = issue;
-		if (toUse.getIssueId() < 1L) {
-			toUse.setIssueId(getNextIssueId());
 		
+		
+		if (toUse.getIssueId() < 1L) {
+			toUse.setIssueId(getNextIssueId());			
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_ISSUE").getSql(),
 					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getObjectType()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getObjectId()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType()),
-					new SqlParameterValue(Types.VARCHAR, toUse.getStatus()),
-					
+					new SqlParameterValue(Types.VARCHAR, toUse.getStatus()),					
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getResolution()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getResolutionDate()),
-					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId()),	
-					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId()),	
+					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
+					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
 					 
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
@@ -208,10 +208,9 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
-					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),
-					
-					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId()),	
-					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId()),	
+					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),					
+					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
+					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId())

@@ -329,5 +329,47 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setResolutionDate(Date resolutionDate) {
 		this.resolutionDate = resolutionDate;
+	}
+	
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("DefaultIssue [");
+		if (repoter != null)
+			builder.append("repoter=").append(repoter).append(", ");
+		if (assignee != null)
+			builder.append("assignee=").append(assignee).append(", ");
+		if (issueType != null)
+			builder.append("issueType=").append(issueType).append(", ");
+		if (issueTypeName != null)
+			builder.append("issueTypeName=").append(issueTypeName).append(", ");
+		builder.append("issueId=").append(issueId).append(", ");
+		if (summary != null)
+			builder.append("summary=").append(summary).append(", ");
+		if (description != null)
+			builder.append("description=").append(description).append(", ");
+		if (priority != null)
+			builder.append("priority=").append(priority).append(", ");
+		if (priorityName != null)
+			builder.append("priorityName=").append(priorityName).append(", ");
+		if (component != null)
+			builder.append("component=").append(component).append(", ");
+		if (resolution != null)
+			builder.append("resolution=").append(resolution).append(", ");
+		if (resolutionName != null)
+			builder.append("resolutionName=").append(resolutionName).append(", ");
+		if (status != null)
+			builder.append("status=").append(status).append(", ");
+		if (statusName != null)
+			builder.append("statusName=").append(statusName).append(", ");
+		if (resolutionDate != null)
+			builder.append("resolutionDate=").append(resolutionDate).append(", ");
+		if (dueDate != null)
+			builder.append("dueDate=").append(dueDate).append(", ");
+		if (creationDate != null)
+			builder.append("creationDate=").append(creationDate).append(", ");
+		if (modifiedDate != null)
+			builder.append("modifiedDate=").append(modifiedDate);
+		builder.append("]");
+		return builder.toString();
 	} 
 }
