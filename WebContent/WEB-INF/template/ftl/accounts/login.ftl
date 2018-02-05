@@ -93,17 +93,13 @@
 							$("#signin-status").fadeIn();									
 							$("input[type='password']").val("").focus();				
 						} else { 
-						
-						setup.authenticate(function(token){
-							community.ui.stringify( token ) ;
-						})
-						/**	$("#signin-status").html("");    
-							var returnUrl = response.data.returnUrl ;
+							$("#signin-status").html("");    
+							var returnUrl = response.data.returnUrl
 							if( returnUrl != null && returnUrl.length > 0 ){
 								location.href= returnUrl ;
 							}else{
-								location.href="<@spring.url "/"/>" ;
-							}*/
+								location.href="<@spring.url "/display/pages/technical-support.html"/>" ;
+							}
 						}
 					},	
 					complete: function(jqXHR, textStatus ){

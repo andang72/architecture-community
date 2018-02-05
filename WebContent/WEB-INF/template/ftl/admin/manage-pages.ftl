@@ -393,13 +393,13 @@
         </div>
             <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-4">
-                    <h2>This is main title</h2>
+                    <h2>페이지 관리</h2>
                     <ol class="breadcrumb">
                         <li>
-                            <a href="index.html">This is</a>
+                            자원
                         </li>
                         <li class="active">
-                            <strong>Breadcrumb</strong>
+                            <strong>페이지 관리</strong>
                         </li>
                     </ol>
                 </div>
@@ -437,12 +437,12 @@
                 </div>
             </div>
             <div class="footer">
-                <div class="pull-right">
+                <!--<div class="pull-right">
                     10GB of <strong>250GB</strong> Free.
                 </div>
                 <div>
                     <strong>Copyright</strong> Example Company &copy; 2014-2017
-                </div>
+                </div>-->
             </div> 
         </div>
     </div>

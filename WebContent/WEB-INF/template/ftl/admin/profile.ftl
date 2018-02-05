@@ -136,12 +136,12 @@
                 <div class="col-lg-10">
                     <h2>Profile</h2>
                     <ol class="breadcrumb">
-                        <li>
+                        <!--<li>
                             <a href="index.html">Home</a>
                         </li>
                         <li>
                             <a>Extra Pages</a>
-                        </li>
+                        </li>-->
                         <li class="active">
                             <strong>Profile</strong>
                         </li>
@@ -176,13 +176,13 @@
                                 <h2 class="no-margins" data-bind="text:currentUser.name" ></h2>
                                 <h4 data-bind="text:currentUser.username"></h4>
                                 <small>
-                                    There are many variations of passages of Lorem Ipsum available, but the majority
-                                    have suffered alteration in some form Ipsum available.
+                                     
                                 </small>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!--
                 <div class="col-md-3">
                     <table class="table small m-b-xs">
                         <tbody>
@@ -219,9 +219,10 @@
                     <h2 class="no-margins">206 480</h2>
                     <div id="sparkline1"></div>
                 </div>
-
+				-->
 
             </div>
+            <!--
             <div class="row">
 
                 <div class="col-lg-3">
@@ -564,17 +565,17 @@
                     </div>
 
                 </div>
-
+				-->
             </div>
 
         </div>
         <div class="footer">
-            <div class="pull-right">
+            <!--<div class="pull-right">
                 10GB of <strong>250GB</strong> Free.
             </div>
             <div>
                 <strong>Copyright</strong> Example Company &copy; 2014-2017
-            </div>
+            </div>-->
         </div>
 
         </div>

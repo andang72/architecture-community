@@ -288,7 +288,7 @@
                             커뮤니티
                         </li>
                         <li class="active">
-                            <strong>게시판관리</strong>
+                            <strong>프로젝트 관리</strong>
                         </li>
                     </ol>
                 </div>
@@ -321,13 +321,13 @@
 	                             </div>  
  
             </div>
-            <div class="footer">
+            <div class="footer"><!--
                 <div class="pull-right">
                     10GB of <strong>250GB</strong> Free.
                 </div>
                 <div>
                     <strong>Copyright</strong> Example Company &copy; 2014-2017
-                </div>
+                </div>-->
             </div>
 
         </div>

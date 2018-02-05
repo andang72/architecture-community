@@ -50,6 +50,12 @@ i.icon-svg {
 }
 
 /* IOS Icons */
+.icon-svg-ios-login {
+	background-image: url("/images/icons/ios/login.svg");	
+}
+.icon-svg-ios-logout {
+	background-image: url("/images/icons/ios/logout.svg");	
+}
 .icon-svg-ios-smile {
 	background-image: url("/images/icons/ios/smile.svg");	
 }

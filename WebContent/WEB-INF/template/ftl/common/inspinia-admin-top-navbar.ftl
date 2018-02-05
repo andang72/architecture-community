@@ -13,8 +13,9 @@
         
             <ul class="nav navbar-top-links navbar-right">
                 <li>
-                    <span class="m-r-sm text-muted welcome-message">Welcome to INSPINIA+ Admin Theme.</span>
+                    <span class="m-r-sm text-muted welcome-message">Welcome to ${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "") } ADMIN</span>
                 </li>
+                <!--
                 <li class="dropdown">
                     <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
                         <i class="fa fa-envelope"></i>  <span class="label label-warning">16</span>
@@ -110,9 +111,10 @@
                         </li>
                     </ul>
                 </li>
+                -->
                 <li>
                     <a href="/accounts/logout">
-                        <i class="fa fa-sign-out"></i> 로그아웃
+                        <i class="icon-svg icon-svg-sm icon-svg-ios-logout g-opacity-0_3" style="position: relative;top: 8px;"></i> 로그아웃
                     </a>
                 </li>
             </ul>

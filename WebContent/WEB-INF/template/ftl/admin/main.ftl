@@ -6,16 +6,28 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INSPINIA | Empty Page</title>
-    <link href="/css/bootstrap/3.3.7/bootstrap.min.css" rel="stylesheet">
-    <link href="/fonts/font-awesome.css" rel="stylesheet">
-    <link href="/css/animate/animate.css" rel="stylesheet">
-    <link href="/css/bootstrap.theme/inspinia/style.css" rel="stylesheet">
-    <link href="/css/community.ui/community.ui.style.css" rel="stylesheet">
- 	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script>
- 	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
- 	
-	<!-- Application JavaScript
+    <title>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "REPLICANT") } | ADMIN</title>
+    <!-- Kendoui with bootstrap theme CSS -->			
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common-bootstrap.core.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+	
+	<!-- Bootstrap CSS -->
+    <link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
+    
+    <!-- Bootstrap Theme Inspinia CSS -->
+    <link href="<@spring.url "/css/bootstrap.theme/inspinia/style.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/bootstrap.theme/inspinia/custom.css"/>" rel="stylesheet" type="text/css" />	
+            
+    <!-- Community CSS -->
+	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
+  	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
+  	    
+ 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js'"/>></script>
+ 	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
+ 	<!-- Application JavaScript
     		================================================== -->    	
 	<script>
 	require.config({
@@ -26,7 +38,7 @@
 	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
 	        "jquery.slimscroll" 			: { "deps" :['jquery'] },
-	        "jquery.metisMenu" 			: { "deps" :['jquery'] },
+	        "jquery.metisMenu" 			: { "deps" :['jquery'] }, 
 	        "inspinia"					: { "deps" :['jquery', 'jquery.metisMenu', 'jquery.slimscroll'] }
 		},
 		paths : {
@@ -35,14 +47,14 @@
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
 			"jquery.metisMenu"			: "/js/jquery.metisMenu/metisMenu.min",
-			"jquery.slimscroll"			: "/js/jquery.slimscroll/1.3.8/jquery.slimscroll.min",
+			"jquery.slimscroll"			: "/js/jquery.slimscroll/1.3.8/jquery.slimscroll.min", 
 			"inspinia" 					: "/js/bootstrap.theme/inspinia/inspinia",
 			"community.ui.core" 			: "/js/community.ui/community.ui.core",
 			"community.data" 			: "/js/community.ui/community.data"
 		}
 	});
-	require([ "jquery", "bootstrap", "kendo.ui.core.min", "community.ui.core", "community.data", "jquery.metisMenu" , "jquery.slimscroll", "inspinia"], function($, kendo ) {
-		
+	require([ "jquery", "bootstrap", "kendo.ui.core.min", "community.ui.core", "community.data", "jquery.metisMenu" , "jquery.slimscroll", "inspinia"], function($, kendo ) { 
+	
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -75,7 +87,6 @@
 </head>
 
 <body class="skin-1">
-
     <div id="wrapper">
 	    	<!--  SIDEBAR  -->
 		<#include "/common/inspinia-admin-sidebar.ftl">
@@ -87,25 +98,23 @@
 	 	<!--  ./TOP NAVBAR  -->
         </div>
             <div class="row wrapper border-bottom white-bg page-heading">
+            
                 <div class="col-sm-4">
-                    <h2>This is main title</h2>
+                    <h2>This is ${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "REPLICANT") } ADMIN </h2>
                     <ol class="breadcrumb">
                         <li>
-                            <a href="index.html">This is</a>
-                        </li>
-                        <li class="active">
-                            <strong>Breadcrumb</strong>
+                            <a href="view.html?t=/admin/main">This is</a>
                         </li>
                     </ol>
-                </div>
+                </div><!-- 
                 <div class="col-sm-8">
                     <div class="title-action">
                         <a href="" class="btn btn-primary">This is action area</a>
                     </div>
-                </div>
+                </div>-->
             </div>
-
             <div class="wrapper wrapper-content">
+            <!-- 
                 <div class="middle-box text-center animated fadeInRightBig">
                     <h3 class="font-bold">This is page content</h3>
                     <div class="error-desc">
@@ -114,18 +123,19 @@
                         <br/><a href="index.html" class="btn btn-primary m-t">Dashboard</a>
                     </div>
                 </div>
+                -->
             </div>
             <div class="footer">
-                <div class="pull-right">
+               <!--  <div class="pull-right">
                     10GB of <strong>250GB</strong> Free.
                 </div>
                 <div>
                     <strong>Copyright</strong> Example Company &copy; 2014-2017
-                </div>
+                </div>-->
             </div>
 
         </div>
-        </div>
+    </div>
 </body>
 </html>
 </#compress>
