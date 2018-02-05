@@ -171,7 +171,7 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		}
 		
 		if( newIssue.getAssignee() != null && newIssue.getAssignee().getUserId() > 0	) {			
-			if( issueToUse.getAssignee() != null && issueToUse.getAssignee().getUserId()  > 0 && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
+			if( issueToUse.getAssignee() != null && issueToUse.getAssignee().getUserId() != newIssue.getAssignee().getUserId() ) {
 				issueToUse.setAssignee(newIssue.getAssignee());
 			}
 			if( issueToUse.getAssignee() == null ) {

@@ -84,6 +84,23 @@
 				that.complete = true;
 			},
 			events : [ AUTHENTICATE ],
+			authenticate : function( callbackHandler ){
+				var that = this,
+				options = that.options,
+				features = options.features;
+				if(defined(features.accounts)){
+					ajax( that.options.url || '/data/api/v1/users/me.json' , {
+						success : function(response){
+							var token = new community.model.User(extend( response.user, { roles : response.roles }));
+							token.copy(that.token);	
+						},
+						complete: function(jqXHR, textStatus ){
+							if( callbackHandler != null )
+								callbackHandler(that.token); 	
+						}
+					});			
+				}	
+			},
 			_features: function(){
 				var that = this,
 				options = that.options,

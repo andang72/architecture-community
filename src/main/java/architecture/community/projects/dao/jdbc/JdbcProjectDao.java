@@ -3,6 +3,7 @@ package architecture.community.projects.dao.jdbc;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
@@ -191,8 +192,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.VARCHAR, toUse.getPriority()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getResolution()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getResolutionDate()),
-					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
-					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
+					new SqlParameterValue(Types.NUMERIC, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
+					new SqlParameterValue(Types.NUMERIC, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
 					 
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
@@ -209,8 +210,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.VARCHAR, toUse.getComponent()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),					
-					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
-					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
+					new SqlParameterValue(Types.NUMERIC, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
+					new SqlParameterValue(Types.NUMERIC, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId())
@@ -219,7 +220,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		}	
 		
 	}
-	
+
 	public void saveOrUpdateIssues(List<Issue> issue) {
 		final List<Issue> updates = issue;
 		getExtendedJdbcTemplate().batchUpdate(
@@ -227,19 +228,30 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			    new BatchPreparedStatementSetter() {
 				public void setValues(PreparedStatement ps, int i) throws SQLException {
 					Issue toUse = updates.get(i);
-					new SqlParameterValue(Types.VARCHAR, toUse.getIssueType());
-					new SqlParameterValue(Types.VARCHAR, toUse.getStatus());
-					new SqlParameterValue(Types.VARCHAR, toUse.getResolution());
-					new SqlParameterValue(Types.TIMESTAMP, toUse.getResolutionDate());
-					new SqlParameterValue(Types.VARCHAR, toUse.getPriority());
-					new SqlParameterValue(Types.VARCHAR, toUse.getComponent());
-					new SqlParameterValue(Types.VARCHAR, toUse.getSummary());
-					new SqlParameterValue(Types.VARCHAR, toUse.getDescription());					
-					new SqlParameterValue(Types.VARCHAR, toUse.getAssignee().getUserId());
-					new SqlParameterValue(Types.VARCHAR, toUse.getRepoter().getUserId());
-					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate());
-					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate());
-					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId());		
+					ps.setString(1, toUse.getIssueType());
+					ps.setString(2, toUse.getStatus());
+					ps.setString(3, toUse.getResolution());					
+					if( toUse.getResolutionDate() != null)
+						ps.setTimestamp(4, new Timestamp(toUse.getResolutionDate().getTime()));
+					else
+						ps.setNull(4, Types.TIMESTAMP);
+					ps.setString(5, toUse.getPriority());
+					ps.setString(6, toUse.getComponent());
+					ps.setString(7, toUse.getSummary());
+					ps.setString(8, toUse.getDescription());
+					ps.setLong(9, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId());
+					ps.setLong(10, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId());
+					
+					if( toUse.getResolutionDate() != null)
+						ps.setTimestamp(11, new Timestamp(toUse.getDueDate().getTime()));
+					else
+						ps.setNull(11, Types.TIMESTAMP);
+					
+					if( toUse.getModifiedDate() != null)
+						ps.setTimestamp(12, new Timestamp(toUse.getModifiedDate().getTime()));
+					else
+						ps.setNull(12, Types.TIMESTAMP);
+					ps.setLong(13, toUse.getIssueId());
 				}
 
 				public int getBatchSize() {

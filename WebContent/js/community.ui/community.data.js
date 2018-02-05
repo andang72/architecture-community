@@ -449,6 +449,13 @@
 	    });
 	}	
 	
+	function replaceLineBreaksToBr(str){
+		if( str != null)
+			str = str.replace(/(?:\r\n|\r|\n)/g, '<br />');
+		
+		return str;
+	}
+	
 	extend(community.data, {	
 		uploadImageAndInsertLink: uploadImageAndInsertLink,
 		getFormattedDate : getFormattedDate,
@@ -456,7 +463,8 @@
 		getAttachmentThumbnailUrl :getAttachmentThumbnailUrl,
 		getUserDisplayName : getUserDisplayName ,
 		getUserProfileImage : getUserProfileImage,
-		bytesToSize : bytesToSize
+		bytesToSize : bytesToSize,
+		replaceLineBreaksToBr : replaceLineBreaksToBr
 	});
 	
 	console.log("community.data initialized.");

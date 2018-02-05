@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.user.dao.UserDao;
 import architecture.community.user.event.UserRemovedEvent;
-import architecture.community.util.SecurityHelper;
 import architecture.ee.spring.event.EventSupport;
 import architecture.ee.util.StringUtils;
 import net.sf.ehcache.Cache;

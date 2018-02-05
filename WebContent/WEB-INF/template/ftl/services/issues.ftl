@@ -122,6 +122,7 @@
 					community.ui.ajax('/data/api/v1/projects/'+ observable.get('projectId') +'/info.json/', {
 						success: function(data){		
 							$this.set('project', new community.model.Project(data) );		
+							$this.set('project.summary', community.data.replaceLineBreaksToBr( $this.get('project.summary') ) );
 							$this.set('projecPeriod' , community.data.getFormattedDate( $this.project.startDate , 'yyyy-MM-dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy-MM-dd' ) );
 							$.each($this.project.issueTypeStats.items , function (index, item ){
 								if( item.name == 'TOTAL' )
@@ -633,7 +634,7 @@
                       </td>
                       <td class="align-middle">
                       # if ( status != '005' && new Date() >= dueDate ) {# <i class="fa fa-exclamation-triangle g-color-red" aria-hidden="true"></i> #} else { #  # } # 
-                      <a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
+                      <a class="btn-link text-wrap #if(status != '005'){# g-font-weight-400 #}else{# g-font-weight-200 #}# g-font-size-20" href="\\#" data-action="view" data-object-id="#= issueId #" data-action-target="issue" > #: summary # </a>
                       </td>
                       <td class="align-middle">#: issueTypeName #</td>
                       <td class="align-middle">#: priorityName #</td>
