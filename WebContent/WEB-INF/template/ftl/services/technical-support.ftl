@@ -536,7 +536,7 @@
 						<div class="g-ml-60 g-mb-5 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
 						#if( isDeveloper() ){ #
 						<div class="g-ml-60 g-mb-5"> 유지보수비용(월) : #: kendo.toString( maintenanceCost, 'c')  #</div>						
-						<div class="g-ml-60 g-mb-5 text-muted">#if(summary != null ){# #= community.data.replaceLineBreaksToBr(summary) # #}#</div>
+						<div class="g-ml-60 g-mb-5">#if(summary != null ){# #= community.data.replaceLineBreaksToBr(summary) # #}#</div>
 						#}#
 					</div>
 					<div class="col-md-1 forum-info">

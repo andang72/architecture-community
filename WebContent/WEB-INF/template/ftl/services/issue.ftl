@@ -907,13 +907,15 @@
 								<div class="g-mb-50">
 									<h3 class="h5 g-color-black g-font-weight-600 mb-4">담당자</h3>
 									<div class="media g-mb-25">
-                  						<img data-bind="attr:{ src: assigneeAvatarSrc  }"  width="64" height="64" src="/images/no-avatar.png" class="d-flex g-width-40 g-height-40 rounded-circle mr-2" alt="image">
-										<div class="media-body">
-						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.assignee.name"></span></h4>						                                 
+                  						<div class="media-body">
+						                    <h4 class="h5 g-color-primary mb-0">
+						                    		<img data-bind="attr:{ src: assigneeAvatarSrc  }"  width="64" height="64" src="/images/no-avatar.png" class="d-flex g-width-40 g-height-40 rounded-circle mr-2" alt="image">
+										    		<span data-bind="text:issue.assignee.name"></span></h4>						                                 
 										</div>
 										<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-										<span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>
-										<button class="btn btn-xs u-btn-outline-blue g-mb-15 g-mr-10 " type="button" role="button" data-bind="click:assignMe, invisible:isAssigned">나를 담당자로 지정합니다.</button>
+										
+										<button class="btn btn-md u-btn-outline-indigo g-mb-15 g-mr-10 " type="button" role="button" data-bind="click:assignMe, invisible:isAssigned">나를 담당자로 지정합니다.</button>
+										<span class="help-block" data-bind="visible:isDeveloper">또는 이름 또는 아이디로 검색할 수 있습니다.</span>
 										<input data-role="combobox"
 				                   		 data-placeholder="담당자 이름을 입력하세요."
 										 data-filter="contains"
@@ -935,9 +937,10 @@
 								<div class="g-mb-50">
 									<h3 class="h5 g-color-black g-font-weight-600 mb-4">리포터</h3>
 									<div class="media g-mb-25">
-                  						<img data-bind="attr:{ src: repoterAvatarSrc  }"  width="64" height="64" src="/images/no-avatar.png" class="d-flex g-width-40 g-height-40 rounded-circle mr-2" alt="image">
-										<div class="media-body">
-						                    <h4 class="h6 g-color-primary mb-0"><span data-bind="text:issue.repoter.name"></span></h4>
+                  						<div class="media-body">
+						                    <h4 class="h5 g-color-primary mb-0">
+						                    <img data-bind="attr:{ src: repoterAvatarSrc  }"  width="64" height="64" src="/images/no-avatar.png" class="d-flex g-width-40 g-height-40 rounded-circle mr-2" alt="image">
+										    <span data-bind="text:issue.repoter.name"></span></h4>
 						                    <span class="help-block" data-bind="visible:isDeveloper">이름 또는 아이디로 검색할 수 있습니다.</span>             
 										</div>
 										<input data-role="combobox"

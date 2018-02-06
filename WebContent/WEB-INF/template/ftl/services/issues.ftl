@@ -689,7 +689,7 @@
 			        	</h2>
 		      	</div>
 				<div class="modal-body g-pa-25">	         
-					<table class="table u-table--v2 g-mb-150">
+					<table class="table u-table--v2 g-mb-50">
 						<thead class="text-uppercase g-letter-spacing-1">
 							<tr class="g-height-50">
 								<th class="align-middle text-center g-font-weight-300 g-color-black g-width-80">ID</th>	
@@ -703,14 +703,10 @@
 			                 style="height: 150px; overflow: auto">			                  
 			             </tbody>
 					</table>
-					<p class="g-font-size-24 g-color-red">
-					선택된 이슈들에 대한 상태를 한꺼번에 변경할 수 있습니다. 
-								아직 지원하고 있지 않는 기능입니다. 2월 중에 지원 예정입니다.</p>
-					<div class="g-brd-blue g-brd-2 g-brd-style-solid g-mt-300 g-pa-25 g-rounded-10 ">
-					<form> 
-						<div class="form-group"> 
-							<h4 class="h6 g-mb-5">상태</h4>
-							<input data-role="combobox"  
+					<form class="g-brd-around g-brd-gray-light-v4 g-pa-30 g-bg-gray-light-v5">
+                			<div class="form-group g-mb-20">
+		                    <label class="g-mb-10">상태</label>
+		                  	<input data-role="combobox"  
 							   data-placeholder="진행상태를 선택하여 주세요."
 			                   data-auto-bind="true"
 			                   data-value-primitive="true"
@@ -718,10 +714,13 @@
 			                   data-value-field="code"
 			                   data-bind="value:issueStatus, source:statusDataSource"
 			                   style="width: 100%;"/>
-						</div> 
-						<div class="form-group"> 
-							<h4 class="h6 g-mb-5">결과</h4>
-							<input id="input-update-resolution"
+							<small class="form-text text-muted g-font-size-default g-mt-10">작업 진행 상태 변경이 있는 경우 선택하여 주세요.</small>
+                			</div>
+                			<hr class="g-brd-gray-light-v4 g-mx-minus-30">
+                			
+                			<div class="form-group g-mb-20">
+		                    <label class="g-mb-10">결과</label>
+		                    <input id="input-update-resolution"
 								data-role="combobox"	
 								data-placeholder="처리결과를 선택하여 주세요"
 							    data-auto-bind="true"
@@ -729,14 +728,15 @@
 							    data-text-field="name"
 						        data-value-field="code"
 						        data-bind="value:resolution, source:resolutionDataSource"
-						        style="width: 100%;"/>
-						</div>
-						<div class="form-group"> 
-							<h4 class="h6 g-mb-5">처리일자</h4>
-							<input id="input-update-resolutionDate" data-role="datepicker" data-bind="value: resolutionDate" style="width: 100%">
-						</div>
-					</form>
-					</div>
+						        style="width: 100%;" />
+							<small class="form-text text-muted g-font-size-default g-mt-10">작업이 완료된 경우 결과를 선택하여 주세요.</small>
+                			</div>
+                			<div class="form-group g-mb-20">
+		                    <label class="g-mb-10">처리일자</label>
+		                  	<input id="input-update-resolutionDate" data-role="datepicker" data-bind="value: resolutionDate" style="width: 100%">
+							<small class="form-text text-muted g-font-size-default g-mt-10">작업이 완료된 경우 처리일자를 입력하여 주세요.</small>
+                			</div>
+              		</form>					
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
