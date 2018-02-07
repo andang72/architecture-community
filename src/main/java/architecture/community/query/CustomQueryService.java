@@ -3,9 +3,11 @@ package architecture.community.query;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
+import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.web.model.json.DataSourceRequest;
 
 public interface CustomQueryService {
@@ -68,5 +70,14 @@ public interface CustomQueryService {
 	 * @return
 	 */
 	public List<Map<String, Object>> list(String source, String statement, List<ParameterValue> values) ;
+	
+
+	
+	public abstract <T> T execute(DaoCallback<T> action) throws DataAccessException;	
+	
+	public interface DaoCallback<T> {
+		T process(CustomQueryJdbcDao dao) throws DataAccessException;
+	}
+	
 
 }

@@ -173,7 +173,7 @@ public class DownloadController {
 			    throw new NotFoundException();
 			}
 		    } else {
-			throw new NotFoundException();
+		    		throw new NotFoundException();
 		    }
 		} catch (NotFoundException e) {
 		    response.sendError(404);

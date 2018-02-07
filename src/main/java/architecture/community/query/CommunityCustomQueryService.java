@@ -11,9 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.util.CommunityContextHelper;
@@ -36,6 +40,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	
 	
 	public CommunityCustomQueryService() {
+		
 	}
 	
 	
@@ -114,6 +119,12 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public <T> T execute(DaoCallback<T> action) throws DataAccessException {
+		Assert.notNull(action, "Callback object must not be null");
+		T result = action.process(customQueryJdbcDao);
+		return result;
+	}	
 	
 	/**
 	 * 외부에서 전달된 인자들을 스프링이 인식하는 형식의 값을 변경하여 처리한다.

@@ -166,6 +166,15 @@ public class IssueDataController extends AbstractCommunityDateController  {
 			}
 		}
 		
+		// reopen closed issue.
+		if( !StringUtils.isNullOrEmpty(newIssue.getStatus()) && !org.apache.commons.lang3.StringUtils.equals(newIssue.getStatus(), "005") ) {
+			if( org.apache.commons.lang3.StringUtils.equals(issueToUse.getStatus(), "005") && 
+				!StringUtils.isNullOrEmpty( issueToUse.getResolution() )	) {
+				newIssue.setResolution(null);
+				issueToUse.setResolutionDate(null);
+			}
+		}
+		
 		if( newIssue.getResolutionDate() != null && newIssue.getResolutionDate() != issueToUse.getResolutionDate() ) {
 			issueToUse.setResolutionDate(newIssue.getResolutionDate());
 		}
@@ -223,7 +232,6 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		
 		boolean hasResolutioin = false;
 		if( !StringUtils.isNullOrEmpty(resolution)) {
-			
 			hasResolutioin = true; 
 			if(resolutionDate == null )
 				resolutionDate = new Date();

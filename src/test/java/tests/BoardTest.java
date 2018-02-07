@@ -98,13 +98,11 @@ public class BoardTest {
 				
 			} catch (BoardNotFoundException e) {
 				e.printStackTrace();
-			}
-			
+			} 
 			
 		}
 		
-	}
-		
+	} 
 	
 	public void createBoardTest(){		
 		boardService.createBoard("질문답변게시판", "질문&답변 게시판", "");
