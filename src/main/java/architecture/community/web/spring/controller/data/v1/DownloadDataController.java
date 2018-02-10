@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import architecture.community.export.CommunityExportService;
 import architecture.community.web.model.json.DataSourceRequest;
@@ -38,8 +40,14 @@ public class DownloadDataController {
 	@ResponseBody
 	public void exportAsExcel (
 			@PathVariable("name") String name, 
-			@RequestBody DataSourceRequest dataSourceRequest,
+			@RequestParam(value = "data", required = false) String jsonData,
 		    HttpServletResponse response) throws IOException {		
+		
+		ObjectMapper mapper = new ObjectMapper();
+		DataSourceRequest dataSourceRequest = mapper.readValue(jsonData, DataSourceRequest.class);		
+		
+		log.debug("request data {}", dataSourceRequest.getData() );		
 		exportService.export(name, dataSourceRequest.getData(), response);
+		log.debug("export done.");
 	}
 }

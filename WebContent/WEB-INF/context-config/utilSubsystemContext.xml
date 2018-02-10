@@ -17,6 +17,6 @@
 	
 	<beans:bean id="customQueryService" class="architecture.community.query.CommunityCustomQueryService" />
 	
-	<beans:bean id="exportService" class="architecture.community.export.CommunityExportService" p:configFileName="export-service-config.xml" />
+	<beans:bean id="exportService" class="architecture.community.export.CommunityExportService" init-method="initialize" p:configFileName="export-service-config.xml" />
 	
 </beans:beans> 

@@ -321,7 +321,7 @@
 		OBJECT_TYPE              INTEGER NOT NULL,
 		OBJECT_ID                INTEGER NOT NULL,	    		
 		CONTENT_TYPE             VARCHAR2(255)  NOT NULL,			  
-		FILE_NAME                VARCHAR2(255)   NOT NULL,
+		FILE_NAME                VARCHAR2(500)   NOT NULL,
 		FILE_SIZE                INTEGER   NOT NULL,
 		USER_ID					 INTEGER NOT NULL,	 	
 		CREATION_DATE            DATE DEFAULT  SYSDATE NOT NULL,

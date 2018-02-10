@@ -173,9 +173,9 @@ public class XSSFExcelWriter {
 		style.setBorderBottom(BorderStyle.THIN);
 		style.setBottomBorderColor(IndexedColors.BLACK.index);		
 		style.setBorderLeft(BorderStyle.THIN);
-		style.setLeftBorderColor(IndexedColors.GREEN.index);
+		style.setLeftBorderColor(IndexedColors.BLACK.index);
 		style.setBorderRight(BorderStyle.THIN);
-		style.setRightBorderColor(IndexedColors.BLUE.index);
+		style.setRightBorderColor(IndexedColors.BLACK.index);
 		style.setBorderTop(BorderStyle.THIN);
 		// style.setBorderTop(HSSFCellStyle.BORDER_MEDIUM_DASHED);
 		style.setTopBorderColor(IndexedColors.BLACK.index);
@@ -187,7 +187,7 @@ public class XSSFExcelWriter {
 		int rowNum = getFirstRowNum();
 		XSSFRow row = addRow(rowNum);
 		XSSFCellStyle cellStyle = createCellStyle();
-		cellStyle.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.index);
+		cellStyle.setFillForegroundColor(IndexedColors.YELLOW.index);
 		cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		cellStyle.setAlignment(HorizontalAlignment.CENTER_SELECTION);
 		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);		
@@ -195,7 +195,8 @@ public class XSSFExcelWriter {
 		font.setBold(true);
 		cellStyle.setFont(font);		
 		for (Column c : getColumnList(true)) {
-			XSSFCell cell = getRow(row.getRowNum()).createCell(c.columnIndex);			
+			XSSFCell cell = getRow(row.getRowNum()).createCell(c.columnIndex);	
+			
 			cell.setCellStyle(cellStyle);
 			cell.setCellValue(c.name);
 		}		

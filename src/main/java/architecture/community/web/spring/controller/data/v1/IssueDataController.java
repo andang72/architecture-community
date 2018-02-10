@@ -359,6 +359,14 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		return items;
 	}
 	
+	
+	/**
+	 * 기간별 이슈 통계
+	 *  
+	 * @param dataSourceRequest
+	 * @param request
+	 * @return
+	 */
 	@Secured({ "ROLE_DEVELOPER" })
 	@RequestMapping(value = "/issues/overviewstats/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
@@ -395,7 +403,23 @@ public class IssueDataController extends AbstractCommunityDateController  {
 				issue.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
 				return issue;
 		}});		
+		
 		Map<Long, OverviewStats > overviewStats = new HashMap<Long, OverviewStats>();
+		for( IssueSummary summary : summaries ) {
+			Project project = summary.getProject();
+			log.debug("summary for projcect : {} , issue : {}", summary.getProject().getProjectId(), summary.getIssueId());
+			if( overviewStats.get( project.getProjectId() ) == null ) {
+				OverviewStats overview = new OverviewStats( project );
+				for( CodeSet code : issueTypes ) {
+					overview.stats.add(code.getCode(), 0);
+				}
+				overviewStats.put( project.getProjectId(), overview );
+				log.debug("create new stats overview for project : {}", project.getProjectId() );
+			}
+		}
+		
+		log.debug("overviews : {}", overviewStats.values());
+		
 		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_REMAILS_BY_DATE");
 		List<OverviewStats> map = customQueryService.list(dataSourceRequest, new RowMapper<OverviewStats>() { 
 			public OverviewStats mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -403,13 +427,15 @@ public class IssueDataController extends AbstractCommunityDateController  {
 				os.getProject().setName(rs.getString("PROJECT_NAME"));
 				os.setUnclosedTotalCount(rs.getInt("CNT"));
 				return os;
-		}});			
+		}});	
+		
 		for( OverviewStats overview : map ) {			
 			for( CodeSet code : issueTypes ) {
 				overview.stats.add(code.getCode(), 0);
 			}
 			overviewStats.put(overview.project.getProjectId(), overview);
-		}			
+		}	 
+		
 		for( IssueSummary summary : summaries )
 		{
 			OverviewStats overview = overviewStats.get(summary.getProject().getProjectId());
@@ -549,6 +575,15 @@ public class IssueDataController extends AbstractCommunityDateController  {
 
 		public void setWithinPeriodResolutionCount(int withinPeriodResolutionCount) {
 			this.withinPeriodResolutionCount = withinPeriodResolutionCount;
+		}
+ 
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("OverviewStats [");
+			if (project != null)
+				builder.append("project=").append(project.getProjectId());
+			builder.append("]");
+			return builder.toString();
 		}
 		
 	}

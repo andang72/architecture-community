@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -122,40 +123,24 @@ public class ExportConfigXmlReader {
 			config.setStatement(soruceEl.elementTextTrim("statement"));
 			config.setQueryString(soruceEl.elementText("queryString"));
 			
-			config.setHeader( Boolean.parseBoolean( soruceEl.elementText("header") ) ) ;
+			config.setHeader( Boolean.parseBoolean( ele.elementText("header") ) ) ;
 			
-			List<ParameterMapping> parameterMappings = new ArrayList<ParameterMapping>();
 			Element parameterMappingsEl = soruceEl.element("parameter-mappings");
 			if( parameterMappingsEl != null )
 			{
-				for (Element child : parameterMappingsEl.elements()) {
-					ParameterMapping.Builder builder = new ParameterMapping.Builder(child.attributeValue(XmlStatementBuilder.XML_ATTR_NAME_TAG));
-					builder.index(Integer.parseInt(child.attributeValue("index", "0")));
-					builder.mode(child.attributeValue("mode", "NONE"));
-					builder.primary(Boolean.parseBoolean(child.attributeValue("primary", "false")));
-					builder.encoding(child.attributeValue("encoding", null));
-					builder.pattern(child.attributeValue("pattern", null));
-					builder.cipher(child.attributeValue("cipher", null));
-					builder.cipherKey(child.attributeValue("cipherKey", null));
-					builder.cipherKeyAlg(child.attributeValue("cipherKeyAlg", null));
-					builder.digest(child.attributeValue("digest", null));
-					builder.size(child.attributeValue("size", "0"));
-					String javaTypeName = child.attributeValue("javaType", null);
-					String jdbcTypeName = child.attributeValue("jdbcType", null);
-					
-					if (!StringUtils.isEmpty(jdbcTypeName))
-						builder.jdbcTypeName(jdbcTypeName);					
-					if (!StringUtils.isEmpty(javaTypeName ))
-						builder.javaType(typeAliasRegistry.resolveAlias(javaTypeName));
-					parameterMappings.add(builder.build());
-				}
+				config.setParameterMappings(getParameterMappings(parameterMappingsEl.elements()));
 			}
-			config.setParameterMappings(parameterMappings);
+				
+			Element resultMappingsEl = soruceEl.element("result-mappings");
+			if( resultMappingsEl != null )
+			{
+				config.setResultMappings(getParameterMappings(resultMappingsEl.elements()));
+			}
 			
 			Element targerEl = ele.element("target");
 			config.setFileName(targerEl.elementTextTrim("fileName"));
 			config.setSheetName(targerEl.elementTextTrim("sheetName"));
-			Element columnsEl = soruceEl.element("columns");
+			Element columnsEl = ele.element("columns");
 			if( columnsEl != null )
 			{
 				for (Element child : columnsEl.elements()) {
@@ -170,6 +155,31 @@ public class ExportConfigXmlReader {
 			holder.put( config.getName(), config );
 			
 		}
+	}
+	
+	private List<ParameterMapping> getParameterMappings( List<Element> elements ) {
+		List<ParameterMapping> parameterMappings = new ArrayList<ParameterMapping>();
+		for (Element child : elements ) {
+			ParameterMapping.Builder builder = new ParameterMapping.Builder(child.attributeValue(XmlStatementBuilder.XML_ATTR_NAME_TAG));
+			builder.index(Integer.parseInt(child.attributeValue("index", "0")));
+			builder.mode(child.attributeValue("mode", "NONE"));
+			builder.primary(Boolean.parseBoolean(child.attributeValue("primary", "false")));
+			builder.encoding(child.attributeValue("encoding", null));
+			builder.pattern(child.attributeValue("pattern", null));
+			builder.cipher(child.attributeValue("cipher", null));
+			builder.cipherKey(child.attributeValue("cipherKey", null));
+			builder.cipherKeyAlg(child.attributeValue("cipherKeyAlg", null));
+			builder.digest(child.attributeValue("digest", null));
+			builder.size(child.attributeValue("size", "0"));
+			String javaTypeName = child.attributeValue("javaType", null);
+			String jdbcTypeName = child.attributeValue("jdbcType", null);			
+			if (!StringUtils.isEmpty(jdbcTypeName))
+				builder.jdbcTypeName(jdbcTypeName);					
+			if (!StringUtils.isEmpty(javaTypeName ))
+				builder.javaType(typeAliasRegistry.resolveAlias(javaTypeName));
+			parameterMappings.add(builder.build());
+		}
+		return parameterMappings;
 	}
 	
 }

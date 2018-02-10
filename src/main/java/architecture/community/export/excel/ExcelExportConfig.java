@@ -26,6 +26,8 @@ public class ExcelExportConfig implements Serializable {
 	
 	private List<ParameterMapping> parameterMappings;
 	
+	private List<ParameterMapping> resultMappings;
+	
 	private boolean header ;
 	
 	private List<Column> columns;
@@ -37,6 +39,7 @@ public class ExcelExportConfig implements Serializable {
 		this.name = name;
 		this.description = description;
 		this.parameterMappings = null;
+		this.resultMappings = null;
 		this.header = true;
 		this.sheetName = null;
 	}
@@ -47,6 +50,7 @@ public class ExcelExportConfig implements Serializable {
 		this.fileName = null;
 		this.columns = new ArrayList<Column>();
 		this.parameterMappings = null;
+		this.resultMappings = null;
 		this.header = true;
 		this.sheetName = null;
 	}
@@ -61,6 +65,10 @@ public class ExcelExportConfig implements Serializable {
 	
 	public boolean isSetParameterMappings() {
 		return parameterMappings == null ? false : true;
+	}
+
+	public boolean isSetResultMappings() {
+		return resultMappings == null ? false : true;
 	}
 	
 	public String getSheetName() {
@@ -146,6 +154,14 @@ public class ExcelExportConfig implements Serializable {
 
 
 
+	public List<ParameterMapping> getResultMappings() {
+		return resultMappings;
+	}
+
+	public void setResultMappings(List<ParameterMapping> resultMappings) {
+		this.resultMappings = resultMappings;
+	}
+
 	public void setColumns(List<Column> columns) {
 		this.columns = columns;
 	}
@@ -167,6 +183,8 @@ public class ExcelExportConfig implements Serializable {
 		
 		private String title; 
 		
+		private String format;
+		
 		private int width;
 		
 		public Column() {
@@ -174,6 +192,7 @@ public class ExcelExportConfig implements Serializable {
 			this.field = null;
 			this.title = null;
 			this.width = 0;
+			this.format = null;
 		}
 
 		public Column(int index, String field, String title) { 
@@ -181,6 +200,7 @@ public class ExcelExportConfig implements Serializable {
 			this.field = field;
 			this.title = title;
 			this.width = 0;
+			this.format = null;
 		}
 
 		public int getIndex() {
@@ -217,6 +237,15 @@ public class ExcelExportConfig implements Serializable {
 		}
 
 
+		public String getFormat() {
+			return format;
+		}
+
+		public void setFormat(String format) {
+			this.format = format;
+		}
+
+
 		public static class Builder {
 			 
 			private Column columnMapping = new Column();
@@ -244,6 +273,11 @@ public class ExcelExportConfig implements Serializable {
 				return this;
 			}
 
+			public Builder format(String format) {
+				columnMapping.format = format;
+				return this;
+			}
+			
 			public Builder index(int index) {
 				columnMapping.index = index;
 				return this;

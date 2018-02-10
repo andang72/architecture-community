@@ -3,8 +3,6 @@
  * Custom css for Inspinia
  */
  
-
-
 .skin-1 .pace .pace-progress  {
 	background: #0e9aef;
 }
@@ -42,9 +40,8 @@
 }
 
 .landing-page section p {
-   /* font-size: 16px!important; */
-    font-size: 1.3em;
-   /* margin: 0 0 0 5px; */
+    font-size: 16px; 
+   	margin: 0 0 0 5px; 
 }
 
 .landing-page .modal-footer .btn-default {
@@ -74,11 +71,17 @@
 .note-popover {
 	z-index: 2050;
 }
+ .issue-body, .note-editable {
+  	color: #676a6c;
+  	font-size : 16px;
+  	line-height: 28px;
+ }
  
-.issue-body p {
-	color: #676a6c!important;
+.issue-body p, .note-editable p{
+	color: #676a6c!important; 
+	/*
 	font-size: 1.1em!important;
-	line-height:1.3em;
+	line-height:1.3em;*/
 	margin: 0 0 0 5px;
 }
 
