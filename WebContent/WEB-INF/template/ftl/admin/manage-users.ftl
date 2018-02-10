@@ -256,7 +256,7 @@
 	</style>
 </head>
 
-<body class="skin-1">
+<body class="skin-1 fixed-sidebar">
 
     <div id="wrapper">
 	    	<!--  SIDEBAR  -->
