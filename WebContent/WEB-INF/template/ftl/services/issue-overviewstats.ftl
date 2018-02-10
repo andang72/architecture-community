@@ -105,6 +105,12 @@
 			search : function(){
 				community.ui.listview( $('#summary-listview') ).dataSource.read(); 
 			},
+			exportExcel : function(){
+				var $this = this, data = {};
+				data.startDate = community.data.getFormattedDate($this.get("startDate"), "yyyyMMdd" )	;
+				data.endDate = community.data.getFormattedDate($this.get("endDate"), "yyyyMMdd" )	;				
+				community.ui.send("<@spring.url "/data/api/v1/export/excel/ISSUE_OVERVIEWSTATS" />", { data : community.ui.stringify(data) }, "POST");
+			},
 			back : function(){
 				community.ui.send("<@spring.url "/display/pages/technical-support.html" />" );
 				return false;
@@ -153,6 +159,8 @@
 						return community.ui.stringify( options );
 					}
 				},
+				serverPaging : false,
+				pageSize : 0,
 				schema: {
 					total: "totalCount",
 					data: "items"
@@ -212,7 +220,9 @@
 						</div>
 						<div class="row">
 							<div class="col-sm-12 text-right">
+							
 							<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:search}">검색</button>
+							<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:exportExcel}">엑셀 다운로드</button>
 							</div>
 						</div>		
 					</div>
