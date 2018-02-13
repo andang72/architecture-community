@@ -47,7 +47,7 @@ public class DownloadDataController {
 		DataSourceRequest dataSourceRequest = mapper.readValue(jsonData, DataSourceRequest.class);		
 		
 		log.debug("request data {}", dataSourceRequest.getData() );		
-		exportService.export(name, dataSourceRequest.getData(), response);
+		exportService.export(name, dataSourceRequest, response);
 		log.debug("export done.");
 	}
 }

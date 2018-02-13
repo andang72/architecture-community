@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.HandlerMapping;
 
 import architecture.community.exception.NotFoundException;
 import architecture.community.user.User;
@@ -35,13 +36,18 @@ public class SecurePageDisplayController {
     private ConfigService configService;
 	
 	@Secured({ "ROLE_ADMINISTRATOR"})
-	@RequestMapping(value = "/view/{filename:.+}", method = { RequestMethod.POST, RequestMethod.GET })
-    public String page(@PathVariable String filename, 
+	@RequestMapping(value = "/ftl/**", method = { RequestMethod.POST, RequestMethod.GET })
+    public String page(
 	    HttpServletRequest request, 
 	    HttpServletResponse response, 
 	    Model model) throws NotFoundException, IOException {		
-		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);		
-		return filename;
+		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);	
+		
+		String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);		
+		String lcStr = restOfTheUrl.substring(19).toLowerCase();
+		
+		log.debug("view {} > {} .", restOfTheUrl, lcStr );
+		return lcStr;
     }
 	
 	@Secured({ "ROLE_USER" , "ROLE_ADMINISTRATOR"})
