@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import architecture.ee.jdbc.sqlquery.mapping.ParameterMapping;
 
-public class ExcelExportConfig implements Serializable {
+public class DataExportConfig implements Serializable {
 
 	private String name;
 	
@@ -33,7 +33,7 @@ public class ExcelExportConfig implements Serializable {
 	private List<Column> columns;
 	
  
-	public ExcelExportConfig(String name, String description) {
+	public DataExportConfig(String name, String description) {
 		this.fileName = null;
 		this.columns = new ArrayList<Column>();
 		this.name = name;
@@ -44,7 +44,7 @@ public class ExcelExportConfig implements Serializable {
 		this.sheetName = null;
 	}
 
-	public ExcelExportConfig() {
+	public DataExportConfig() {
 		this.name = null;
 		this.description = null;
 		this.fileName = null;

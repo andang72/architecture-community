@@ -21,7 +21,7 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import architecture.community.export.excel.ExcelExportConfig.Column;
+import architecture.community.export.excel.DataExportConfig.Column;
 import architecture.ee.jdbc.sqlquery.builder.xml.XmlStatementBuilder;
 import architecture.ee.jdbc.sqlquery.mapping.ParameterMapping;
 import architecture.ee.jdbc.sqlquery.type.TypeAliasRegistry;
@@ -37,9 +37,9 @@ public class ExportConfigXmlReader {
 	
 	private Document document; 
 	
-	private  Map<String, ExcelExportConfig> holder ; 
+	private  Map<String, DataExportConfig> holder ; 
 	
-	public ExportConfigXmlReader(File file, Map<String, ExcelExportConfig> holder ) throws IOException {
+	public ExportConfigXmlReader(File file, Map<String, DataExportConfig> holder ) throws IOException {
 		this.file = file;
 		if (!file.exists()) {
 			// Attempt to recover from this error case by seeing if the
@@ -84,7 +84,7 @@ public class ExportConfigXmlReader {
 			}
 		} 
 	}
-	public ExportConfigXmlReader(InputStream in , Map<String, ExcelExportConfig> holder ) throws IOException {
+	public ExportConfigXmlReader(InputStream in , Map<String, DataExportConfig> holder ) throws IOException {
 		Reader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 		this.holder = holder;
 		buildDoc(reader);
@@ -117,7 +117,7 @@ public class ExportConfigXmlReader {
 			log.debug(" {} - {} , element {} ", ele.attributeValue("name", null), ele.attributeValue("description", null), node.asXML());
 			
 			Element soruceEl = ele.element("source");
-			ExcelExportConfig config = new ExcelExportConfig(ele.attributeValue("name", null),  ele.attributeValue("description", null) );
+			DataExportConfig config = new DataExportConfig(ele.attributeValue("name", null),  ele.attributeValue("description", null) );
 			
 			config.setDataSourceName(soruceEl.elementText("dataSourceName"));
 			config.setStatement(soruceEl.elementTextTrim("statement"));

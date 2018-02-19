@@ -26,8 +26,8 @@ import org.springframework.jdbc.core.SqlParameterValue;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import architecture.community.export.excel.ExcelExportConfig;
-import architecture.community.export.excel.ExcelExportConfig.Column;
+import architecture.community.export.excel.DataExportConfig;
+import architecture.community.export.excel.DataExportConfig.Column;
 import architecture.community.export.excel.ExportConfigXmlReader;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.query.CustomColumnMapMapper;
@@ -70,7 +70,7 @@ public class CommunityExportService {
 		
 	private boolean usingTempFile = false;
 	
-	protected final BiMap<String, ExcelExportConfig> exports = HashBiMap.create();
+	protected final BiMap<String, DataExportConfig> exports = HashBiMap.create();
 	
 	public CommunityExportService() { 
 		
@@ -98,7 +98,7 @@ public class CommunityExportService {
 		}
 	}
 	
-	public ExcelExportConfig getExcelExportConfig(String id) throws ExportConfigFoundException {
+	public DataExportConfig getExcelExportConfig(String id) throws ExportConfigFoundException {
 		if( !StringUtils.isNullOrEmpty(id) && exports.containsKey(id) ){
 			return exports.get(id);
 		}
@@ -108,7 +108,7 @@ public class CommunityExportService {
 	
 	public void export(String name, DataSourceRequest dataSourceRequest, HttpServletResponse response ) throws IOException {	
 		
-		final ExcelExportConfig config = getExcelExportConfig(name);
+		final DataExportConfig config = getExcelExportConfig(name);
 		List<Map<String, Object>> data = getData(config, dataSourceRequest);
 		
 		log.debug("data size : {}", data.size() );
@@ -140,7 +140,7 @@ public class CommunityExportService {
 		}
 	}
 	
-	protected List<Map<String, Object>> getData(final ExcelExportConfig config, final DataSourceRequest dataSourceRequest) {	
+	protected List<Map<String, Object>> getData(final DataExportConfig config, final DataSourceRequest dataSourceRequest) {	
 		final List<SqlParameterValue> parameters = config.isSetParameterMappings() ? getSqlParameterValues(dataSourceRequest.getData(), config.getParameterMappings()) : Collections.EMPTY_LIST;
 		List<Map<String, Object>> data = null;	
 		if( config.isSetDataSourceName() ) {
@@ -180,7 +180,7 @@ public class CommunityExportService {
 		return additionalParameter;
 	}
 	
-	protected RowMapper<Map<String, Object>> getColumnMapRowMapper( ExcelExportConfig config ) {
+	protected RowMapper<Map<String, Object>> getColumnMapRowMapper( DataExportConfig config ) {
 		if(config.isSetResultMappings())
 			return new CustomColumnMapMapper(config.getResultMappings());
 		else
