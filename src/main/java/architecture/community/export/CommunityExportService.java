@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
@@ -32,7 +31,6 @@ import architecture.community.export.excel.ExportConfigXmlReader;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.query.CustomColumnMapMapper;
 import architecture.community.query.CustomQueryService;
-import architecture.community.query.CustomQueryService.DaoCallback;
 import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.util.CommunityContextHelper;
 import architecture.community.util.excel.XSSFExcelWriter;
@@ -139,6 +137,14 @@ public class CommunityExportService {
 			writer.write(response.getOutputStream());
 		}
 	}
+	
+	
+	public List<Map<String, Object>> getData(String name, DataSourceRequest dataSourceRequest){
+		final DataExportConfig config = getExcelExportConfig(name);
+		List<Map<String, Object>> data = getData(config, dataSourceRequest);
+		return data;
+	}
+	
 	
 	protected List<Map<String, Object>> getData(final DataExportConfig config, final DataSourceRequest dataSourceRequest) {	
 		final List<SqlParameterValue> parameters = config.isSetParameterMappings() ? getSqlParameterValues(dataSourceRequest.getData(), config.getParameterMappings()) : Collections.EMPTY_LIST;

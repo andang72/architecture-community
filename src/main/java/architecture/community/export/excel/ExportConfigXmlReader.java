@@ -138,8 +138,15 @@ public class ExportConfigXmlReader {
 			}
 			
 			Element targerEl = ele.element("target");
-			config.setFileName(targerEl.elementTextTrim("fileName"));
-			config.setSheetName(targerEl.elementTextTrim("sheetName"));
+			
+			String typeString = StringUtils.defaultString( targerEl.elementText("type"), "NONE");
+			config.setType( DataExportConfig.Type.valueOf(typeString.toUpperCase()) );
+			
+			if( config.getType() != DataExportConfig.Type.NONE ) {
+				config.setFileName(targerEl.elementTextTrim("fileName"));
+				config.setSheetName(targerEl.elementTextTrim("sheetName"));
+			}
+			
 			Element columnsEl = ele.element("columns");
 			if( columnsEl != null )
 			{
@@ -152,8 +159,7 @@ public class ExportConfigXmlReader {
 				}
 			}
 			
-			holder.put( config.getName(), config );
-			
+			holder.put( config.getName(), config );			
 		}
 	}
 	

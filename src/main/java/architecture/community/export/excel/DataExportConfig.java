@@ -19,6 +19,12 @@ public class DataExportConfig implements Serializable {
 	private String statement;
 	
 	private String queryString;
+
+	private String totalCountStatement;
+	
+	private String totalCountQueryString;	
+
+	private Type type;
 	
 	private String fileName;
 	
@@ -30,10 +36,12 @@ public class DataExportConfig implements Serializable {
 	
 	private boolean header ;
 	
-	private List<Column> columns;
+	private List<Column> columns;	
 	
  
 	public DataExportConfig(String name, String description) {
+		this.totalCountStatement = null;
+		this.totalCountQueryString = null;
 		this.fileName = null;
 		this.columns = new ArrayList<Column>();
 		this.name = name;
@@ -42,9 +50,12 @@ public class DataExportConfig implements Serializable {
 		this.resultMappings = null;
 		this.header = true;
 		this.sheetName = null;
+		this.type = Type.NONE;
 	}
 
 	public DataExportConfig() {
+		this.totalCountStatement = null;
+		this.totalCountQueryString = null;		
 		this.name = null;
 		this.description = null;
 		this.fileName = null;
@@ -53,8 +64,18 @@ public class DataExportConfig implements Serializable {
 		this.resultMappings = null;
 		this.header = true;
 		this.sheetName = null;
+		this.type = Type.NONE;
 	}
 	
+	
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
 	public boolean isSetDataSourceName() {
 		return StringUtils.isNotBlank(this.dataSourceName);
 	} 
@@ -125,6 +146,22 @@ public class DataExportConfig implements Serializable {
 
 	public void setQueryString(String queryString) {
 		this.queryString = queryString;
+	}
+
+	public String getTotalCountStatement() {
+		return totalCountStatement;
+	}
+
+	public void setTotalCountStatement(String totalCountStatement) {
+		this.totalCountStatement = totalCountStatement;
+	}
+
+	public String getTotalCountQueryString() {
+		return totalCountQueryString;
+	}
+
+	public void setTotalCountQueryString(String totalCountQueryString) {
+		this.totalCountQueryString = totalCountQueryString;
 	}
 
 	public String getName() {
@@ -294,5 +331,6 @@ public class DataExportConfig implements Serializable {
 	public enum Type {
  		XLSX, 
 	    OBJECT,
+	    NONE,
 	}
 }
