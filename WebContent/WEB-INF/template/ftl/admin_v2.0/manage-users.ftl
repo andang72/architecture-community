@@ -87,6 +87,7 @@
 		createUserListView();
 		
 		renderTo.on("click", "button[data-object-type=user], a[data-object-type=user]", function(e){			
+			console.log("--");
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
@@ -280,33 +281,77 @@
 			<!-- End Breadcrumb-v1 -->
 			<div class="g-pa-20">
 				<h1 class="g-font-weight-300 g-font-size-28 g-color-black g-mb-30">사용자 관리</h1>
+            		<hr class="d-flex g-brd-gray-light-v7 g-my-30">            		
 				<!-- Content Body -->
 				<div id="features" class="container-fluid">
-					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
+					<div class="row text-center">
 						<div class="col-6 text-left">
-						<p class="text-danger g-font-weight-100">게시판 정보입니다.</p>
+							<p class="text-danger g-font-weight-100">웹 페이지를 관리합니다.</p>
 						</div>
 						<div class="col-6 text-right">
-						<a href="javascript:void();" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="user"  data-object-id="0" >새로운 사용자 생성하기</a>
+							<a href="#!" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="user" data-object-id="0">새로운 페이지 만들기</a>
 						</div>
+					</div>
+					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
+					
+						<div class="media flex-wrap g-mb-30">
+			              <div class="d-flex align-self-center align-items-center">
+			                <span class="g-hidden-sm-down g-color-gray-dark-v6 g-mr-12">Type:</span>
+			
+			                <div class="u-select--v1 g-pr-20">
+			                  <div class="btn-group bootstrap-select js-select u-select--v1-select w-100"><button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" role="button" title="Colleagues" aria-expanded="false"><span class="filter-option pull-left"><span class="d-flex align-items-center"><span class="u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-teal-v2 g-mr-8--sm"></span><span class="g-hidden-sm-down g-line-height-1_2 g-color-black">Colleagues</span></span></span>&nbsp;<span class="bs-caret"><span class="caret"></span></span></button><div class="dropdown-menu open" role="combobox" x-placement="bottom-start" style="max-height: 154.578px; overflow: hidden; min-height: 0px; position: absolute; transform: translate3d(30px, 16px, 0px); top: 0px; left: 0px; will-change: transform;"><ul class="dropdown-menu inner" role="listbox" aria-expanded="false" style="max-height: 152.578px; overflow-y: auto; min-height: 0px;"><li data-original-index="0" class=""><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="d-flex align-items-center"><span class="u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-lightblue-v3 g-mr-8--sm"></span><span class="g-hidden-sm-down g-line-height-1_2 g-color-black">Friends</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li><li data-original-index="1" class="selected"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="true"><span class="d-flex align-items-center"><span class="u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-teal-v2 g-mr-8--sm"></span><span class="g-hidden-sm-down g-line-height-1_2 g-color-black">Colleagues</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li></ul></div><select class="js-select u-select--v1-select w-100" style="display: none;" tabindex="-98">
+			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-lightblue-v3 g-mr-8--sm&quot;></span><span class=&quot;g-hidden-sm-down g-line-height-1_2 g-color-black&quot;>Friends</span></span>">Friends</option>
+			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-teal-v2 g-mr-8--sm&quot;></span><span class=&quot;g-hidden-sm-down g-line-height-1_2 g-color-black&quot;>Colleagues</span></span>">Colleagues</option>
+			                  </select></div>
+			                  <i class="hs-admin-angle-down g-absolute-centered--y g-right-0 g-color-gray-light-v6 ml-auto"></i>
+			                </div>
+			              </div>
+			
+			              <div class="d-flex align-self-center align-items-center g-ml-10 g-ml-20--md g-ml-40--lg">
+			                <span class="g-hidden-sm-down g-color-gray-dark-v6 g-mr-12">Position:</span>
+			
+			                <div class="u-select--v1 g-pr-20">
+			                  <div class="btn-group bootstrap-select js-select u-select--v1-select w-100"><button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" role="button" title="All Positions"><span class="filter-option pull-left"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">All Positions</span></span></span>&nbsp;<span class="bs-caret"><span class="caret"></span></span></button><div class="dropdown-menu open" role="combobox"><ul class="dropdown-menu inner" role="listbox" aria-expanded="false"><li data-original-index="0" class="selected"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="true"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">All Positions</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li><li data-original-index="1"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">Manager</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li><li data-original-index="2"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">Designer</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li><li data-original-index="3"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">Developer</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li></ul></div><select class="js-select u-select--v1-select w-100" style="display: none;" tabindex="-98">
+			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;g-line-height-1_2 g-color-black&quot;>All Positions</span></span>">All Positions</option>
+			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;g-line-height-1_2 g-color-black&quot;>Manager</span></span>">Manager</option>
+			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;g-line-height-1_2 g-color-black&quot;>Designer</span></span>">Designer</option>
+			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;g-line-height-1_2 g-color-black&quot;>Developer</span></span>">Developer</option>
+			                  </select></div>
+			                  <i class="hs-admin-angle-down g-absolute-centered--y g-right-0 g-color-gray-light-v6 ml-auto"></i>
+			                </div>
+			              </div>
+			
+			              <div class="d-flex g-hidden-md-up w-100"></div>
+			
+			              <div class="media-body align-self-center g-mt-10 g-mt-0--md">
+			                <div class="input-group g-pos-rel g-max-width-380 float-right">
+			                  <input class="form-control g-font-size-default g-brd-gray-light-v7 g-brd-lightblue-v3--focus g-rounded-20 g-pl-20 g-pr-50 g-py-10" type="text" placeholder="이름 검색">
+			                  <button class="btn g-pos-abs g-top-0 g-right-0 g-z-index-2 g-width-60 h-100 g-bg-transparent g-font-size-16 g-color-lightred-v2 g-color-lightblue-v3--hover rounded-0" type="submit">
+			                    <i class="community-admin-search g-absolute-centered"></i>
+			                  </button>
+			                </div>
+			              </div>
+			            </div>
+            
 					</div>
 					<div class="row">
 	                		<div class="table-responsive">
-							<table class="table table-bordered js-editable-table u-table--v1 u-editable-table--v1 g-color-black g-mb-0">
+							<table class="table w-100 g-mb-0">
 								<thead class="g-hidden-sm-down g-color-gray-dark-v6">
 									<tr class="g-height-50">
-			                             <th class="g-valign-middle g-font-weight-300 g-width-50 g-bg-gray-light-v8 g-color-black" >#</th>
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black">이름(ID)</th>
-			                             <th class="g-valign-middle g-font-weight-300 g-width-200 g-bg-gray-light-v8 g-color-black">메일</th>
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100">상태</th>
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100">생성일</th>
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100">수정일</th>  										
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-60" >No.</th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15">이름(ID)</th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15">메일</th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15" width="100">상태</th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15" width="100">생성일</th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15" width="100">수정일</th>  		
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-pr-25 g-width-50"></th>								
 									</tr>
 								</thead>
-								<tbody id="users-listview" class="u-listview"></tbody>
+								<tbody id="users-listview" class="u-listview g-brd-none"></tbody>
 							</table>
 						</div>
-						<div id="users-listview-pager" class="g-brd-top-none" style="width:100%;"></div>
+						<div id="users-listview-pager" class="g-brd-top-none g-brd-left-none g-brd-right-none" style="width:100%;"></div>
             			</div>	
 				</div>
 				<!-- End Content Body -->
@@ -473,22 +518,38 @@
 	</div><!-- /.modal -->		
 	<script type="text/x-kendo-template" id="template">    	
 	<tr class="u-listview-item">
-		<td class="u-text-left"><img class="g-width-36 g-height-36 rounded-circle" src="#= community.data.getUserProfileImage(data) #""> </td>
-		<td class="u-text-left">	
-		<h5 class="g-font-weight-100">
-			 #= name #	<span class="g-font-weight-300 g-color-gray-dark-v6 mb-0">(#: username #)</span>
-		</h5>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">#= userId #</td>
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm">	
+		<img class="g-width-40 g-width-50--md g-height-40 g-height-50--md g-brd-around g-brd-2 g-brd-transparent g-brd-lightblue-v3--parent-opened rounded-circle g-mr-20--sm" src="#= community.data.getUserProfileImage(data) #" alt="Image Description">
+		<span class="g-hidden-sm-down"> #: name #</span>
+		<span class="g-font-weight-300 g-color-gray-dark-v6 mb-0">(#: username #)</span>
+		<!--
 		<div class="u-visible-on-select">
 			<div class="btn-group">
 			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="edit" data-object-type="user" data-object-id="#= userId #">수정</button>
 			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-type="user" data-object-id="#= userId #">삭제</button>
 			</div>
 	 	</div>		
+	 	-->
 		</td>		
-		<td class="u-text-left"> #: email # </td>
-		<td class="text-center"> #: status # </td>
-		<td class="text-center">  #: community.data.getFormattedDate( creationDate)  #  </td>
-		<td class="text-center">#: community.data.getFormattedDate( modifiedDate)  # </td>
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md"> #: email # </td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> 
+			<span class="d-flex align-items-center justify-content-center u-tags-v1 g-hidden-sm-down text-center g-width-150--sm g-brd-around g-bg-gray-light-v8 g-bg-gray-light-v8 g-font-size-default g-color-gray-dark-v6 g-rounded-50 g-py-4 g-px-15">
+				#: status # 
+			</span>
+		</td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">  #: community.data.getFormattedDate( creationDate)  #  </td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">#: community.data.getFormattedDate( modifiedDate)  # </td>
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm g-pr-25--sm">
+			<div class="d-flex align-items-center g-line-height-1">
+				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="user" data-object-id="#= userId #" >
+					<i class="community-admin-pencil g-font-size-18"></i>
+                </a>
+                <a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover" href="\#!" data-action="delete" data-object-type="user" data-object-id="#= userId #" >
+                		<i class="community-admin-trash g-font-size-18"></i>
+                </a>
+			</div>
+		</td>
 	</tr>				                      
     </script>   	
 </body>
