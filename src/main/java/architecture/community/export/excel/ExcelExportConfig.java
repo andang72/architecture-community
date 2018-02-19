@@ -291,5 +291,8 @@ public class ExcelExportConfig implements Serializable {
 	}
 	
 	
-
+	public enum Type {
+ 		XLSX, 
+	    OBJECT,
+	}
 }

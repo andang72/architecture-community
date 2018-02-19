@@ -4,9 +4,10 @@
 	<version>1.0</version>
 	<excle-export name="ISSUE_OVERVIEWSTATS" description="기간별 처리 이슈 목록" >
 		<source>
-			<dataSourceName>dataSource</dataSourceName>
-			<statement></statement>
+			<!-- <dataSourceName>dataSource</dataSourceName> -->
+			<statement>COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD</statement>
 			<!-- query 가 존재하면 쿼리를 사용합니다. -->
+			<!-- 
 			<queryString><![CDATA[ 
 			SELECT  
 			T2.PROJECT_ID, 
@@ -32,7 +33,8 @@
 			   OR ( T1.DUE_DATE IS NOT NULL AND TO_CHAR( T1.DUE_DATE , 'YYYYMMDD' ) BETWEEN ? AND ? ) 
 			   OR ( T1.RESOLUTION_DATE IS NOT NULL AND TO_CHAR( T1.RESOLUTION_DATE , 'YYYYMMDD' ) BETWEEN ? AND ? ) 
 			)
-			]]></queryString>
+			]]></queryString>-->
+			<!-- 
 			<parameter-mappings>
 				<parameter index="1" name="startDate" jdbcType="VARCHAR" />
 				<parameter index="2" name="endDate"   jdbcType="VARCHAR" />
@@ -41,6 +43,7 @@
 				<parameter index="5" name="startDate" jdbcType="VARCHAR" />
 				<parameter index="6" name="endDate"   jdbcType="VARCHAR" />
 			</parameter-mappings>
+			-->
 			<result-mappings>
 				<parameter index="11" name="DUE_DATE" jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
 				<parameter index="12" name="RESOLUTION_DATE"   jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
