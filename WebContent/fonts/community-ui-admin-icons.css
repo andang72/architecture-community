@@ -2,11 +2,11 @@
  * -------------------------- */
 @font-face {
   font-family: 'community-ui-admin-icons';
-  src: url('community-ui-admin-icons.eot');
-  src: url('community-ui-admin-icons.eot#iefix') format('embedded-opentype'),
-  url('community-ui-admin-icons.svg') format('svg'),
-  url('community-ui-admin-icons.ttf') format('truetype'),
-  url('community-ui-admin-icons.woff') format('woff');
+  src: url('community-ui-admin-icons/community-ui-admin-icons.eot');
+  src: url('community-ui-admin-icons/community-ui-admin-icons.eot#iefix') format('embedded-opentype'),
+  url('community-ui-admin-icons/community-ui-admin-icons.svg') format('svg'),
+  url('community-ui-admin-icons/community-ui-admin-icons.ttf') format('truetype'),
+  url('community-ui-admin-icons/community-ui-admin-icons.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
