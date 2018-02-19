@@ -24,7 +24,7 @@
 	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
 	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
   	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
-  	
+  	<link href="<@spring.url "/fonts/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	
  	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script>
  	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
  	
@@ -272,12 +272,12 @@
 
     <div id="wrapper">
 	    	<!--  SIDEBAR  -->
-		<#include "/common/inspinia-admin-sidebar.ftl">
+		<#include "includes/inspinia-admin-sidebar.ftl">
 	 	<!--  ./SIDEBAR  -->
         <div id="page-wrapper" class="gray-bg">
         <div class="row border-bottom">
 	    	<!--  TOP NAVBAR  -->
-		<#include "/common/inspinia-admin-top-navbar.ftl">
+		<#include "includes/inspinia-admin-top-navbar.ftl">
 	 	<!--  ./TOP NAVBAR  -->
         </div>
             <div class="row wrapper border-bottom white-bg page-heading">
@@ -312,14 +312,13 @@
 			                                <th class="g-valign-middle text-center" width="150">수정일</th>
 			                            </tr>
 			                            </thead>
-			                            <tbody id="project-listview" class="no-border " >	
+			                            <tbody id="project-listview" class="no-border" >	
 			                            </tbody>                            
 			                        </table>          
                         			 </div>
                         			 <div class="ibox-footer no-padding g-brd-top-none">  
 	                            		<div id="project-listview-pager" ></div>
-	                             </div>  
- 
+	                             </div> 
             </div>
             <div class="footer"><!--
                 <div class="pull-right">
@@ -338,11 +337,13 @@
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 		      	<div class="modal-header">
+		      	
+		      		<h2 class="modal-title"><span data-bind="text:project.name"></span></h2>
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
 			          	<!--<span aria-hidden="true">&times;</span>-->
 			        </button>
-			        <h2 class="modal-title"><span data-bind="text:project.name"></span></h2>
+			        
 		      	</div><!-- /.modal-content -->
 		      	<div class="modal-body">
 			        <form>

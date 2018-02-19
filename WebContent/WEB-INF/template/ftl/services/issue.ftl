@@ -1223,16 +1223,20 @@
 				<img src="#= community.data.getUserProfileImage( user ) #" alt="profile-picture">
 			</a>
 			<div class="media-body">
+				<div class="g-mb-15">
+                    <h5 class="h5 g-color-gray-dark-v1 mb-0">#= community.data.getUserDisplayName( user ) #</h5>
+                    <span class="g-color-gray-dark-v4 g-font-size-12">#: kendo.toString( new Date(creationDate), "g") #</span>
+                 </div>
+				<!--
 				<span class="font-bold">#= community.data.getUserDisplayName( user ) #</span>
 				<span class="text-muted">#: kendo.toString( new Date(creationDate), "g") #</span>
-				<div class="social-content g-font-size-16">
+				-->
+				<div class="g-py-10 g-font-size-16">
               	#= body #	
 				</div>
-				<div class="g-mb-5">
-					<button class="btn btn-sm btn-link" type="button" 
-						data-kind="comment" data-action="list" data-object-id="#:objectId#" data-comment-id="#:commentId#" data-target="\\#message-#:objectId#-comment-#:commentId#-listview" aria-expanded="false" aria-controls="message-#:objectId#-comment-#:commentId#-listview"> <i class="icon-bubbles"></i> 답글보기 (<span>#: replyCount #</span>)</button>
-					<button class="btn btn-sm btn-link" type="button" 
-						data-kind="comment" data-action="create" data-object-id="#: objectId #" data-parent-comment-id="#: commentId#" ><i class="icon-bubble"></i> 답글쓰기</button>	
+				<div class="list-inline-item g-mr-20">
+					<button class="btn btn-sm btn-link" type="button" data-kind="comment" data-action="list" data-object-id="#:objectId#" data-comment-id="#:commentId#" data-target="\\#message-#:objectId#-comment-#:commentId#-listview" aria-expanded="false" aria-controls="message-#:objectId#-comment-#:commentId#-listview"> <i class="icon-bubbles"></i> 답글보기 (<span>#: replyCount #</span>)</button>
+					<button class="btn btn-sm btn-link" type="button" data-kind="comment" data-action="create" data-object-id="#: objectId #" data-parent-comment-id="#: commentId#" ><i class="icon-bubble"></i> 답글쓰기</button>	
 				</div>		
 				<div class="collapse no-border comment-reply" id="message-#:objectId#-comment-#:commentId#-listview"></div>		
 			</div>
@@ -1259,7 +1263,9 @@
 		<td class="align-middle text-right"><span class='text-muted'>#: formattedSize() #</span></td>
 	</tr>            	        	        	
 	</script>  
+ 
       		
+      		     		     		
 </body>     		 
 </html>
 </#compress>

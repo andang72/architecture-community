@@ -25,7 +25,7 @@
 	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
 	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
   	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
-  	
+  	<link href="<@spring.url "/fonts/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	
     
     
  	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script>
@@ -276,12 +276,12 @@
 
     <div id="wrapper">
 	    	<!--  SIDEBAR  -->
-		<#include "/common/inspinia-admin-sidebar.ftl">
+		<#include "includes/inspinia-admin-sidebar.ftl">
 	 	<!--  ./SIDEBAR  -->
         <div id="page-wrapper" class="gray-bg">
         <div class="row border-bottom">
 	    	<!--  TOP NAVBAR  -->
-		<#include "/common/inspinia-admin-top-navbar.ftl">
+		<#include "includes/inspinia-admin-top-navbar.ftl">
 	 	<!--  ./TOP NAVBAR  -->
         </div>
             <div class="row wrapper border-bottom white-bg page-heading">

@@ -24,7 +24,7 @@
 	<link href="<@spring.url "/css/community.ui/community.ui.globals.css"/>" rel="stylesheet" type="text/css" />	
 	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
   	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
-  	    
+  	<link href="<@spring.url "/fonts/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	    
  	<script data-pace-options='{ "ajax": false }' src='/js/pace/pace.min.js'></script>
  	<script src="/js/require.js/2.3.5/require.js" type="text/javascript"></script>
  	
@@ -195,7 +195,6 @@
 				template: community.ui.template($("#property-template").html()),
 				editTemplate: community.ui.template($("#property-edit-template").html())
 			});		
-				
 			parentRendorTo.on("click", "button[data-action=create], a[data-action=create]", function(e){			
 				listview.add();
                 e.preventDefault();
@@ -383,12 +382,12 @@
 
     <div id="wrapper">
 	    	<!--  SIDEBAR  -->
-		<#include "/common/inspinia-admin-sidebar.ftl">
+		<#include "includes/inspinia-admin-sidebar.ftl">
 	 	<!--  ./SIDEBAR  -->
         <div id="page-wrapper" class="gray-bg">
         <div class="row border-bottom">
 	    	<!--  TOP NAVBAR  -->
-		<#include "/common/inspinia-admin-top-navbar.ftl">
+		<#include "includes/inspinia-admin-top-navbar.ftl">
 	 	<!--  ./TOP NAVBAR  -->
         </div>
             <div class="row wrapper border-bottom white-bg page-heading">
@@ -614,7 +613,7 @@
                          		<div id="page-options-tab-2" class="tab-pane">
 	                                <div class="panel-body">
 	                                    <p>속성값을 수정할 수 있습니다.</p>
-	                                     <button class="btn btn-sm u-btn-outline-bluegray g-mb-15"   data-action="create">속성 추가</button>
+	                                     <button class="btn u-btn-outline-bluegray g-mb-15" data-action="create">속성 추가</button>
 	                                    <!-- properties listview -->						
 										<div class="table-responsive">
 											<table class="table table-bordered u-table--v2" >

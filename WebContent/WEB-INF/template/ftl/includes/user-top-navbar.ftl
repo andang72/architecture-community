@@ -11,7 +11,7 @@
                     
                     <a class="navbar-brand" href="/index.html">HELPDESK</a>
                     <#if SecurityHelper.isUserInRole("ROLE_ADMINISTRATOR") >
-                    <a class="back g-mt-15 g-ml-10" href="<@spring.url "/secure/display/view.html?t=/admin/main"/>" ><i class="icon-svg icon-svg-sm icon-svg-dusk-administrative-tools "></i></a>
+                    <a class="back g-mt-15 g-ml-10" href="<@spring.url "/secure/display/ftl/admin_v2.0/main"/>" ><i class="icon-svg icon-svg-sm icon-svg-dusk-administrative-tools "></i></a>
                     </#if>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
