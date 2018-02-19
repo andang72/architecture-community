@@ -60,6 +60,7 @@
 				features : {
 					culture : true,
 					landing : true,
+					tooltip : false,
 					wallpaper : false,
 					lightbox: false,
 					menu : false
@@ -115,7 +116,11 @@
 				if(features.wallpaper){
 				}
 				if(features.lightbox){
-				}				
+				}
+				if(features.tooltip){
+					// Botostrap Tootltips	
+					$('[data-toggle="tooltip"]').tooltip();
+				}
 				if(defined(features.accounts)){
 					that.token = new community.model.User();
 					ajax( that.options.url || '/data/api/v1/users/me.json' , {
@@ -124,7 +129,38 @@
 							token.copy(that.token);	
 							that.trigger(AUTHENTICATE,{ token : that.token });
 						}
-					});			
+					});					
+					if( defined( community.ui.components.HSSideNav ) )	
+					{
+						console.log("SideNav - features on");
+						if( community.data.storageAvailable ('localStorage') ){							
+							var page = localStorage.getItem('selected_current_page');	
+							console.log("SideNav - selected page : " + page );
+							
+							var item = $("a[data-page='"+ page +"']");							
+							if( item.hasClass('u-side-nav--second-level-menu-link') ){
+								console.log("SideNav - this is second level");
+								var itemParent = item.closest('ul.u-side-nav--second-level-menu');
+								itemParent.parent().addClass('u-side-nav-opened');
+								//itemParent.parent().addClass('has-active');
+								//.find('a.u-side-nav--top-level-menu-link').click();
+							}
+							if (!item.hasClass('active')) {
+								item.addClass('active');
+							}
+						}
+					}
+
+					if( community.data.storageAvailable ('localStorage') ){
+						console.log('checking localstorage ok.');
+						$('body').on("click", "a[data-page]", function(e){			
+							var $this = $(this);
+							var page = $this.data("page");		 
+							console.log( page );
+							localStorage.setItem('selected_current_page', page );							
+							return true;		
+						});	
+					}
 				}	
 			} 		
 		});
@@ -483,7 +519,9 @@
 			observable : kendo.observable,
 			exists : exists,
 			notification : notification,
-			tooltip: tooltip
+			tooltip: tooltip,
+			components: {},
+			helpers : {}			
 		});		
     	
 		console.log("community.ui.core initialized.");
