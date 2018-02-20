@@ -1,4 +1,4 @@
-package architecture.community.web.spring.controller.data.v1;
+package architecture.community.web.spring.controller.data.admin.v1;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +34,7 @@ import architecture.community.projects.ProjectService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
+import architecture.community.web.spring.controller.data.v1.AbstractCommunityDateController;
 import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
 

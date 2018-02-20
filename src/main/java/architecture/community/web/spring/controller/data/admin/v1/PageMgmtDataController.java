@@ -1,4 +1,4 @@
-package architecture.community.web.spring.controller.data.v1;
+package architecture.community.web.spring.controller.data.admin.v1;
 
 import java.io.File;
 import java.io.IOException;
