@@ -69,8 +69,15 @@ import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
-
-@Controller("community-data-v1-issue-controller")
+/**
+ * Project & Issue Data Controller 
+ * 
+ * 
+ * 
+ * @author donghyuck
+ *
+ */
+@Controller("community-data-v1-issues-controller")
 @RequestMapping("/data/api/v1")
 public class IssueDataController extends AbstractCommunityDateController  {
 

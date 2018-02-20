@@ -59,6 +59,14 @@ import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
 
+/**
+ * Board Data Controller
+ * 
+ * 
+ * @author donghyuck
+ *
+ */
+
 @Controller("community-data-v1-core-controller")
 @RequestMapping("/data/api/v1")
 public class CommunityDataController extends AbstractCommunityDateController {
