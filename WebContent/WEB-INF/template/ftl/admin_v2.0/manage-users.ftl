@@ -373,8 +373,7 @@
 			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
 			          	<!--<span aria-hidden="true">&times;</span>-->
-			        </button>
-			       
+			        </button>			       
 		      	</div>
 			    <!-- /.modal-header -->
 			    <!-- .modal-body -->
@@ -446,12 +445,14 @@
 						</div>
 					</div>
 			        </form>
-		      	</div><!-- /.modal-body -->		
+		      	</div>
+		      	<!-- /.modal-body -->		
 		      	<div class="modal-footer">
 			        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
 			        <button type="button" class="btn btn-primary" data-bind="{ click: saveOrUpdate }">확인</button>
 		      	</div><!-- /.modal-footer --> 				      			      	
 			    <!-- /.modal-content -->					
+				</div>
 				</div>
 				<div class="user-options" style="display:none;">
 					<!-- .modal-header -->
