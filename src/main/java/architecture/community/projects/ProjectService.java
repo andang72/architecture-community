@@ -1,7 +1,6 @@
 package architecture.community.projects;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import architecture.community.user.User;
 import architecture.community.web.model.json.DataSourceRequest;

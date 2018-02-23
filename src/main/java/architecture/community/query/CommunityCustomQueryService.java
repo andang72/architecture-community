@@ -47,7 +47,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {				
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
 		if( dataSourceRequest.getParameters().size() > 0 )
-			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType, getSqlParameterValues( dataSourceRequest.getParameters() ).toArray());
 		else	
 			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), requiredType );
 	}
@@ -55,7 +55,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper) {			
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
 		if( dataSourceRequest.getParameters().size() > 0 )
-			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper, getSqlParameterValues( dataSourceRequest.getParameters() ).toArray() );
 		else	
 			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForObject( sqlSource.getSql(), rowmapper );
 	}
@@ -63,7 +63,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	public Map<String, Object> queryForMap (DataSourceRequest dataSourceRequest) {				
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
 		if( dataSourceRequest.getParameters().size() > 0 )
-			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql(), getSqlParameterValues( dataSourceRequest.getParameters() ) );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql(), getSqlParameterValues( dataSourceRequest.getParameters() ).toArray() );
 		else	
 			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql() );
 	}
@@ -73,7 +73,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
 		if( dataSourceRequest.getPageSize() > 0 ){	
 			if( dataSourceRequest.getParameters().size() > 0 )
-				return customQueryJdbcDao.getExtendedJdbcTemplate().query( sqlSource.getSql(), dataSourceRequest.getSkip(),  dataSourceRequest.getPageSize(), rowmapper , getSqlParameterValues( dataSourceRequest.getParameters() ) );		
+				return customQueryJdbcDao.getExtendedJdbcTemplate().query( sqlSource.getSql(), dataSourceRequest.getSkip(),  dataSourceRequest.getPageSize(), rowmapper , getSqlParameterValues( dataSourceRequest.getParameters() ).toArray() );		
 			else
 				return customQueryJdbcDao.getExtendedJdbcTemplate().query( sqlSource.getSql(), dataSourceRequest.getSkip(),  dataSourceRequest.getPageSize(), rowmapper );					
 		}else {
@@ -88,10 +88,42 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		logger.debug("Paging not support yet.");		
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
 		if( dataSourceRequest.getParameters().size() > 0 )
-			return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor, getSqlParameterValues( dataSourceRequest.getParameters() ) );
+			return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor, getSqlParameterValues( dataSourceRequest.getParameters() ).toArray() );
 		else	
 			return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor );
 	}	
+	
+	
+	
+	
+	public <T> List<T> list(DataSourceRequest dataSourceRequest, Class<T> elementType) {	
+		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
+		if( dataSourceRequest.getPageSize() > 0 ) {
+			// paging 
+			if( dataSourceRequest.getParameters().size() > 0 ) 
+				return customQueryJdbcDao.getExtendedJdbcTemplate().query( 
+					sqlSource.getSql(), 
+					dataSourceRequest.getSkip(), 
+					dataSourceRequest.getPageSize(),
+					elementType,
+					getSqlParameterValues( dataSourceRequest.getParameters() ).toArray());
+			else 
+				return customQueryJdbcDao.getExtendedJdbcTemplate().query( 
+					sqlSource.getSql(), 
+					dataSourceRequest.getSkip(), 
+					dataSourceRequest.getPageSize(),
+					elementType);
+			
+		}else {		
+			if( dataSourceRequest.getParameters().size() > 0 )
+				return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(sqlSource.getSql(), elementType, getSqlParameterValues( dataSourceRequest.getParameters() ).toArray() );
+			else	
+				return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(sqlSource.getSql(), elementType);
+		}
+	}
+	
+	
+	
 	
 	
 
@@ -135,7 +167,8 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		ArrayList<SqlParameterValue> al = new ArrayList<SqlParameterValue>();	
 		for( ParameterValue v : values)
 		{
-			al.add(new SqlParameterValue(v.getJdbcType(), v.getValueText()) );
+			logger.debug("isSetByObject : {} , {}", v.isSetByObject(), v.getValueObject() );
+			al.add(new SqlParameterValue(v.getJdbcType(), v.isSetByObject() ? v.getValueObject() : v.getValueText()) );
 		}
 		return al;
 	}

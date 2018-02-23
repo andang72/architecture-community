@@ -28,12 +28,10 @@ import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetNotFoundException;
 import architecture.community.codeset.CodeSetService;
 import architecture.community.exception.NotFoundException;
-import architecture.community.model.Property;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.web.model.ItemList;
-import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.spring.controller.data.v1.AbstractCommunityDateController;
 import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
@@ -73,52 +71,6 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return communityAclService;
 	}
 
-	/**
-	 * CONFIG API 
-	******************************************/
-	
-	private List<Property> getApplicationProperties(){
-		List<String> propertyKeys = configService.getApplicationPropertyNames();
-		List<Property> list = new ArrayList<Property>(); 
-		for( String key : propertyKeys ) {
-			String value = configService.getApplicationProperty(key);
-			list.add(new Property( key, value ));
-		}
-		return list ;
-	}
-	
-	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public List<Property> getConfig(@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request){ 
-		return getApplicationProperties() ;
-	}
-	
-	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/properties/update.json", method = RequestMethod.POST)
-	@ResponseBody
-	public List<Property> updatePageProperties( 
-			@RequestBody List<Property> newProperties, 
-			NativeWebRequest request) throws NotFoundException {
- 
-		// update or create
-		for (Property property : newProperties) {
-			configService.setApplicationProperty(property.getName(), property.getValue());
-		}		
-		return getApplicationProperties();
-	}
-
-	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/properties/delete.json", method = { RequestMethod.POST, RequestMethod.DELETE })
-	@ResponseBody
-	public List<Property> deletePageProperties(  
-			@RequestBody List<Property> newProperties, NativeWebRequest request) throws NotFoundException {
-		
-		for (Property property : newProperties) {
-			configService.deleteApplicationProperty(property.getName());
-		}
-		return getApplicationProperties();
-	}
 	/**
 	 * CODESET API 
 	******************************************/

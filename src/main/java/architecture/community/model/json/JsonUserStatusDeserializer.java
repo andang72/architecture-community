@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import architecture.community.page.PageState;
 import architecture.community.user.User.Status;
 
 public class JsonUserStatusDeserializer  extends JsonDeserializer<Status> {

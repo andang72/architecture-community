@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -129,7 +130,8 @@ public class CommunityExportService {
         response.setHeader("Pragma", "no-cache;");
         response.setHeader("Expires", "-1;");
 		if(usingTempFile) {
-			File file = File.createTempFile("tempExcelFile", ".xls");
+			UUID guid = UUID.randomUUID();			
+			File file = File.createTempFile( guid.toString() , ".xls");
 			FileOutputStream fileOutStream = new FileOutputStream(file);			
 			writer.write(fileOutStream);			
 	        FileUtils.copyFile(file, response.getOutputStream());			
@@ -144,7 +146,6 @@ public class CommunityExportService {
 		List<Map<String, Object>> data = getData(config, dataSourceRequest);
 		return data;
 	}
-	
 	
 	protected List<Map<String, Object>> getData(final DataExportConfig config, final DataSourceRequest dataSourceRequest) {	
 		final List<SqlParameterValue> parameters = config.isSetParameterMappings() ? getSqlParameterValues(dataSourceRequest.getData(), config.getParameterMappings()) : Collections.EMPTY_LIST;

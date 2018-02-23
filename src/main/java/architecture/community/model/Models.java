@@ -24,6 +24,8 @@ import architecture.community.codeset.CodeSet;
 import architecture.community.comment.Comment;
 import architecture.community.image.Image;
 import architecture.community.image.LogoImage;
+import architecture.community.menu.Menu;
+import architecture.community.menu.MenuItem;
 import architecture.community.page.Page;
 import architecture.community.projects.Issue;
 import architecture.community.projects.Project;
@@ -49,7 +51,9 @@ public enum Models {
 	TAG(15, ContentTag.class),
 	CODESET(17, CodeSet.class),
 	ISSUE(18, Issue.class),
-	PROJECT(19, Project.class)
+	PROJECT(19, Project.class),
+	MENU(20, Menu.class),
+	MENU_ITEM(21, MenuItem.class)
 	;
 	
 	

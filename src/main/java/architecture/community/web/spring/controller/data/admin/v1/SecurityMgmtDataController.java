@@ -21,6 +21,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 import architecture.community.exception.NotFoundException;
 import architecture.community.model.Models;
+import architecture.community.query.CustomQueryService;
 import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.security.spring.acls.ObjectAccessControlEntry;
@@ -35,7 +36,6 @@ import architecture.community.user.User;
 import architecture.community.user.UserAlreadyExistsException;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
-import architecture.community.user.UserTemplate;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
@@ -51,6 +51,11 @@ public class SecurityMgmtDataController {
 	@Inject
 	@Qualifier("communityAclService")
 	private JdbcCommunityAclService communityAclService;
+	
+	@Inject
+	@Qualifier("customQueryService")
+	private CustomQueryService customQueryService;
+	
 	
 	@Inject
 	@Qualifier("userManager")
@@ -85,6 +90,36 @@ public class SecurityMgmtDataController {
 		
 		List<User> users = userManager.getUsers(dataSourceRequest.getSkip(), dataSourceRequest.getPageSize() );		
 		
+		return new ItemList(users, totalCount);
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/find.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList findUsers (
+		@RequestBody DataSourceRequest dataSourceRequest,
+		NativeWebRequest request) throws NotFoundException {	
+				 
+		if( dataSourceRequest.getPageSize() == 0)
+			dataSourceRequest.setPageSize(15);
+		
+		//int totalCount = userManager.getUserCount();		
+		//List<User> users = userManager.getUsers(dataSourceRequest.getSkip(), dataSourceRequest.getPageSize() );		
+		
+		dataSourceRequest.setStatement("COMMUNITY_USER.COUNT_USERS_BY_REQUEST");	
+		int totalCount = customQueryService.queryForObject(dataSourceRequest, Integer.class);
+		
+		List<User> users = new ArrayList<User>(totalCount);
+		if( totalCount > 0) {
+			dataSourceRequest.setStatement("COMMUNITY_USER.FIND_USER_IDS_BY_REQUEST");		
+			List<Long> userIds = customQueryService.list(dataSourceRequest, Long.class);
+			for( Long userId : userIds ) {
+				try {
+					users.add(userManager.getUser(userId));
+				} catch (UserNotFoundException e) {
+				}
+			}
+		}
 		return new ItemList(users, totalCount);
 	}
 	

@@ -36,7 +36,16 @@ public interface CustomQueryService {
 	 */
 	public <T> T list(DataSourceRequest dataSourceRequest, ResultSetExtractor<T> extractor) ;
 	 
+	/**
+	 * 이 함수는 단일 컬럼에 대한 결과를 List 형태로 리턴한다. 
+	 *  
+	 * @param dataSourceRequest
+	 * @param elementType 결과 데이터 타입  
+	 * @return
+	 */
+	public <T> List<T> list(DataSourceRequest dataSourceRequest, Class<T> elementType);
 	
+	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType);
 	
 	/**
 	 *  
