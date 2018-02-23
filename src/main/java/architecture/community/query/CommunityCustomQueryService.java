@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.transaction.annotation.Propagation;
@@ -93,6 +94,15 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor );
 	}	
 	
+	
+	public void query(DataSourceRequest dataSourceRequest, RowCallbackHandler callback) {	
+		logger.debug("Paging not support.");		
+		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
+		if( dataSourceRequest.getParameters().size() > 0 )
+			customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), callback, getSqlParameterValues( dataSourceRequest.getParameters() ).toArray() );
+		else	
+			customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), callback );		
+	}
 	
 	
 	

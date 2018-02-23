@@ -71,6 +71,16 @@
 				data.copy($this.currentUser);
 				$this.set('userAvatarSrc', community.data.getUserProfileImage( $this.currentUser ) );
 				$this.set('userDisplayName', community.data.getUserDisplayName( $this.currentUser ) );
+			},
+			filter : {
+				NAME : ""
+			},
+			find : function (){
+				var $this = this, filters = [];
+				if( $this.filter.NAME != null ){
+					filters.push({ field: "NAME", operator: "startswith", value: $this.filter.NAME });
+				}
+				community.ui.listview( $('#users-listview') ).dataSource.filter( filters );
 			}
 		});
 		
@@ -86,10 +96,19 @@
 		
 		createUserListView();
 		
-		renderTo.on("click", "button[data-object-type=user], a[data-object-type=user]", function(e){			
+		renderTo.on("click", "button[data-object-type=user], a[data-object-type=user], .sorting[data-kind=user]", function(e){			
 			console.log("--");
 			var $this = $(this);
-			var actionType = $this.data("action");		
+			var actionType = $this.data("action");	
+			if( actionType == 'sort'){
+				if( $this.data('dir') == 'asc' )
+					$this.data('dir', 'desc' );
+				else if 	( $this.data('dir') == 'desc' )
+					$this.data('dir', 'asc' );
+				community.ui.listview( $('#users-listview') ).dataSource.sort({ field:$this.data('field'), dir:$this.data('dir') });				
+				return false;
+			}
+			
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.User();
 			if ( objectId > 0 ) {
@@ -105,7 +124,7 @@
 		console.log("create user listview.");
 		var renderTo = $('#users-listview');	
 		var listview = community.ui.listview( renderTo , {
-			dataSource: community.ui.datasource('<@spring.url "/data/api/mgmt/v1/security/users/list.json"/>', {
+			dataSource: community.ui.datasource('<@spring.url "/data/api/mgmt/v1/security/users/find.json"/>', {
 				transport: { 
 					read:{
 						contentType: "application/json; charset=utf-8"
@@ -114,6 +133,8 @@
 						return community.ui.stringify(options);
 					}
 				},
+				serverFiltering:true,
+				serverSorting: true,
 				schema: {
 					total: "totalCount",
 					data:  "items",
@@ -322,29 +343,84 @@
 			              </div>
 			
 			              <div class="d-flex g-hidden-md-up w-100"></div>
-			
 			              <div class="media-body align-self-center g-mt-10 g-mt-0--md">
 			                <div class="input-group g-pos-rel g-max-width-380 float-right">
-			                  <input class="form-control g-font-size-default g-brd-gray-light-v7 g-brd-lightblue-v3--focus g-rounded-20 g-pl-20 g-pr-50 g-py-10" type="text" placeholder="이름 검색">
-			                  <button class="btn g-pos-abs g-top-0 g-right-0 g-z-index-2 g-width-60 h-100 g-bg-transparent g-font-size-16 g-color-lightred-v2 g-color-lightblue-v3--hover rounded-0" type="submit">
+			                  <input class="form-control g-font-size-default g-brd-gray-light-v7 g-brd-lightblue-v3--focus g-rounded-20 g-pl-20 g-pr-50 g-py-10" type="text" placeholder="이름 검색" data-bind="value:filter.NAME" >
+			                  <button class="btn g-pos-abs g-top-0 g-right-0 g-z-index-2 g-width-60 h-100 g-bg-transparent g-font-size-16 g-color-lightred-v2 g-color-lightblue-v3--hover rounded-0" type="button" data-bind="click:find">
 			                    <i class="community-admin-search g-absolute-centered"></i>
 			                  </button>
 			                </div>
 			              </div>
 			            </div>
-            
 					</div>
 					<div class="row">
 	                		<div class="table-responsive">
 							<table class="table w-100 g-mb-0">
 								<thead class="g-hidden-sm-down g-color-gray-dark-v6">
 									<tr class="g-height-50">
-			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-60" >No.</th>
-			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15">이름(ID)</th>
-			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15">메일</th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-60 sorting" data-kind="user" data-action="sort" data-dir="asc" data-field="USER_ID" >
+											<div class="media">
+												<div class="d-flex align-self-center">ID.</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-up"></i>
+													</a>
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-down"></i>
+													</a>
+													</span>
+												</div>
+											</div>	
+										</th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 sorting" data-kind="user" data-action="sort" data-dir="asc" data-field="NAME">
+			                             	<div class="media">
+												<div class="d-flex align-self-center">이름(ID)</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-up"></i>
+													</a>
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-down"></i>
+													</a>
+													</span>
+												</div>
+											</div>	
+			                             </th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15">메일</th>			                             
 			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15" width="100">상태</th>
-			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15" width="100">생성일</th>
-			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15" width="100">수정일</th>  		
+			                             
+										<th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-100 sorting" data-kind="user" data-action="sort" data-dir="asc" data-field="CREATION_DATE">
+											<div class="media">
+												<div class="d-flex align-self-center">생성일</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+														<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+															<i class="community-admin-angle-up"></i>
+														</a>
+														<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+															<i class="community-admin-angle-down"></i>
+														</a>
+													</span>
+												</div>
+											</div>
+										</th>			                             
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-100 sorting" data-kind="user" data-action="sort" data-dir="asc" data-field="MODIFIED_DATE">
+											<div class="media">
+												<div class="d-flex align-self-center">수정일</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+														<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+															<i class="community-admin-angle-up"></i>
+														</a>
+														<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+															<i class="community-admin-angle-down"></i>
+														</a>
+													</span>
+												</div>
+											</div>
+										</th> 		
 			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-pr-25 g-width-100"></th>								
 									</tr>
 								</thead>
@@ -541,7 +617,7 @@
 		</td>
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">  #: community.data.getFormattedDate( creationDate)  #  </td>
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">#: community.data.getFormattedDate( modifiedDate)  # </td>
-		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm g-pr-25--sm">
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">
 			<div class="d-flex align-items-center g-line-height-1">
 				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="user" data-object-id="#= userId #" >
 					<i class="community-admin-pencil g-font-size-18"></i>

@@ -12,6 +12,71 @@
 		}
 	});
 	
+	community.model.Menu = Model.define({ 		
+		id: "menuId",
+		fields: { 		
+			menuId: { type: "number", defaultValue: 0 },			
+			name: { type: "string", defaultValue: null },		
+			description: { type: "string", defaultValue: null },
+			creationDate:{ type: "date" },			
+			modifiedDate:{ type: "date"}
+		},
+		formattedCreationDate : function(){		
+			return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    		return kendo.toString(this.get("modifiedDate"), "g");
+	    },
+		copy : function ( target ){
+		    	target.menuId = this.get("menuId");
+		    	target.set("name", this.get("name"));
+		    	target.set("description", this.get("description"));
+		    	if( typeof this.get("properties") === 'object' )
+		    		target.set("properties", this.get("properties"));	  
+		    	if(this.get("creationDate") != null )
+		    		target.set("creationDate", this.get("creationDate"));
+		    if(this.get("modifiedDate") != null )
+		    		target.set("modifiedDate", this.get("modifiedDate"));
+		}
+	});
+	
+	community.model.MenuItem = Model.define({ 		
+		id: "menuItemId",
+		fields: { 		
+			menuItemId: { type: "number", defaultValue: 0 },		
+			menuId: { type: "number", defaultValue: 0 },	
+			parentMenuItemId: { type: "number", defaultValue: 0 },	
+			menuId: { type: "number", defaultValue: 0 },	
+			sortOrder: { type: "number", defaultValue: 1 },	
+			location: { type: "string", defaultValue: null },	
+			description: { type: "string", defaultValue: null },
+			creationDate:{ type: "date" },			
+			modifiedDate:{ type: "date"}
+		},
+		formattedCreationDate : function(){		
+			return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    		return kendo.toString(this.get("modifiedDate"), "g");
+	    },
+		copy : function ( target ){
+		    	target.menuItemId = this.get("menuItemId");
+		    	target.set("name", this.get("name"));
+		    	target.set("menuId", this.get("menuId"));
+		    	target.set("parentMenuItemId", this.get("parentMenuItemId"));
+		    	target.set("sortOrder", this.get("sortOrder"));
+		    	target.set("location", this.get("location"));
+		    	target.set("description", this.get("description"));
+		    	if( typeof this.get("properties") === 'object' )
+		    		target.set("properties", this.get("properties"));	  
+		    	if(this.get("creationDate") != null )
+		    		target.set("creationDate", this.get("creationDate"));
+		    if(this.get("modifiedDate") != null )
+		    		target.set("modifiedDate", this.get("modifiedDate"));
+		}
+	});
+	
+	
 	community.model.Role = Model.define({ 		
 		id: "roleId",
 		fields: { 		

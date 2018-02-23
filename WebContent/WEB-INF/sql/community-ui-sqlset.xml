@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlset>
+	<name>COMMUNITY_UI</name>
+	<description>COMMUNITY UI SUBSYSTEM QUERIES</description>	
+	
+	<!-- MENU  -->  
+ 	<sql-query name="CREATE_MENU" description="MENU 생성"><![CDATA[
+	INSERT INTO AC_UI_MENU (
+		MENU_ID,
+		NAME,
+		DESCRIPTION,
+		CREATION_DATE,
+		MODIFIED_DATE
+	) VALUES ( ?, ?, ?, ?, ? )
+    ]]></sql-query>	
+	<sql-query name="UPDATE_MENU" description="MENU 업데이트"><![CDATA[    
+	UPDATE AC_UI_MENU SET 
+		NAME = ?,
+		DESCRIPTION = ?,
+		MODIFIED_DATE = ?		 
+	WHERE MENU_ID = ?
+ 	]]></sql-query> 
+ 	
+	<sql-query name="SELECT_ALL_MENU_IDS" description="모든 MENU 아이디 조회"><![CDATA[
+		SELECT MENU_ID FROM AC_UI_MENU
+    ]]></sql-query>	
+
+	<sql-query name="SELECT_MENU_IDS_BY_REQUEST" description="특정 일자 이전까지 미처리 건수 조회"><![CDATA[
+	SELECT  
+		MENU_ID      	
+	FROM AC_UI_MENU
+	]]><dynamic><![CDATA[    
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list></#if>
+    ]]></dynamic></sql-query>
+    
+
+	<sql-query name="SELECT_MENU_ID_BY_NAME" description="MENU_ID 조회"><![CDATA[
+		SELECT
+		  MENU_ID
+		FROM AC_UI_MENU WHERE NAME = ?
+    ]]></sql-query>	
+    
+	<sql-query name="SELECT_MENU_BY_ID" description="MENU 조회"><![CDATA[
+		SELECT
+		  MENU_ID,
+		  NAME,
+		  DESCRIPTION,
+		  CREATION_DATE,
+		  MODIFIED_DATE
+		FROM AC_UI_MENU WHERE MENU_ID = ?
+    ]]></sql-query>	
+
+	<sql-query name="DELETE_MENU_BY_ID" description="MENU 삭제"><![CDATA[
+		DELETE FROM AC_UI_MENU WHERE MENU_ID = ?
+    ]]></sql-query>		
+
+ 	<sql-query name="CREATE_MENU_ITEM" description="MENU ITEM 생성"><![CDATA[
+	INSERT INTO AC_UI_MENU_ITEM (
+		MENU_ID,
+		PARENT_ID,
+		MENU_ITEM_ID,
+		SORT_ORDER,
+		NAME,
+		DESCRIPTION,
+		LINK_URL,
+		CREATION_DATE,
+		MODIFIED_DATE
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )
+    ]]></sql-query>	
+	<sql-query name="UPDATE_MENU_ITEM" description="MENU ITEM 업데이트"><![CDATA[    
+	UPDATE AC_UI_MENU_ITEM SET 
+	    PARENT_ID = ?
+	    SORT_ORDER = ?,
+		NAME = ?,
+		DESCRIPTION = ?,
+		LINK_URL = ?,
+		MODIFIED_DATE = ?		 
+	WHERE MENU_ITEM_ID = ?
+ 	]]></sql-query> 
+ 	
+    <sql-query name="SELECT_MENU_ITEM_BY_ID" description="SELECT_MENU_ITEM_BY_ID"><![CDATA[
+	SELECT  
+		MENU_ID,
+		PARENT_ID,
+		MENU_ITEM_ID,
+		SORT_ORDER,
+		NAME,
+		DESCRIPTION,
+		LINK_URL,
+		CREATION_DATE,
+		MODIFIED_DATE
+	FROM AC_UI_MENU_ITEM 
+	WHERE MENU_ITEM_ID = ?
+    ]]></sql-query>	
+    
+    <sql-query name="SELECT_MENU_ITEMS_BY_MENU_ID" description="SELECT_MENU_ITEMS_BY_MENU_ID"><![CDATA[
+	SELECT  
+		MENU_ID,
+		PARENT_ID,
+		MENU_ITEM_ID,
+		SORT_ORDER,
+		NAME,
+		DESCRIPTION,
+		LINK_URL,
+		CREATION_DATE,
+		MODIFIED_DATE
+	FROM AC_UI_MENU_ITEM 
+	WHERE MENU_ID = ?
+	ORDER BY MENU_ID , PARENT_ID, SORT_ORDER
+    ]]></sql-query>	
+    
+    	<sql-query name="SELECT_MENU_ITEM_IDS_BY_MENU_ID_AND_REQUEST" description="SELECT_MENU_ITEM_IDS_BY_MENU_ID_AND_REQUEST"><![CDATA[
+	SELECT  
+		MENU_ITEM_ID      	
+	FROM AC_UI_MENU_ITEM
+	WHERE MENU_ID = ?
+	]]><dynamic><![CDATA[    
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list></#if>
+    ]]></dynamic></sql-query>
+    
+
+</sqlset>

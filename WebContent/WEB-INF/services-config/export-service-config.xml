@@ -51,7 +51,8 @@
 				<parameter index="14" name="MODIFIED_DATE"   jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>				
 			</result-mappings>
 		</source>
-		<target>
+		<target>	
+			<type>XLSX</type>
 			<fileName>기간별이슈목록.xlsx</fileName>	
 			<sheetName>기간별 이슈목록</sheetName>
 		</target>
@@ -66,4 +67,47 @@
 			<column index="6" field="RESOLUTION_DATE" title="처리일" width="3000"/>
 		</columns>
 	</excle-export>
+	<excle-export name="ISSUE_OVERVIEWSTATS_DATA" description="기간별 처리 이슈 목록 데이터" >
+		<source>
+			
+			<totalCountStatement></totalCountStatement>
+			<totalCountQueryString></totalCountQueryString>
+			
+			<statement>COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD</statement>
+			
+			<!-- 
+			<parameter-mappings>
+				<parameter index="1" name="startDate" jdbcType="VARCHAR" />
+				<parameter index="2" name="endDate"   jdbcType="VARCHAR" />
+				<parameter index="3" name="startDate" jdbcType="VARCHAR" />
+				<parameter index="4" name="endDate"   jdbcType="VARCHAR" />
+				<parameter index="5" name="startDate" jdbcType="VARCHAR" />
+				<parameter index="6" name="endDate"   jdbcType="VARCHAR" />
+			</parameter-mappings>
+			-->
+			<result-mappings>
+				<parameter index="11" name="DUE_DATE" jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
+				<parameter index="12" name="RESOLUTION_DATE"   jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
+				<parameter index="13" name="CREATION_DATE" jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
+				<parameter index="14" name="MODIFIED_DATE"   jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>				
+			</result-mappings>
+		</source>
+		<!-- 
+		<target>	
+			<type>XLSX</type>
+			<fileName>기간별이슈목록.xlsx</fileName>	
+			<sheetName>기간별 이슈목록</sheetName>
+		</target>
+		<header>true</header>
+		<columns>
+			<column index="0" field="PROJECT_NAME" title="프로젝트" width="9000" />
+			<column index="1" field="ISSUE_TYPE" title="이슈유형코드" width="3000" />
+			<column index="2" field="ISSUE_RESOLUTION" title="처리결과코드" width="3000"/>
+			<column index="3" field="ISSUE_SUMMARY" title="이슈" width="18000"/>
+			<column index="4" field="CREATION_DATE" title="접수일" width="3000"/>
+			<column index="5" field="DUE_DATE" title="예정일" width="3000"/>
+			<column index="6" field="RESOLUTION_DATE" title="처리일" width="3000"/>
+		</columns>
+		 -->
+	</excle-export>	
 </services>

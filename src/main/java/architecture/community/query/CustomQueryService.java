@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import architecture.community.query.dao.CustomQueryJdbcDao;
@@ -12,6 +13,10 @@ import architecture.community.web.model.json.DataSourceRequest;
 
 public interface CustomQueryService {
 	
+	/**
+	 * API directly access Spring JdbcTemplate Function .
+	 */
+	public void query(DataSourceRequest dataSourceRequest, RowCallbackHandler callback);
 	
 	/**
 	 *  

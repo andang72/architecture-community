@@ -88,6 +88,14 @@
 						<span class="media-body align-self-center">페이지</span>
 					</a>
 				</li>
+				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-menus" data-page="manage-menus"> 
+						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
+							<i class="community-admin-list-ol"></i>
+						</span> 
+						<span class="media-body align-self-center">메뉴</span>
+					</a>
+				</li>				
 				<!-- End Pages -->	
 			</ul> <!-- End Resources: sub_menu_3 -->
 		</li>

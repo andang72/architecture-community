@@ -20,6 +20,7 @@ community
 4. deploy WebContent as web application .
 
 ------
+
 ** OPENSOURE for UI 
 
 오픈소스 | 버전 | 라이선스 
@@ -34,11 +35,17 @@ Require JS  | 2.3.5 | MIT
 Kendoui Core | | Apache LICENSE 2.0 
 Bootstrap  | 3.3.7 | MIT
 Summernote | 0.8.8 | MIT
-Dropzone | | 
+Dropzone JS | | 
 
 
 ------
 ** PAGE API 
+
+UI DATA
+LAYOUT 
+VISUALIZATION
+
+
 
 /display/
 /display/

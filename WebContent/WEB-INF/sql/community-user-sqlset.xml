@@ -16,6 +16,28 @@
 	ORDER BY NAME 
 	 ]]></sql-query>
 	 
+	<sql-query name="COUNT_USERS_BY_REQUEST" description="사용자 수를 조회"><![CDATA[
+	SELECT 
+		COUNT( USER_ID )
+	FROM REP_USER 
+	]]><dynamic><![CDATA[    
+	<#if filter?? && ( filter.filters?size > 0 ) > WHERE 
+	<#list filter.filters as item ><#if item.logic??>${item.logic}</#if> ${item.field} <#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%' </#if>
+ 	</#list></#if>	
+    ]]></dynamic></sql-query>
+    	 
+	<sql-query name="FIND_USER_IDS_BY_REQUEST" description="사용자 ID 를 조회"><![CDATA[
+	SELECT 
+		 USER_ID
+	FROM REP_USER 
+	]]><dynamic><![CDATA[    
+	<#if filter?? && ( filter.filters?size > 0 ) > WHERE 
+	<#list filter.filters as item ><#if item.logic??>${item.logic}</#if> ${item.field} <#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%' </#if>
+ 	</#list></#if>
+	ORDER BY 
+	<#if sort??  && ( sort?size > 0 ) > <#list sort as item > ${item.field} ${item.dir} </#list><#else> NAME </#if>
+    ]]></dynamic></sql-query>
+	 	 
 	 
 	<sql-query name="COUNT_USERS_BY_EMAIL_OR_NAME" description="메일 또는 이름에 해당하는 모든 사용자 수를 조회"><![CDATA[
 	SELECT 

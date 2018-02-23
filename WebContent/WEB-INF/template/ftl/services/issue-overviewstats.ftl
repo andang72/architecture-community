@@ -55,7 +55,9 @@
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap"], function($, kendo ) {		
+	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", 
+	"https://www.gstatic.com/charts/loader.js"], function($, kendo ) {		
+	
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -67,6 +69,7 @@
 		  	}
 		});		
 
+      		
         // Topnav animation feature
  		var cbpAnimatedHeader = (function() {
         		var docElem = document.documentElement, header = document.querySelector( '.navbar-default' ), didScroll = false, changeHeaderOn = 200;
@@ -120,6 +123,36 @@
 			unclosedTotalCount : 0
     		});     	
     		
+    		
+		// google charts loading 
+		google.charts.load('current', {'packages':['corechart']});
+		
+      	
+      	community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
+      		contentType : "application/json",	
+      		data: community.ui.stringify({}),
+			success: function(response){	
+				var data = new google.visualization.DataTable();
+				data.addColumn('string', '월');
+				data.addColumn('number', '오류');
+				data.addColumn('number', '데이터작업');
+				data.addColumn('number', '기능변경');
+				data.addColumn('number', '추가개발');
+				data.addColumn('number', '기술지원');
+				data.addColumn('number', '영업지원');
+				data.addColumn('number', 'TOTAL');
+				data.addColumn('number', '완료');
+				
+				$.each(response.items, function( index, item ) {				
+					data.addRow([ item.month + '월', item['aggregate']['001'],item['aggregate']['002'],item['aggregate']['003'],item['aggregate']['004'],item['aggregate']['005'],item['aggregate']['006'],
+					item['aggregate']['001']+item['aggregate']['002']+item['aggregate']['003']+item['aggregate']['004']+item['aggregate']['005']+item['aggregate']['006'],
+					item['aggregate']['000']
+					]);
+				});
+				google.charts.setOnLoadCallback(drawChart(data));
+			}	
+		});
+			
      	var renderTo = $('#page-top');
     		renderTo.data('model', observable);
     		community.ui.bind(renderTo, observable );	    		
@@ -127,6 +160,23 @@
     		
 	});				
 	
+	/**
+	 * Drawing Charting .
+	 */
+	function drawChart(data) {
+        var options = {
+          title: '누적 월별 현황',
+          subtitle: '완료건은 해당기간에 요청된 이슈들에 대한 완료 건입니다.',
+         axes: {
+          x: {
+            0: {side: 'top'}
+          }
+        	 }
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+      	
 	function getFirstDayOfWeek(){
 		var now = new Date();	
 		var day = now.getDay(), diff = now.getDate() - day + (day == 0 ? -6 : 1 ); 
@@ -227,6 +277,11 @@
 						</div>		
 					</div>
 				</div>			
+			</div>
+		</div>
+		<div class="row">
+			<div class="card g-brd-gray-light-v7 g-pa-15 g-pa-25-30--md g-mb-30" >
+				<div id="chart_div" style="width: 100%; height: 500px;"></div>			
 			</div>
 		</div>
 		<div class="row text-center text-uppercase g-brd-gray g-brd-top-0 g-brd-left-0 g-brd-right-0  g-brd-style-solid  g-brd-3">

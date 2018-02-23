@@ -61,7 +61,12 @@
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR"], function($, kendo ) {	
+	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR",
+	"https://www.gstatic.com/charts/loader.js"], function($, kendo ) {	
+	
+
+    		
+	
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -72,6 +77,7 @@
 		    		}
 		  	}
 		});	        
+		
 		
         // Topnav animation feature
  		var cbpAnimatedHeader = (function() {
@@ -120,8 +126,8 @@
 				var $this = this;
 				if( observable.get('projectId') > 0 ){ 
 					community.ui.ajax('/data/api/v1/projects/'+ observable.get('projectId') +'/info.json/', {
-						success: function(data){		
-							$this.set('project', new community.model.Project(data) );		
+						success: function(response){		
+							$this.set('project', new community.model.Project(response) );		
 							$this.set('project.summary', community.data.replaceLineBreaksToBr( $this.get('project.summary') ) );
 							$this.set('projecPeriod' , community.data.getFormattedDate( $this.project.startDate , 'yyyy-MM-dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy-MM-dd' ) );
 							$.each($this.project.issueTypeStats.items , function (index, item ){
@@ -136,7 +142,43 @@
 							});
 							$this.set('openIssueCount', $this.get('totalIssueCount') - $this.get('closeIssueCount') );
 							$this.set('enabled', true);
+							
 							createIssueListView($this);
+							
+							setTimeout(function(){
+
+							var data = new google.visualization.DataTable();
+							data.addColumn('string', '유형');
+							data.addColumn('number', '건수');
+							$.each( $this.project.issueTypeStats.items , function(index, item ){				
+								switch (item.name) {
+  									case "001" :
+								 		data.addRow(['오류', item['value'] ]);
+								 	break;
+								 	case "002" :
+								 		data.addRow(['데이터작업', item.value ]);
+								 	break;
+								 	case "003" :
+								 		data.addRow(['기능변경', item['value'] ]);
+								 	break;
+								 	case "004" :
+								 		data.addRow(['추가개발', item['value'] ]);	
+								 	break;
+								 	case "005" :
+								 		data.addRow(['기술지원', item['value'] ]);
+								 	break;
+								 	case "006" :
+								 		data.addRow(['영업지원', item['value'] ]);
+								 	break;
+								 		default :
+								    break;
+								}
+							} );
+							google.charts.setOnLoadCallback(drawChart(data));										
+							}, 500);
+
+							
+							
 						}	
 					});
 				}
@@ -165,8 +207,11 @@
 			resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
 			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} )			
     		});
-    		
-		observable.loadProjectInfo();
+		   		
+     	// google charts loading 
+		google.charts.load('current', {'packages':['corechart']});
+				   		
+    		observable.loadProjectInfo();
 
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
@@ -200,22 +245,24 @@
 				targetObject.set('issueId', 0);
 				targetObject.set('objectType', 19);
 				targetObject.set('objectId', __projectId);
-			}	
-			/**
-			if( actionType == 'view'){
-				send(targetObject);	
-				return false;	
-			}
-			
-			if( isDeveloper() )
- 				createOrOpenIssueEditor (targetObject);
-			else
-			*/			
+			}			
 			send(targetObject);	
 			return false;		
 		});
 	});
-	
+
+	/**
+	 * Drawing Charting .
+	 */
+	function drawChart(data) {
+        var options = {
+          title: '이슈 유형',
+          subtitle: '금일까지 요청된 이슈들에 대한 유형입니다.'
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+    	
 	function send ( issue ) {
 		community.ui.send("<@spring.url "/display/pages/issue.html" />", { projectId: issue.objectId, issueId: issue.issueId });
 	}
@@ -549,7 +596,7 @@
 	                            		</div>
 	                            	 </div>
                             	</div>
-                            	<div class="ibox-content text-right">					                  
+                            	<div class="ibox-content text-right g-pb-0">					                  
 						    		<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" 
 						    			data-toggle="tooltip" data-placement="top" data-original-title="조건에 해당하는 이슈들을 검색합니다." 
 						    			data-bind="{click:search, visible:enabled}">검색</button>
@@ -568,8 +615,12 @@
 					</div>
 				</div>	           		
             		<!-- Start Issue Summary -->
-            		<div class="row text-center text-uppercase g-bord-radias g-brd-gray g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">				
-					<p class="text-warning g-font-weight-100">오늘까지 요청사항에 대한 누적 현황입니다.</p>
+            		<div class="row text-center text-uppercase g-bord-radias g-brd-gray g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">		
+            			<div class="col-sm-4">
+            				<div id="chart_div" style="width: 100%; height:200px;"></div>
+            			</div>
+            			<div class="col-sm-8">			
+					<p class="text-warning g-font-weight-100 g-mb-50 g-mt-50">오늘까지 요청사항에 대한 누적 현황입니다.</p>
 					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
 					<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div>
 					<span>전체</span>
@@ -585,7 +636,8 @@
 					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
 					<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div>
 					<span>미처리</span>
-					</div>						
+					</div>			
+					</div>			
 				</div><!-- Start Issue Summary -->
 				<div class="row">
 					<div class="col-12">

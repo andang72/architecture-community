@@ -86,6 +86,7 @@
 				}
 				community.ui.progress(renderTo, true);		
 				community.ui.ajax("<@spring.url "/accounts/auth/login_check"/>", {
+					/*contentType : "application/json",*/
 					data: renderTo.serialize(),
 					success : function( response ) {   
 						if( response.error ){ 

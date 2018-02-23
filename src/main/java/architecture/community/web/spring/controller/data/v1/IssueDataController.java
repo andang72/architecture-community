@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.mysql.fabric.xmlrpc.base.Array;
 
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
@@ -364,6 +366,104 @@ public class IssueDataController extends AbstractCommunityDateController  {
 			items.setItems(list);
 		}		
 		return items;
+	}
+	
+	
+	
+	@Secured({ "ROLE_DEVELOPER" })
+	@RequestMapping(value = "/issues/overviewstats/monthly/stats/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getYearIssueOverviewstats(
+		@RequestBody DataSourceRequest dataSourceRequest,
+		NativeWebRequest request) {
+		ItemList items = new ItemList();
+		
+		final List<CodeSet> issueTypes = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");
+		final Map<String , MonthIssueCount> monthlyIssueCounts = new HashMap<String , MonthIssueCount>();
+		for ( int month = 0 ; month < Calendar.getInstance().get(Calendar.MONTH) + 1 ; month ++ )
+		{
+			MonthIssueCount m = createMonthIssueCount(String.format("%02d", month + 1 ), issueTypes);
+			monthlyIssueCounts.put(m.month, m);
+		}
+		
+		log.debug("monthly index : {}", monthlyIssueCounts.keySet());
+		
+		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_STATS_BY_YEAR");
+		customQueryService.query(dataSourceRequest, new RowCallbackHandler() {
+			public void processRow(ResultSet rs) throws SQLException {
+				
+				
+				
+				while(rs.next()) {
+					String type = rs.getString(1);   // TYPE
+					String status = rs.getString(2); // STATUS CODE
+					String month1 = rs.getString(3); // DEU DATE
+					String month2 = rs.getString(4); // CREATION DATE
+					String month3 = rs.getString(5); // RESOLUTION DATE
+					
+					String monthToUse = month2 ;
+					if( !StringUtils.isEmpty( month1 ) ) {
+						monthToUse = month1;
+					}
+					
+					log.debug("holder {} , exist: {}, type:{}, DEU:{}, CREATION:{}, RESOLUTION:{}", monthToUse ,monthlyIssueCounts.containsKey(monthToUse), type, month1, month2, month3 );
+					
+					MonthIssueCount issueCountToUse = monthlyIssueCounts.get(monthToUse);
+					if( issueCountToUse == null ) {
+						issueCountToUse = createMonthIssueCount(monthToUse, issueTypes);
+					}
+					
+					issueCountToUse.aggregate.put(type, issueCountToUse.aggregate.get(type) + 1);					
+					if( !StringUtils.isEmpty(month3)) {
+						int closedCount = issueCountToUse.aggregate.get("000");
+						issueCountToUse.aggregate.put("000", closedCount + 1);
+					}
+					monthlyIssueCounts.put(monthToUse, issueCountToUse);
+				}
+			}});
+		
+		List<MonthIssueCount> list = new ArrayList<MonthIssueCount>(monthlyIssueCounts.values());
+		items.setTotalCount(list.size());
+		items.setItems(list);
+		return items;
+	}
+	
+	private MonthIssueCount createMonthIssueCount(String month , List<CodeSet> issueTypes ) {
+		MonthIssueCount m = new MonthIssueCount(month);
+		for( CodeSet code : issueTypes ) {
+			m.aggregate.put(code.getCode(), 0);
+		}	
+		m.aggregate.put("000", 0);
+		return m;
+	}
+	
+	public static class MonthIssueCount {
+		
+		String month ;
+		
+		Map<String , Integer > aggregate ;
+		
+		public MonthIssueCount(String month) {
+			this.month = month;
+			aggregate = new HashMap<String , Integer >();
+		}
+		
+		public String getMonth() {
+			return month;
+		}
+
+		public void setMonth(String month) {
+			this.month = month;
+		}
+
+		public Map<String, Integer> getAggregate() {
+			return aggregate;
+		}
+
+		public void setAggregate(Map<String, Integer> aggregate) {
+			this.aggregate = aggregate;
+		}
+
 	}
 	
 	
