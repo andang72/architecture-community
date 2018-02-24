@@ -127,12 +127,10 @@
 		// google charts loading 
 		google.charts.load('current', {'packages':['corechart']});
 		
-      	
       	community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
       		contentType : "application/json",	
       		data: community.ui.stringify({}),
 			success: function(response){	
-
 				setTimeout(function(){
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', '월');
