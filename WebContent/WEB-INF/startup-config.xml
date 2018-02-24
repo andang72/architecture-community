@@ -45,13 +45,12 @@
 			<!-- 1. jndi datasource -->
 			<!-- <jndiDataSourceProvider> <jndiName></jndiName> </jndiDataSourceProvider> -->
 			<!-- 2. connection pool datasource using dbcp -->
-
 			<pooledDataSourceProvider>
 				<driverClassName>oracle.jdbc.OracleDriver</driverClassName>
 				<url>jdbc:oracle:thin:@//222.122.47.196:1521/PODODB</url>
 				<username>U_HELPDESK</username>
-				<username>U_PORTAL</username>
-				<password>podoq23$</password>
+				<username></username>
+				<password></password>
 				<connectionProperties>
 					<initialSize>1</initialSize>
 					<maxActive>8</maxActive>
@@ -64,51 +63,6 @@
 					<validationQuery>select 1 from dual</validationQuery>
 				</connectionProperties>
 			</pooledDataSourceProvider>
-			
 		</default>
-
-		<!-- podo csr site -->
-		<external1>
-			<pooledDataSourceProvider>
-				<driverClassName>oracle.jdbc.OracleDriver</driverClassName>
-				<url>jdbc:oracle:thin:@//222.122.47.196:1521/PODODB</url>
-				<username>kisspa</username>
-				<password>kisspa</password>
-				<connectionProperties>
-					<initialSize>1</initialSize>
-					<maxActive>3</maxActive>
-					<maxIdle>3</maxIdle>
-					<maxWait>-1</maxWait>
-					<minIdle>0</minIdle>
-					<testOnBorrow>false</testOnBorrow>
-					<testOnReturn>false</testOnReturn>
-					<testWhileIdle>false</testWhileIdle>
-					<validationQuery>select 1 from dual</validationQuery>
-				</connectionProperties>
-			</pooledDataSourceProvider>
-		</external1>
-
-		<!-- inkium csr site -->
-
-		<external2>
-			<pooledDataSourceProvider>
-				<driverClassName>oracle.jdbc.OracleDriver</driverClassName>
-				<url>jdbc:oracle:thin:@//222.122.63.153:1521/IRDS</url>
-				<username>u_csr</username>
-				<password>inkium</password>
-				<connectionProperties>
-					<initialSize>1</initialSize>
-					<maxActive>3</maxActive>
-					<maxIdle>3</maxIdle>
-					<maxWait>-1</maxWait>
-					<minIdle>0</minIdle>
-					<testOnBorrow>false</testOnBorrow>
-					<testOnReturn>false</testOnReturn>
-					<testWhileIdle>false</testWhileIdle>
-					<validationQuery>select 1 from dual</validationQuery>
-				</connectionProperties>
-			</pooledDataSourceProvider>
-			-
-		</external2>
 	</database>
 </startup-config>
