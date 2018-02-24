@@ -47,8 +47,7 @@
 			<!-- 2. connection pool datasource using dbcp -->
 			<pooledDataSourceProvider>
 				<driverClassName>oracle.jdbc.OracleDriver</driverClassName>
-				<url>jdbc:oracle:thin:@//222.122.47.196:1521/PODODB</url>
-				<username>U_HELPDESK</username>
+				<url></url>
 				<username></username>
 				<password></password>
 				<connectionProperties>
