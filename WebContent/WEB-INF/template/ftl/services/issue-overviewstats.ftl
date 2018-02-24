@@ -132,6 +132,8 @@
       		contentType : "application/json",	
       		data: community.ui.stringify({}),
 			success: function(response){	
+
+				setTimeout(function(){
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', '월');
 				data.addColumn('number', '오류');
@@ -149,7 +151,9 @@
 					item['aggregate']['000']
 					]);
 				});
-				google.charts.setOnLoadCallback(drawChart(data));
+				google.charts.setOnLoadCallback(drawChart(data));				
+				}, 500);
+													
 			}	
 		});
 			
