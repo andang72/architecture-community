@@ -47,7 +47,7 @@
 	        "community.ui.core" 			: { "deps" :['jquery', "kendo.web.min", 'kendo.culture.ko-KR.min', 'kendo.extension.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
 	        "community.ui.professional" 	: { "deps" :['jquery', 'community.ui.core'] },
-	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core'] }
+	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core', 'community.data'] }
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",

@@ -307,15 +307,16 @@
 				<div id="features" class="container-fluid">
 					<div class="row text-center">
 						<div class="col-6 text-left">
-							<p class="text-danger g-font-weight-100">웹 페이지를 관리합니다.</p>
+							<p class="text-danger g-font-weight-100">사용자를 관리합니다.</p>
 						</div>
 						<div class="col-6 text-right">
-							<a href="#!" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="user" data-object-id="0">새로운 페이지 만들기</a>
+							<a href="#!" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="user" data-object-id="0">새로운 사용자 만들기</a>
 						</div>
 					</div>
 					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
-					
+						
 						<div class="media flex-wrap g-mb-30">
+						<!--
 			              <div class="d-flex align-self-center align-items-center">
 			                <span class="g-hidden-sm-down g-color-gray-dark-v6 g-mr-12">Type:</span>
 			
@@ -341,7 +342,7 @@
 			                  <i class="hs-admin-angle-down g-absolute-centered--y g-right-0 g-color-gray-light-v6 ml-auto"></i>
 			                </div>
 			              </div>
-			
+						-->
 			              <div class="d-flex g-hidden-md-up w-100"></div>
 			              <div class="media-body align-self-center g-mt-10 g-mt-0--md">
 			                <div class="input-group g-pos-rel g-max-width-380 float-right">
