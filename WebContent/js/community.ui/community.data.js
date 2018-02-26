@@ -42,11 +42,12 @@
 	
 	community.model.MenuItem = Model.define({ 		
 		id: "menuItemId",
+		parentId: "parentMenuItemId",
 		fields: { 		
 			menuItemId: { type: "number", defaultValue: 0 },		
 			menuId: { type: "number", defaultValue: 0 },	
-			parentMenuItemId: { type: "number", defaultValue: 0 },	
-			menuId: { type: "number", defaultValue: 0 },	
+			parentMenuItemId: { type: "number", defaultValue: null },	
+			name: { type: "string", defaultValue: null },	
 			sortOrder: { type: "number", defaultValue: 1 },	
 			location: { type: "string", defaultValue: null },	
 			description: { type: "string", defaultValue: null },

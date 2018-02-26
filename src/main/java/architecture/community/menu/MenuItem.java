@@ -13,7 +13,7 @@ public class MenuItem implements Serializable {
 	
 	private long menuItemId;
 	
-	private long parentMenuItemId;
+	private Long parentMenuItemId;
 	
 	private String name;
 	
@@ -69,11 +69,11 @@ public class MenuItem implements Serializable {
 		this.menuItemId = menuItemId;
 	}
 
-	public long getParentMenuItemId() {
+	public Long getParentMenuItemId() {
 		return parentMenuItemId;
 	}
 
-	public void setParentMenuItemId(long parentMenuItemId) {
+	public void setParentMenuItemId(Long parentMenuItemId) {
 		this.parentMenuItemId = parentMenuItemId;
 	}
 

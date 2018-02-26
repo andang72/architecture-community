@@ -69,7 +69,7 @@
     ]]></sql-query>	
 	<sql-query name="UPDATE_MENU_ITEM" description="MENU ITEM 업데이트"><![CDATA[    
 	UPDATE AC_UI_MENU_ITEM SET 
-	    PARENT_ID = ?
+	    PARENT_ID = ?,
 	    SORT_ORDER = ?,
 		NAME = ?,
 		DESCRIPTION = ?,

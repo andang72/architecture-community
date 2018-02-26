@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
@@ -88,6 +90,7 @@ public class CommuintyUIMgmtDataController {
     @ResponseBody
     public ItemList getMenuItems(
     		@PathVariable Long menuId, 
+    		@RequestParam(value = "widget", defaultValue = "", required = false) String widget,
     		@RequestBody DataSourceRequest dataSourceRequest,
     		NativeWebRequest request) throws NotFoundException {		
     		
@@ -97,8 +100,13 @@ public class CommuintyUIMgmtDataController {
     		List<Long> itemIds = customQueryService.list(dataSourceRequest, Long.class);
     		List<MenuItem> items = new ArrayList<MenuItem>(itemIds.size());
     		for( Long itemId : itemIds ) {
-    			items.add(menuService.getMenuItemById(itemId));
-    		}		
+    			MenuItem item = menuService.getMenuItemById(itemId);
+    			if(StringUtils.isNotEmpty(widget) && StringUtils.equals("treelist", widget)) {
+    				if( item.getParentMenuItemId() != null && item.getParentMenuItemId() < 1 )
+    					item.setParentMenuItemId(null);
+    			}
+    			items.add(item);
+    		}
     		return new ItemList(items, items.size());	
     }
 	

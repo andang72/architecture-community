@@ -124,6 +124,11 @@ public class CommunityMenuService implements MenuService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdateMenuItem(MenuItem menuItem) {		
+		
+		if( menuItem.getParentMenuItemId() == null )
+		{
+			menuItem.setParentMenuItemId(-1L);
+		}
 		menuDao.saveOrUpdate(menuItem);
 		menuItemCache.invalidate(menuItem.getMenuItemId());
 	}

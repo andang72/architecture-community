@@ -1,6 +1,6 @@
 /**
  * COMMUNITY UI CORE
- * dependency : jquery, kendo
+ * dependency : jquery, kendoui core
  */
 
     (function (window, $, undefined) {		
@@ -249,7 +249,7 @@
 			}		
 			return renderTo.data("kendoListView");
 		}
-		
+
 		
 		var DEFAULT_PAGER_SETTING = {
 				refresh : true,		
@@ -313,6 +313,7 @@
 			return dataSource;
 		};
 		
+
 		function datasource_v2( options ){
 			options = options || {} ;
 			var settings = extend(true, {}, { error:handleAjaxError } , options ); 
@@ -502,8 +503,8 @@
 			defined : defined,
 			send : redirect,
 			datasource : datasource,
-			datasource_v2 : datasource_v2,
-			ajax : ajax,
+			datasource_v2 : datasource_v2, 
+			ajax : ajax, 
 			listview : listview,
 			listbox : listbox,
 			validator: validator,

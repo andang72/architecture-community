@@ -7,9 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
 	<title>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "REPLICANT") } | ADMIN v2.0</title>
 	
-    <!-- Kendoui with bootstrap theme CSS -->			
+    <!-- Kendo UI with bootstrap theme CSS -->	
+   	<!--
 	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common-bootstrap.core.css"/>" rel="stylesheet" type="text/css" />	
 	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+	-->
+	<!-- Professional Kendo UI --> 	
+	<link href="<@spring.url "/css/kendo/2018.1.221/kendo.common.min.css"/>" rel="stylesheet" type="text/css" />	
+	
+	<link href="<@spring.url "/css/kendo/2018.1.221/kendo.bootstrap-v4.min.css"/>" rel="stylesheet" type="text/css" />	
 	
 	<!-- Bootstrap CSS -->
     <link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
@@ -35,10 +41,12 @@
 		shim : {
 			"jquery.cookie" 				: { "deps" :['jquery'] },
 	        "bootstrap" 					: { "deps" :['jquery'] },
-	        "kendo.ui.core.min" 			: { "deps" :['jquery'] },
-	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
-	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
+	        "kendo.web.min" 				: { "deps" :['jquery'] },
+	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.web.min'] },
+	        "kendo.extension.min" 		: { "deps" :['jquery', 'kendo.web.min'] },
+	        "community.ui.core" 			: { "deps" :['jquery', "kendo.web.min", 'kendo.culture.ko-KR.min', 'kendo.extension.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
+	        "community.ui.professional" 	: { "deps" :['jquery', 'community.ui.core'] },
 	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core'] }
 		},
 		paths : {
@@ -46,14 +54,18 @@
 			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
 			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle",
 			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap.min",
-			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
-			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
-			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
+			/*"kendo.ui.core.min" 		: "/js/kendo.ui.core/kendo.ui.core.min",*/
+			/*"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",*/
+			"kendo.web.min"	 			: "/js/kendo/2018.1.221/kendo.web.min",
+			"kendo.culture.ko-KR.min"	: "/js/kendo/2018.1.221/cultures/kendo.culture.ko-KR.min",	
+			"kendo.extension.min"		: "/js/kendo.extension/kendo.ko_KR",			
 			"community.ui.core" 			: "/js/community.ui/community.ui.core",
-			"community.data" 			: "/js/community.ui/community.data"
+			"community.ui.professional" 	: "/js/community.ui.components/community.ui.professional",
+			"community.data" 			: "/js/community.ui/community.data",
+			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin"
 		}
 	});
-	require([ "jquery", "jquery.cookie", "popper", "kendo.ui.core.min", "community.ui.core", "community.data", "community.ui.admin"], function($, kendo ) { 
+	require([ "jquery", "jquery.cookie", "popper", "kendo.web.min", "community.ui.core", "community.data", "community.ui.professional", "community.ui.admin"], function($, kendo ) { 
 	
 		community.ui.setup({
 		  	features : {
@@ -63,6 +75,8 @@
 		  		observable.setUser(e.token);
 		  	}
 		});
+		
+		var usingTreeList = true;
 		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
@@ -87,7 +101,11 @@
 					success: function(data){	
 						var data = new community.model.Menu(data);
 						data.copy( $this.menu );
-						createItemsListView();
+						
+						if( usingTreeList )
+							createItemsTreeList();
+						else
+							createItemsListView();
 					}	
 				});
 							
@@ -104,9 +122,10 @@
 		var renderTo = $('#features');
 		community.ui.bind( renderTo , observable );
 		
-		renderTo.on("click", "button[data-object-type=menu], a[data-object-type=menu], .sorting[data-kind=menu]", function(e){			
+		renderTo.on("click", "button[data-object-type=menu], a[data-object-type=menu], a[data-kind=menu], .sorting[data-kind=menu]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");	
+			
 			if( actionType == 'sort'){
 				if( $this.data('dir') == 'asc' )
 					$this.data('dir', 'desc' );
@@ -114,18 +133,120 @@
 					$this.data('dir', 'asc' );
 				community.ui.listview( $('#items-listview') ).dataSource.sort({ field:$this.data('field'), dir:$this.data('dir') });				
 				return false;
+			}else if (actionType == 'refresh'){
+				if( usingTreeList ){
+					community.ui.treelist($('#items-treelist')).dataSource.read();
+				}
+				return false;		
 			}
 			
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.MenuItem();
 			if ( objectId > 0 ) {
 				targetObject = community.ui.listview( $('#items-listview') ).dataSource.get( objectId );				
-			}				
- 			openMenuEditor(targetObject);
+			}
+			if( usingTreeList )
+				community.ui.treelist($('#items-treelist')).addRow();				
+ 			else
+ 				openMenuEditor(targetObject);
+			
 			return false;		
 		});	
 	});
 	
+	function createItemsTreeList(){
+		var renderTo = $('#items-treelist');	
+		if( !community.ui.exists(renderTo)){
+			community.ui.treelist(renderTo, {
+                    dataSource: {
+                        transport: {
+                            read: {
+                            	   	contentType: "application/json; charset=utf-8",
+                            		url: '<@spring.url "/data/api/mgmt/v1/ui/menus/"/>' + __menuId + '/items/list.json?widget=treelist' ,
+                                	type :'POST',
+                                	dataType: 'json'                                
+                             },
+                             update: {
+                                 url: '<@spring.url "/data/api/mgmt/v1/ui/menus/"/>' + __menuId + '/items/save-or-update.json' ,
+                                 type :'POST',  
+                                 contentType : "application/json", 
+                             	dataType: 'json'    
+                             },
+                             destroy: {
+                                 url: '<@spring.url "/data/api/mgmt/v1/ui/menus/"/>' + __menuId + '/items/delete.json' ,
+                            		type :'POST',
+                            		contentType : "application/json",
+                            		dataType: 'json'    
+                             },
+                             create: {
+                                 url: '<@spring.url "/data/api/mgmt/v1/ui/menus/"/>' + __menuId + '/items/save-or-update.json' ,
+                             	type :'POST',
+                             	contentType : "application/json",
+                             	dataType: 'json'    
+                             },
+							parameterMap: function (options, operation){	 
+								if (operation !== "read" && options.models) {
+                                     return {models: kendo.stringify(options.models)};
+                                 }else{
+									return community.ui.stringify(options);
+								}
+							}
+                        },
+                        schema: {
+							data:  "items",
+							model: {
+								id: "menuItemId",
+								parentId: "parentMenuItemId",
+								fields: { 		
+									menuItemId: { type: "number", defaultValue: 0 },		
+									menuId: { type: "number", defaultValue: 0 },	
+									parentMenuItemId: { type: "number", defaultValue: null },	
+									name: { type: "string", defaultValue: null },	
+									sortOrder: { type: "number", defaultValue: 1 },	
+									location: { type: "string", defaultValue: null },	
+									description: { type: "string", defaultValue: null },
+									creationDate:{ type: "date" },			
+									modifiedDate:{ type: "date"}
+								},	
+								expanded: true
+							}
+ 							
+                        }
+                    },
+                    height: 300,
+                    filterable: false,
+                    sortable: true,
+                    toolbar: [ "create" ],
+                    /*
+                    toolbar: kendo.template('
+                    <div class="p-xs"><button class="btn btn-flat btn-labeled btn-outline btn-danger" 
+                    data-action="create" data-object-id="0">
+                    <span class="btn-label icon fa fa-plus"></span> 메뉴 추가하기 </button>
+                    <button class="btn btn-flat btn-outline btn-info pull-right" 
+                    data-action="refresh" data-loading-text="<i class=\'fa fa-spinner fa-spin\'></i> 조회중 ...\'"> 새로고침 </button></div>'),
+					*/
+                    editable: {
+                    		mode: "inline",
+                    		move: true
+                    },
+                    columns: [
+                        { field: "name", expandable: true, title: "메뉴", width: 250 },
+                        { field: "description" , title: "설명", sortable: false, width: 250 },
+                        { field: "sortOrder" , title: "정렬",  width: 100, attributes: { style: "text-align: center;"  }},
+                        { field: "location" , title: "링크" , sortable : false},
+                        { title: "권한" , width: 100, sortable : false},
+                        { title: " ", command: [ "edit" ], width: 200 }
+                    ]
+                });
+             community.ui.treelist(renderTo).bind(
+				"dragend", function(e){
+					console.log("drag ended", community.ui.stringify(e.source), e.destination);
+					this.dataSource.sync();
+				}
+             );   
+        }    
+	}
+
 	function createItemsListView(){
 		console.log("create menu items listview.");
 		var renderTo = $('#items-listview');	
@@ -235,25 +356,32 @@
 						<div class="col-12 g-mb-20">
 							<div class="media-md align-items-center g-mb-30">
 		              			<div class="d-flex g-mb-15 g-mb-0--md">
-		                				<h3 class="g-font-weight-400 g-font-size-16 g-color-black mb-0" data-bind="text:menu.name"></h3>
+									<header class="g-mb-10">
+						            	<div class="u-heading-v6-2 text-uppercase" >
+						              <h2 class="h4 u-heading-v6__title g-font-weight-300" data-bind="text:menu.name"></h2>
+						            	</div>
+						            	<div class="g-pl-90">
+						              <p data-bind="text:menu.description"></p>
+						            	</div>
+						          	</header>		                				
 		             	 		</div>	
 								<div class="media d-md-flex align-items-center ml-auto">
 					                <a class="d-flex align-items-center u-link-v5 g-color-lightblue-v3 g-color-primary--hover g-ml-15 g-ml-45--md" href="#!" data-bind="click:back">
 					                  	<i class="community-admin-angle-left g-font-size-18"></i>
 					                 	<span class="g-hidden-sm-down g-ml-10">뒤로가기</span>
-					                </a>								
-					                <a class="d-flex align-items-center u-link-v5 g-color-lightblue-v3 g-color-primary--hover g-ml-15 g-ml-45--md" href="#!" data-action="edit" data-object-type="menu" data-object-id="0"  >
-					                  	<i class="community-admin-plus g-font-size-18"></i>
-					                 	<span class="g-hidden-sm-down g-ml-10">메뉴 추가하기</span>
+					                </a>			
+					                <a class="d-flex align-items-center u-link-v5 g-color-lightblue-v3 g-color-primary--hover g-ml-15 g-ml-45--md" href="#!" data-action="refresh" data-object-type="menu" data-object-id="0"  >
+					                  	<i class="community-admin-reload g-font-size-18"></i>
+					                 	<span class="g-hidden-sm-down g-ml-10">새로고침</span>
 					                </a>
 								</div>
 		            			</div>
-		            			<span data-bind="text:menu.description"></span>
 	                  	</div>					
 					</div>
 					<div class="row">
+						<div id="items-treelist"></div>
 						<!-- menu listview -->
-						<div class="table-responsive g-mb-0">
+						<div class="table-responsive g-mb-0" style="display:none;">						
 						<table class="table u-table--v3 g-color-black">
 							<thead>
 								<tr class="g-bg-gray-light-v8">
@@ -423,7 +551,7 @@
 	<script type="text/x-kendo-template" id="template">    	
 	<tr>
 		<td class="g-px-30">#: menuItemId # </td>
-		<td class="g-px-30">#if( parentMenuItemId < 0 ) {#  #}else{# #:parentMenuItemId # #}#</td>
+		<td class="g-px-30">#if( parentMenuItemId < 0 ) {# - #}else{# #:parentMenuItemId # #}#</td>
 		<td class="g-px-30">
 		<a class="d-flex align-items-center u-link-v5 g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-object-id="#=menuId#" data-object-type="menu">#: name #</a>
 		</td>
