@@ -12,7 +12,7 @@
 	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
 	
 	<!-- Bootstrap CSS -->
-    <link href="<@spring.url "/css/bootstrap/4.0.0-beta.2/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
     
     <!-- Bootstrap Theme CSS -->    
     <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
@@ -37,7 +37,7 @@
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
 	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
-	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core'] }
+	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core', 'community.data'] }
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
