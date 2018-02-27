@@ -38,7 +38,7 @@
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
 	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
-	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core' ] }
+	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core', 'community.data'] }	
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
@@ -421,6 +421,81 @@
 					</div>				
 					<div class="row">
 	                		<div class="table-responsive">
+	                			<table class="table w-100 g-mb-0">
+	                				<thead class="g-hidden-sm-down g-color-gray-dark-v6">
+	                					<tr class="g-height-50">
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-60 sorting" data-kind="page" data-action="sort" data-dir="asc" data-field="USER_ID" >
+											<div class="media">
+												<div class="d-flex align-self-center">ID.</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-up"></i>
+													</a>
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-down"></i>
+													</a>
+													</span>
+												</div>
+											</div>	
+										</th>	                					
+										<th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 sorting" data-kind="page" data-action="sort" data-dir="asc" data-field="NAME">
+			                             	<div class="media">
+												<div class="d-flex align-self-center">파일</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-up"></i>
+													</a>
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-down"></i>
+													</a>
+													</span>
+												</div>
+											</div>	
+			                             </th>	  
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-100" >상태</th>
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-150" >작성자</th>   
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-100" >페이지 뷰</th>     
+										<th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-100 sorting" data-kind="page" data-action="sort" data-dir="asc" data-field="CREATION_DATE">
+											<div class="media">
+												<div class="d-flex align-self-center">생성일</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+														<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+															<i class="community-admin-angle-up"></i>
+														</a>
+														<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+															<i class="community-admin-angle-down"></i>
+														</a>
+													</span>
+												</div>
+											</div>
+										</th>			                             
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-width-100 sorting" data-kind="page" data-action="sort" data-dir="asc" data-field="MODIFIED_DATE">
+											<div class="media">
+												<div class="d-flex align-self-center">수정일</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+														<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+															<i class="community-admin-angle-up"></i>
+														</a>
+														<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+															<i class="community-admin-angle-down"></i>
+														</a>
+													</span>
+												</div>
+											</div>
+										</th> 		
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-pr-25 g-width-120"></th>				                                   						              						
+	                					</tr>
+	                				</thead>
+	                				<tbody id="pages-listview" class="u-listview g-brd-none">
+	                					<tr class="g-height-50"><td colspan="8" class="align-middle g-font-weight-300 g-color-black text-center"></td></tr>
+	                				</tbody>
+	                			</table>
+	                			
+	                			<!--
 							<table class="table table-bordered js-editable-table u-table--v1 u-editable-table--v1 g-color-black g-mb-0">
 								<thead class="g-hidden-sm-down g-color-gray-dark-v6">
 									<tr class="g-height-50">
@@ -434,8 +509,9 @@
 								</thead>    
 								<tbody id="pages-listview" class=" u-listview"></tbody>
 							</table>
+							-->
 						</div>
-						<div id="pages-listview-pager" class="g-brd-top-none" style="width:100%;"></div>
+						<div id="pages-listview-pager" g-brd-top-none g-brd-left-none g-brd-right-none" style="width:100%;"></div>
             			</div>
 				</div>
 				<!-- End Content Body -->
@@ -530,8 +606,7 @@
 			        	  <div class="row">
 					  	<div class="col-sm-10">
 					  	<h6 class="text-light-gray text-semibold">템플릿 설정</h6>
-					  		<div class="form-inline">
-					  		 	
+					  		<div class="form-inline">					  		 	
 								<div class="form-group g-pb-10">
 									<input type="text" class="form-control g-width-300" placeholder="템플릿 파일 위치" data-bind="value: page.template" >			
 									<div class="btn-group">
@@ -724,11 +799,16 @@
 	</script>	
 	<script type="text/x-kendo-template" id="template">    	
 	<tr class="u-listview-item">
-		<td class="u-text-left">		
-		<h5 class="g-font-weight-100">
-		#if (secured) { # <i class="icon-lock"></i>  # } else {# <i class="icon-lock-open"></i> #}#
-		#= title # 	<span class="g-font-weight-300 g-color-gray-dark-v6 mb-0">#= name #</span>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">#= pageId #</td>
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm">	
+		
+		<a class="d-flex align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="edit" data-object-id="#=pageId#" data-object-type="page">
+		<h5 class="g-font-weight-100 g-mb-0">
+		#if (secured) { # <i class="community-admin-lock"></i>  # } else {# <i class="community-admin-unlock"></i> #}#
+		#= name #
 		</h5> 
+		</a>
+		<p class="g-font-weight-300 g-color-gray-dark-v6 g-mt-5 g-ml-10 g-mb-0" >#= title #</p>
 		<!--
 		<div class="u-visible-on-select">
 			<div class="btn-group">
@@ -737,7 +817,6 @@
 			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-id="#= pageId#" >삭제</button>
 			</div>
 	 	</div>
-	 	-->
 	 	
 	 	<div class="u-visible-on-select g-pa-5">
 			<div class="d-flex">
@@ -754,12 +833,15 @@
 					<span class="g-ml-15">삭제</span>
 				</a>				
 			</div>
-		</div>	 	
+		</div>	
+		--> 	
 		</td>
-		<td class="text-center align-middle" >
-			#: pageState #
-		</td>
-		<td class="text-right align-middle" >
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> 
+			<span class="d-flex align-items-center justify-content-center u-tags-v1 g-hidden-sm-down text-center g-width-150--sm g-brd-around g-bg-gray-light-v8 g-bg-gray-light-v8 g-font-size-default g-color-gray-dark-v6 g-rounded-50 g-py-4 g-px-15">
+				#: pageState # 
+			</span>
+		</td>		
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm" >
 			<div class="media">
             		<div class="d-flex align-self-center">
                     <img class="g-width-36 g-height-36 rounded-circle g-mr-15" src="#= community.data.getUserProfileImage(user) #" >
@@ -767,11 +849,19 @@
 				<div class="media-body align-self-center text-left">#: user.name #</div>
             </div>
 		</td>
-		<td class="text-center align-middle"> #: commentCount # </td>
-		<td class="text-center align-middle"> #: viewCount # </td>
-		<td class="text-center align-middle">
- 		 #: community.data.getFormattedDate( modifiedDate)  # 
-		</td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> #: viewCount # </td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">  #: community.data.getFormattedDate( creationDate)  #  </td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">#: community.data.getFormattedDate( modifiedDate)  # </td>
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">
+			<div class="d-flex align-items-center g-line-height-1">
+				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="page" data-object-id="#= pageId #" >
+					<i class="community-admin-pencil g-font-size-18"></i>
+                </a>
+                <a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover" href="\#!" data-action="delete" data-object-type="page" data-object-id="#= pageId #" >
+                		<i class="community-admin-trash g-font-size-18"></i>
+                </a>
+			</div>
+		</td>		
 	</tr>				                      
     </script>  	
 </body>

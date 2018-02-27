@@ -37,7 +37,7 @@
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
 	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
-	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core' ] }
+	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core', 'community.data'] }	   
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
@@ -314,7 +314,8 @@
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black">프로젝트</th>
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">비용(월)</th> 
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="200">기간</th> 
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">수정일</th>   										
+			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">수정일</th>   		
+			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black g-width-100">&nbsp;</th>								
 									</tr>
 								</thead>
 								<tbody id="project-listview" class=" u-listview"></tbody>
@@ -522,17 +523,24 @@
 		#= name # 
 		# if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } #
 		# if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #		
-		</h5>
+		</h5><!--
 		<div class="u-visible-on-select">
 			<div class="btn-group">
 			<button class="btn u-btn-outline-lightgray g-mt-5" data-action="edit" data-object-type="project" data-object-id="#= projectId#"  >수정</button>
 			<button class="btn u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-type="project" data-object-id="#= projectId#" >삭제</button>
 			</div>
-	 	</div>
+	 	</div>-->
 		</td>
 		<td class="text-right align-middle"> #: kendo.toString( maintenanceCost, 'c')  # </td>
 		<td class="text-center align-middle"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # </td>
 		<td class="text-center align-middle"> #: community.data.getFormattedDate( modifiedDate )  # </td>
+		<td class="align-middle">
+			<div class="d-flex align-items-center g-line-height-1">
+				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="project" data-object-id="#= projectId #" >
+					<i class="community-admin-pencil g-font-size-18"></i>
+                </a>
+            </div>    
+		</td>		
 	</tr>				                      
     </script> 	
 </body>

@@ -37,7 +37,7 @@
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
 	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
-	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core' ] }
+	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core', 'community.data'] }	        
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
@@ -302,20 +302,20 @@
 					</div>
 					<div class="row">
 	                		<div class="table-responsive">
-							<table class="table table-bordered js-editable-table u-table--v1 u-editable-table--v1 g-color-black g-mb-0">
+							<table class="table u-table--v1 u-editable-table--v1 g-color-black g-mb-0">
 								<thead class="g-hidden-sm-down g-color-gray-dark-v6">
 									<tr class="g-height-50">
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black" >#</th>
+			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black g-width-100" >ID.</th>
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black">이름</th>
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100">주제 게시물</th>
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100">전체 게시물</th>
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100"></th>  										
 									</tr>
 								</thead>
-								<tbody id="board-listview" class="u-listview"></tbody>
+								<tbody id="board-listview" class="u-listview g-brd-none"></tbody>
 							</table>
 						</div>
-						<div id="board-listview-pager" class="g-brd-top-none" style="width:100%;"></div>
+						<div id="board-listview-pager" class="g-brd-left-none g-brd-right-none" style="width:100%;"></div>
             			</div>	
 				</div>
 				<!-- End Content Body -->
@@ -481,17 +481,24 @@
 		<td>
 			<h5 class="g-font-weight-100">#:displayName# </h5>
 			<p class="g-font-weight-300 g-color-gray-dark-v6 mb-0">#if(description != null ){# #:description # #}#</p>
+			<!--
 			<div class="u-visible-on-select">
 				<div class="btn-group">
 					<button class="btn u-btn-outline-lightgray g-mt-5" data-action="create" data-object-type="board"  data-object-id="#:boardId#"  >수정</button>
 					<button class="btn u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-type="board"  data-object-id="#:boardId#" >삭제</button>
 				</div>
 	 		</div>
-	 	
+	 		-->
 		</td>
-		<td class="text-center align-middle"> #: totalThreadCount # </td>
-		<td class="text-center align-middle"> #: totalMessage # </td>
-		<td class="align-middle"></td>
+		<td class="text-center align-middle g-hidden-sm-down"> #: totalThreadCount # </td>
+		<td class="text-center align-middle g-hidden-sm-down"> #: totalMessage # </td>
+		<td class="align-middle">
+			<div class="d-flex align-items-center g-line-height-1">
+				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="board" data-object-id="#= boardId #" >
+					<i class="community-admin-pencil g-font-size-18"></i>
+                </a>
+            </div>    
+		</td>
 	</tr>				                      
     </script>    	
 </body>

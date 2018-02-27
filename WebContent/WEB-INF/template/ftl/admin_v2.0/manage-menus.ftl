@@ -37,7 +37,7 @@
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
 	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
-	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core'] }
+	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core', 'community.data'] }	  
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
@@ -101,8 +101,11 @@
 			var targetObject = new community.model.Menu();
 			if ( objectId > 0 ) {
 				targetObject = community.ui.listview( $('#menus-listview') ).dataSource.get( objectId );				
-			}				
- 			openMenuEditor(targetObject);
+			}		
+							
+ 			//openMenuEditor(targetObject);
+			community.ui.listview( $('#menus-listview') ).add();
+			
 			return false;		
 		});	 
 		
@@ -114,16 +117,14 @@
 		console.log("create menu listview.");
 		var renderTo = $('#menus-listview');	
 		var listview = community.ui.listview( renderTo , {
-			dataSource: community.ui.datasource('<@spring.url "/data/api/mgmt/v1/ui/menus/list.json"/>', {
+			dataSource: community.ui.datasource_v3({
 				transport: { 
-					read:{
-						contentType: "application/json; charset=utf-8"
-					},
-					parameterMap: function (options, operation){	 
-						return community.ui.stringify(options);
-					}
+					read : { url:'<@spring.url "/data/api/mgmt/v1/ui/menus/list.json"/>', type:'post', dataType:'json', contentType: 'application/json; charset=utf-8' },
+					create : { url:'<@spring.url "/data/api/mgmt/v1/ui/menus/save-or-update.json"/>', type:'post', dataType:'json', contentType: 'application/json; charset=utf-8' },
+					update : { url:'<@spring.url "/data/api/mgmt/v1/ui/menus/save-or-update.json"/>', type:'post', dataType:'json', contentType: 'application/json; charset=utf-8' }
 				},
 				serverPaging: false,
+				pageSize: 15	,
 				serverSorting: true,
 				schema: {
 					total: "totalCount",
@@ -135,6 +136,7 @@
 				if( this.items().length == 0)
 					renderTo.html('<tr class="g-height-50"><td colspan="6" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 데이터가 없습니다.</td></tr>');
 			},
+			editTemplate: community.ui.template($("#edit-template").html()),
 			template: community.ui.template($("#template").html())
 		}); 			
 		
@@ -292,7 +294,7 @@
 											</div>
 										</div>
 									</th>
-									<th class="g-valign-middle g-px-30 g-width-100"></th>	
+									<th class="g-valign-middle g-px-30 g-width-120"></th>	
 								</tr>	
 							</thead>
 							<tbody id="menus-listview" class="u-listview g-brd-none">
@@ -353,20 +355,48 @@
 	    		</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->	
-	<script type="text/x-kendo-template" id="template">    	
+	<script type="text/x-kendo-template" id="edit-template">    	
 	<tr>
 		<td class="g-px-30">#: menuId # </td>
+		<td class="">
+			<input type="text" class="k-textbox form-control" data-bind="value:name" name="name" required="required" validationMessage="필수 입력 항목입니다." />
+		</td>
 		<td class="g-px-30">
-		<a class="d-flex align-items-center u-link-v5 g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=menuId#" data-object-type="menu">#: name #</a>
+			<input type="text" class="k-textbox form-control" data-bind="value:description" name="description" required="required" validationMessage="필수 입력 항목입니다." />
+		</td>
+		<td class="g-px-30">#: community.data.getFormattedDate( creationDate)  #</td>
+		<td class="g-px-30">#: community.data.getFormattedDate( modifiedDate)  #</td>
+		<td class="">
+				<a class="btn btn-sm u-btn-outline-bluegray k-update-button g-mb-0" href="\\#">확인</a>
+                <a class="btn btn-sm u-btn-outline-bluegray k-cancel-button g-mb-0" href="\\#">취소</a>
+		</td>
+	</tr>
+	</script>	
+		
+	<script type="text/x-kendo-template" id="template">    	
+	<tr class="u-listview-item">
+		<td class="g-px-30">#: menuId # </td>
+		<td class="g-px-30">
+		<a class="d-flex align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=menuId#" data-object-type="menu">
+			#: name #
+			<!--
+			<i class="g-ml-10 community-admin-more g-font-size-18 u-visible-on-select"></i>	
+			-->
+		</a>
 		</td>
 		<td class="g-px-30">#: description #</td>
 		<td class="g-px-30">#: community.data.getFormattedDate( creationDate)  #</td>
 		<td class="g-px-30">#: community.data.getFormattedDate( modifiedDate)  #</td>
 		<td class="g-px-30">
 			<div class="d-flex align-items-center g-line-height-1">
+				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15 k-edit-button" href="\#!" data-object-id="#= menuId #" >
+					<i class="community-admin-pencil g-font-size-18"></i>
+                </a>
+                <!--
 				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="menu" data-object-id="#= menuId #" >
 					<i class="community-admin-pencil g-font-size-18"></i>
                 </a>
+                -->
                 <!--
                 <a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover" href="\#!" data-action="delete" data-object-type="menu" data-object-id="#= menuId #" >
                 		<i class="community-admin-trash g-font-size-18"></i>
