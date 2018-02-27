@@ -89,7 +89,13 @@
 		renderTo.on("click","[data-action=create],[data-action=edit],[data-action=delete]", function(e){		
 			var $this = $(this);		
 			if( community.ui.defined($this.data("object-id")) ){
-				var objectId = $this.data("object-id");						
+				var objectId = $this.data("object-id");		
+				
+				if (actionType == 'view'){
+					community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/page-editor" />", { menuId: $this.data("object-id") });
+					return false;
+				}
+												
 				if( objectId > 0 ){
 					var listview = community.ui.listview( $('#pages-listview') );
 					openPageEditor( listview.dataSource.get(objectId) );

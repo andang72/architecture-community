@@ -20,6 +20,7 @@
     <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
 
     <!-- Community Admin CSS -->
+    <link href="<@spring.url "/css/community.ui/community.ui.admin.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/css/community.ui.admin/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/css/community.ui.admin/community.ui.admin.css"/>" rel="stylesheet" type="text/css" />	
   	     
@@ -94,7 +95,7 @@
 				community.ui.listview( $('#menus-listview') ).dataSource.sort({ field:$this.data('field'), dir:$this.data('dir') });				
 				return false;
 			} else if (actionType == 'view'){
-				community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/edit-menu" />", { menuId: $this.data("object-id") });
+				community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/menu-editor" />", { menuId: $this.data("object-id") });
 				return false;
 			}
 			var objectId = $this.data("object-id");		
