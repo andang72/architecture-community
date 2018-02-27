@@ -18,10 +18,10 @@
     
     <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
-    <link href="<@spring.url "/fonts/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	
     
-    <!-- Community CSS -->
-    <link href="<@spring.url "/css/community.ui/community.ui.admin.css"/>" rel="stylesheet" type="text/css" />	
+    <!-- Community Admin CSS -->
+    <link href="<@spring.url "/css/community.ui.admin/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/community.ui.admin/community.ui.admin.css"/>" rel="stylesheet" type="text/css" />	
   	     
  	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js'"/>></script>
  	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>

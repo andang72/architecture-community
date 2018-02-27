@@ -1,0 +1,55 @@
+@charset "UTF-8";
+/*------------------------------------
+ Custom Styles
+------------------------------------*/
+
+/*------------------------------------
+  PACE
+------------------------------------*/
+.pace {
+  -webkit-pointer-events: none;
+  pointer-events: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+.pace-inactive {
+  display: none;
+}
+.pace .pace-progress {
+  background: #1ab394;
+  position: fixed;
+  z-index: 2040;
+  top: 0;
+  right: 100%;
+  width: 100%;
+  height: 2px;
+}
+.pace-inactive {
+  display: none;
+}
+
+/*------------------------------------
+  Kendo UI ListView
+------------------------------------*/
+
+.u-listview  .u-listview-item .u-visible-on-select {
+	visibility: hidden;
+}
+
+.u-listview  .u-listview-item:hover .u-visible-on-select {
+	visibility: visible;	 
+}
+
+.u-listview .u-link-underline {
+	border-bottom: 1px solid transparent;
+	padding-bottom: 1.5px;
+}
+
+.u-listview .u-link-underline:hover{
+	border-bottom: 1px solid;
+	padding-bottom: 1.5px;
+}
+
+/*Import Font*/
+@import url('unify-admin.css');
