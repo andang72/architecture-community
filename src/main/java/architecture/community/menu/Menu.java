@@ -5,9 +5,10 @@ import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateSerializer;
 
-public class Menu implements Serializable {
+public class Menu extends PropertyAwareSupport implements Serializable {
 
 	private long menuId;
 

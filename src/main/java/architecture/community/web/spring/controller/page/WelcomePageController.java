@@ -19,9 +19,9 @@ import architecture.community.page.PageService;
 import architecture.community.web.util.ServletUtils;
 
 @Controller("welcome-page-controller")
-public class WalcomePageController {
+public class WelcomePageController {
 
-	private static final Logger log = LoggerFactory.getLogger(WalcomePageController.class);	
+	private static final Logger log = LoggerFactory.getLogger(WelcomePageController.class);	
 
 	@Inject
 	@Qualifier("pageService")

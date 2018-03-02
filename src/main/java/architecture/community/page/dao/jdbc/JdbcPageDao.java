@@ -110,8 +110,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 	private void insertProperties(Page page) {
 		if (page.getProperties() != null && !page.getProperties().isEmpty()) {
 			Map<String, String> properties = page.getProperties();
-			final List<Map.Entry<String, String>> entryList = new ArrayList<Map.Entry<String, String>>(
-					properties.entrySet());
+			final List<Map.Entry<String, String>> entryList = new ArrayList<Map.Entry<String, String>>( properties.entrySet());
 			final long pageId = page.getPageId();
 			final long pageVersionId = page.getVersionId();
 			getExtendedJdbcTemplate().batchUpdate(getBoundSql("COMMUNITY_PAGE.INSERT_PAGE_PROPERTY").getSql(),

@@ -147,8 +147,8 @@ public class PageMgmtDataController {
 				pageToUse.setProperties(page.getProperties());
 			pageService.saveOrUpdatePage(pageToUse);
 		}
-
-		return Result.newResult();
+		
+		return  Result.newResult("item", pageToUse );
 	}
 
 	@Secured({ "ROLE_ADMINISTRATOR" })
@@ -187,6 +187,21 @@ public class PageMgmtDataController {
 		}		
 		
 	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/{pageId:[\\p{Digit}]+}/get.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Page getPage(@PathVariable Long pageId,
+			@RequestParam(value = "content", defaultValue = "false") Boolean includeBodyContent,
+			@RequestParam(value = "versionId", defaultValue = "1") Integer versionId, 
+			NativeWebRequest request)
+			throws NotFoundException {
+
+		User user = SecurityHelper.getUser();
+		Page page = pageService.getPage(pageId, versionId);
+		return new PageView(page, includeBodyContent) ;
+	}
+	
 
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/{pageId:[\\p{Digit}]+}/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })

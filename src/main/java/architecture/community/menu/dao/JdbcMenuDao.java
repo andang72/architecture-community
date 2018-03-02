@@ -36,6 +36,9 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 	@Inject
 	@Qualifier("propertyDao")
 	private PropertyDao propertyDao;
+
+	private String menuPropertyTableName = "AC_UI_MENU_PROPERTY";
+	private String menuPropertyPrimaryColumnName = "MENU_ID";
 	
 	private String menuItemPropertyTableName = "AC_UI_MENU_ITEM_PROPERTY";
 	private String menuItemPropertyPrimaryColumnName = "MENU_ITEM_ID";
@@ -60,6 +63,7 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 			item.setLocation(rs.getString("LINK_URL"));
 			item.setSortOrder(rs.getInt("SORT_ORDER"));
 			item.setDescription(rs.getString("DESCRIPTION"));
+			item.setRoles(rs.getString("ROLES"));
 			item.setCreationDate(rs.getDate("CREATION_DATE"));
 			item.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
 			return item;
@@ -67,6 +71,26 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 	};
 	
 	public JdbcMenuDao() {
+	}
+
+
+	public String getMenuPropertyTableName() {
+		return menuPropertyTableName;
+	}
+
+
+	public void setMenuPropertyTableName(String menuPropertyTableName) {
+		this.menuPropertyTableName = menuPropertyTableName;
+	}
+
+
+	public String getMenuPropertyPrimaryColumnName() {
+		return menuPropertyPrimaryColumnName;
+	}
+
+
+	public void setMenuPropertyPrimaryColumnName(String menuPropertyPrimaryColumnName) {
+		this.menuPropertyPrimaryColumnName = menuPropertyPrimaryColumnName;
 	}
 
 
@@ -100,6 +124,19 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 	public void setMenuItemProperties(long menuItemId, Map<String, String> props) {
 		propertyDao.updateProperties(menuItemPropertyTableName, menuItemPropertyPrimaryColumnName, menuItemId, props);
 	}
+	
+
+	public Map<String, String> getMenuProperties(long menuItemId) {
+		return propertyDao.getProperties(menuItemPropertyTableName, menuItemPropertyPrimaryColumnName, menuItemId);
+	}
+
+	public void deleteMenuProperties(long menuItemId) {
+		propertyDao.deleteProperties(menuItemPropertyTableName, menuItemPropertyPrimaryColumnName, menuItemId);
+	}
+	
+	public void setMenuProperties(long menuItemId, Map<String, String> props) {
+		propertyDao.updateProperties(menuItemPropertyTableName, menuItemPropertyPrimaryColumnName, menuItemId, props);
+	}	
 		
 	public long getNextMenuItemId(){		
 		return sequencerFactory.getNextValue(Models.MENU_ITEM.getObjectType(), Models.MENU_ITEM.name());
@@ -130,6 +167,10 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 						new SqlParameterValue(Types.TIMESTAMP, menu.getCreationDate() != null ? menu.getCreationDate() : now ),
 						new SqlParameterValue(Types.TIMESTAMP, menu.getModifiedDate() != null ? menu.getModifiedDate() : now )
 				);
+				
+				if( menu.getProperties().size() > 0)
+					setMenuProperties(menu.getMenuId(), menu.getProperties());
+				
 			} catch (DataAccessException e) {
 				//logger.error(CommunityLogLocalizer.getMessage("010013"), e);
 				throw e;
@@ -143,6 +184,12 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 					new SqlParameterValue(Types.VARCHAR, menu.getDescription()),
 					new SqlParameterValue(Types.TIMESTAMP, menu.getModifiedDate() != null ? menu.getModifiedDate() : now ),
 					new SqlParameterValue(Types.NUMERIC, menu.getMenuId()));
+			
+			deleteMenuProperties(menu.getMenuId());
+			
+			if( menu.getProperties().size() > 0)
+			setMenuItemProperties(menu.getMenuId(), menu.getProperties());
+			
 		}
 
 	}
@@ -153,25 +200,33 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 	}
 	
 	public Menu getMenuById(long menuId) {
-		return getExtendedJdbcTemplate().queryForObject( getBoundSql("COMMUNITY_UI.SELECT_MENU_BY_ID").getSql(),  menuMapper,  new SqlParameterValue(Types.NUMERIC, menuId));
+		Menu menu = getExtendedJdbcTemplate().queryForObject( getBoundSql("COMMUNITY_UI.SELECT_MENU_BY_ID").getSql(),  menuMapper,  new SqlParameterValue(Types.NUMERIC, menuId));
+		menu.setProperties(getMenuProperties(menuId));
+		return menu;
 	}	
 
 	public List<MenuItem> getMenuItemsByMenuId(long menuId) {
-		return getExtendedJdbcTemplate().query(
+		List<MenuItem> items = getExtendedJdbcTemplate().query(
 			getBoundSql("COMMUNITY_UI.SELECT_MENU_ITEMS_BY_MENU_ID").getSql(), 
 			menuItemMapper,
 			new SqlParameterValue(Types.NUMERIC, menuId )
 		);
+		
+		for( MenuItem item : items )
+			item.setProperties(getMenuProperties(item.getMenuItemId()));
+		
+		return items;
 	}
 
 	public List<Long> getAllMenuIds() {
 		return getExtendedJdbcTemplate().queryForList( getBoundSql("COMMUNITY_UI.SELECT_ALL_MENU_IDS").getSql(),  Long.class );
 	}
 
-
 	@Override
 	public MenuItem getMenuItemById(long menuItemId) {
-		return getExtendedJdbcTemplate().queryForObject( getBoundSql("COMMUNITY_UI.SELECT_MENU_ITEM_BY_ID").getSql(),  menuItemMapper,  new SqlParameterValue(Types.NUMERIC, menuItemId));
+		MenuItem item = getExtendedJdbcTemplate().queryForObject( getBoundSql("COMMUNITY_UI.SELECT_MENU_ITEM_BY_ID").getSql(),  menuItemMapper,  new SqlParameterValue(Types.NUMERIC, menuItemId));
+		item.setProperties(getMenuProperties(menuItemId));
+		return item ;
 	}
 
 	public void saveOrUpdate(MenuItem menu) {		
@@ -196,9 +251,14 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 						new SqlParameterValue(Types.VARCHAR, menu.getName()),
 						new SqlParameterValue(Types.VARCHAR, menu.getDescription()),
 						new SqlParameterValue(Types.VARCHAR, menu.getLocation()),
+						new SqlParameterValue(Types.VARCHAR, menu.getRoles()),
 						new SqlParameterValue(Types.TIMESTAMP, menu.getCreationDate() != null ? menu.getCreationDate() : now ),
 						new SqlParameterValue(Types.TIMESTAMP, menu.getModifiedDate() != null ? menu.getModifiedDate() : now )
 				);
+				
+				if( menu.getProperties().size() > 0)
+					setMenuItemProperties(menu.getMenuItemId(), menu.getProperties());
+				
 			} catch (DataAccessException e) {
 				//logger.error(CommunityLogLocalizer.getMessage("010013"), e);
 				throw e;
@@ -213,8 +273,14 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 					new SqlParameterValue(Types.VARCHAR, menu.getName()),
 					new SqlParameterValue(Types.VARCHAR, menu.getDescription()),
 					new SqlParameterValue(Types.VARCHAR, menu.getLocation()),
+					new SqlParameterValue(Types.VARCHAR, menu.getRoles()),
 					new SqlParameterValue(Types.TIMESTAMP, menu.getModifiedDate() != null ? menu.getModifiedDate() : now ),
 					new SqlParameterValue(Types.NUMERIC, menu.getMenuItemId()));
+			
+			deleteMenuItemProperties(menu.getMenuItemId());
+			
+			if( menu.getProperties().size() > 0)
+				setMenuItemProperties(menu.getMenuItemId(), menu.getProperties());
 		}
 
 	}

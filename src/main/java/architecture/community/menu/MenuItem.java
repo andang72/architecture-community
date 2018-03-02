@@ -5,9 +5,10 @@ import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateSerializer;
 
-public class MenuItem implements Serializable {
+public class MenuItem extends PropertyAwareSupport implements Serializable {
 	
 	private long menuId;
 	
@@ -23,6 +24,8 @@ public class MenuItem implements Serializable {
 	
 	private int sortOrder;
 	
+	private String roles;
+	
 	private Date creationDate;
 
 	private Date modifiedDate;
@@ -32,6 +35,7 @@ public class MenuItem implements Serializable {
 		this.parentMenuItemId = -1L;
 		this.menuItemId = -1L;
 		this.sortOrder = 0;
+		this.roles = null;
 		this.creationDate = new Date();
 		this.modifiedDate = creationDate;
 	}
@@ -41,6 +45,7 @@ public class MenuItem implements Serializable {
 		this.parentMenuItemId = -1L;
 		this.menuItemId = menuItemId ;
 		this.sortOrder = 0;
+		this.roles = null;
 		this.creationDate = new Date();
 		this.modifiedDate = creationDate;
 	}
@@ -101,6 +106,14 @@ public class MenuItem implements Serializable {
 		this.location = location;
 	}
 
+
+	public String getRoles() {
+		return roles;
+	}
+
+	public void setRoles(String roles) {
+		this.roles = roles;
+	}
 
 	/**
 	 * @return creationDate
