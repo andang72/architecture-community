@@ -31,7 +31,7 @@
 	<script>
 	require.config({
 		shim : {
-			"jquery.cookie" 				: { "deps" :['jquery'] },
+			"bootstrap" 					: { "deps" :['jquery', 'popper'] },
 	        "bootstrap" 					: { "deps" :['jquery'] },
 	        "kendo.ui.core.min" 			: { "deps" :['jquery'] },
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
@@ -42,7 +42,8 @@
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
 			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"bootstrap" 					: "/js/bootstrap/3.3.7/bootstrap.min",
+			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle.min",
+			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap",
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
@@ -113,7 +114,11 @@
 				}
 			}),
 			editTemplate: community.ui.template($("#property-edit-template").html()),
-			template: community.ui.template($("#property-template").html())
+			template: community.ui.template($("#property-template").html()),
+			dataBound: function() {
+				if( this.items().length == 0)
+					renderTo.html('<tr class="g-height-50"><td colspan="3" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 데이터가 없습니다.</td></tr>');
+			}			
 		}); 			
 		community.ui.pager( $("#properties-listview-pager"), {
             dataSource: listview.dataSource
@@ -150,9 +155,26 @@
 				<h1 class="g-font-weight-300 g-font-size-28 g-color-black g-mb-30">시스템 프로퍼티</h1>
 				<!-- Content Body -->
 				<div id="features" class="container-fluid">
+
 					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
-						<p class="text-danger g-font-weight-100">시스템 프로퍼티 정보입니다.</p>
-					</div>				
+						<div class="col-6">
+							<div class="alert alert-dismissible fade show g-bg-gray-dark-v2 g-color-white rounded-0" role="alert">
+								<button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+                          			<span class="g-color-white" aria-hidden="true">×</span>
+                        			</button>
+                        			<div class="media">
+									<span class="d-flex g-mr-10 g-mt-5"><i class="icon-question g-font-size-25"></i></span>
+                          			<span class="media-body align-self-center">
+                          			<strong>주의!</strong>
+                            			 속성값은 임의로 수정하거나 추가하는 경우 오류의 원인이 될 수 있습니다.
+                          			</span>
+                        			</div>
+							</div>  
+						</div>
+						<div class="col-6 text-right">
+						<a href="javascript:void();" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-bind="click:createNewProperty" >새로운 프로퍼티 만들기</a>
+						</div>
+					</div>			
 					<div class="row">
                 		<div class="table-responsive">
 						<table class="table table-bordered js-editable-table u-table--v1 u-editable-table--v1 g-color-black g-mb-0">

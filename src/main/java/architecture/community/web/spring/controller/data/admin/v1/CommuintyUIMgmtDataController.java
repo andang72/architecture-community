@@ -151,6 +151,9 @@ public class CommuintyUIMgmtDataController {
 			if (newMenuItem.getSortOrder() != menuItem.getSortOrder()) {
 				menuItem.setSortOrder(newMenuItem.getSortOrder());
 			}
+			menuItem.setPage(newMenuItem.getPage());
+			menuItem.setRoles(newMenuItem.getRoles());
+			
 		}else {
 			menuItem = newMenuItem ;
 			if( newMenuItem.getMenuId() != menu.getMenuId())

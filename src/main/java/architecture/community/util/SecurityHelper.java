@@ -2,6 +2,8 @@ package architecture.community.util;
 
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +18,8 @@ import architecture.community.user.UserTemplate;
 import architecture.ee.util.StringUtils;
 
 public class SecurityHelper {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SecurityHelper.class);
 
 	public static final User ANONYMOUS = new UserTemplate(-1L, "ANONYMOUS");
 	
@@ -78,19 +82,18 @@ public class SecurityHelper {
 	 * @return
 	 */
 	public static boolean isUserInRole(String roles) {
-		
+		logger.debug("is user in roles : {}", roles);
 		boolean flag = false;
 		boolean returnFlag = false;
-		
 		if( StringUtils.isEmpty(roles)){
-			returnFlag = true;
+			return true;
 		}
-		
 		if( !StringUtils.isNullOrEmpty(roles)){
 			for(String token : StringUtils.tokenizeToStringArray(roles, ",")){
 				flag = isGranted(token);
+				logger.debug("is granted  {} : {}", token, flag);
 				if(flag == true){
-					returnFlag = true;
+					return true;
 				}
 			}
 		}

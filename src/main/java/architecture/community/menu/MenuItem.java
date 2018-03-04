@@ -3,6 +3,8 @@ package architecture.community.menu;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.model.PropertyAwareSupport;
@@ -17,6 +19,8 @@ public class MenuItem extends PropertyAwareSupport implements Serializable {
 	private Long parentMenuItemId;
 	
 	private String name;
+	
+	private String page;
 	
 	private String description;
 	
@@ -35,7 +39,9 @@ public class MenuItem extends PropertyAwareSupport implements Serializable {
 		this.parentMenuItemId = -1L;
 		this.menuItemId = -1L;
 		this.sortOrder = 0;
+		this.location = null;
 		this.roles = null;
+		this.page = null;
 		this.creationDate = new Date();
 		this.modifiedDate = creationDate;
 	}
@@ -45,10 +51,30 @@ public class MenuItem extends PropertyAwareSupport implements Serializable {
 		this.parentMenuItemId = -1L;
 		this.menuItemId = menuItemId ;
 		this.sortOrder = 0;
+		this.location = null;
 		this.roles = null;
 		this.creationDate = new Date();
 		this.modifiedDate = creationDate;
 	}
+	
+	public boolean isSetPage() {
+		if(StringUtils.isNotEmpty(page))
+			return true;
+		return false;		
+	}
+	
+	public boolean isSetLocation() {
+		if(StringUtils.isNotEmpty(location))
+			return true;
+		return false;		
+	}
+	
+	public boolean isSetRoles() {
+		if(StringUtils.isNotEmpty(roles))
+			return true;
+		return false;		
+	}
+	
 	
 	public int getSortOrder() {
 		return sortOrder;
@@ -107,6 +133,14 @@ public class MenuItem extends PropertyAwareSupport implements Serializable {
 	}
 
 
+	public String getPage() {
+		return page;
+	}
+
+	public void setPage(String page) {
+		this.page = page;
+	}
+
 	public String getRoles() {
 		return roles;
 	}
@@ -146,5 +180,5 @@ public class MenuItem extends PropertyAwareSupport implements Serializable {
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-
+	
 }

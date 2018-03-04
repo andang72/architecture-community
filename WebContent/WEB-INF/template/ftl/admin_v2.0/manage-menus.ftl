@@ -222,7 +222,17 @@
 				<div id="features" class="container-fluid">
 					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
 					<div class="col-6 text-left">
-					<p class="text-danger g-font-weight-100">메뉴 이름을 클릭하면 세부 메뉴를 구성할 수 있습니다.</p>
+						<div class="alert alert-dismissible fade show g-bg-gray-dark-v2 g-color-white rounded-0" role="alert">
+								<button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+                          			<span class="g-color-white" aria-hidden="true">×</span>
+                        			</button>
+                        			<div class="media">
+									<span class="d-flex g-mr-10 g-mt-5"><i class="icon-question g-font-size-25"></i></span>
+                          			<span class="media-body align-self-center">
+                            			이름을 클릭하면 세부적인 메뉴를 구성할 수 있습니다.
+                          			</span>
+                        			</div>
+						</div>  
 					</div>
 					<div class="col-6 text-right">
 					<a href="javascript:void();" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="menu" data-object-id="0">새로운 메뉴 만들기</a>

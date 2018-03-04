@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import architecture.community.menu.MenuItemTreeWalker;
+import architecture.community.menu.MenuNotFoundException;
 import architecture.community.menu.MenuService;
 import architecture.community.page.Page;
 import architecture.community.page.PageNotFoundException;
@@ -39,9 +40,8 @@ public class WelcomePageController {
 	private MenuService menuService;
 	
 	@RequestMapping(value={"/", "/index", "/index.html"} , method = { RequestMethod.POST, RequestMethod.GET } )
-    public String displayWelcomePage (HttpServletRequest request, HttpServletResponse response, Model model) {
+    public String displayWelcomePage (HttpServletRequest request, HttpServletResponse response, Model model) throws MenuNotFoundException {
 		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
-		
 		String view = "index";
 		try {
 			

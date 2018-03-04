@@ -63,6 +63,7 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 			item.setMenuId(rs.getLong("MENU_ITEM_ID"));
 			item.setParentMenuItemId(rs.getLong("PARENT_ID"));
 			item.setName(rs.getString("NAME"));
+			item.setPage(rs.getString("PAGE"));
 			item.setLocation(rs.getString("LINK_URL"));
 			item.setSortOrder(rs.getInt("SORT_ORDER"));
 			item.setDescription(rs.getString("DESCRIPTION"));
@@ -270,6 +271,7 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 						new SqlParameterValue(Types.INTEGER, menu.getSortOrder()),
 						new SqlParameterValue(Types.VARCHAR, menu.getName()),
 						new SqlParameterValue(Types.VARCHAR, menu.getDescription()),
+						new SqlParameterValue(Types.VARCHAR, menu.getPage()),
 						new SqlParameterValue(Types.VARCHAR, menu.getLocation()),
 						new SqlParameterValue(Types.VARCHAR, menu.getRoles()),
 						new SqlParameterValue(Types.TIMESTAMP, menu.getCreationDate() != null ? menu.getCreationDate() : now ),
@@ -292,6 +294,7 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 					new SqlParameterValue(Types.INTEGER, menu.getSortOrder()),
 					new SqlParameterValue(Types.VARCHAR, menu.getName()),
 					new SqlParameterValue(Types.VARCHAR, menu.getDescription()),
+					new SqlParameterValue(Types.VARCHAR, menu.getPage()),
 					new SqlParameterValue(Types.VARCHAR, menu.getLocation()),
 					new SqlParameterValue(Types.VARCHAR, menu.getRoles()),
 					new SqlParameterValue(Types.TIMESTAMP, menu.getModifiedDate() != null ? menu.getModifiedDate() : now ),

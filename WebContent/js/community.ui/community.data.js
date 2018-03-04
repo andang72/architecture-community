@@ -48,6 +48,8 @@
 			menuId: { type: "number", defaultValue: 0 },	
 			parentMenuItemId: { type: "number", defaultValue: null },	
 			name: { type: "string", defaultValue: null },	
+			page: { type: "string", defaultValue: null },	
+			roles: { type: "string", defaultValue: null },	
 			sortOrder: { type: "number", defaultValue: 1 },	
 			location: { type: "string", defaultValue: null },	
 			description: { type: "string", defaultValue: null },
@@ -65,7 +67,9 @@
 		    	target.set("name", this.get("name"));
 		    	target.set("menuId", this.get("menuId"));
 		    	target.set("parentMenuItemId", this.get("parentMenuItemId"));
+		    	target.set("roles", this.get("roles"));
 		    	target.set("sortOrder", this.get("sortOrder"));
+		    target.set("page", this.get("page"));
 		    	target.set("location", this.get("location"));
 		    	target.set("description", this.get("description"));
 		    	if( typeof this.get("properties") === 'object' )

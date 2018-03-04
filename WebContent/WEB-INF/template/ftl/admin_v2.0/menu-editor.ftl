@@ -202,6 +202,7 @@
 									menuId: { type: "number", defaultValue: 0 },	
 									parentMenuItemId: { type: "number", defaultValue: null },	
 									name: { type: "string", defaultValue: null },	
+									roles: { type: "string", defaultValue: null },	
 									sortOrder: { type: "number", defaultValue: 1 },	
 									location: { type: "string", defaultValue: null },	
 									description: { type: "string", defaultValue: null },
@@ -213,7 +214,7 @@
  							
                         }
                     },
-                    height: 300,
+                    height: 500,
                     filterable: false,
                     sortable: true,
                     toolbar: [ "create" ],
@@ -233,11 +234,15 @@
                         { field: "name", expandable: true, title: "메뉴", width: 250 },
                         { field: "description" , title: "설명", sortable: false, width: 250 },
                         { field: "sortOrder" , title: "정렬",  width: 100, attributes: { style: "text-align: center;"  }},
+                        { field: "page" , title: "페이지" , sortable : false},
                         { field: "location" , title: "링크" , sortable : false},
-                        { title: "권한" , width: 100, sortable : false},
+                        { field: "roles", title: "권한" , width: 200, sortable : false},
                         { title: " ", command: [ "edit" ], width: 200 }
-                    ]
-                });
+                    ],
+                    save: function(e){
+				    		this.dataSource.read();  	
+				    }
+             });
              community.ui.treelist(renderTo).bind(
 				"dragend", function(e){
 					console.log("drag ended", community.ui.stringify(e.source), e.destination);
@@ -353,7 +358,7 @@
 				<!-- Content Body -->
 				<div id="features" class="container-fluid">
 					<div class="row g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
-						<div class="col-12 g-mb-20">
+						<div class="col-12">
 							<div class="media-md align-items-center g-mb-30">
 		              			<div class="d-flex g-mb-15 g-mb-0--md">
 									<header class="g-mb-10">
@@ -376,8 +381,19 @@
 					                </a>
 								</div>
 		            			</div>
-	                  	</div>					
-					</div>
+	                  	</div>
+						<div class="alert alert-dismissible fade show g-bg-gray-dark-v2 g-color-white rounded-0" role="alert">
+								<button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+                          			<span class="g-color-white" aria-hidden="true">×</span>
+                        			</button>
+                        			<div class="media">
+									<span class="d-flex g-mr-10 g-mt-5"><i class="icon-question g-font-size-25"></i></span>
+                          			<span class="media-body align-self-center">
+                            			이름을 클릭하면 세부적인 메뉴를 구성할 수 있습니다.
+                          			</span>
+                        			</div>
+						</div> 
+					</div>	
 					<div class="row">
 						<div id="items-treelist"></div>
 						<!-- menu listview -->

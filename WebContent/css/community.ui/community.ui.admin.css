@@ -455,8 +455,17 @@ figure {
 }
 
 .u-listview  .u-listview-item:hover .u-visible-on-select {
-	visibility: visible;
-	 
+	visibility: visible;	 
+}
+
+.u-listview .u-link-underline {
+	border-bottom: 1px solid transparent;
+	padding-bottom: 1.5px;
+}
+
+.u-listview .u-link-underline:hover{
+	border-bottom: 1px solid;
+	padding-bottom: 1.5px;
 }
 
 /*------------------------------------

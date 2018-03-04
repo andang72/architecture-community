@@ -20,6 +20,6 @@ public interface MenuService {
 	
 	public abstract MenuItem getMenuItemById(long menuItemId) throws MenuItemNotFoundException ;
 	
-	public abstract MenuItemTreeWalker getTreeWalker(String name) ;
+	public abstract MenuItemTreeWalker getTreeWalker(String name) throws MenuNotFoundException ;
 	
 }

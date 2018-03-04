@@ -2,9 +2,28 @@ var isSideMenuMini = $.cookie('isSideMenuMini') ? true : '';
 ;
 (function($) {
 	'use strict';
-	
 	var community = window.community = window.community || { ui : { components: {}, helpers : {} }, model : {} , data : {}};
-
+	console.log("SideNav - features on");
+	if( community.data.storageAvailable ('localStorage') ){							
+		var page = localStorage.getItem('selected_current_page');	
+		console.log("SideNav - selected page : " + page );
+		
+		var item = $("a[data-page='"+ page +"']");							
+		if( item.hasClass('u-side-nav--second-level-menu-link') ){
+			console.log("SideNav - this is second level");
+			
+			var itemParent = item.closest('ul.u-side-nav--second-level-menu');
+			itemParent.css('display', 'block');
+			
+			//itemParent.parent().addClass('u-side-nav-opened');
+		}
+		if (!item.hasClass('active')) {
+			item.addClass('active');
+		}
+	}
+	
+	console.log("community.ui.admin components initialized.");
+	
 	/**
 	 * Side Nav wrapper.
 	 */	

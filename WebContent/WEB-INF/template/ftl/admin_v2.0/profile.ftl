@@ -12,13 +12,13 @@
 	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
 	
 	<!-- Bootstrap CSS -->
-    <link href="<@spring.url "/css/bootstrap/4.0.0-beta.2/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+   	<link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
     
     <!-- Bootstrap Theme CSS -->
     
-    <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
-    <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
-
+    <link href="<@spring.url "/fonts/font-awesome.min.css"/>" rel="stylesheet" type="text/css" />	
+    <link href="<@spring.url "/css/animate/animate.min.css"/>" rel="stylesheet" type="text/css" />	
+     
     <!-- Community Admin CSS -->
     <link href="<@spring.url "/css/community.ui.admin/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/css/community.ui.admin/community.ui.admin.css"/>" rel="stylesheet" type="text/css" />	
@@ -32,17 +32,18 @@
 	require.config({
 		shim : {
 			"jquery.cookie" 				: { "deps" :['jquery'] },
-	        "bootstrap" 					: { "deps" :['jquery'] },
+	        "bootstrap" 					: { "deps" :['jquery', 'popper'] },
 	        "kendo.ui.core.min" 			: { "deps" :['jquery'] },
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
 	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
-	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core'] }
+	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core', 'community.data'] }	
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
 			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"bootstrap" 					: "/js/bootstrap/3.3.7/bootstrap.min",
+			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle",
+			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap",
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
@@ -51,7 +52,7 @@
 			"dropzone"					: "/js/dropzone/dropzone"
 		}
 	});
-	require([ "jquery", "jquery.cookie", "bootstrap", "dropzone", "kendo.ui.core.min", "community.ui.core", "community.data", "community.ui.admin"], function($, kendo ) { 
+	require([ "jquery", "jquery.cookie", "bootstrap", "dropzone",  "bootstrap", "kendo.ui.core.min", "community.ui.core", "community.data", "community.ui.admin"], function($, kendo ) { 
 		
 		if( community.data.storageAvailable ('localStorage') ){
 			localStorage.setItem('selected_current_page', 'none' );

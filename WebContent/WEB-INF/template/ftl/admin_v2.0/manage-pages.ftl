@@ -42,8 +42,8 @@
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
 			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle",
-			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap.min",
+			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle.min",
+			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap",
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
@@ -52,7 +52,7 @@
 			"ace" 						: "/js/ace/ace"
 		}
 	});
-	require([ "jquery", "popper", "kendo.ui.core.min", "community.ui.core", "community.data", "community.ui.admin", "ace" ], function($, kendo ) { 
+	require([ "jquery", "bootstrap", "kendo.ui.core.min", "community.ui.core", "community.data", "community.ui.admin", "ace" ], function($, kendo ) { 
 	
 		community.ui.setup({
 		  	features : {
@@ -74,7 +74,7 @@
 				$this.set('userDisplayName', community.data.getUserDisplayName( $this.currentUser ) );
 			}
 		});
-		 
+		  
 		// initialization of sidebar navigation component
 	    community.ui.components.HSSideNav.init('.js-side-nav');
 	   	// initialization of HSDropdown component
@@ -86,13 +86,13 @@
 		
 	 	createPagesListView(renderTo); 
                 
-		renderTo.on("click","[data-action=create],[data-action=edit],[data-action=delete]", function(e){		
+		renderTo.on("click","[data-action=create],[data-action=edit],[data-action=delete],[data-action=view]", function(e){		
 			var $this = $(this);		
 			if( community.ui.defined($this.data("object-id")) ){
 				var objectId = $this.data("object-id");		
-				
+				var actionType = $this.data("action");
 				if (actionType == 'view'){
-					community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/page-editor" />", { menuId: $this.data("object-id") });
+					community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/page-editor" />", { pageId: $this.data("object-id") });
 					return false;
 				}
 												
@@ -119,7 +119,11 @@
 					model: community.model.Page
 				}
 			}),
-			template: community.ui.template($("#template").html())
+			template: community.ui.template($("#template").html()),
+			dataBound: function() {
+					if( this.items().length == 0)
+						renderTo.html('<tr class="g-height-50"><td colspan="7" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 데이터가 없습니다.</td></tr>');
+			}
 		}); 			
 		community.ui.pager( $("#pages-listview-pager"), {
             dataSource: listview.dataSource
@@ -417,11 +421,21 @@
 				<!-- Content Body -->
 				<div id="features" class="container-fluid">
 					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
-						<div class="col-6 text-left">
-						<p class="text-danger g-font-weight-100">웹 페이지를 관리합니다.</p>
+						<div class="col-6">
+							<div class="alert alert-dismissible fade show g-bg-gray-dark-v2 g-color-white rounded-0" role="alert">
+								<button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+                          			<span class="g-color-white" aria-hidden="true">×</span>
+                        			</button>
+                        			<div class="media">
+									<span class="d-flex g-mr-10 g-mt-5"><i class="icon-question g-font-size-25"></i></span>
+                          			<span class="media-body align-self-center">
+                            			파일 이름을 클릭하면 세부적인 페이지 설정 작업을 할 수 있습니다.
+                          			</span>
+                        			</div>
+							</div>  
 						</div>
 						<div class="col-6 text-right">
-						<a href="javascript:void();" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="page"  data-object-id="0" >새로운 페이지 만들기</a>
+						<a href="javascript:void();" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="view" data-object-type="page"  data-object-id="0" >새로운 페이지 만들기</a>
 						</div>
 					</div>				
 					<div class="row">
@@ -492,31 +506,15 @@
 												</div>
 											</div>
 										</th> 		
-			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-pr-25 g-width-120"></th>				                                   						              						
+			                             <!--<th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-brd-bottom-none g-py-15 g-pr-25 g-width-120"></th>-->				                                   						              						
 	                					</tr>
 	                				</thead>
 	                				<tbody id="pages-listview" class="u-listview g-brd-none">
 	                					<tr class="g-height-50"><td colspan="8" class="align-middle g-font-weight-300 g-color-black text-center"></td></tr>
 	                				</tbody>
 	                			</table>
-	                			
-	                			<!--
-							<table class="table table-bordered js-editable-table u-table--v1 u-editable-table--v1 g-color-black g-mb-0">
-								<thead class="g-hidden-sm-down g-color-gray-dark-v6">
-									<tr class="g-height-50">
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black">파일</th>
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100">상태</th> 
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">작성자</th> 
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">뎃글</th> 
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">페이지 뷰</th>   	
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">마지막 수정일</th>   										
-									</tr>
-								</thead>    
-								<tbody id="pages-listview" class=" u-listview"></tbody>
-							</table>
-							-->
 						</div>
-						<div id="pages-listview-pager" g-brd-top-none g-brd-left-none g-brd-right-none" style="width:100%;"></div>
+						<div id="pages-listview-pager" class="g-brd-top-none g-brd-left-none g-brd-right-none" style="width:100%;"></div>
             			</div>
 				</div>
 				<!-- End Content Body -->
@@ -807,39 +805,13 @@
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">#= pageId #</td>
 		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm">	
 		
-		<a class="d-flex align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="edit" data-object-id="#=pageId#" data-object-type="page">
+		<a class="d-flex align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=pageId#" data-object-type="page">
 		<h5 class="g-font-weight-100 g-mb-0">
 		#if (secured) { # <i class="community-admin-lock"></i>  # } else {# <i class="community-admin-unlock"></i> #}#
 		#= name #
 		</h5> 
 		</a>
 		<p class="g-font-weight-300 g-color-gray-dark-v6 g-mt-5 g-ml-10 g-mb-0" >#= title #</p>
-		<!--
-		<div class="u-visible-on-select">
-			<div class="btn-group">
-			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="edit" data-object-id="#= pageId#"  >수정</button>
-			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="preview" data-object-id="#= pageId#" >미리보기</button>
-			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-id="#= pageId#" >삭제</button>
-			</div>
-	 	</div>
-	 	
-	 	<div class="u-visible-on-select g-pa-5">
-			<div class="d-flex">
-				<a class="u-link-v5 d-flex g-font-size-15 g-color-gray-light-v6 g-color-lightblue-v3--hover g-ml-10" href="\#!" data-action="edit" data-object-id="#= pageId#" >
-					<i class="community-admin-pencil-alt g-font-size-16"></i>
-					<span class="g-ml-8">수정</span>
-				</a>
-				<a class="u-link-v5 d-flex g-font-size-15 g-color-gray-light-v6 g-color-lightblue-v3--hover g-ml-30" href="\#!" data-action="preview" data-object-id="#= pageId#" >
-                     <i class="community-admin-new-window g-font-size-16"></i>
-					<span class="g-ml-15">미리보기</span>
-				</a>	
-				<a class="u-link-v5 d-flex g-font-size-15 g-color-gray-light-v6 g-color-lightblue-v3--hover g-ml-30" href="\#!" data-action="delete" data-object-id="#= pageId#" >
-                     <i class="community-admin-trash g-font-size-16"></i>
-					<span class="g-ml-15">삭제</span>
-				</a>				
-			</div>
-		</div>	
-		--> 	
 		</td>
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> 
 			<span class="d-flex align-items-center justify-content-center u-tags-v1 g-hidden-sm-down text-center g-width-150--sm g-brd-around g-bg-gray-light-v8 g-bg-gray-light-v8 g-font-size-default g-color-gray-dark-v6 g-rounded-50 g-py-4 g-px-15">
@@ -857,6 +829,7 @@
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> #: viewCount # </td>
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">  #: community.data.getFormattedDate( creationDate)  #  </td>
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">#: community.data.getFormattedDate( modifiedDate)  # </td>
+		<!--
 		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">
 			<div class="d-flex align-items-center g-line-height-1">
 				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="page" data-object-id="#= pageId #" >
@@ -866,7 +839,8 @@
                 		<i class="community-admin-trash g-font-size-18"></i>
                 </a>
 			</div>
-		</td>		
+		</td>	
+		-->	
 	</tr>				                      
     </script>  	
 </body>

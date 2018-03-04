@@ -30,6 +30,8 @@ public class CommunityMenuService implements MenuService {
 	private com.google.common.cache.LoadingCache<String, Long> menuIdCache = null;
 
 	private com.google.common.cache.LoadingCache<Long, MenuItem> menuItemCache = null;
+	
+	private com.google.common.cache.LoadingCache<Long, MenuItemTreeWalker> treewalkerCache = null;
 		
 	@Inject
 	@Qualifier("menuDao")
@@ -60,24 +62,15 @@ public class CommunityMenuService implements MenuService {
 					public MenuItem load(Long menuItemId) throws Exception {
 						return menuDao.getMenuItemById(menuItemId);
 				}}
-			);
-		
+			);	
+		treewalkerCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(30, TimeUnit.MINUTES).build(		
+				new CacheLoader<Long, MenuItemTreeWalker>(){			
+					public MenuItemTreeWalker load(Long menuItemId) throws Exception {
+						return getTreeWalkerById(menuItemId);
+				}}
+			);			
 	}
- 
 
-	public MenuItemTreeWalker getTreeWalker(String name) throws MenuNotFoundException {
-		
-		Menu menu = getMenuByName(name);
-		MenuItemTreeWalker walker = menuDao.getTreeWalker(menu.getMenuId());		
-		List<MenuItem> items = menuDao.getMenuItemsByMenuId(menu.getMenuId());
-		Map<Long, MenuItem> list = new HashMap<Long, MenuItem>();
-		for( MenuItem item : items )
-			list.put(item.getMenuItemId(), item);
-		
-		walker.setCache(list);
-		
-		return walker;
-	}
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Menu createMenu(String name, String description) throws MenuAlreadyExistsException {
@@ -103,6 +96,25 @@ public class CommunityMenuService implements MenuService {
 		invalidateMenuCache(menu);
 	}
 
+
+	public MenuItemTreeWalker getTreeWalker(String name) throws MenuNotFoundException {
+		Menu menu = getMenuByName(name);
+		try {
+			return treewalkerCache.get(menu.getMenuId());
+		} catch (ExecutionException e) {
+			throw new MenuNotFoundException(e);
+		}
+	}
+	
+	protected MenuItemTreeWalker getTreeWalkerById(long menuId) throws MenuNotFoundException {
+		MenuItemTreeWalker walker = menuDao.getTreeWalkerById(menuId);		
+		List<MenuItem> items = menuDao.getMenuItemsByMenuId(menuId);
+		Map<Long, MenuItem> list = new HashMap<Long, MenuItem>();
+		for( MenuItem item : items )
+			list.put(item.getMenuItemId(), item);
+		walker.setCache(list);
+		return walker;
+	}
 	
 	public Menu getMenuByName(String name) throws MenuNotFoundException {
 		Long menuId;
@@ -147,6 +159,7 @@ public class CommunityMenuService implements MenuService {
 		}
 		menuDao.saveOrUpdate(menuItem);
 		menuItemCache.invalidate(menuItem.getMenuItemId());
+		treewalkerCache.invalidate(menuItem.getMenuId());
 	}
  
 	public void deleteMenuItem(MenuItem menuItem) {

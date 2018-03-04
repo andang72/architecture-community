@@ -18,6 +18,7 @@
 		DataSource = kendo.data.DataSource,
 		Widget = kendo.ui.Widget, 
 		progress = kendo.ui.progress,
+		stringify = kendo.stringify,
 		POST = 'POST',	
 		GET = 'GET',
 		JSON = 'json',
@@ -132,35 +133,17 @@
 					});					
 					if( defined( community.ui.components.HSSideNav ) )	
 					{
-						console.log("SideNav - features on");
-						if( community.data.storageAvailable ('localStorage') ){							
-							var page = localStorage.getItem('selected_current_page');	
-							console.log("SideNav - selected page : " + page );
-							
-							var item = $("a[data-page='"+ page +"']");							
-							if( item.hasClass('u-side-nav--second-level-menu-link') ){
-								console.log("SideNav - this is second level");
-								var itemParent = item.closest('ul.u-side-nav--second-level-menu');
-								itemParent.parent().addClass('u-side-nav-opened');
-								//itemParent.parent().addClass('has-active');
-								//.find('a.u-side-nav--top-level-menu-link').click();
-							}
-							if (!item.hasClass('active')) {
-								item.addClass('active');
-							}
-						}
-					}
-
-					if( community.data.storageAvailable ('localStorage') ){
-						console.log('checking localstorage ok.');
-						$('body').on("click", "a[data-page]", function(e){			
-							var $this = $(this);
-							var page = $this.data("page");		 
-							console.log( page );
-							localStorage.setItem('selected_current_page', page );							
-							return true;		
-						});	
-					}
+						if( community.data.storageAvailable ('localStorage') ){
+							console.log('checking localstorage ok.');
+							$('body').on("click", "a[data-page]", function(e){			
+								var $this = $(this);
+								var page = $this.data("page");		 
+								console.log( page );
+								localStorage.setItem('selected_current_page', page );							
+								return true;		
+							});	
+						}						
+					}					
 				}	
 			} 		
 		});
@@ -319,7 +302,23 @@
 			var settings = extend(true, {}, { error:handleAjaxError } , options ); 
 			return DataSource.create(settings);
 		}
-
+		
+		function datasource_v3( options ){
+			options = options || {} ;
+			var settings = extend(true, {}, { 
+				transport : {
+					parameterMap: function (options, operation){	 
+						if (operation !== "read" && options.models) { 
+							return stringify(options.models);
+						}
+						return stringify(options);
+					}
+				},
+				error:handleAjaxError 
+			} , options ); 
+			return DataSource.create(settings);
+		}
+		
 		var DEFAULT_AJAX_SETTING = {
 			type : POST,	
 			data : {},
@@ -504,6 +503,7 @@
 			send : redirect,
 			datasource : datasource,
 			datasource_v2 : datasource_v2, 
+			datasource_v3 : datasource_v3,
 			ajax : ajax, 
 			listview : listview,
 			listbox : listbox,
