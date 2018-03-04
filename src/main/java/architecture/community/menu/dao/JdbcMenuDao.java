@@ -11,13 +11,16 @@ import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
 import architecture.community.menu.Menu;
 import architecture.community.menu.MenuItem;
+import architecture.community.menu.MenuItemTreeWalker;
 import architecture.community.menu.MenuNotFoundException;
 import architecture.community.model.Models;
+import architecture.community.util.LongTree;
 import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
@@ -218,6 +221,23 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 		return items;
 	}
 
+	public MenuItemTreeWalker getTreeWalkerById(long menuId) {		
+		int totalCount = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_UI.COUNT_MENU_ITEM_IDS_BY_MENU_ID").getSql(), Integer.class, new SqlParameterValue(Types.NUMERIC, menuId ));
+		totalCount++;
+		final LongTree tree = new LongTree(-1L, totalCount);
+		getExtendedJdbcTemplate().query(getBoundSql("COMMUNITY_UI.SELECT_MENU_ITEM_IDS_BY_MENU_ID").getSql(),
+			new RowCallbackHandler() {
+				public void processRow(ResultSet rs) throws SQLException {
+					long parentId = rs.getLong(1);
+					if( parentId < 1 )
+						parentId = -1L;						
+					long itemId = rs.getLong(2);
+					tree.addChild(parentId, itemId);
+				}
+			}, new SqlParameterValue(Types.NUMERIC, menuId ));
+		return new MenuItemTreeWalker(menuId, tree);
+	}
+	
 	public List<Long> getAllMenuIds() {
 		return getExtendedJdbcTemplate().queryForList( getBoundSql("COMMUNITY_UI.SELECT_ALL_MENU_IDS").getSql(),  Long.class );
 	}
@@ -230,7 +250,7 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 	}
 
 	public void saveOrUpdate(MenuItem menu) {		
-		if( menu.getMenuId() < 1) {
+		if( menu.getMenuItemId() < 1) {
 			
 			// insert case 
 			if (menu.getName() == null || menu.getMenuId() < 1)

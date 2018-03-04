@@ -1,7 +1,9 @@
 package architecture.community.menu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -28,12 +30,15 @@ public class CommunityMenuService implements MenuService {
 	private com.google.common.cache.LoadingCache<String, Long> menuIdCache = null;
 
 	private com.google.common.cache.LoadingCache<Long, MenuItem> menuItemCache = null;
-	
-	
+		
+	@Inject
+	@Qualifier("menuDao")
+	private MenuDao menuDao;
 	
 	public CommunityMenuService() {
 	}
 
+	
 	@PostConstruct
 	public void initialize(){		
 		logger.debug("creating cache ...");		
@@ -58,11 +63,22 @@ public class CommunityMenuService implements MenuService {
 			);
 		
 	}
-	
-	@Inject
-	@Qualifier("menuDao")
-	private MenuDao menuDao;
  
+
+	public MenuItemTreeWalker getTreeWalker(String name) throws MenuNotFoundException {
+		
+		Menu menu = getMenuByName(name);
+		MenuItemTreeWalker walker = menuDao.getTreeWalker(menu.getMenuId());		
+		List<MenuItem> items = menuDao.getMenuItemsByMenuId(menu.getMenuId());
+		Map<Long, MenuItem> list = new HashMap<Long, MenuItem>();
+		for( MenuItem item : items )
+			list.put(item.getMenuItemId(), item);
+		
+		walker.setCache(list);
+		
+		return walker;
+	}
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Menu createMenu(String name, String description) throws MenuAlreadyExistsException {
 		Menu menu = new Menu();
@@ -149,12 +165,8 @@ public class CommunityMenuService implements MenuService {
 		return menus;
 	}
 	
-	
-	
-	
 	private void invalidateMenuCache(Menu menu){		
 		menuCache.invalidate(menu.getMenuId());
 		menuIdCache.invalidate(menu.getName());
 	}
- 
 }

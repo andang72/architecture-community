@@ -37,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;

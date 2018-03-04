@@ -4,6 +4,7 @@ import java.util.List;
 
 import architecture.community.menu.Menu;
 import architecture.community.menu.MenuItem;
+import architecture.community.menu.MenuItemTreeWalker;
 import architecture.community.menu.MenuNotFoundException;
 
 public interface MenuDao {
@@ -21,5 +22,7 @@ public interface MenuDao {
 	public MenuItem getMenuItemById(long menuItemId);
 	
 	public List<MenuItem> getMenuItemsByMenuId(long menuId);
+	
+	public MenuItemTreeWalker getTreeWalkerById(long menuId) ;
 	
 }

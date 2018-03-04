@@ -11,6 +11,7 @@ import architecture.community.attachment.AttachmentService;
 import architecture.community.board.BoardService;
 import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.menu.MenuService;
 import architecture.community.viewcount.ViewCountService;
 import architecture.ee.exception.ComponentNotFoundException;
 import architecture.ee.service.ConfigService;
@@ -50,6 +51,10 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 	
 	public static AttachmentService getAttachmentService(){
 		return getComponent(AttachmentService.class);
+	}
+	
+	public static MenuService getMenuService(){
+		return getComponent(MenuService.class);
 	}
 	
 	public static <T> T getComponent(Class<T> requiredType) {
