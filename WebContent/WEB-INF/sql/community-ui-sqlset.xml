@@ -62,10 +62,12 @@
 		SORT_ORDER,
 		NAME,
 		DESCRIPTION,
+		PAGE,
 		LINK_URL,
+		ROLES,
 		CREATION_DATE,
 		MODIFIED_DATE
-	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
     ]]></sql-query>	
 	<sql-query name="UPDATE_MENU_ITEM" description="MENU ITEM 업데이트"><![CDATA[    
 	UPDATE AC_UI_MENU_ITEM SET 
@@ -73,7 +75,9 @@
 	    SORT_ORDER = ?,
 		NAME = ?,
 		DESCRIPTION = ?,
+		PAGE = ?,
 		LINK_URL = ?,
+		ROLES = ?,
 		MODIFIED_DATE = ?		 
 	WHERE MENU_ITEM_ID = ?
  	]]></sql-query> 
@@ -86,7 +90,9 @@
 		SORT_ORDER,
 		NAME,
 		DESCRIPTION,
+		PAGE,
 		LINK_URL,
+		ROLES,
 		CREATION_DATE,
 		MODIFIED_DATE
 	FROM AC_UI_MENU_ITEM 
@@ -101,14 +107,33 @@
 		SORT_ORDER,
 		NAME,
 		DESCRIPTION,
+		PAGE,
 		LINK_URL,
+		ROLES,
 		CREATION_DATE,
 		MODIFIED_DATE
 	FROM AC_UI_MENU_ITEM 
 	WHERE MENU_ID = ?
 	ORDER BY MENU_ID , PARENT_ID, SORT_ORDER
     ]]></sql-query>	
+
+	<sql-query name="COUNT_MENU_ITEM_IDS_BY_MENU_ID" description="MENU ITEM 생성"><![CDATA[
+	SELECT
+		COUNT(MENU_ITEM_ID)
+	FROM AC_UI_MENU_ITEM 
+	WHERE MENU_ID = ?
+    ]]></sql-query>	
     
+	<sql-query name="SELECT_MENU_ITEM_IDS_BY_MENU_ID" description="MENU ITEM 생성"><![CDATA[
+	SELECT
+		PARENT_ID,
+		MENU_ITEM_ID,
+		SORT_ORDER
+	FROM AC_UI_MENU_ITEM 
+	WHERE MENU_ID = ?
+	ORDER BY MENU_ID , PARENT_ID, SORT_ORDER
+    ]]></sql-query>	
+        
     	<sql-query name="SELECT_MENU_ITEM_IDS_BY_MENU_ID_AND_REQUEST" description="SELECT_MENU_ITEM_IDS_BY_MENU_ID_AND_REQUEST"><![CDATA[
 	SELECT  
 		MENU_ITEM_ID      	
