@@ -14,8 +14,13 @@
 	FROM 
 		REP_ISSUE T1
 	WHERE 
-		TO_CHAR(SYSDATE, 'YYYY') = TO_CHAR(T1.CREATION_DATE, 'YYYY') OR TO_CHAR(SYSDATE, 'YYYY') = TO_CHAR(T1.RESOLUTION_DATE, 'YYYY') 
- 	 ]]></sql-query>
+		( TO_CHAR(SYSDATE, 'YYYY') = TO_CHAR(T1.CREATION_DATE, 'YYYY') OR TO_CHAR(SYSDATE, 'YYYY') = TO_CHAR(T1.RESOLUTION_DATE, 'YYYY') )
+	]]><dynamic><![CDATA[  	
+	<#if data.projectId?? >
+		AND T1.OBJECT_TYPE = 19
+		AND T1.OBJECT_ID = ${data.projectId} 
+	</#if>	
+ 	]]></dynamic></sql-query>
  	<sql-query name="SELECT_ISSUE_SUMMARY_BY_PERIOD" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[    	
 	SELECT  
 			T2.PROJECT_ID, 

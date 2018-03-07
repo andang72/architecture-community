@@ -28,10 +28,15 @@ import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetNotFoundException;
 import architecture.community.codeset.CodeSetService;
 import architecture.community.exception.NotFoundException;
+import architecture.community.image.Image;
+import architecture.community.image.ImageService;
+import architecture.community.menu.MenuItem;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
+import architecture.community.query.CustomQueryService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.web.model.ItemList;
+import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.spring.controller.data.v1.AbstractCommunityDateController;
 import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
@@ -67,6 +72,14 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return boardService;
 	}
 
+	@Inject
+	@Qualifier("imageService")
+	private ImageService imageService;
+	
+	@Inject
+	@Qualifier("customQueryService")
+	private CustomQueryService customQueryService;
+	
 	protected JdbcCommunityAclService getCommunityAclService() {
 		return communityAclService;
 	}
@@ -248,4 +261,36 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return boardToUse;
 		
 	}
+	
+	/**
+	 * IMAGES API 
+	******************************************/
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/images/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getImages(
+		@RequestBody DataSourceRequest dataSourceRequest, 
+		NativeWebRequest request) {
+		
+		if( !dataSourceRequest.getData().containsKey("objectType")) {
+			dataSourceRequest.getData().put("objectType", -1);
+		}	
+		if( !dataSourceRequest.getData().containsKey("objectId") ) {
+			dataSourceRequest.getData().put("objectId", -1);
+		}
+		dataSourceRequest.setStatement("COMMUNITY_CS.COUNT_IMAGE_BY_REQUEST");
+		int totalCount = customQueryService.queryForObject(dataSourceRequest, Integer.class);
+		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_IMAGE_IDS_BY_REQUEST");
+		List<Long> items = customQueryService.list(dataSourceRequest, Long.class);
+		List<Image> images = new ArrayList<Image>(totalCount);
+		for( Long id : items ) {
+			try {
+				images.add(imageService.getImage(id));
+			} catch (NotFoundException e) {
+			}
+		}
+		return new ItemList(images, totalCount );
+	}	
+	
 }

@@ -125,6 +125,7 @@
 			loadProjectInfo : function( ){
 				var $this = this;
 				if( observable.get('projectId') > 0 ){ 
+				
 					community.ui.ajax('/data/api/v1/projects/'+ observable.get('projectId') +'/info.json/', {
 						success: function(response){		
 							$this.set('project', new community.model.Project(response) );		
@@ -142,45 +143,69 @@
 							});
 							$this.set('openIssueCount', $this.get('totalIssueCount') - $this.get('closeIssueCount') );
 							$this.set('enabled', true);
-							
 							createIssueListView($this);
 							
 							setTimeout(function(){
-
-							var data = new google.visualization.DataTable();
-							data.addColumn('string', '유형');
-							data.addColumn('number', '건수');
-							$.each( $this.project.issueTypeStats.items , function(index, item ){				
-								switch (item.name) {
-  									case "001" :
-								 		data.addRow(['오류', item['value'] ]);
-								 	break;
-								 	case "002" :
-								 		data.addRow(['데이터작업', item.value ]);
-								 	break;
-								 	case "003" :
-								 		data.addRow(['기능변경', item['value'] ]);
-								 	break;
-								 	case "004" :
-								 		data.addRow(['추가개발', item['value'] ]);	
-								 	break;
-								 	case "005" :
-								 		data.addRow(['기술지원', item['value'] ]);
-								 	break;
-								 	case "006" :
-								 		data.addRow(['영업지원', item['value'] ]);
-								 	break;
-								 		default :
-								    break;
-								}
-							} );
-							google.charts.setOnLoadCallback(drawChart(data));										
+								var data = new google.visualization.DataTable();
+								data.addColumn('string', '유형');
+								data.addColumn('number', '건수');
+								$.each( $this.project.issueTypeStats.items , function(index, item ){				
+									switch (item.name) {
+	  									case "001" :
+									 		data.addRow(['오류', item['value'] ]);
+									 	break;
+									 	case "002" :
+									 		data.addRow(['데이터작업', item.value ]);
+									 	break;
+									 	case "003" :
+									 		data.addRow(['기능변경', item['value'] ]);
+									 	break;
+									 	case "004" :
+									 		data.addRow(['추가개발', item['value'] ]);	
+									 	break;
+									 	case "005" :
+									 		data.addRow(['기술지원', item['value'] ]);
+									 	break;
+									 	case "006" :
+									 		data.addRow(['영업지원', item['value'] ]);
+									 	break;
+									 		default :
+									    break;
+									}
+								} );
+								google.charts.setOnLoadCallback(drawPieChart(data));										
 							}, 500);
-
-							
-							
 						}	
 					});
+					
+					
+					community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
+			      		contentType : "application/json",	
+			      		data: community.ui.stringify({
+			      			data : { projectId : $this.projectId }
+			      		}),
+						success: function(response){	
+							setTimeout(function(){
+							var data = new google.visualization.DataTable();
+							data.addColumn('string', '월');
+							data.addColumn('number', '오류');
+							data.addColumn('number', '데이터작업');
+							data.addColumn('number', '기능변경');
+							data.addColumn('number', '추가개발');
+							data.addColumn('number', '기술지원');
+							data.addColumn('number', '영업지원');
+							data.addColumn('number', 'TOTAL');
+							data.addColumn('number', '완료');
+							$.each(response.items, function( index, item ) {				
+								data.addRow([ item.month + '월', item['aggregate']['001'],item['aggregate']['002'],item['aggregate']['003'],item['aggregate']['004'],item['aggregate']['005'],item['aggregate']['006'],
+								item['aggregate']['001']+item['aggregate']['002']+item['aggregate']['003']+item['aggregate']['004']+item['aggregate']['005']+item['aggregate']['006'],
+								item['aggregate']['000']
+								]);
+							});
+							google.charts.setOnLoadCallback(drawLineChart(data));				
+							}, 500);
+						}	
+					});					
 				}
 			},
 			search : function(){
@@ -233,11 +258,9 @@
 					kendo.alert("선택된 이슈가 없습니다.<br/> 원하시는 이슈의 체크박스를 체크하여 이슈를 선택한 다음 '이슈상태변경' 버튼을 다시 클릭해주세요.");
 				}
 				return false;	
-			}		
-			
+			}
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.Issue();	
-				
 			if( objectId > 0 ){
 				targetObject = community.ui.listview($('#issue-listview')).dataSource.get(objectId);
 			}else{			
@@ -254,7 +277,7 @@
 	/**
 	 * Drawing Charting .
 	 */
-	function drawChart(data) {
+	function drawPieChart(data) {
         var options = {
           title: '이슈 유형',
           subtitle: '금일까지 요청된 이슈들에 대한 유형입니다.'
@@ -263,6 +286,23 @@
         chart.draw(data, options);
     }
     	
+	/**
+	 * Drawing Charting .
+	 */
+	function drawLineChart(data) {
+        var options = {
+          title: '누적 월별 현황',
+          subtitle: '완료건은 해당기간에 요청된 이슈들에 대한 완료 건입니다.',
+         axes: {
+          x: {
+            0: {side: 'top'}
+          }
+        	 }
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('linechart_div'));
+        chart.draw(data, options);
+    }
+        	
 	function send ( issue ) {
 		community.ui.send("<@spring.url "/display/pages/issue.html" />", { projectId: issue.objectId, issueId: issue.issueId });
 	}
@@ -615,7 +655,7 @@
 					</div>
 				</div>	           		
             		<!-- Start Issue Summary -->
-            		<div class="row text-center text-uppercase g-bord-radias g-brd-gray g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">		
+            		<div class="row text-center text-uppercase g-brd-gray g-brd-top-1  g-brd-bottom-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">		
             			<div class="col-sm-4">
             				<div id="chart_div" style="width: 100%; height:200px;"></div>
             			</div>
@@ -640,6 +680,11 @@
 					</div>			
 				</div><!-- Start Issue Summary -->
 				<div class="row">
+					<div class="col-12">
+						<div id="linechart_div" style="width: 100%; height:300px;"></div>
+					</div>
+				</div>	
+				<div class="row g-bord-radias g-brd-gray g-brd-top-1  g-brd-bottom-0  g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
 					<div class="col-12">
 						<!--Issue ListView-->
 						<div class="table-responsive">

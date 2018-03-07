@@ -208,8 +208,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 		oldKeys.retainAll(newKeys);
 		List<String> modified = new ArrayList<String>();
 		for (String key : oldKeys) {
-			logger.debug(key + " equals:[" + newProps.get(key) + "]=[" + oldProps.get(key) + "]"
-					+ StringUtils.equals(newProps.get(key), oldProps.get(key)));
+			logger.debug(key + " equals:[" + newProps.get(key) + "]=[" + oldProps.get(key) + "]" + StringUtils.equals(newProps.get(key), oldProps.get(key)));
 			if (!StringUtils.equals(newProps.get(key), oldProps.get(key)))
 				modified.add(key);
 		}

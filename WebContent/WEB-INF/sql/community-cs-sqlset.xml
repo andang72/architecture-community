@@ -2,7 +2,25 @@
 <sqlset>
 	<name>COMMUNITY_CS</name>
 	<description>COMMUNITY SERVICE SUBSYSTEM QUERIES</description>	
-	
+
+	<!--  ====================================  -->
+	<!-- 	IMAGES			      	 		   -->
+	<!--  ====================================  -->
+    	<sql-query name="COUNT_IMAGE_BY_REQUEST" description="COUNT_IMAGE_BY_REQUEST"><![CDATA[
+	SELECT  
+		COUNT(IMAGE_ID)      	
+	FROM REP_IMAGE
+	]]><dynamic><![CDATA[    
+    ]]></dynamic></sql-query>	
+    	
+    	<sql-query name="SELECT_IMAGE_IDS_BY_REQUEST" description="SELECT_IMAGE_IDS_BY_REQUEST"><![CDATA[
+	SELECT  
+		IMAGE_ID      	
+	FROM REP_IMAGE
+	]]><dynamic><![CDATA[    
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list></#if>
+    ]]></dynamic></sql-query>
+		
 	<!--  ====================================  -->
 	<!-- 	ANNOUNCE			      	 		   -->
 	<!--  ====================================  -->

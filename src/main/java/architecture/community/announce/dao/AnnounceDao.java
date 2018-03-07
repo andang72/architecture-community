@@ -10,7 +10,7 @@ public interface AnnounceDao {
 
     public abstract Announce load(long announceId) throws AnnounceNotFoundException;
 
-    public abstract Long nextId();
+    public abstract long getNextAnnounceId();
 
     public abstract void update(Announce annoucne);
 

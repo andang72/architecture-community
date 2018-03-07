@@ -16,6 +16,7 @@
 
 package architecture.community.model;
 
+import architecture.community.announce.Announce;
 import architecture.community.attachment.Attachment;
 import architecture.community.board.Board;
 import architecture.community.board.BoardMessage;
@@ -43,6 +44,7 @@ public enum Models {
 	BOARD_THREAD(6, BoardThread.class),
 	BOARD_MESSAGE(7, BoardMessage.class),
 	COMMENT(8, Comment.class),
+	ANNOUNCE(8, Announce.class),
 	ATTACHMENT(10, Attachment.class),
 	IMAGE(11, Image.class),
 	LOGO_IMAGE(12, LogoImage.class),

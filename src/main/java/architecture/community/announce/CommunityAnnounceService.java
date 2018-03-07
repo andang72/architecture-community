@@ -20,6 +20,7 @@ import net.sf.ehcache.Element;
 public class CommunityAnnounceService implements AnnounceService {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
+	
 	private AnnounceDao announceDao;
     
 	private Cache announceCache;
@@ -27,6 +28,7 @@ public class CommunityAnnounceService implements AnnounceService {
 	private UserManager userManager;
     
 	public CommunityAnnounceService() { 
+		
 	}
 
 	/**
@@ -52,7 +54,7 @@ public class CommunityAnnounceService implements AnnounceService {
 	public void addAnnounce(Announce announce) {
 		Long announceId = announce.getAnnounceId();
 		if (announceId < 0)
-			announceId = announceDao.nextId();
+			announceId = announceDao.getNextAnnounceId();
 		announce.setAnnounceId(announceId);
 		announceDao.insert(announce);
 		updateCache(announce);

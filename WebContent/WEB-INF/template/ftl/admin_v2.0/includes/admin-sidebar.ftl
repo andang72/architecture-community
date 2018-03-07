@@ -61,7 +61,17 @@
 						<span class="media-body align-self-center">게시판</span>
 					</a>
 				</li>
-				<!-- End Board -->				
+				<!-- End Board -->	
+				<!-- Announce -->
+				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-announces" data-page="manage-announces"> 
+						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
+							<i class="community-admin-announcement"></i>
+						</span> 
+						<span class="media-body align-self-center">공지</span>
+					</a>
+				</li>
+				<!-- End Announce -->								
 			</ul> <!-- End Community: sub_menu_2 -->
 		</li>
 		<!-- End Community -->
@@ -88,6 +98,8 @@
 						<span class="media-body align-self-center">페이지</span>
 					</a>
 				</li>
+				<!-- End Pages -->	
+				<!-- Menus -->	
 				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
 					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-menus" data-page="manage-menus"> 
 						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
@@ -96,7 +108,27 @@
 						<span class="media-body align-self-center">메뉴</span>
 					</a>
 				</li>				
-				<!-- End Pages -->	
+				<!-- End Menus -->	
+				<!-- Attachments -->	
+				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-attachments" data-page="manage-attachments"> 
+						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
+							<i class="community-admin-zip"></i>
+						</span> 
+						<span class="media-body align-self-center">파일</span>
+					</a>
+				</li>				
+				<!-- End Attachments -->	
+				<!-- Images -->	
+				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-images" data-page="manage-images"> 
+						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
+							<i class="community-admin-image"></i>
+						</span> 
+						<span class="media-body align-self-center">이미지</span>
+					</a>
+				</li>				
+				<!-- End Images -->									
 			</ul> <!-- End Resources: sub_menu_3 -->
 		</li>
 		<!-- End Resources -->

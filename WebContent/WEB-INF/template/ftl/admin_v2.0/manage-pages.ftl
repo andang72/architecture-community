@@ -31,7 +31,7 @@
 	<script>
 	require.config({
 		shim : {
-			"bootstrap" 					: { "deps" :['jquery', 'popper'] },
+			"bootstrap" 					: { "deps" :['jquery'] },
 			"jquery.cookie" 				: { "deps" :['jquery'] },
 	        "kendo.ui.core.min" 			: { "deps" :['jquery'] },
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
@@ -42,8 +42,7 @@
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
 			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle.min",
-			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap",
+			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap.bundle.min",
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
@@ -823,7 +822,7 @@
             		<div class="d-flex align-self-center">
                     <img class="g-width-36 g-height-36 rounded-circle g-mr-15" src="#= community.data.getUserProfileImage(user) #" >
                 </div>
-				<div class="media-body align-self-center text-left">#: user.name #</div>
+				<div class="media-body align-self-center text-left">#if ( !user.anonymous ) {# #: user.name # #}#</div>
             </div>
 		</td>
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> #: viewCount # </td>

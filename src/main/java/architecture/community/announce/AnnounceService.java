@@ -6,6 +6,7 @@ import java.util.List;
 import architecture.community.user.User;
 
 public interface AnnounceService {
+	
 	public abstract Announce createAnnounce(User user);
 
     public abstract Announce createAnnounce(User user, int objectType, long objectId);
