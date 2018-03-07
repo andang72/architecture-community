@@ -174,8 +174,7 @@
 							}, 500);
 						}	
 					});
-					
-					
+					<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
 					community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
 			      		contentType : "application/json",	
 			      		data: community.ui.stringify({
@@ -202,7 +201,8 @@
 							google.charts.setOnLoadCallback(drawLineChart(data));				
 							}, 500);
 						}	
-					});					
+					});		
+					</#if>			
 				}
 			},
 			search : function(){
@@ -675,12 +675,14 @@
 					<span>미처리</span>
 					</div>			
 					</div>			
-				</div><!-- Start Issue Summary -->
+				</div>
+				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
 				<div class="row">
 					<div class="col-12">
 						<div id="linechart_div" style="width: 100%; height:300px;"></div>
 					</div>
 				</div>	
+				</#if>    	
 				<div class="row g-bord-radias g-brd-gray g-brd-top-1  g-brd-bottom-0  g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
 					<div class="col-12">
 						<!--Issue ListView-->
