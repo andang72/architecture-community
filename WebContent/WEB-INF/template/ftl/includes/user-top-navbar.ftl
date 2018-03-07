@@ -15,7 +15,7 @@
                 </div>               
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">                
-                     <#assign user_top_menu = CommunityContextHelper.getMenuService().getTreeWalker("USER_TOP_MENU") />		    
+					<#assign user_top_menu = CommunityContextHelper.getMenuService().getTreeWalker("USER_TOP_MENU") />		    
 					<#list user_top_menu.getChildren()  as item >
 					<#if SecurityHelper.isUserInRole(item.roles) >
 					<li<#if __page?? && ( isGranted( item, __page)) > class="active"</#if> ><a href="${ item.location }">${ item.name }</a></li>   

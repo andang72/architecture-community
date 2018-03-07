@@ -64,9 +64,6 @@
 	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR",
 	"https://www.gstatic.com/charts/loader.js"], function($, kendo ) {	
 	
-
-    		
-	
 		community.ui.setup({
 		  	features : {
 				accounts: true
