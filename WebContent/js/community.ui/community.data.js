@@ -308,6 +308,51 @@
 	    }
 	});
 	
+	community.model.Image = Model.define({ 
+		id : "imageId",
+		fields: { 	
+			imageId:{ type: "number", defaultValue: 0 },		
+			objectType:{ type: "number", defaultValue: 0 },		
+			objectId:{ type: "number", defaultValue: 0 },		
+			name:{ type: "string", defaultValue: "" },
+			contentType:{ type: "string", defaultValue: "" },
+			size: { type: "number", defaultValue: 0 },	
+			thumbnailContentType:{ type: "string", defaultValue: "" },	
+			thumbnailSize : { type: "number", defaultValue: 0 },				
+			user: { type: "object" , defaultValue : new community.model.User()},
+			properties: { type: "object", defaultValue : {} },
+			creationDate: { type: "date" },			
+			modifiedDate: { type: "date" }
+		},
+		copy: function ( target ){
+			target.imageId = this.get("imageId");
+		    	target.set("objectType",this.get("objectType") );
+		    	target.set("objectId", this.get("objectId"));
+		    	target.set("name",this.get("name") );
+		    	target.set("contentType", this.get("contentType"));
+		    	target.set("size", this.get("size"));
+		    	target.set("thumbnailContentType", this.get("thumbnailContentType"));
+		    	target.set("thumbnailSize", this.get("thumbnailSize"));
+		    	target.set("modifiedDate",this.get("modifiedDate") );
+		    	target.set("creationDate", this.get("creationDate") )
+		    
+		    	if( typeof this.get("user") === 'object' )
+		    		target.set("user", this.get("user") );
+		    	
+		    	if( typeof this.get("properties") === 'object' )
+		    		target.set("properties", this.get("properties") );
+		    	
+		},
+		formattedSize : function(){
+			return kendo.toString(this.get("size"), "##,###");
+		},	
+		formattedCreationDate : function(){
+			return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    		return kendo.toString(this.get("modifiedDate"), "g");
+	    }
+	});
 	
 	community.model.BodyContent = Model.define({ 		
 		id: "bodyId",
@@ -445,7 +490,7 @@
 	
 	
 	function getUserProfileImage ( user ) {
-		if( user != null && user.username != null &&  user.username.length > 0 )
+		if( user != null && !user.anonymous && user.username != null &&  user.username.length > 0 )
 			return encodeURI ('/download/avatar/' + user.username + '?height=96&width=96&time=' + kendo.guid() );
 		else
 			return "/images/no-avatar.png";
@@ -464,6 +509,27 @@
 				_photoUrl = _photoUrl + '?time=' + kendo.guid() ;
 			} 
 			return encodeURI( _photoUrl );
+		}
+		return "/images/no-image.jpg";
+	} 
+	
+	var DEFAULT_DOWNLOAD_OPTIONS = {
+		thumbnail : false,		
+		width : 150,
+		height : 150
+	};
+	
+	function getImageUrl ( image , options ){	
+		options = options || {};		
+		var settings = extend(true, {}, DEFAULT_DOWNLOAD_OPTIONS , options ); 
+		if( image.imageId > 0 ){
+			var _imageUrl = '/download/images/' + image.imageId + '/' + image.name  ; 
+			if( settings.thumbnail ){
+				_imageUrl = _imageUrl + '?thumbnail=true&height='+ settings.height +'&width='+ settings.width + '&time=' + kendo.guid() ;
+			}else{
+				_imageUrl = _imageUrl + '?time=' + kendo.guid() ;
+			} 
+			return encodeURI( _imageUrl );
 		}
 		return "/images/no-image.jpg";
 	} 
@@ -553,6 +619,7 @@
 	
 	extend(community.data, {	
 		uploadImageAndInsertLink: uploadImageAndInsertLink,
+		getImageUrl : getImageUrl,
 		getFormattedDate : getFormattedDate,
 		getAttachmentUrl : getAttachmentThumbnailUrl,
 		getAttachmentThumbnailUrl :getAttachmentThumbnailUrl,
