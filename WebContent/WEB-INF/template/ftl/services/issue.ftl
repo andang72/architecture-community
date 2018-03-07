@@ -251,7 +251,7 @@
 					});
 				}					
 			},
-			refreshAdditionalInfo(){
+			refreshAdditionalInfo : function (){
 				var $this = this;		
 				if(  $this.issue.issueId > 0 ){ 	
 					$this.set('isAssigned', false);

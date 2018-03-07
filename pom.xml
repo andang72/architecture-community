@@ -180,6 +180,13 @@
 		    <version>2.0.2</version>
 		</dependency>
 		
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		    <version>1.11.2</version>
+		</dependency>
+
+		
 	    <dependency>
 	      <groupId>javax.mail</groupId>
 	      <artifactId>mail</artifactId>
@@ -210,13 +217,29 @@
 						<include>**/css/bootstrap.theme/inspinia/style.css</include>
 						<include>**/css/bootstrap.theme/unify/unify-core.css</include>
 						<include>**/css/bootstrap.theme/unify/unify-globals.css</include>
+						<include>**/css/bootstrap.theme/unify/unify-style-switcher.css</include>
+						<include>**/css/bootstrap.theme/unify/unify.css</include>
+						<include>**/css/bootstrap.theme/unify/custom.css</include>
+						
+						<include>**/css/community.ui/community.ui.admin.css</include>
+						<include>**/css/community.ui/community.ui.components.css</include>
 						<include>**/css/community.ui/community.ui.core.css</include>
+						<include>**/css/community.ui/community.ui.css</include>
+						<include>**/css/community.ui/community.ui.globals.css</include>
+						<include>**/css/community.ui/community.ui.icons.css</include>
+						<include>**/css/community.ui/community.ui.style.css</include>
+						<include>**/css/community.ui/custom.css</include>
+						
+						<include>**/css/community.ui.admin/community-ui-admin-icons.css</include>
+						<include>**/css/community.ui.admin/community.ui.admin.css</include>
+						<!-- 
 						<include>**/css/community.ui/community.ui.glogals.css</include>
 						<include>**/css/community.ui/community.ui.components.css</include>
 						<include>**/css/community.ui/community.ui.style.css</include>
 						<include>**/css/community.ui/community.ui.icons.css</include>
 						<include>**/js/community.ui/community.data.js</include>
 						<include>**/js/community.ui/community.ui.core.js</include>
+						 -->
 			        </includes>
 					<sourceDirectory>${basedir}/WebContent</sourceDirectory>
 					<outputDirectory>${basedir}/WebContent</outputDirectory> 

@@ -45,6 +45,8 @@ import architecture.community.attachment.AbstractAttachmentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.image.dao.ImageDao;
 import architecture.community.image.dao.ImageLinkDao;
+import architecture.community.user.User;
+import architecture.community.user.UserManager;
 import architecture.community.util.CommunityConstants.Platform;
 import architecture.ee.exception.RuntimeError;
 import architecture.ee.service.Repository;
@@ -89,6 +91,10 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	@Qualifier("imageLinkCache")
     private Cache imageLinkCache;
  
+	@Inject
+	@Qualifier("userManager")
+	private UserManager userManager;
+	
 	private ImageConfig imageConfig;;
 
 	private File imageDir;
@@ -644,6 +650,10 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		if (imageCache.get(imageId) == null) {
 			try {
 				imageToUse = getImageById(imageId);
+				if(	imageToUse.getUser() != null && imageToUse.getUser().getUserId() > 0 ) {
+					User user = userManager.getUser(imageToUse.getUser().getUserId());
+					imageToUse.setUser(user);
+				}
 				imageCache.put(new Element(imageId, imageToUse));
 			} catch (Exception e) {
 				String msg = (new StringBuilder()).append("Unable to find image ").append(imageId).toString();

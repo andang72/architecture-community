@@ -42,6 +42,7 @@ import architecture.community.image.ImageNotFoundException;
 import architecture.community.image.LogoImage;
 import architecture.community.image.dao.ImageDao;
 import architecture.community.model.Models;
+import architecture.community.user.UserTemplate;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.spring.jdbc.ExtendedJdbcUtils.DB;
@@ -80,6 +81,7 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 			image.setObjectId(rs.getLong("OBJECT_ID"));
 			image.setName(rs.getString("FILE_NAME"));
 			image.setSize(rs.getInt("FILE_SIZE"));
+			image.setUser(new UserTemplate(rs.getLong("USER_ID")));
 			image.setContentType(rs.getString("CONTENT_TYPE"));
 			image.setCreationDate(rs.getDate("CREATION_DATE"));
 			image.setModifiedDate(rs.getDate("MODIFIED_DATE"));			

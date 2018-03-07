@@ -15,6 +15,7 @@
 	<!-- 이미지, 자바스클립트, CSS 와 같은 정적 컨텐츠 요청(GET) 을 처리하기 위하여 설정 -->
 	<mvc:resources mapping="/favicon.ico" 	location="/images/ico/favicon.ico" />
 	<mvc:resources mapping="/images/**" 	location="/images/" />
+	<mvc:resources mapping="/assets/**" 	location="/assets/" />
 	<mvc:resources mapping="/js/**" 		location="/js/" />
 	<mvc:resources mapping="/fonts/**" 		location="/fonts/" />
 	<mvc:resources mapping="/css/**" 		location="/css/" />

@@ -121,7 +121,8 @@ public class ImagesDataController {
 		    log.debug("upload image {}, file:{}, size:{}, type:{} ", imageId,  mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
 		    Image image;
 		    if (imageId > 0) {
-			    	image = imageService.getImage(imageId);			
+			    	image = imageService.getImage(imageId);	
+			    	image.setUser(user);
 			    	((DefaultImage) image).setName(mpf.getOriginalFilename());
 			    	((DefaultImage) image).setInputStream(is);
 			    	((DefaultImage) image).setSize((int) mpf.getSize());

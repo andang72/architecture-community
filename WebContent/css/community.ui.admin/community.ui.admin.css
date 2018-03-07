@@ -42,14 +42,23 @@
 }
 
 .u-listview .u-link-underline {
+
+}
+
+.u-listview .u-link-underline:hover{
+
+}
+
+.u-listview .u-link-underline > h5{
 	border-bottom: 1px solid transparent;
 	padding-bottom: 1.5px;
 }
 
-.u-listview .u-link-underline:hover{
+.u-listview .u-link-underline:hover > h5{
 	border-bottom: 1px solid;
 	padding-bottom: 1.5px;
 }
+
 
 /*------------------------------------
   Variables
