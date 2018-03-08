@@ -4,8 +4,16 @@
 	<description>COMMUNITY SERVICE SUBSYSTEM QUERIES</description>	
 
 	<!--  ====================================  -->
-	<!-- 	IMAGES			      	 		   -->
+	<!-- 	PROJECTS & ISSUES      	 		   -->
 	<!--  ====================================  -->
+	<!--  PROJECTS							   -->
+	
+	<!--  ISSUES								   -->
+	
+	<!--  ====================================  -->
+	<!-- 	IMAGES AND ATTACHMENTS  	 		   -->
+	<!--  ====================================  -->
+	<!--  IMAGES								   -->
     	<sql-query name="COUNT_IMAGE_BY_REQUEST" description="COUNT_IMAGE_BY_REQUEST"><![CDATA[
 	SELECT  
 		COUNT(IMAGE_ID)      	
@@ -20,7 +28,16 @@
 	]]><dynamic><![CDATA[    
 	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list></#if>
     ]]></dynamic></sql-query>
-		
+    
+    	<sql-query name="UPDATE_IMAGE_OBJECT_TYPE_AND_OBJECT_ID" description="UPDATE_IMAGE_OBJECT_TYPE_AND_OBJECT_ID"><![CDATA[
+  	UPDATE REP_IMAGE SET
+	  	OBJECT_TYPE = ?,
+		OBJECT_ID = ?
+	WHERE IMAGE_ID = ?
+    ]]></sql-query>
+            
+	<!--  ATTACHMENTS						   -->
+	
 	<!--  ====================================  -->
 	<!-- 	ANNOUNCE			      	 		   -->
 	<!--  ====================================  -->

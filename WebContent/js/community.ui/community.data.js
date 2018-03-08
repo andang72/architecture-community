@@ -575,11 +575,19 @@
 	        processData: false,
 	        success: function (response) {	        		
 	        		$.each( response, function( index , item  ) {
-		            var url = '/download/images/' + item.linkId;
-		            editor.summernote('insertImage', url, function ($image) {
-		              $image.addClass('img-responsive');
-					  $image.attr('data-public-shared', response.publicShared );
-					});				  
+	        			var externalId = item.linkId;
+	        			var url = '/download/images/' + externalId;
+	        			editor.summernote('insertImage', url, function ($image) {
+	        				
+	        			  console.log("insert image ... " + externalId );
+	        			 
+		            	  $image.addClass('img-responsive');
+		            	  $image.attr('data-external-id', externalId );
+					  //$image.attr('data-shared', response.publicShared );
+					  
+					  // console.log( $image );
+					  
+		            });				  
 				});
 	        }
 	    });

@@ -8,11 +8,11 @@ import architecture.community.util.LongTree;
 
 public class MenuItemTreeWalker {
 	
-	private long menuId;
+	private Long menuId;
 	private LongTree tree;
 	private Map<Long, MenuItem> cache;
 	
-	public MenuItemTreeWalker( long menuId , LongTree tree ) { 
+	public MenuItemTreeWalker( Long menuId , LongTree tree ) { 
 		this.menuId = menuId;
 		this.tree = tree;
 	}
@@ -25,11 +25,11 @@ public class MenuItemTreeWalker {
 		this.cache = cache;
 	}
 
-	public long getMenuId() {
+	public Long getMenuId() {
 		return menuId;
 	}
 
-	public void setMenuId(long menuId) {
+	public void setMenuId(Long menuId) {
 		this.menuId = menuId;
 	}
 

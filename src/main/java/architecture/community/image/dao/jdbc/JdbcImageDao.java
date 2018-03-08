@@ -133,7 +133,7 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 				new SqlParameterValue (Types.VARCHAR, image.getName() ), 
 				new SqlParameterValue (Types.INTEGER, image.getSize() ), 
 				new SqlParameterValue (Types.VARCHAR, image.getContentType()), 
-				new SqlParameterValue(Types.DATE, image.getCreationDate()),
+				//new SqlParameterValue(Types.DATE, image.getCreationDate()),
 				new SqlParameterValue(Types.DATE, image.getModifiedDate()),
 				new SqlParameterValue (Types.NUMERIC, image.getImageId()) );	
 		return image;

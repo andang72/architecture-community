@@ -12,9 +12,9 @@ import architecture.community.model.json.JsonDateSerializer;
 
 public class MenuItem extends PropertyAwareSupport implements Serializable {
 	
-	private long menuId;
+	private Long menuId;
 	
-	private long menuItemId;
+	private Long menuItemId;
 	
 	private Long parentMenuItemId;
 	
@@ -84,19 +84,19 @@ public class MenuItem extends PropertyAwareSupport implements Serializable {
 		this.sortOrder = sortOrder;
 	}
 
-	public long getMenuId() {
+	public Long getMenuId() {
 		return menuId;
 	}
 
-	public void setMenuId(long menuId) {
+	public void setMenuId(Long menuId) {
 		this.menuId = menuId;
 	}
 
-	public long getMenuItemId() {
+	public Long getMenuItemId() {
 		return menuItemId;
 	}
 
-	public void setMenuItemId(long menuItemId) {
+	public void setMenuItemId(Long menuItemId) {
 		this.menuItemId = menuItemId;
 	}
 

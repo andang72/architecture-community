@@ -45,6 +45,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	}
 	
 	
+	
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {				
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
 		if( dataSourceRequest.getParameters().size() > 0 )
@@ -161,6 +162,11 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public int update ( String statement , Object... args) {
+		return customQueryJdbcDao.getExtendedJdbcTemplate().update(customQueryJdbcDao.getBoundSql(statement).getSql(), args);
+	}
+
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public <T> T execute(DaoCallback<T> action) throws DataAccessException {
 		Assert.notNull(action, "Callback object must not be null");

@@ -905,8 +905,7 @@
 
 	<sql-query name="UPDATE_IMAGE" description="ID로 IMAGE 조회"><![CDATA[    
   		UPDATE REP_IMAGE SET
-	  		IMAGE_ID = ?,
-			OBJECT_TYPE = ?,
+	  		OBJECT_TYPE = ?,
 			OBJECT_ID = ?,
 			FILE_NAME = ?,
 			FILE_SIZE = ?,

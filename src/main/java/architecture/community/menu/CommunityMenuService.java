@@ -57,7 +57,7 @@ public class CommunityMenuService implements MenuService {
 						return menuDao.getMenuIdByName(name);
 				}}
 		);
-		menuItemCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(30, TimeUnit.MINUTES).build(		
+		menuItemCache = CacheBuilder.newBuilder().maximumSize(200).expireAfterAccess(30, TimeUnit.MINUTES).build(		
 				new CacheLoader<Long, MenuItem>(){			
 					public MenuItem load(Long menuItemId) throws Exception {
 						return menuDao.getMenuItemById(menuItemId);
@@ -157,9 +157,17 @@ public class CommunityMenuService implements MenuService {
 		{
 			menuItem.setParentMenuItemId(-1L);
 		}
+		
+		logger.debug("invalidate cache for {}", menuItem.getMenuItemId());
+		
 		menuDao.saveOrUpdate(menuItem);
+		
 		menuItemCache.invalidate(menuItem.getMenuItemId());
 		treewalkerCache.invalidate(menuItem.getMenuId());
+		
+		menuItemCache.asMap().remove(menuItem.getMenuItemId());
+		treewalkerCache.asMap().remove(menuItem.getMenuId());
+		
 	}
  
 	public void deleteMenuItem(MenuItem menuItem) {

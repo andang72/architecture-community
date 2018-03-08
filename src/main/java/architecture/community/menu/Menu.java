@@ -10,7 +10,7 @@ import architecture.community.model.json.JsonDateSerializer;
 
 public class Menu extends PropertyAwareSupport implements Serializable {
 
-	private long menuId;
+	private Long menuId;
 
 	private String name;
 
@@ -36,11 +36,11 @@ public class Menu extends PropertyAwareSupport implements Serializable {
 		this.modifiedDate = creationDate;
 	}
 
-	public long getMenuId() {
+	public Long getMenuId() {
 		return menuId;
 	}
 
-	public void setMenuId(long menuId) {
+	public void setMenuId(Long menuId) {
 		this.menuId = menuId;
 	}
 

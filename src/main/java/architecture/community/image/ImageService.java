@@ -51,8 +51,7 @@ public interface ImageService {
 	
 	public InputStream getImageThumbnailInputStream(LogoImage image, int width, int height ) ;
 	
-	
-
+	/** IMAGE API **/
 	
 	public abstract boolean isImageEnabled();
 	
@@ -112,6 +111,7 @@ public interface ImageService {
 	
 	public abstract InputStream getImageThumbnailInputStream(Image image, int width, int height ) ;
 	
+	public abstract void invalidate(Image image, boolean fileToo);
 	
 	/** IMAGE LINK API **/
 	

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,9 +21,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -48,6 +55,8 @@ import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
+import architecture.community.image.Image;
+import architecture.community.image.ImageService;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
@@ -62,6 +71,8 @@ import architecture.community.projects.ProjectService;
 import architecture.community.projects.ProjectView;
 import architecture.community.projects.Stats;
 import architecture.community.query.CustomQueryService;
+import architecture.community.query.CustomQueryService.DaoCallback;
+import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
@@ -94,7 +105,10 @@ public class IssueDataController extends AbstractCommunityDateController  {
 	@Qualifier("communityAclService")
 	private JdbcCommunityAclService communityAclService;
 
-
+	@Inject
+	@Qualifier("imageService")
+	private ImageService imageService;
+	
 	@Inject
 	@Qualifier("attachmentService")
 	private AttachmentService attachmentService;
@@ -154,16 +168,21 @@ public class IssueDataController extends AbstractCommunityDateController  {
 
 		User user = SecurityHelper.getUser();
 		String statusCodeToUse = newIssue.getStatus() ;
-		
-		Issue issueToUse ;		
+		boolean isNew = true;
+		boolean descriptionUpdate = false;
+		final Issue issueToUse ;	
 		if ( newIssue.getIssueId() > 0) {
-			issueToUse = projectService.getIssue(newIssue.getIssueId());			
+			isNew = false;
+			issueToUse = projectService.getIssue(newIssue.getIssueId());		
+			if( !org.apache.commons.lang3.StringUtils.equals(newIssue.getDescription(), issueToUse.getDescription())  ) {
+				descriptionUpdate = true;
+			}
 		}else {
 			issueToUse = projectService.createIssue(newIssue.getObjectType(), newIssue.getObjectId(), user );
 			if( StringUtils.isNullOrEmpty(newIssue.getStatus()))
-				statusCodeToUse = "001";
-		}	
-		
+				statusCodeToUse = "001";			
+			descriptionUpdate = true;
+		}
 		if( !StringUtils.isNullOrEmpty(newIssue.getResolution()))
 		{
 			if( newIssue.getResolutionDate() == null ) {
@@ -216,8 +235,36 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		issueToUse.setStatus(newIssue.getStatus());
 		issueToUse.setResolution(newIssue.getResolution());		
 		issueToUse.setPriority(newIssue.getPriority());	
-		
 		projectService.saveOrUpdateIssue(issueToUse);
+		if(descriptionUpdate) {		
+			customQueryService.execute(new DaoCallback<Integer>() {
+				public Integer process(CustomQueryJdbcDao dao) throws DataAccessException {
+					Document doc = Jsoup.parse(issueToUse.getDescription());
+					Elements eles = doc.select("img");
+					for( Element ele : eles ) {
+						log.debug("found img tag in content : {} ", ele.toString());
+						if( ele.hasAttr("data-external-id") ) {					
+							String link = ele.attr("data-external-id");
+							log.debug("it has external link : {}.", link);
+							try {
+								Image image = imageService.getImageByImageLink(link);
+								if( image.getObjectType() <= 0 && image.getObjectId() <= 0 ) {									
+									dao.getExtendedJdbcTemplate().update(dao.getBoundSql("COMMUNITY_CS.UPDATE_IMAGE_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+										new SqlParameterValue(Types.NUMERIC, Models.ISSUE.getObjectType()),
+										new SqlParameterValue(Types.NUMERIC, issueToUse.getIssueId()),
+										new SqlParameterValue(Types.NUMERIC, image.getImageId())
+									);
+								}
+							} catch (Exception e) {
+							}
+						}
+					}
+					return null;
+				}
+				
+			});
+			
+		}
 		
 		return issueToUse;
 	}	 

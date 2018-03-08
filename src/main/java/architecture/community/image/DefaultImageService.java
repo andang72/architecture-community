@@ -83,6 +83,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	@Qualifier("imageCache")
 	private Cache imageCache;
 
+	
 	@Inject
 	@Qualifier("imageLinkIdCache")
     private Cache imageLinkIdCache;
@@ -271,8 +272,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	}
 
 	protected String getLogoImageIdListCacheKey(int objectType, long objectId) {
-		return (new StringBuilder()).append("objectType-").append(objectType).append("-objectId-").append(objectId)
-				.toString();
+		return (new StringBuilder()).append("objectType-").append(objectType).append("-objectId-").append(objectId).toString();
 	}
 
 	protected String toThumbnailFilename(LogoImage image, int width, int height) {
@@ -357,8 +357,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 			if (!imageDir.exists()) {
 				boolean result = imageDir.mkdir();
 				if (!result)
-					log.error((new StringBuilder()).append("Unable to create image directory: '").append(imageDir)
-							.append("'").toString());
+					log.error((new StringBuilder()).append("Unable to create image directory: '").append(imageDir).append("'").toString());
 				getImageCacheDir();
 				getImageTempDir();
 			} else {
@@ -530,11 +529,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		Image imageToUse = imageDao.getImageById(image.getImageId());
 		imageDao.deleteImage(imageToUse);
 		removeImageLink(imageToUse);
-		
-		File dir = new File(getImageDir(), "cache");
-		File imageFile = new File(dir, (new StringBuilder()).append(imageToUse.getImageId()).append(".bin").toString());
-		if (imageFile.exists())
-			imageFile.delete();
+		invalidate(image, true);
 	}
 
 	public Image createImage(int objectType, long objectId, String name, String contentType, File file) {
@@ -605,14 +600,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				imageDao.updateImage(image);
 				imageDao.saveImageInputStream(image, image.getInputStream());
 			}
-
-			Collection<File> files = FileUtils.listFiles(getImageCacheDir(), FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
-			for (File file : files) {
-				FileUtils.deleteQuietly(file);
-			}
-
-			Image imageToUse = getImage(image.getImageId());
-			imageCache.remove(imageToUse.getImageId());
+			invalidate(image, true);	
 		} catch (Exception e) {
 			throw new RuntimeError(e);
 		}
@@ -620,7 +608,6 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Image saveImage(Image image) {
-
 		try {
 			if (image.getImageId() < 0) {
 				Image newImage = imageDao.createImage(image);
@@ -631,17 +618,24 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				imageDao.updateImage(image);
 				imageDao.saveImageInputStream(image, image.getInputStream());
 			}
+			invalidate(image, true);
+			Image imageToUse = getImage(image.getImageId());
+			return imageToUse;
+		} catch (Exception e) {
+			throw new RuntimeError(e);
+		}
+	}
+	
 
+	
+	public void invalidate(Image image, boolean deleteFile) {
+		if( imageCache.isKeyInCache(image.getImageId())) 
+			imageCache.remove(image.getImageId());
+		if(deleteFile) {
 			Collection<File> files = FileUtils.listFiles(getImageCacheDir(), FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
 			for (File file : files) {
 				FileUtils.deleteQuietly(file);
 			}
-
-			Image imageToUse = getImage(image.getImageId());
-			imageCache.remove(imageToUse.getImageId());
-			return imageToUse;
-		} catch (Exception e) {
-			throw new RuntimeError(e);
 		}
 	}
 
@@ -754,6 +748,9 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	}
 
 
+	
+	
+
 	/**
 	 * 
 	 * @param image
@@ -762,10 +759,7 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	 */
 	protected File getImageFromCacheIfExist(Image image) throws IOException {
 		File dir = getImageCacheDir();
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(image.getImageId()).append(".bin");
-		File file = new File(dir, sb.toString());
+		File file = new File(dir, toImageFilename(image));
 		if (file.exists()) {
 			long size = FileUtils.sizeOf(file);
 			if (size != image.getSize()) {
@@ -780,6 +774,12 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		}
 		return file;
 	}
+	
+	private String toImageFilename(Image image) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(image.getImageId()).append(".bin");
+		return sb.toString();
+	}
 
 	protected String toThumbnailFilename(Image image, int width, int height) {
 		StringBuilder sb = new StringBuilder();
@@ -793,7 +793,6 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		File dir = getImageCacheDir();
 		File file = new File(dir, toThumbnailFilename(image, width, height));
 		File originalFile = getImageFromCacheIfExist(image);
-
 		log.debug("source: " + originalFile.getAbsoluteFile() + ", " + originalFile.length());
 		log.debug("target:" + file.getAbsoluteFile());
 
