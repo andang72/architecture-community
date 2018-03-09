@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services>
-	<name>EXPORT_SERVICE</name>
+	<name>DATA_SERVICE</name>
 	<version>1.0</version>
-	<excle-export name="ISSUE_OVERVIEWSTATS" description="기간별 처리 이슈 목록" >
+	<data-service name="ISSUE_OVERVIEWSTATS" description="기간별 처리 이슈 목록" >
 		<source>
 			<!-- <dataSourceName>dataSource</dataSourceName> -->
 			<statement>COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD</statement>
@@ -66,15 +66,12 @@
 			<column index="5" field="DUE_DATE" title="예정일" width="3000"/>
 			<column index="6" field="RESOLUTION_DATE" title="처리일" width="3000"/>
 		</columns>
-	</excle-export>
-	<excle-export name="ISSUE_OVERVIEWSTATS_DATA" description="기간별 처리 이슈 목록 데이터" >
+	</data-service>
+	<data-service name="ISSUE_OVERVIEWSTATS_DATA" description="기간별 처리 이슈 목록 데이터" >
 		<source>
-			
 			<totalCountStatement></totalCountStatement>
 			<totalCountQueryString></totalCountQueryString>
-			
 			<statement>COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD</statement>
-			
 			<!-- 
 			<parameter-mappings>
 				<parameter index="1" name="startDate" jdbcType="VARCHAR" />
@@ -109,5 +106,5 @@
 			<column index="6" field="RESOLUTION_DATE" title="처리일" width="3000"/>
 		</columns>
 		 -->
-	</excle-export>	
+	</data-service>	
 </services>
