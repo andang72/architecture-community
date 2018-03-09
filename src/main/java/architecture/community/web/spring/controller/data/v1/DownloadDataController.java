@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import architecture.community.export.CommunityExportService;
+import architecture.community.services.CommunityDataService;
 import architecture.community.web.model.json.DataSourceRequest;
 
 @Controller("download-data-controller")
@@ -29,8 +29,8 @@ public class DownloadDataController {
 
 	
 	@Inject
-	@Qualifier("exportService")
-	private CommunityExportService exportService;
+	@Qualifier("customDataService")
+	private CommunityDataService dataService;
 	
 	public DownloadDataController() {
 	}
@@ -47,7 +47,7 @@ public class DownloadDataController {
 		DataSourceRequest dataSourceRequest = mapper.readValue(jsonData, DataSourceRequest.class);		
 		
 		log.debug("request data {}", dataSourceRequest.getData() );		
-		exportService.export(name, dataSourceRequest, response);
+		dataService.export(name, dataSourceRequest, response);
 		log.debug("export done.");
 	}
 }

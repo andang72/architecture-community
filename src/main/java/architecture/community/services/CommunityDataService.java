@@ -1,4 +1,4 @@
-package architecture.community.export;
+package architecture.community.services;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,13 +26,13 @@ import org.springframework.jdbc.core.SqlParameterValue;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-import architecture.community.export.excel.DataExportConfig;
-import architecture.community.export.excel.DataExportConfig.Column;
-import architecture.community.export.excel.ExportConfigXmlReader;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.query.CustomColumnMapMapper;
 import architecture.community.query.CustomQueryService;
 import architecture.community.query.dao.CustomQueryJdbcDao;
+import architecture.community.services.excel.DataServiceConfig;
+import architecture.community.services.excel.DataServiceConfigXmlReader;
+import architecture.community.services.excel.DataServiceConfig.Column;
 import architecture.community.util.CommunityContextHelper;
 import architecture.community.util.excel.XSSFExcelWriter;
 import architecture.community.web.model.json.DataSourceRequest;
@@ -45,7 +45,7 @@ import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.spring.jdbc.ExtendedJdbcTemplate;
 import architecture.ee.util.StringUtils;
 
-public class CommunityExportService {
+public class CommunityDataService {
 
 	@Autowired
 	@Qualifier("sqlConfiguration")
@@ -63,15 +63,15 @@ public class CommunityExportService {
 	@Qualifier("customQueryService")
 	private CustomQueryService customQueryService;
 	
-	private Logger log = LoggerFactory.getLogger(CommunityExportService.class);
+	private Logger log = LoggerFactory.getLogger(CommunityDataService.class);
 	
 	private String configFileName ;
 		
 	private boolean usingTempFile = false;
 	
-	protected final BiMap<String, DataExportConfig> exports = HashBiMap.create();
+	protected final BiMap<String, DataServiceConfig> exports = HashBiMap.create();
 	
-	public CommunityExportService() { 
+	public CommunityDataService() { 
 		
 	}
 
@@ -88,7 +88,7 @@ public class CommunityExportService {
 		
 		if( configFile.exists() ) {
 			try {
-				ExportConfigXmlReader reader = new ExportConfigXmlReader(configFile, exports);
+				DataServiceConfigXmlReader reader = new DataServiceConfigXmlReader(configFile, exports);
 				reader.parse();
 			} catch (Exception e) {
 				log.warn(CommunityLogLocalizer.format("014001", configFile.getAbsolutePath()));
@@ -97,17 +97,17 @@ public class CommunityExportService {
 		}
 	}
 	
-	public DataExportConfig getExcelExportConfig(String id) throws ExportConfigFoundException {
+	public DataServiceConfig getExcelExportConfig(String id) throws ServiceConfigNotFoundException {
 		if( !StringUtils.isNullOrEmpty(id) && exports.containsKey(id) ){
 			return exports.get(id);
 		}
-		throw new ExportConfigFoundException( "" );
+		throw new ServiceConfigNotFoundException( "" );
 	}
 	
 	
 	public void export(String name, DataSourceRequest dataSourceRequest, HttpServletResponse response ) throws IOException {	
 		
-		final DataExportConfig config = getExcelExportConfig(name);
+		final DataServiceConfig config = getExcelExportConfig(name);
 		List<Map<String, Object>> data = getData(config, dataSourceRequest);
 		
 		log.debug("data size : {}", data.size() );
@@ -142,12 +142,12 @@ public class CommunityExportService {
 	
 	
 	public List<Map<String, Object>> getData(String name, DataSourceRequest dataSourceRequest){
-		final DataExportConfig config = getExcelExportConfig(name);
+		final DataServiceConfig config = getExcelExportConfig(name);
 		List<Map<String, Object>> data = getData(config, dataSourceRequest);
 		return data;
 	}
 	
-	protected List<Map<String, Object>> getData(final DataExportConfig config, final DataSourceRequest dataSourceRequest) {	
+	protected List<Map<String, Object>> getData(final DataServiceConfig config, final DataSourceRequest dataSourceRequest) {	
 		final List<SqlParameterValue> parameters = config.isSetParameterMappings() ? getSqlParameterValues(dataSourceRequest.getData(), config.getParameterMappings()) : Collections.EMPTY_LIST;
 		List<Map<String, Object>> data = null;	
 		if( config.isSetDataSourceName() ) {
@@ -187,7 +187,7 @@ public class CommunityExportService {
 		return additionalParameter;
 	}
 	
-	protected RowMapper<Map<String, Object>> getColumnMapRowMapper( DataExportConfig config ) {
+	protected RowMapper<Map<String, Object>> getColumnMapRowMapper( DataServiceConfig config ) {
 		if(config.isSetResultMappings())
 			return new CustomColumnMapMapper(config.getResultMappings());
 		else

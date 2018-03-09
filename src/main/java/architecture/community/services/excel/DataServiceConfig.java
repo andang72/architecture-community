@@ -1,4 +1,4 @@
-package architecture.community.export.excel;
+package architecture.community.services.excel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import architecture.ee.jdbc.sqlquery.mapping.ParameterMapping;
 
-public class DataExportConfig implements Serializable {
+public class DataServiceConfig implements Serializable {
 
 	private String name;
 	
@@ -39,7 +39,7 @@ public class DataExportConfig implements Serializable {
 	private List<Column> columns;	
 	
  
-	public DataExportConfig(String name, String description) {
+	public DataServiceConfig(String name, String description) {
 		this.totalCountStatement = null;
 		this.totalCountQueryString = null;
 		this.fileName = null;
@@ -53,7 +53,7 @@ public class DataExportConfig implements Serializable {
 		this.type = Type.NONE;
 	}
 
-	public DataExportConfig() {
+	public DataServiceConfig() {
 		this.totalCountStatement = null;
 		this.totalCountQueryString = null;		
 		this.name = null;

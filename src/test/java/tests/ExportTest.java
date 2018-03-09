@@ -12,7 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import architecture.community.export.CommunityExportService;
+import architecture.community.services.CommunityDataService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
@@ -26,7 +26,7 @@ public class ExportTest {
 	private static Logger log = LoggerFactory.getLogger(ExportTest.class);
 	
 	@Autowired
-	private CommunityExportService exportService;
+	private CommunityDataService exportService;
 	
 	public ExportTest() {
 		

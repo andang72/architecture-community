@@ -1,4 +1,4 @@
-package architecture.community.export.excel;
+package architecture.community.services.excel;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,15 +20,15 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import architecture.community.export.excel.DataExportConfig.Column;
+import architecture.community.services.excel.DataServiceConfig.Column;
 import architecture.ee.jdbc.sqlquery.builder.xml.XmlStatementBuilder;
 import architecture.ee.jdbc.sqlquery.mapping.ParameterMapping;
 import architecture.ee.jdbc.sqlquery.type.TypeAliasRegistry;
 import architecture.ee.util.StringUtils;
 
-public class ExportConfigXmlReader {
+public class DataServiceConfigXmlReader {
 	
-	private static final Logger log = LoggerFactory.getLogger(ExportConfigXmlReader.class);
+	private static final Logger log = LoggerFactory.getLogger(DataServiceConfigXmlReader.class);
 	
 	private static final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 	
@@ -36,9 +36,9 @@ public class ExportConfigXmlReader {
 	
 	private Document document; 
 	
-	private  Map<String, DataExportConfig> holder ; 
+	private  Map<String, DataServiceConfig> holder ; 
 	
-	public ExportConfigXmlReader(File file, Map<String, DataExportConfig> holder ) throws IOException {
+	public DataServiceConfigXmlReader(File file, Map<String, DataServiceConfig> holder ) throws IOException {
 		this.file = file;
 		if (!file.exists()) {
 			// Attempt to recover from this error case by seeing if the
@@ -83,7 +83,7 @@ public class ExportConfigXmlReader {
 			}
 		} 
 	}
-	public ExportConfigXmlReader(InputStream in , Map<String, DataExportConfig> holder ) throws IOException {
+	public DataServiceConfigXmlReader(InputStream in , Map<String, DataServiceConfig> holder ) throws IOException {
 		Reader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 		this.holder = holder;
 		buildDoc(reader);
@@ -106,7 +106,7 @@ public class ExportConfigXmlReader {
 	}
 	
 	public void parse() throws Exception {
-		List<Node> list = document.selectNodes("//excle-export");
+		List<Node> list = document.selectNodes("//data-service");
 		excelExportElement(list);
 	}
 	
@@ -116,7 +116,7 @@ public class ExportConfigXmlReader {
 			log.debug(" {} - {} , element {} ", ele.attributeValue("name", null), ele.attributeValue("description", null), node.asXML());
 			
 			Element soruceEl = ele.element("source");
-			DataExportConfig config = new DataExportConfig(ele.attributeValue("name", null),  ele.attributeValue("description", null) );
+			DataServiceConfig config = new DataServiceConfig(ele.attributeValue("name", null),  ele.attributeValue("description", null) );
 			
 			config.setDataSourceName(soruceEl.elementText("dataSourceName"));
 			config.setStatement(soruceEl.elementTextTrim("statement"));
@@ -139,9 +139,9 @@ public class ExportConfigXmlReader {
 			Element targerEl = ele.element("target");
 			
 			String typeString = StringUtils.defaultString( targerEl.elementText("type"), "NONE");
-			config.setType( DataExportConfig.Type.valueOf(typeString.toUpperCase()) );
+			config.setType( DataServiceConfig.Type.valueOf(typeString.toUpperCase()) );
 			
-			if( config.getType() != DataExportConfig.Type.NONE ) {
+			if( config.getType() != DataServiceConfig.Type.NONE ) {
 				config.setFileName(targerEl.elementTextTrim("fileName"));
 				config.setSheetName(targerEl.elementTextTrim("sheetName"));
 			}
