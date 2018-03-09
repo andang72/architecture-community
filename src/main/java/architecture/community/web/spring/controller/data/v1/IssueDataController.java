@@ -254,6 +254,7 @@ public class IssueDataController extends AbstractCommunityDateController  {
 										new SqlParameterValue(Types.NUMERIC, issueToUse.getIssueId()),
 										new SqlParameterValue(Types.NUMERIC, image.getImageId())
 									);
+									imageService.invalidate(image, false);
 								}
 							} catch (Exception e) {
 							}
