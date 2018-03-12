@@ -142,7 +142,8 @@
 				data.addColumn('number', '추가개발');
 				data.addColumn('number', '기술지원');
 				data.addColumn('number', '영업지원');
-				data.addColumn('number', 'TOTAL');
+				
+				data.addColumn('number', '요청');
 				data.addColumn('number', '완료');
 				
 				$.each(response.items, function( index, item ) {				
@@ -170,6 +171,16 @@
         var options = {
           title: '누적 월별 현황',
           subtitle: '완료건은 해당기간에 요청된 이슈들에 대한 완료 건입니다.',
+          series : {
+          	0: {lineDashStyle: [10,2], lineWidth: 2  },
+          	1: {lineDashStyle: [10,2], lineWidth: 2  },
+          	2: {lineDashStyle: [10,2], lineWidth: 2  },
+          	3: {lineDashStyle: [10,2], lineWidth: 2  },
+          	4: {lineDashStyle: [10,2], lineWidth: 2  },
+          	5: {lineDashStyle: [10,2], lineWidth: 2  },
+          	6: { lineWidth: 4  },
+          	7: { lineWidth: 4  }
+          },
          axes: {
           x: {
             0: {side: 'top'}
