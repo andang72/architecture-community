@@ -19,6 +19,12 @@ import architecture.community.model.Property;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.ee.service.ConfigService;
 
+/**
+ * 
+ * @author donghyuck
+ *
+ */
+
 @Controller("community-data-v1-mgmt-system-controller")
 @RequestMapping("/data/api/mgmt/v1")
 public class SystemMgmtDataController {
