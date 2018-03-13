@@ -35,7 +35,7 @@ import architecture.community.web.model.json.Result;
 
 @Controller("community-data-v1-mgmt-ui-controller")
 @RequestMapping("/data/api/mgmt/v1/ui")
-public class CommuintyUIMgmtDataController {
+public class WebMgmtDataController {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -47,7 +47,7 @@ public class CommuintyUIMgmtDataController {
 	@Qualifier("customQueryService")
 	private CustomQueryService customQueryService;
 	
-	public CommuintyUIMgmtDataController() {
+	public WebMgmtDataController() {
 	}
 
 	/**
