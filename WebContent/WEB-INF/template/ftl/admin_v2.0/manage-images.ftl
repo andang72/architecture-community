@@ -19,6 +19,7 @@
     <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
     
     
+    <link href="<@spring.url "/css/community.ui/community.ui.icons.min.css"/>" rel="stylesheet" type="text/css" />	
     <!-- Community Admin CSS -->
     <link href="<@spring.url "/css/community.ui.admin/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/css/community.ui.admin/community.ui.admin.css"/>" rel="stylesheet" type="text/css" />	
@@ -47,10 +48,11 @@
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
 			"community.ui.core" 			: "/js/community.ui/community.ui.core",
-			"community.data" 			: "/js/community.ui/community.data"
+			"community.data" 			: "/js/community.ui/community.data",
+			"dropzone"					: "/js/dropzone/dropzone"
 		}
 	});
-	require([ "jquery", "jquery.cookie", "bootstrap", "kendo.ui.core.min", "community.ui.core", "community.data", "community.ui.admin"], function($, kendo ) { 
+	require([ "jquery", "jquery.cookie", "bootstrap", "kendo.ui.core.min", "community.ui.core", "community.data", "community.ui.admin", "dropzone"], function($, kendo ) { 
 	
 		community.ui.setup({
 		  	features : {
@@ -82,6 +84,29 @@
 	 	
 	 	var renderTo = $('#features');
 		community.ui.bind( renderTo , observable );
+		
+		
+		renderTo.on("click", ".sorting[data-kind=image], a[data-object-type=image]", function(e){			
+			var $this = $(this);
+			var actionType = $this.data("action");	
+			if( actionType == 'sort'){
+				if( $this.data('dir') == 'asc' )
+					$this.data('dir', 'desc' );
+				else if 	( $this.data('dir') == 'desc' )
+					$this.data('dir', 'asc' );
+				community.ui.listview( $('#images-listview') ).dataSource.sort({ field:$this.data('field'), dir:$this.data('dir') });				
+				return false;
+			}else if (actionType == 'edit' || actionType == 'create' ){
+				var objectId = $this.data("object-id");		
+				var targetObject = new community.model.Image();
+				if ( objectId > 0 ) {
+					targetObject = community.ui.listview( $('#images-listview') ).dataSource.get( objectId );				
+				}
+				openImageEditorModal( targetObject );
+			} 
+			return false;		
+		});	 
+		
 		createImageListView();
 		
 	});
@@ -119,6 +144,101 @@
         }); 	
 	}
 		
+	function openImageEditorModal (data){ 
+		var renderTo = $('#image-editor-modal');
+		if( !renderTo.data("model") ){
+		
+			var featuresTo = $('#image-editor-modal .modal-content');
+			var observable = new community.ui.observable({
+				isNew : false,		
+				editable : false,	
+				image : new community.model.Image(),
+				imageThumbnailUrl : null,
+				imageLink : null,
+				setSource : function(data){
+					var $this = this;
+					data.copy( $this.image ); 
+					$this.set('imageLink', null);
+					if(  $this.image.imageId > 0 ){
+						$this.set('isNew', false );
+						$this.set('editable' , true);
+						$this.set('imageThumbnailUrl' , community.data.getImageUrl(data, {thumbnail:false}) );
+						//renderTo.find("#image-thumbnail").css('background-image', 'url(' + $this.get('imageThumbnailUrl') +  ')' );
+					}else{
+						$this.set('isNew', true ); 
+						$this.set('editable' , false);
+						$this.set('imageThumbnailUrl' , "/images/no-image.jpg");
+					}	
+				},
+				getImageLink : function(){
+					var $this = this;
+					if( $this.image.imageId > 0 ){
+						community.ui.progress(featuresTo, true);
+						community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/images/" />' + $this.image.imageId + '/link.json?create=true', {
+							data: community.ui.stringify($this.menu),
+							contentType : "application/json",
+							success : function(response){
+								$this.set('imageLink', response.linkId );
+							}
+						}).always( function () {
+							community.ui.progress(featuresTo, false);
+						});	
+					}	
+					return false;
+				}
+			});
+			renderTo.data("model", observable );	
+			community.ui.bind( renderTo, observable );	
+			createImageDropzone(observable);
+			
+		}
+		renderTo.data("model").setSource(data);
+		renderTo.modal('show');			
+	}
+	
+
+	function createImageDropzone( observable, renderTo ){	
+		renderTo = renderTo || $('#image-file-dropzone');	
+		console.log( "create dropzone" );
+		// image dorpzone
+		var myDropzone = new Dropzone("#image-file-dropzone", {
+			url: '<@spring.url "/data/api/v1/images/upload_image_and_link.json"/>',
+			paramName: 'file',
+			maxFilesize: 10,
+			previewsContainer: '#image-file-dropzone .dropzone-previews'	,
+			previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div></div>'
+		});
+		
+		var featuresTo = $('#image-editor-modal .modal-content');
+		  		
+		myDropzone.on("sending", function(file, xhr, formData) {
+			console.log( community.ui.stringify(observable.image) );
+			formData.append("objectType", observable.image.objectType);
+			formData.append("objectId", observable.image.objectId);
+			formData.append("imageId", observable.image.imageId);
+		});			
+		myDropzone.on("success", function(file, response) {
+			file.previewElement.innerHTML = "";
+			$.each( response, function( index , item  ) {
+		    		observable.image.imageId = item.imageId;
+		    		observable.set('image.name', item.filename);
+		    		observable.set('isNew', false );
+		    		observable.set('imageThumbnailUrl', community.data.getImageUrl(observable.image, {thumbnail:false}) );
+			});
+			community.ui.listview( $('#images-listview') ).dataSource.read();
+		});
+		myDropzone.on("maxfilesexceeded", function() {
+			console.log( "maxfilesexceeded" );
+		});	
+		myDropzone.on("addedfile", function(file) {
+			community.ui.progress(featuresTo, true);
+			console.log( "file added" );
+		});		
+		myDropzone.on("complete", function() {
+			community.ui.progress(featuresTo, false);
+		});			
+	}
+			
 	</script>
 </head>
     
@@ -148,13 +268,13 @@
 			<div class="g-pa-20">
 				<h1 class="g-font-weight-300 g-font-size-28 g-color-black g-mb-30">이미지 관리</h1>
 				<!-- Content Body -->
-				<div class="container-fluid">
+				<div id="features" class="container-fluid">
 					<div class="row text-center">
 						<div class="col-6 text-left">
-							<p class="text-danger g-font-weight-100">사용자를 관리합니다.</p>
+							<p class="text-danger g-font-weight-100">등록된 이미지 파일들을 관리합니다.</p>
 						</div>
 						<div class="col-6 text-right">
-							<a href="#!" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="user" data-object-id="0">이미지 업로드</a>
+							<a href="#!" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="image" data-object-id="0">이미지 업로드</a>
 						</div>
 					</div>				
 					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
@@ -245,42 +365,155 @@
 		</div>
 	</div>
 	</section>
+
+	<!-- menu editor modal -->
+	<div class="modal fade" id="image-editor-modal" tabindex="-1" role="dialog" aria-labelledby="image-editor-modal-labal" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			
+			<div class="modal-content">
+			
+				<!-- .modal-header -->
+				<div class="modal-header">
+					<h2 class="modal-title">이미지</h2>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
+			        </button>			       
+		      	</div>
+			    <!-- /.modal-header -->
+			    <!-- .modal-body -->
+				<div class="modal-body">
+				
+			<div class="g-brd-around g-brd-gray-light-v4 g-pa-30 g-mb-30" >
+                
+			<article class="row align-items-center g-mb-30">
+              <div class="col-md-4 g-mb-30 g-mb-0--lg">
+                <figure class="g-pos-rel">
+                  <img class="img-fluid g-rounded-5 g-width-150" data-bind="attr:{src: imageThumbnailUrl }" alt="Image description">
+                </figure>
+              </div>
+              <div class="col-md-8">
+                <div class="g-pa-30--md">
+                		<h3 class="h6 g-color-black g-mb-25" data-bind="text: image.name"></h3>
+                </div>
+              </div>
+            </article>  
+            
+			<div class="form-inline row" data-bind="invisible: isNew ">
+				<div class="form-group col-sm-10">
+					<input type="text" class="form-control form-control-sm rounded-0 form-control-md g-width-400" placeholder="이미지 링크" data-bind="value: imageLink">
+				</div>
+				<button type="button" class="btn btn-md u-btn-primary rounded-0" data-bind="click:getImageLink">링크 생성</button>
+			</div>
+                    
+			<hr class="g-brd-gray-light-v4 g-mx-minus-30">			
+			
+			<div class="alert alert-dismissible fade show g-bg-gray-dark-v2 g-color-white rounded-0" role="alert" data-bind="visible:isNew">
+				<button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+					<span class="g-color-white" aria-hidden="true">×</span>
+				</button>
+				<div class="media">
+					<span class="d-flex g-mr-10 g-mt-5"><i class="icon-question g-font-size-25"></i></span>
+					<span class="media-body align-self-center">
+					웹 페이지와 관련된 이미지를 업로드하는 경우 객체유형 값 14 , 객체 ID 값은 페이지 ID 값으로 입력하여 주세요.
+					</span>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col">
+					<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mb-5">객체유형</h3>
+					<input data-role="numerictextbox" placeholder="객체유형" data-min="-1" data-max="100"  data-format="###" data-bind="value:image.objectType" style="width: 100%"/>
+				</div>
+				<div class="col">
+					<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mb-5">객체 ID</h3>
+					<input data-role="numerictextbox" placeholder="객체 ID" data-min="-1" data-format="###" data-bind="value:image.objectId" style="width: 100%"/>
+				</div>
+			</div>
+            
+            <!-- Advanced File Input -->            
+ 			<div class="form-group g-mt-10 g-mb-0">
+ 			<!--<label class="g-mb-10">Advanced File input</label>-->
+ 			<form action="" method="post" enctype="multipart/form-data" id="image-file-dropzone" class="u-dropzone u-file-attach-v3 g-mb-15">
+				<div class="dz-default dz-message">
+					<p><i class="icon-svg icon-svg-dusk-upload"></i></p>
+					<h3 class="g-font-size-16 g-color-gray-dark-v2 mb-0">업로드할 이미지 파일은 이곳에 드레그 <span class="g-color-primary">Drag & Drop</span> 하여 놓아주세요.</h3>               				
+                  	<p class="g-font-size-14 g-color-gray-light-v2 mb-0">최대파일 크기는 10MB 입니다.</p>
+				</div>       
+				<div class="dropzone-previews"></div>                 
+				<div class="fallback">
+					<input name="file" type="file" multiple style="display:none;"/>
+				</div>
+			</form> 	
+			</div>							                              
+			<!-- End Advanced File Input -->
+										
+				</div>
+		      	<!-- /.modal-body -->		
+		      	<div class="modal-footer">
+			        <button type="button" class="btn btn-primary"  data-dismiss="modal" >확인</button>
+		      	</div><!-- /.modal-footer --> 				      			      	
+				
+	    		</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->		
+			
 	<script type="text/x-kendo-template" id="template">   
 	<tr class="u-listview-item">
-	<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">
-	#: imageId #
-	</td>
-	<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm">
-		<img class="g-width-100 g-width-100--md g-height-100 g-height-100--md g-brd-2 g-brd-transparent g-brd-lightblue-v3--parent-opened g-mr-20--sm" 
-		src="#= community.data.getImageUrl(data, {thumbnail:true}) #" 
-		alt="Image Description">
-		<span class="g-hidden-sm-down">#: name #</span>
-	</td>
-	<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md"> 
-	#= community.data.bytesToSize(size	) # 
-	</td>
-		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">
-			#if( !user.anonymous ){  #
-			<div class="media">
-            		<div class="d-flex align-self-center">
-                    <img class="g-width-36 g-height-36 rounded-circle g-mr-15" src="#= community.data.getUserProfileImage(user) #" >
-                </div>
-				<div class="media-body align-self-center text-left">#: user.name #</div>
-            </div>
-            #}#
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">
+		#: imageId #
 		</td>
-	<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> #: community.data.getFormattedDate( creationDate)  # </td>
-	<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">#: community.data.getFormattedDate( modifiedDate)  #</td>
-	<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">
-	<div class="d-flex align-items-center g-line-height-1">
-	<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="image" data-object-id="#= imageId #">
-	<i class="community-admin-pencil g-font-size-18"></i>
-	</a>
-	<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover" href="\#!" data-action="delete" data-object-type="image" data-object-id="#= imageId #">
-	<i class="community-admin-trash g-font-size-18"></i>
-	</a>
-	</div>
-	</td>
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm">
+			<div class="media g-mb-20">
+				<div class="d-flex">
+					<!-- Figure Image -->
+					<div class="g-width-100 g-width-100--md g-width-100 g-height-100--md g-brd-2 g-brd-transparent g-brd-lightblue-v3--parent-opened g-mr-20--sm">
+                          <img class="g-width-100 g-width-100--md g-width-100 g-height-100--md g-brd-2 g-brd-transparent g-brd-lightblue-v3--parent-opened g-mr-20--sm" src="#= community.data.getImageUrl(data, {thumbnail:true}) #"  alt="Image Description">
+					</div>
+					<!-- Figure Image -->
+				</div>
+				<div class="media-body">
+					<!-- Figure Info -->
+
+		<a class="d-flex align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=imageId#" data-object-type="image">
+		<h5 class="g-font-weight-100 g-mb-0">
+		#= name #
+		</h5> 
+		</a>					
+															
+					<div class="d-block g-mt-5">
+                          <i class="g-color-primary g-font-size-default icon-location-pin"></i>
+                          <span class="u-label g-bg-bluegray g-mr-10 g-mb-15">#= objectType #</span>
+                          <span class="u-label g-bg-black g-mr-10 g-mb-15">#= objectId #</span>
+					</div>
+					<!-- End Figure Info -->
+				</div>
+            </div>
+		</td>
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md"> 
+		#= community.data.bytesToSize(size	) # 
+		</td>
+			<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">
+			#if( !user.anonymous ){  #
+				<div class="media">
+	            		<div class="d-flex align-self-center">
+	                    <img class="g-width-36 g-height-36 rounded-circle g-mr-15" src="#= community.data.getUserProfileImage(user) #" >
+	                </div>
+					<div class="media-body align-self-center text-left">#: user.name #</div>
+	            </div>
+			#}#
+		</td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> #: community.data.getFormattedDate( creationDate)  # </td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">#: community.data.getFormattedDate( modifiedDate)  #</td>
+		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm">
+			<div class="d-flex align-items-center g-line-height-1">
+				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover g-mr-15" href="\#!" data-action="edit" data-object-type="image" data-object-id="#= imageId #">
+					<i class="community-admin-pencil g-font-size-18"></i>
+				</a>
+				<a class="u-link-v5 g-color-gray-light-v6 g-color-lightblue-v4--hover" href="\#!" data-action="delete" data-object-type="image" data-object-id="#= imageId #">
+					<i class="community-admin-trash g-font-size-18"></i>
+				</a>
+			</div>
+		</td>
 	</tr>
 	</script>	
 </body>

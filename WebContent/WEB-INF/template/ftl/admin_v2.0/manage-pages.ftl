@@ -803,7 +803,6 @@
 	<tr class="u-listview-item">
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">#= pageId #</td>
 		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm">	
-		
 		<a class="d-flex align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=pageId#" data-object-type="page">
 		<h5 class="g-font-weight-100 g-mb-0">
 		#if (secured) { # <i class="community-admin-lock"></i>  # } else {# <i class="community-admin-unlock"></i> #}#

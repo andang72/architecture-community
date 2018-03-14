@@ -231,12 +231,12 @@
                     		move: true
                     },
                     columns: [
-                        { field: "name", expandable: true, title: "메뉴", width: 250 },
+                        { field: "name", expandable: true, title: "메뉴", width: 200 },
                         { field: "description" , title: "설명", sortable: false, width: 250 },
-                        { field: "sortOrder" , title: "정렬",  width: 100, attributes: { style: "text-align: center;"  }},
+                        { field: "sortOrder" , title: "정렬",  width: 60, attributes: { style: "text-align: center;"  }},
                         { field: "page" , title: "페이지" , sortable : false},
                         { field: "location" , title: "링크" , sortable : false},
-                        { field: "roles", title: "권한" , width: 200, sortable : false},
+                        { field: "roles", title: "권한" , width: 150, sortable : false},
                         { title: " ", command: [ "edit" ], width: 200 }
                     ],
                     save: function(e){
