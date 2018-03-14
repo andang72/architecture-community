@@ -29,6 +29,7 @@ import architecture.community.codeset.CodeSetNotFoundException;
 import architecture.community.codeset.CodeSetService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.image.Image;
+import architecture.community.image.ImageLink;
 import architecture.community.image.ImageService;
 import architecture.community.menu.MenuItem;
 import architecture.community.projects.Project;
@@ -37,6 +38,7 @@ import architecture.community.query.CustomQueryService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
+import architecture.community.web.model.json.Result;
 import architecture.community.web.spring.controller.data.v1.AbstractCommunityDateController;
 import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
@@ -292,5 +294,34 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		}
 		return new ItemList(images, totalCount );
 	}	
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/images/{imageId:[\\p{Digit}]+}/delete.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Result removeImageAndLink (
+		@PathVariable Long imageId,
+		@RequestBody DataSourceRequest dataSourceRequest, 
+		NativeWebRequest request) throws NotFoundException {
+		
+		Image image = 	imageService.getImage(imageId);
+		imageService.deleteImage(image);
+		
+		return Result.newResult();
+	}	
+	
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/images/{imageId:[\\p{Digit}]+}/link.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ImageLink getImageLinkAndCreateIfNotExist (
+		@PathVariable Long imageId,
+		@RequestParam(value = "create", defaultValue = "false", required = false) Boolean createIfNotExist,
+		@RequestBody DataSourceRequest dataSourceRequest, 
+		NativeWebRequest request) throws NotFoundException {
+		
+		Image image = 	imageService.getImage(imageId);
+		return imageService.getImageLink(image, createIfNotExist);
+	}	
+	
 	
 }

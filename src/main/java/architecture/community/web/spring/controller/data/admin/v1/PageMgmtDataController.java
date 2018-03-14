@@ -44,7 +44,11 @@ import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.Result;
 import architecture.ee.service.ConfigService;
-
+/**
+ * 페이지 관리자 API  
+ * @author donghyuck
+ *
+ */
 @Controller("community-data-v1-mgmt-pages-controller")
 @RequestMapping("/data/api/mgmt/v1/pages")
 public class PageMgmtDataController {

@@ -25,6 +25,8 @@ import architecture.community.exception.NotFoundException;
 
 public interface ImageService {
 
+	/** LOGO IMAGE LINK API **/
+	
 	public LogoImage createLogoImage();
 	
 	public LogoImage createLogoImage(int objectType, long objectId, boolean primary) ;	
@@ -97,6 +99,9 @@ public interface ImageService {
 	
 	public abstract void removeDisallowedType(String contentType);
 	
+	
+	/** IMAGE API **/
+	
 	public abstract Image createImage(int objectType, long objectId, String name, String contentType, File file);
 	
 	public abstract Image createImage(int objectType, long objectId, String name, String contentType, InputStream inputStream);
@@ -112,6 +117,8 @@ public interface ImageService {
 	public abstract InputStream getImageThumbnailInputStream(Image image, int width, int height ) ;
 	
 	public abstract void invalidate(Image image, boolean fileToo);
+	
+	public abstract void deleteImage(Image image) ;
 	
 	/** IMAGE LINK API **/
 	

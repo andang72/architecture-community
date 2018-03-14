@@ -185,8 +185,9 @@ public class DownloadController {
 	@ResponseBody
 	public void downloadImageByLink(
 			@PathVariable("linkId") String linkId, 
-			@RequestParam(value = "width", defaultValue = "0", required = false) Integer width,
-			@RequestParam(value = "height", defaultValue = "0", required = false) Integer height,
+			@RequestParam(value = "thumbnail", defaultValue = "false", required = false) boolean thumbnail,
+			@RequestParam(value = "width", defaultValue = "150", required = false) Integer width,
+			@RequestParam(value = "height", defaultValue = "150", required = false) Integer height,
 			HttpServletResponse response) throws IOException {
 		try {
 			Image image = imageService.getImageByImageLink(linkId);
@@ -194,7 +195,7 @@ public class DownloadController {
 				InputStream input;
 				String contentType;
 				int contentLength;
-				if (width > 0 && width > 0) {
+				if (thumbnail) {
 					input = imageService.getImageThumbnailInputStream(image, width, height);
 					contentType = image.getThumbnailContentType();
 					contentLength = image.getThumbnailSize();

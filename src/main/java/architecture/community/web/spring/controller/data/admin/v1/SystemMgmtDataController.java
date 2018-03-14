@@ -20,7 +20,7 @@ import architecture.community.web.model.json.DataSourceRequest;
 import architecture.ee.service.ConfigService;
 
 /**
- * 
+ * 시스템 관리자 API
  * @author donghyuck
  *
  */

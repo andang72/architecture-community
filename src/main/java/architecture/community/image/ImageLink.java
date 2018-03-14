@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class ImageLink implements Serializable {
 
+	private String filename;
+	
 	private Long imageId = -1L;
 
 	private String linkId;
@@ -19,7 +21,25 @@ public class ImageLink implements Serializable {
 		this.linkId = linkId;
 		this.imageId = imageId;
 		this.publicShared = publicShared;
+		this.filename = null;
 	}
+	
+ 
+
+
+	public String getFilename() {
+		return filename;
+	}
+
+
+
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+
+
 
 	/**
 	 * @return imageId

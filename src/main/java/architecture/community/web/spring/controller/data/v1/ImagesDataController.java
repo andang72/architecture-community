@@ -97,7 +97,20 @@ public class ImagesDataController {
 		return list;
     }
 
- 
+
+	/**
+	 * 이미지를 생성 / 업데이트 하고 동시에 타 모듈에서 이미지를 보여주기 위한 링크키를 생성하여 리턴한다. 
+	 * (링크키는 없는 경우에만 생성된다.)
+	 * 
+	 * @param objectType
+	 * @param objectId
+	 * @param imageId
+	 * @param request
+	 * @return
+	 * @throws NotFoundException
+	 * @throws IOException
+	 * @throws UnAuthorizedException
+	 */
 	@Secured({ "ROLE_USER" })
     @RequestMapping(value = "/upload_image_and_link.json", method = RequestMethod.POST)
     @ResponseBody
@@ -118,7 +131,8 @@ public class ImagesDataController {
 		    String fileName = names.next();
 		    MultipartFile mpf = request.getFile(fileName);
 		    InputStream is = mpf.getInputStream();
-		    log.debug("upload image {}, file:{}, size:{}, type:{} ", imageId,  mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
+		    log.debug("upload objectType: {}, objectId:{}, image : {}, file:{}, size:{}, type:{} ", objectType, objectId, imageId,  mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
+		    
 		    Image image;
 		    if (imageId > 0) {
 			    	image = imageService.getImage(imageId);	
@@ -131,9 +145,13 @@ public class ImagesDataController {
 			    	image.setUser(user);
 		    }		    
 		    imageService.saveImage(image);
-		    list.add( imageService.getImageLink(image, true) ) ;
+		    ImageLink link = imageService.getImageLink(image, true);
+		    link.setFilename(image.getName());
+		    list.add( link ) ;
+		    
 		}			
-		return list ;//externalLinkService.getExternalLink(new ModelObjectAwareSupport(Models.IMAGE.getObjectType(), imageToUse.getImageId()), true);
+		return list ;
+		//externalLinkService.getExternalLink(new ModelObjectAwareSupport(Models.IMAGE.getObjectType(), imageToUse.getImageId()), true);
     }
 
 	@Secured({ "ROLE_USER" })

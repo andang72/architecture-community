@@ -524,14 +524,6 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 		// str);
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void deleteImage(Image image) {
-		Image imageToUse = imageDao.getImageById(image.getImageId());
-		imageDao.deleteImage(imageToUse);
-		removeImageLink(imageToUse);
-		invalidate(image, true);
-	}
-
 	public Image createImage(int objectType, long objectId, String name, String contentType, File file) {
 		Date now = new Date();
 		DefaultImage image = new DefaultImage();
@@ -627,10 +619,23 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	}
 	
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void deleteImage(Image image)  {
+		if (image.getImageId() > 1) {
+			Image imageToUse = imageDao.getImageById(image.getImageId());
+			try {
+				getImageLink(imageToUse);
+				removeImageLink(imageToUse);
+			} catch (NotFoundException e) {}
+			imageDao.deleteImage(imageToUse);
+			invalidate(imageToUse, true);
+		}
+	}
 	
 	public void invalidate(Image image, boolean deleteFile) {
 		if( imageCache.isKeyInCache(image.getImageId())) 
 			imageCache.remove(image.getImageId());
+		
 		if(deleteFile) {
 			Collection<File> files = FileUtils.listFiles(getImageCacheDir(), FileFilterUtils.prefixFileFilter(image.getImageId() + ""), null);
 			for (File file : files) {

@@ -42,7 +42,13 @@ import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
-
+/**
+ * 보안 관련 관리자 API 서비스 .
+ * 
+ * 
+ * @author donghyuck
+ *
+ */
 @Controller("community-data-v1-mgmt-security-controller")
 @RequestMapping("/data/api/mgmt/v1/security")
 public class SecurityMgmtDataController {

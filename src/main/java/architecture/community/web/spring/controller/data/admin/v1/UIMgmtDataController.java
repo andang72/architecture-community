@@ -33,9 +33,14 @@ import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 
+/**
+ * UI컴포넌트 관리자 API
+ * @author donghyuck
+ *
+ */
 @Controller("community-data-v1-mgmt-ui-controller")
 @RequestMapping("/data/api/mgmt/v1/ui")
-public class WebMgmtDataController {
+public class UIMgmtDataController {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -47,7 +52,7 @@ public class WebMgmtDataController {
 	@Qualifier("customQueryService")
 	private CustomQueryService customQueryService;
 	
-	public WebMgmtDataController() {
+	public UIMgmtDataController() {
 	}
 
 	/**
