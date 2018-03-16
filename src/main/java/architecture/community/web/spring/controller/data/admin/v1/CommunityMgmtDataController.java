@@ -281,6 +281,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		if( !dataSourceRequest.getData().containsKey("objectId") ) {
 			dataSourceRequest.getData().put("objectId", -1);
 		}
+		
 		dataSourceRequest.setStatement("COMMUNITY_CS.COUNT_IMAGE_BY_REQUEST");
 		int totalCount = customQueryService.queryForObject(dataSourceRequest, Integer.class);
 		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_IMAGE_IDS_BY_REQUEST");
@@ -316,7 +317,6 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	public ImageLink getImageLinkAndCreateIfNotExist (
 		@PathVariable Long imageId,
 		@RequestParam(value = "create", defaultValue = "false", required = false) Boolean createIfNotExist,
-		@RequestBody DataSourceRequest dataSourceRequest, 
 		NativeWebRequest request) throws NotFoundException {
 		
 		Image image = 	imageService.getImage(imageId);

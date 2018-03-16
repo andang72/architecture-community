@@ -19,6 +19,7 @@ import architecture.community.user.UserManager;
 import architecture.community.user.UserTemplate;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
+import architecture.ee.service.ConfigService;
 
 @Controller("accounts-data-controller")
 @RequestMapping("/data/accounts")
@@ -26,6 +27,9 @@ public class AccountsDataController {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());	
 	
+	@Inject
+	@Qualifier("configService")
+	private ConfigService configService;
 	
 	@Inject
 	@Qualifier("userManager")

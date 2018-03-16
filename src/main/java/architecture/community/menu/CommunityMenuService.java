@@ -188,6 +188,7 @@ public class CommunityMenuService implements MenuService {
 	
 	private void invalidateMenuCache(Menu menu){		
 		menuCache.invalidate(menu.getMenuId());
+		treewalkerCache.invalidate(menu.getMenuId());
 		menuIdCache.invalidate(menu.getName());
 	}
 }
