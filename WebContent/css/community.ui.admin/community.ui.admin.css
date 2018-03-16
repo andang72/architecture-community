@@ -52677,3 +52677,12 @@ input:checked + .g-parent .g-opacity-1--parent-sibling-checked {
   opacity: 1;
   color: #acbdbd;
 }
+
+
+/*------------------------------------
+  Kendoui
+------------------------------------*/
+[aria-labelledby][role=alertdialog] {
+    opacity: 1;
+}
+

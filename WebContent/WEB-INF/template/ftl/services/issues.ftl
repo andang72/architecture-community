@@ -664,37 +664,47 @@
 					</div>
 				</div>	           		
             		<!-- Start Issue Summary -->
-            		<div class="row text-center text-uppercase g-brd-gray g-brd-top-1  g-brd-bottom-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">		
-            			<div class="col-sm-4">
-            				<div id="chart_div" style="width: 100%; height:200px;"></div>
-            			</div>
-            			<div class="col-sm-8">			
-					<p class="text-warning g-font-weight-100 g-mb-50 g-mt-50">오늘까지 요청사항에 대한 누적 현황입니다.</p>
-					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
-					<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div>
-					<span>전체</span>
-					</div>
-					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
-					<div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount">0</div>
-					<span>오류</span>
-					</div>
-					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30" "="">
-					<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount">0</div>
-					<span>종결</span>
-					</div>
-					<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
-					<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div>
-					<span>미처리</span>
-					</div>			
-					</div>			
-				</div>
-				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
+            				
+            		<div class="u-shadow-v11 g-rounded-7 g-pa-20 g-mb-30" >
+            		
+            			<div class="u-heading-v2-4--bottom g-mb-40">
+                      <h2 class="text-uppercase u-heading-v2__title g-mb-10">프로젝트 이슈요약</h2>
+                      <h4 class="g-font-weight-200"><span data-bind="text:project.name"></span> 에 대한 이슈처리 현황입니다.</h4>
+                    	</div>
+                    
+            		   	<div class="row">
+	            			<div class="col-sm-6">
+	            				<div id="chart_div" style="width: 100%; height:200px;"></div>
+	            			</div>
+	            			<div class="col-sm-6">			
+						<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div>
+							<span>전체</span>
+							</div>
+							<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+							<div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount">0</div>
+							<span>오류</span>
+							</div>
+							<div class="d-inline-block g-px-40 g-mx-15 g-mb-30" "="">
+							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount">0</div>
+							<span>종결</span>
+							</div>
+							<div class="d-inline-block g-px-40 g-mx-15 g-mb-30">
+							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div>
+							<span>미처리</span>
+							</div>			
+						</div>
+            			</div>            		
+					<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
 				<div class="row">
-					<div class="col-12">
+					<div class="col-sm-12">
 						<div id="linechart_div" style="width: 100%; height:300px;"></div>
 					</div>
 				</div>	
-				</#if>    	
+				</#if>    
+				</div>
+				
+					
 				<div class="row g-bord-radias g-brd-gray g-brd-top-1  g-brd-bottom-0  g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
 					<div class="col-12">
 						<!--Issue ListView-->

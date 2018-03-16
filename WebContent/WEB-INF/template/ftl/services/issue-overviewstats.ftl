@@ -293,11 +293,17 @@
 				</div>			
 			</div>
 		</div>
-		<div class="row">
-			<div class="card g-brd-gray-light-v7 g-pa-15 g-pa-25-30--md g-mb-30" >
-				<div id="chart_div" style="width: 100%; height: 500px;"></div>			
-			</div>
-		</div>
+		
+		
+
+        <div class="u-shadow-v11 g-rounded-7 g-pa-20 g-mb-50" >                 
+                <div class="u-heading-v2-4--bottom g-mb-10">
+                      <h2 class="text-uppercase u-heading-v2__title g-mb-10">년간처리현황</h2>
+                      <h4 class="g-font-weight-200">년간 전체 프로젝트 이슈처리 현황입니다.</h4>
+                    	</div>    			
+			 <div id="chart_div" style="width: 100%; height: 500px;"></div>
+		</div>	
+		
 		<div class="row text-center text-uppercase g-brd-gray g-brd-top-0 g-brd-left-0 g-brd-right-0  g-brd-style-solid  g-brd-3">
 			<div class="col-lg-3 col-sm-6 g-brd-right g-brd-white-opacity-0_2 g-mb-25">
 				<div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:withinPeriodIssueCount">9</div>
