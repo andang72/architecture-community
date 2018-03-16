@@ -72,6 +72,24 @@
 				data.copy($this.currentUser);
 				$this.set('userAvatarSrc', community.data.getUserProfileImage( $this.currentUser ) );
 				$this.set('userDisplayName', community.data.getUserDisplayName( $this.currentUser ) );
+			},
+			filter : {
+				NAME : "",
+				OBJECT_TYPE : "",
+				OBJECT_ID : ""
+			},
+			find : function (){
+				var $this = this, filters = [];
+				if( $this.filter.NAME != null && $this.filter.NAME.length > 0 ){
+					filters.push({ field: "NAME", operator: "startswith", value: $this.filter.NAME });
+				}
+				if( $this.filter.OBJECT_TYPE != null && $this.filter.OBJECT_TYPE > 0 ){
+					filters.push({ field: "OBJECT_TYPE", operator: "eq", value: $this.filter.OBJECT_TYPE });
+				}
+				if( $this.filter.OBJECT_ID != null && $this.filter.OBJECT_ID > 0 ){
+					filters.push({ field: "OBJECT_ID", operator: "eq", value: $this.filter.OBJECT_ID });
+				}								
+				community.ui.listview( $('#images-listview') ).dataSource.filter( filters );
 			}
 		});
 		
@@ -277,8 +295,30 @@
 							<a href="#!" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="image" data-object-id="0">이미지 업로드</a>
 						</div>
 					</div>				
-					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
-					</div>
+					
+					<!-- Search -->
+					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">						
+						<div class="media flex-wrap g-mb-30">
+			              <div class="d-flex align-self-center align-items-center"> 
+			                <input data-role="numerictextbox" placeholder="객체유형" data-min="-1" data-max="100"  data-format="###" data-bind="value:filter.OBJECT_TYPE" style="width: 100%"/>
+			              </div>
+			
+			              <div class="d-flex align-self-center align-items-center g-ml-10 g-ml-20--md g-ml-40--lg g-mr-20"> 		
+			                <input data-role="numerictextbox" placeholder="객체 ID" data-min="-1" data-format="###" data-bind="value:filter.OBJECT_ID" style="width: 100%"/>
+			              </div>
+			              <div class="d-flex g-hidden-md-up w-100"></div>
+			              <div class="media-body align-self-center g-mt-10 g-mt-0--md">
+			                <div class="input-group g-pos-rel g-max-width-380 float-right">
+			                  <input class="form-control g-font-size-default g-brd-gray-light-v7 g-brd-lightblue-v3--focus g-rounded-20 g-pl-20 g-pr-50 g-py-10" type="text" placeholder="파일" data-bind="value:filter.NAME" >
+			                  <button class="btn g-pos-abs g-top-0 g-right-0 g-z-index-2 g-width-60 h-100 g-bg-transparent g-font-size-16 g-color-lightred-v2 g-color-lightblue-v3--hover rounded-0" type="button" data-bind="click:find">
+			                    <i class="community-admin-search g-absolute-centered"></i>
+			                  </button>
+			                </div>
+			              </div>
+			            </div>
+					</div>					
+					<!-- End Search -->
+					
 					<div class="row">
 	                		<div class="table-responsive">
 							<table class="table w-100 g-mb-0">
@@ -366,12 +406,10 @@
 	</div>
 	</section>
 
-	<!-- menu editor modal -->
+	<!-- Image Modal -->
 	<div class="modal fade" id="image-editor-modal" tabindex="-1" role="dialog" aria-labelledby="image-editor-modal-labal" aria-hidden="true">
-		<div class="modal-dialog modal-lg" role="document">
-			
-			<div class="modal-content">
-			
+		<div class="modal-dialog modal-lg" role="document">			
+			<div class="modal-content">			
 				<!-- .modal-header -->
 				<div class="modal-header">
 					<h2 class="modal-title">이미지</h2>
@@ -382,81 +420,78 @@
 			    <!-- /.modal-header -->
 			    <!-- .modal-body -->
 				<div class="modal-body">
-				
-			<div class="g-brd-around g-brd-gray-light-v4 g-pa-30 g-mb-30" >
-                
-			<article class="row align-items-center g-mb-30">
-              <div class="col-md-4 g-mb-30 g-mb-0--lg">
-                <figure class="g-pos-rel">
-                  <img class="img-fluid g-rounded-5 g-width-150" data-bind="attr:{src: imageThumbnailUrl }" alt="Image description">
-                </figure>
-              </div>
-              <div class="col-md-8">
-                <div class="g-pa-30--md">
-                		<h3 class="h6 g-color-black g-mb-25" data-bind="text: image.name"></h3>
-                </div>
-              </div>
-            </article>  
-            
-			<div class="form-inline row" data-bind="invisible: isNew ">
-				<div class="form-group col-sm-10">
-					<input type="text" class="form-control form-control-sm rounded-0 form-control-md g-width-400" placeholder="이미지 링크" data-bind="value: imageLink">
-				</div>
-				<button type="button" class="btn btn-md u-btn-primary rounded-0" data-bind="click:getImageLink">링크 생성</button>
-			</div>
+					<div class="g-brd-around g-brd-gray-light-v4 g-pa-30 g-mb-30" >         
+					<!-- Image Preview -->       
+					<article class="row align-items-center g-mb-30">
+		              <div class="col-md-4 g-mb-30 g-mb-0--lg">
+		                <figure class="g-pos-rel">
+		                  <img class="img-fluid g-rounded-5 g-width-150" data-bind="attr:{src: imageThumbnailUrl }" alt="Image description">
+		                </figure>
+		              </div>
+		              <div class="col-md-8">
+		                <div class="g-pa-30--md">
+		                		<h3 class="h6 g-color-black g-mb-25" data-bind="text: image.name"></h3>
+		                </div>
+		              </div>
+		            </article>    
+		            <!-- End Image Preview -->          			
+					<div class="form-inline row" data-bind="invisible: isNew ">
+						<div class="form-group col-sm-10">
+							<input type="text" class="form-control form-control-sm rounded-0 form-control-md g-width-400" placeholder="이미지 링크" data-bind="value: imageLink">
+						</div>
+						<button type="button" class="btn btn-md u-btn-primary rounded-0" data-bind="click:getImageLink">링크 생성</button>
+					</div>
                     
-			<hr class="g-brd-gray-light-v4 g-mx-minus-30">			
+					<hr class="g-brd-gray-light-v4 g-mx-minus-30"/>			
 			
-			<div class="alert alert-dismissible fade show g-bg-gray-dark-v2 g-color-white rounded-0" role="alert" data-bind="visible:isNew">
-				<button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
-					<span class="g-color-white" aria-hidden="true">×</span>
-				</button>
-				<div class="media">
-					<span class="d-flex g-mr-10 g-mt-5"><i class="icon-question g-font-size-25"></i></span>
-					<span class="media-body align-self-center">
-					웹 페이지와 관련된 이미지를 업로드하는 경우 객체유형 값 14 , 객체 ID 값은 페이지 ID 값으로 입력하여 주세요.
-					</span>
-				</div>
-			</div>
+					<div class="alert alert-dismissible fade show g-bg-gray-dark-v2 g-color-white rounded-0" role="alert" data-bind="visible:isNew">
+						<button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+							<span class="g-color-white" aria-hidden="true">×</span>
+						</button>
+						<div class="media">
+							<span class="d-flex g-mr-10 g-mt-5"><i class="icon-question g-font-size-25"></i></span>
+							<span class="media-body align-self-center">
+							웹 페이지와 관련된 이미지를 업로드하는 경우 객체유형 값 14 , 객체 ID 값은 페이지 ID 값으로 입력하여 주세요.
+							</span>
+						</div>
+					</div>
 
-			<div class="row">
-				<div class="col">
-					<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mb-5">객체유형</h3>
-					<input data-role="numerictextbox" placeholder="객체유형" data-min="-1" data-max="100"  data-format="###" data-bind="value:image.objectType" style="width: 100%"/>
-				</div>
-				<div class="col">
-					<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mb-5">객체 ID</h3>
-					<input data-role="numerictextbox" placeholder="객체 ID" data-min="-1" data-format="###" data-bind="value:image.objectId" style="width: 100%"/>
-				</div>
-			</div>
-            
-            <!-- Advanced File Input -->            
- 			<div class="form-group g-mt-10 g-mb-0">
- 			<!--<label class="g-mb-10">Advanced File input</label>-->
- 			<form action="" method="post" enctype="multipart/form-data" id="image-file-dropzone" class="u-dropzone u-file-attach-v3 g-mb-15">
-				<div class="dz-default dz-message">
-					<p><i class="icon-svg icon-svg-dusk-upload"></i></p>
-					<h3 class="g-font-size-16 g-color-gray-dark-v2 mb-0">업로드할 이미지 파일은 이곳에 드레그 <span class="g-color-primary">Drag & Drop</span> 하여 놓아주세요.</h3>               				
-                  	<p class="g-font-size-14 g-color-gray-light-v2 mb-0">최대파일 크기는 10MB 입니다.</p>
-				</div>       
-				<div class="dropzone-previews"></div>                 
-				<div class="fallback">
-					<input name="file" type="file" multiple style="display:none;"/>
-				</div>
-			</form> 	
-			</div>							                              
-			<!-- End Advanced File Input -->
-										
+					<div class="row">
+						<div class="col">
+							<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mb-5">객체유형</h3>
+							<input data-role="numerictextbox" placeholder="객체유형" data-min="-1" data-max="100"  data-format="###" data-bind="value:image.objectType" style="width: 100%"/>
+						</div>
+						<div class="col">
+							<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mb-5">객체 ID</h3>
+							<input data-role="numerictextbox" placeholder="객체 ID" data-min="-1" data-format="###" data-bind="value:image.objectId" style="width: 100%"/>
+						</div>
+					</div>
+            			</div>	
+		            <!-- Advanced File Input -->            
+		 			<div class="form-group g-mt-10 g-mb-0">
+		 			<form action="" method="post" enctype="multipart/form-data" id="image-file-dropzone" class="u-dropzone u-file-attach-v3 g-mb-15">
+						<div class="dz-default dz-message">
+							<p><i class="icon-svg icon-svg-dusk-upload"></i></p>
+							<h3 class="g-font-size-16 g-color-gray-dark-v2 mb-0">업로드할 이미지 파일은 이곳에 드레그 <span class="g-color-primary">Drag & Drop</span> 하여 놓아주세요.</h3>               				
+		                  	<p class="g-font-size-14 g-color-gray-light-v2 mb-0">최대파일 크기는 10MB 입니다.</p>
+						</div>       
+						<div class="dropzone-previews"></div>                 
+						<div class="fallback">
+							<input name="file" type="file" multiple style="display:none;"/>
+						</div>
+					</form> 	
+					</div>							                              
+					<!-- End Advanced File Input -->
 				</div>
 		      	<!-- /.modal-body -->		
 		      	<div class="modal-footer">
 			        <button type="button" class="btn btn-primary"  data-dismiss="modal" >확인</button>
-		      	</div><!-- /.modal-footer --> 				      			      	
-				
+		      	</div><!-- /.modal-footer --> 	
 	    		</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->		
-			
+	<!-- End Image Modal -->		
+	
 	<script type="text/x-kendo-template" id="template">   
 	<tr class="u-listview-item">
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">
@@ -473,13 +508,9 @@
 				</div>
 				<div class="media-body">
 					<!-- Figure Info -->
-
-		<a class="d-flex align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=imageId#" data-object-type="image">
-		<h5 class="g-font-weight-100 g-mb-0">
-		#= name #
-		</h5> 
-		</a>					
-															
+					<h5 class="g-font-weight-100 g-mb-0">
+					#= name #
+					</h5> 
 					<div class="d-block g-mt-5">
                           <i class="g-color-primary g-font-size-default icon-location-pin"></i>
                           <span class="u-label g-bg-bluegray g-mr-10 g-mb-15">#= objectType #</span>

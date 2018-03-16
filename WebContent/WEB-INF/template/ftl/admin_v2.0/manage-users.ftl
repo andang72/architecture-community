@@ -313,37 +313,10 @@
 							<a href="#!" class="btn btn-xl u-btn-primary g-width-180--md g-mb-10 g-font-size-default g-ml-10" data-action="create" data-object-type="user" data-object-id="0">새로운 사용자 만들기</a>
 						</div>
 					</div>
-					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
-						
+					
+					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">						
 						<div class="media flex-wrap g-mb-30">
-						<!--
-			              <div class="d-flex align-self-center align-items-center">
-			                <span class="g-hidden-sm-down g-color-gray-dark-v6 g-mr-12">Type:</span>
-			
-			                <div class="u-select--v1 g-pr-20">
-			                  <div class="btn-group bootstrap-select js-select u-select--v1-select w-100"><button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" role="button" title="Colleagues" aria-expanded="false"><span class="filter-option pull-left"><span class="d-flex align-items-center"><span class="u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-teal-v2 g-mr-8--sm"></span><span class="g-hidden-sm-down g-line-height-1_2 g-color-black">Colleagues</span></span></span>&nbsp;<span class="bs-caret"><span class="caret"></span></span></button><div class="dropdown-menu open" role="combobox" x-placement="bottom-start" style="max-height: 154.578px; overflow: hidden; min-height: 0px; position: absolute; transform: translate3d(30px, 16px, 0px); top: 0px; left: 0px; will-change: transform;"><ul class="dropdown-menu inner" role="listbox" aria-expanded="false" style="max-height: 152.578px; overflow-y: auto; min-height: 0px;"><li data-original-index="0" class=""><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="d-flex align-items-center"><span class="u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-lightblue-v3 g-mr-8--sm"></span><span class="g-hidden-sm-down g-line-height-1_2 g-color-black">Friends</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li><li data-original-index="1" class="selected"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="true"><span class="d-flex align-items-center"><span class="u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-teal-v2 g-mr-8--sm"></span><span class="g-hidden-sm-down g-line-height-1_2 g-color-black">Colleagues</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li></ul></div><select class="js-select u-select--v1-select w-100" style="display: none;" tabindex="-98">
-			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-lightblue-v3 g-mr-8--sm&quot;></span><span class=&quot;g-hidden-sm-down g-line-height-1_2 g-color-black&quot;>Friends</span></span>">Friends</option>
-			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;u-badge-v2--md g-pos-stc g-transform-origin--top-left g-bg-teal-v2 g-mr-8--sm&quot;></span><span class=&quot;g-hidden-sm-down g-line-height-1_2 g-color-black&quot;>Colleagues</span></span>">Colleagues</option>
-			                  </select></div>
-			                  <i class="hs-admin-angle-down g-absolute-centered--y g-right-0 g-color-gray-light-v6 ml-auto"></i>
-			                </div>
-			              </div>
-			
-			              <div class="d-flex align-self-center align-items-center g-ml-10 g-ml-20--md g-ml-40--lg">
-			                <span class="g-hidden-sm-down g-color-gray-dark-v6 g-mr-12">Position:</span>
-			
-			                <div class="u-select--v1 g-pr-20">
-			                  <div class="btn-group bootstrap-select js-select u-select--v1-select w-100"><button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" role="button" title="All Positions"><span class="filter-option pull-left"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">All Positions</span></span></span>&nbsp;<span class="bs-caret"><span class="caret"></span></span></button><div class="dropdown-menu open" role="combobox"><ul class="dropdown-menu inner" role="listbox" aria-expanded="false"><li data-original-index="0" class="selected"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="true"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">All Positions</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li><li data-original-index="1"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">Manager</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li><li data-original-index="2"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">Designer</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li><li data-original-index="3"><a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="d-flex align-items-center"><span class="g-line-height-1_2 g-color-black">Developer</span></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li></ul></div><select class="js-select u-select--v1-select w-100" style="display: none;" tabindex="-98">
-			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;g-line-height-1_2 g-color-black&quot;>All Positions</span></span>">All Positions</option>
-			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;g-line-height-1_2 g-color-black&quot;>Manager</span></span>">Manager</option>
-			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;g-line-height-1_2 g-color-black&quot;>Designer</span></span>">Designer</option>
-			                    <option data-content="<span class=&quot;d-flex align-items-center&quot;><span class=&quot;g-line-height-1_2 g-color-black&quot;>Developer</span></span>">Developer</option>
-			                  </select></div>
-			                  <i class="hs-admin-angle-down g-absolute-centered--y g-right-0 g-color-gray-light-v6 ml-auto"></i>
-			                </div>
-			              </div>
-						-->
-			              <div class="d-flex g-hidden-md-up w-100"></div>
+						  <div class="d-flex g-hidden-md-up w-100"></div>
 			              <div class="media-body align-self-center g-mt-10 g-mt-0--md">
 			                <div class="input-group g-pos-rel g-max-width-380 float-right">
 			                  <input class="form-control g-font-size-default g-brd-gray-light-v7 g-brd-lightblue-v3--focus g-rounded-20 g-pl-20 g-pr-50 g-py-10" type="text" placeholder="이름 검색" data-bind="value:filter.NAME" >
@@ -594,6 +567,7 @@
 	    		</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->		
+	
 	<script type="text/x-kendo-template" id="template">    	
 	<tr class="u-listview-item">
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">#= userId #</td>

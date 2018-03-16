@@ -180,9 +180,11 @@
 				} else if ( $xhr.errorThrown == "Forbidden" || $xhr.errorThrown == 'timeout' || $xhr.errorThrown == 'parsererror') {
 					message = ERROR_MESSAGES[$xhr.errorThrown];						
 				} else {		
-					if( $xhr.responseText ){
+					if( $xhr.responseText ){						
 						console.log( $xhr.responseText );
-						var obj = eval("("+$xhr.responseText+")")
+						
+						var obj = eval("("+$xhr.responseText+")");
+						
 						if( obj != null && obj.error.exceptionMessage ){
 							if( obj.error.exceptionMessage == 'Bad credentials' ){
 								message = '아이디 또는 비밀번호를 잘못 입력하셨습니다.';
