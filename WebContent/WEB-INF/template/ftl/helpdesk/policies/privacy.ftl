@@ -111,7 +111,7 @@
 </head>
 <body id="page-top" class="landing-page skin-5">
 	<!-- NAVBAR START -->   
-	<#include "/includes/user-top-navbar.ftl">
+	<#include "../includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->  
 	<section class="g-brd-bottom g-brd-gray-light-v4">
       <div class="container g-py-150">
@@ -259,7 +259,7 @@
 	</div>	
     </section>      
 	<!-- FOOTER START -->   
-	<#include "/includes/user-footer.ftl">
+	<#include "../includes/user-footer.ftl">
 	<!-- FOOTER END -->  
 </body>
 </html>	

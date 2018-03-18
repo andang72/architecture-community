@@ -249,7 +249,7 @@
 </head>
 <body id="page-top" class="landing-page no-skin-config">
 	<!-- NAVBAR START -->   
-	<#include "/includes/user-top-navbar.ftl">
+	<#include "includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->  
 	<section class="g-brd-bottom g-brd-gray-light-v4 u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(/images/bg/black_panther.jpg)">
       <div class="container g-py-150">
@@ -329,7 +329,7 @@
 		</div>	
   	</section>    	
 	<!-- FOOTER START -->   
-	<#include "/includes/user-footer.ftl">
+	<#include "includes/user-footer.ftl">
 	<!-- FOOTER END -->  
 	<script type="text/x-kendo-template" id="template">
 	<div class="forum-item">

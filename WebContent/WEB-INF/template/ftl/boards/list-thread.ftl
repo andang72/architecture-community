@@ -191,7 +191,7 @@
   </head>
   <body id="page-top" class="landing-page no-skin-config">
 	<!-- NAVBAR START -->   
-	<#include "/includes/user-top-navbar.ftl">
+	<#include "/helpdesk/includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->   
 	
 	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(/images/bg/BladeRunner-car-1920x1080.jpg)">      
@@ -268,7 +268,7 @@
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->	
 	<!-- FOOTER START -->   
-	<#include "/includes/user-footer.ftl">
+	<#include "/helpdesk/includes/user-footer.ftl">
 	<!-- FOOTER END -->  		
 	<script type="text/x-kendo-template" id="template">
 			<div class="forum-item">

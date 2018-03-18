@@ -121,7 +121,24 @@
 					targetObject = community.ui.listview( $('#images-listview') ).dataSource.get( objectId );				
 				}
 				openImageEditorModal( targetObject );
-			} 
+			}else if (actionType == 'delete'){
+				var objectId = $this.data("object-id");
+				if ( objectId > 0 ) {
+					var targetObject = community.ui.listview( $('#images-listview') ).dataSource.get( objectId );		
+					community.ui.confirm( "이미지 <span class='text-danger'>" + targetObject.name + "</span> 를 <br/> 삭제하시겠습니까?").done(function(){
+		            		community.ui.progress(renderTo, true);
+		            		community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/images/" />' + objectId + '/delete.json', {
+							contentType : "application/json",
+							data : community.ui.stringify({}) ,
+							success : function(response){		
+								community.ui.listview( $('#images-listview') ).dataSource.read();						
+							}
+						}).always( function () {
+							community.ui.progress(renderTo, false);
+						});			            		
+		        		});		
+				}
+			}
 			return false;		
 		});	 
 		

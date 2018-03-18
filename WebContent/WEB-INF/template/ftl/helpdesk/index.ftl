@@ -106,7 +106,7 @@
 </head>
 <body id="page-top" class="landing-page no-skin-config">
 	<!-- NAVBAR START -->   
-	<#include "/includes/user-top-navbar.ftl">
+	<#include "includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->  
 <div id="inSlider" class="carousel carousel-fade" data-ride="carousel">
     <ol class="carousel-indicators">
@@ -376,7 +376,7 @@
 		
 		</section>
 	<!-- FOOTER START -->   
-	<#include "/includes/user-footer.ftl">
+	<#include "includes/user-footer.ftl">
 	<!-- FOOTER END -->  
 </body>
 </html>
