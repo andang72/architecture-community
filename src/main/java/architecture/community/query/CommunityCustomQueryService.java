@@ -45,7 +45,6 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	}
 	
 	
-	
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {				
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		
 		if( dataSourceRequest.getParameters().size() > 0 )
