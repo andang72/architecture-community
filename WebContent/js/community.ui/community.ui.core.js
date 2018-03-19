@@ -297,8 +297,7 @@
 					}
 				},
 				serverPaging: false,
-				error:handleAjaxError,	
-				pageSize: 15		
+				error:handleAjaxError		
 		};
 		
 		function datasource(url, options ){
