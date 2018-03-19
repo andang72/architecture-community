@@ -47,6 +47,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
+import architecture.community.board.Board;
 import architecture.community.board.BoardMessageNotFoundException;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.codeset.CodeSet;
@@ -74,6 +75,7 @@ import architecture.community.query.CustomQueryService;
 import architecture.community.query.CustomQueryService.DaoCallback;
 import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
+import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
 import architecture.community.util.SecurityHelper;
@@ -127,6 +129,21 @@ public class IssueDataController extends AbstractCommunityDateController  {
 	/**
 	 * PROJECT & ISSUE API 
 	******************************************/
+	@RequestMapping(value = "/projects/list_v2.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getProjecs (@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {		
+		
+		List<Project> list = projectService.getProjects();
+		List<Project> list2 = new ArrayList<Project> ();	
+		for( Project project : list) {
+			PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, project.getProjectId() );		
+			if( bundle.isAdmin() || bundle.isWrite() || bundle.isRead())
+				list2.add(project);
+		}
+		return new ItemList(list2, list2.size());
+	}
+	
+	
 	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public ItemList getProjects (@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {			
@@ -144,6 +161,9 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		}
 		return new ItemList(list2, list2.size());
 	}
+	
+	
+	
 	
 	/**
 	 * 프로젝트 정보 리턴 

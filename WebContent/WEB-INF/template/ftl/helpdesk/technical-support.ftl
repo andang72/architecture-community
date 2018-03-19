@@ -130,14 +130,23 @@
 				}
 			}),
 			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PROJECT/list.json" />' , {} ),
+			projectsDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/list_v2.json"/>' , {
+				schema: {
+					total: "totalCount",
+					data: "items",
+					model: community.model.Project
+				}
+			} ),
 			filter : {
 				PROJECT_CONTRACT : null,
-				NAME : null
+				NAME : null,
+				ID : null
 			},
 			clearFilters : function(){
 				var $this = this ;
 				$this.set('filter.PROJECT_CONTRACT' , null ) ;
 				$this.set('filter.NAME' , null ) ;
+				$this.set('filter.ID' , null ) ;
 				$this.dataSource.filter( [] );
 			},
 			applyFilters : function(){
@@ -146,7 +155,10 @@
 					filters.push({ field: "contractState", operator: "eq", value: $this.filter.PROJECT_CONTRACT });
 				}else if ($this.filter.NAME != null ){
 					filters.push({ field: "name", operator: "contains", value: $this.filter.NAME });
+				}else if ($this.filter.ID != null ){
+					filters.push({ field: "projectId", operator: "eq", value: $this.filter.ID });
 				}
+				
 				$this.dataSource.filter( filters );
 			},
 			filter2 : {
@@ -172,7 +184,7 @@
  			}
     		});
     		observable.bind("change", function(e) { 
-    			if( e.field == 'filter.PROJECT_CONTRACT' || e.field == 'filter.NAME' ) {
+    			if( e.field == 'filter.PROJECT_CONTRACT' || e.field == 'filter.NAME' || e.field == 'filter.ID' ) {
     				observable.applyFilters();
     			}else if (e.field == 'filter2.ASSIGNEE_TYPE'){
     				observable.doFilter2();  				
@@ -412,6 +424,17 @@
 								  			</div>	
 								  		</div>
 								 		<div class="col-sm-4 g-mb-15">
+										  	<div class="form-group">					    
+												<input data-role="combobox" 
+													data-option-label="프로젝트를 선택하세요."
+													data-placeholder="프로젝트를 선택하세요."
+													data-value-primitive="true"
+													data-auto-bind="true"
+													data-text-field="name"
+													data-value-field="projectId"
+													data-bind="value: filter.ID, source: projectsDataSource"
+													style="width: 100%;" />
+								  			</div>	
 										  	<div class="form-group">
 												<input type="text" class="form-control" placeholder="프로젝트 이름을 입력하세요." data-bind="value:filter.NAME">
 											</div>

@@ -285,6 +285,21 @@
 				pageSize: 15		
 		};
 		
+		var DEFAULT_DATASOURCE_SETTING_V4 = {
+				transport:{
+					read:{
+						contentType : "application/json; charset=utf-8",
+						type :POST,
+						dataType : JSON
+					},
+					parameterMap : function (options, operation){		
+						return kendo.stringify(options);
+					}
+				},
+				serverPaging: false,
+				error:handleAjaxError,	
+				pageSize: 15		
+		};
 		
 		function datasource(url, options ){
 			options = options || {} ;		
@@ -298,7 +313,17 @@
 			return dataSource;
 		};
 		
-
+		function datasource_v4(url, options ){
+			options = options || {} ;	
+			var settings = extend(true, {}, DEFAULT_DATASOURCE_SETTING_V4 , options ); 
+			
+			if( defined(url) && url != null ){
+				settings.transport.read.url = url;
+			}		
+			var dataSource =  DataSource.create(settings);
+			return dataSource;
+		}
+		
 		function datasource_v2( options ){
 			options = options || {} ;
 			var settings = extend(true, {}, { error:handleAjaxError } , options ); 
@@ -506,6 +531,7 @@
 			datasource : datasource,
 			datasource_v2 : datasource_v2, 
 			datasource_v3 : datasource_v3,
+			datasource_v4 : datasource_v4,
 			ajax : ajax, 
 			listview : listview,
 			listbox : listbox,
@@ -523,6 +549,7 @@
 			exists : exists,
 			notification : notification,
 			tooltip: tooltip,
+			confirm : kendo.confirm,
 			components: {},
 			helpers : {}			
 		});		
