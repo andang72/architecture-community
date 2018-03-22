@@ -304,7 +304,7 @@ $.extend(true, kendo.ui.Grid.prototype.options.messages,{
 		     "excel": "Export to Excel",
 		     "pdf": "Export to PDF",
 		     "save": "변경 사항 저장",
-		     "select" "선택",
+		     "select": "선택",
 		     "update": "업데이트"
 		   },
 		   "editable": {
@@ -532,7 +532,7 @@ $.extend(true, kendo.ui.TreeView.prototype.options.messages,{
 if (kendo.ui.Upload) {
 kendo.ui.Upload.prototype.options.localization=
 $.extend(true, kendo.ui.Upload.prototype.options.localization,{
-	"select" "파일을 선택 ...",
+	"select" : "파일을 선택 ...",
 	   "cancel": "취소",
 	   "retry": "다시 시도",
 	   "remove": "삭제",
