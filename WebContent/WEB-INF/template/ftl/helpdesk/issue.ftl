@@ -496,13 +496,18 @@
 		targetObject = targetObject || $('#issue-comment-listview');	
 		var renderTo = $('#issue-comment-modal');
 		if( !renderTo.data("model") ){
-			var editorTenderTo = $('#issue-comment-body');
-			editorTenderTo.summernote({
-				toolbar: [], 
+			var editorRenderTo = $('#issue-comment-body');
+			editorRenderTo.summernote({
+				toolbar: [ 'codeview' ], 
 				placeholder: '댓글...',
 				dialogsInBody: true,
 				height: 200,
-				lang: 'ko-KR'
+				lang: 'ko-KR',
+				callbacks: {
+					onImageUpload : function(files, editor, welEditable) {
+				    		community.data.uploadImageAndInsertLink(files[0], editorRenderTo );
+				    }
+			    }
 			});
 			var observable = new community.ui.observable({ 
 				autherAvatarSrc :"/images/no-avatar.png",
@@ -519,11 +524,11 @@
 					$this.set( 'text', "" );
 					$this.set( 'email', "" );
 					$this.set( 'name', "" );					
-					editorTenderTo.summernote('code', $this.get('text'));
+					editorRenderTo.summernote('code', $this.get('text'));
 				},
 				save : function () {
 					var $this = this;
-					$this.set('text', editorTenderTo.summernote('code') );
+					$this.set('text', editorRenderTo.summernote('code') );
 				  	var template = community.ui.template("/data/api/v1/issues/#= issueId #/comments/add.json"); 
 				  	var target_url = template($this);			  	
 				  	community.ui.progress(renderTo, true);				
