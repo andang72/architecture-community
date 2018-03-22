@@ -44,6 +44,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			Project board = new Project(rs.getLong("PROJECT_ID"));			
 			board.setName(rs.getString("NAME"));
 			board.setSummary(rs.getString("SUMMARY"));
+			board.setContractor(rs.getString("CONTRACTOR"));
 			board.setContractState(rs.getString("CONTRACT_STATE"));
 			board.setMaintenanceCost(rs.getDouble("MAINTENANCE_COST"));
 			board.setStartDate(rs.getDate("START_DATE"));
@@ -110,6 +111,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getProjectId()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getName()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getContractor()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getContractState()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getMaintenanceCost()),					
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
@@ -123,6 +125,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_PROJECT").getSql(),
 					new SqlParameterValue(Types.VARCHAR, toUse.getName()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getSummary()),
+					new SqlParameterValue(Types.VARCHAR, toUse.getContractor()),
 					new SqlParameterValue(Types.VARCHAR, toUse.getContractState()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getMaintenanceCost()),	
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
@@ -376,6 +379,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			IssueSummary issue = new IssueSummary(rs.getLong("ISSUE_ID"));			
 			issue.setProject( new Project( rs.getLong("PROJECT_ID") ) );
 			issue.getProject().setName(rs.getString("PROJECT_NAME"));
+			issue.getProject().setContractState(rs.getString("PROJECT_CONTRACT_STATE"));		
+			issue.getProject().setContractor(rs.getString("PROJECT_CONTRACTOR"));	 
 			issue.setIssueType(rs.getString("ISSUE_TYPE"));
 			issue.setStatus(rs.getString("ISSUE_STATUS"));
 			issue.setResolution(rs.getString("ISSUE_RESOLUTION"));

@@ -15,7 +15,7 @@
     <link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
     
     <!-- Bootstrap Theme CSS -->
-    
+    <link href="<@spring.url "/fonts/nanumgothic.min.css"/>" rel="stylesheet" type="text/css" />	     
     <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
 
@@ -573,16 +573,13 @@
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">#= userId #</td>
 		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm">	
 		<img class="g-width-40 g-width-50--md g-height-40 g-height-50--md g-brd-around g-brd-2 g-brd-transparent g-brd-lightblue-v3--parent-opened rounded-circle g-mr-20--sm" src="#= community.data.getUserProfileImage(data) #" alt="Image Description">
+		
+		<a class="align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=userId#" data-object-type="page">
+		<span class="u-title">
 		<span class="g-hidden-sm-down"> #: name #</span>
 		<span class="g-font-weight-300 g-color-gray-dark-v6 mb-0">(#: username #)</span>
-		<!--
-		<div class="u-visible-on-select">
-			<div class="btn-group">
-			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="edit" data-object-type="user" data-object-id="#= userId #">수정</button>
-			<button class="btn btn-sm u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-type="user" data-object-id="#= userId #">삭제</button>
-			</div>
-	 	</div>		
-	 	-->
+		</span>
+		</a>
 		</td>		
 		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md"> #: email # </td>
 		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md g-px-5 g-px-10--sm"> 

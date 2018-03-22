@@ -420,9 +420,11 @@
 			name: { type: "string", defaultValue: "" },			
 			summary:{ type: "string", defaultValue: "" },
 			contractState: { type: "string", defaultValue: "" },
+			contractor: { type: "string", defaultValue: "" },
 			maintenanceCost : { type: "number", defaultValue: 0 },
 			startDate:{ type: "date" },			
 			endDate:{ type: "date"},
+			properties: { type: "object", defaultValue : {} },
 			creationDate:{ type: "date" },			
 			modifiedDate:{ type: "date" }	
 		},
@@ -430,12 +432,15 @@
 			target.projectId = this.get("projectId");
 		    	target.set("name",this.get("name") );
 		    	target.set("summary", this.get("summary") );
+		    	target.set("contractor", this.get("contractor") );
 		    	target.set("contractState", this.get("contractState") );
 		    	target.set("maintenanceCost", this.get("maintenanceCost") );
 		    	target.set("startDate",this.get("startDate") );
 		    	target.set("endDate", this.get("endDate") );		
 		    	target.set("modifiedDate",this.get("modifiedDate") );
 		    	target.set("creationDate", this.get("creationDate") );
+		    	if( typeof this.get("properties") === 'object' )
+		    		target.set("properties", this.get("properties") );
 		}
 	});	
 	
@@ -486,6 +491,87 @@
 		    	if( typeof this.get("assignee") === 'object' )
 		    		target.set("assignee", this.get("assignee") );
 		}			
+	});
+	
+	
+	community.model.Announce = kendo.data.Model.define({
+		id : "announceId", // the identifier of the model
+		fields : {
+			announceId : {
+				type : "number",
+				editable : false,
+				defaultValue : 0
+			},
+			objectType : {
+				type : "number",
+				editable : true,
+				defaultValue : 0
+			},
+			objectId : {
+				type : "number",
+				editable : true,
+				defaultValue : 0
+			},
+			subject : {
+				type : "string",
+				editable : true
+			},
+			body : {
+				type : "string",
+				editable : true
+			},
+			startDate : {
+				type : "date",
+				editable : true
+			},
+			endDate : {
+				type : "date",
+				editable : true
+			},
+			user : {
+				type : "common.ui.data.User"
+			},
+			modifiedDate : {
+				type : "date"
+			},
+			creationDate : {
+				type : "date"
+			}
+		},
+		authorPhotoUrl : function() {
+			if (typeof this.get("user") === 'object')
+				return getUserProfileImage(this.get("user"));
+			else
+				return "/images/common/no-avatar.png";
+		},
+		formattedCreationDate : function() {
+			return kendo.toString(this.get("creationDate"), "g");
+		},
+		formattedModifiedDate : function() {
+			return kendo.toString(this.get("modifiedDate"), "g");
+		},
+		formattedStartDate : function() {				
+			return kendo.toString(this.get("startDate"), 'yyyy.MM.dd');
+		},
+		formattedEndDate : function() {
+			return kendo.toString(this.get("endDate"), "g");
+		},
+		copy : function(target) {
+			if (typeof this.get("user") === 'object')
+				target.set("user", this.get("user"));
+			if (typeof this.get("properties") === 'object')
+				target.set("properties", this.get("properties"));
+			target.announceId = this.get("announceId");
+			target.set("objectType", this.get("objectType"));
+			target.set("objectId", this.get("objectId"));
+			target.set("subject", this.get("subject"));
+			target.set("body", this.get("body"));
+			target.set("startDate", this.get("startDate"));
+			target.set("endDate", this.get("endDate"));
+			target.set("modifiedDate", this.get("modifiedDate"));
+			target.set("creationDate", this.get("creationDate"));
+
+		}
 	});
 	
 	

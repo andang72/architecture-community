@@ -6994,3 +6994,62 @@ button.u-btn-floating {
     left: 18%;
   }
 }
+
+
+/*------------------------------------
+  Accordions
+------------------------------------*/
+.u-accordion__header {
+  padding: 0.71429rem 1.07143rem; }
+
+.u-accordion__body {
+  padding: 1.07143rem; }
+
+.u-accordion__control-icon i:nth-child(1) {
+  display: none; }
+
+.collapsed .u-accordion__control-icon i:nth-child(1) {
+  display: inline; }
+
+.u-accordion__control-icon i:nth-child(2) {
+  display: inline; }
+
+.collapsed .u-accordion__control-icon i:nth-child(2) {
+  display: none; }
+
+.u-accordion [class*="et-icon-"], .u-accordion-line-icon-pro {
+  position: relative;
+  top: 3px; }
+
+.u-accordion-color-primary .u-accordion__header [aria-expanded="true"] {
+  color: #72c02c !important; }
+
+.u-accordion-color-white .u-accordion__header [aria-expanded="true"] {
+  color: #fff !important; }
+
+.u-accordion-bg-primary .u-accordion__header [aria-expanded="true"] {
+  background-color: #72c02c !important;
+  border-color: #72c02c !important; }
+
+.u-accordion-bg-white .u-accordion__header [aria-expanded="true"] {
+  background-color: #fff !important;
+  border-color: #fff !important; }
+
+.u-accordion-brd-primary .u-accordion__header [aria-expanded="true"] {
+  border-color: #72c02c !important; }
+
+.u-accordion-brd-white .u-accordion__header [aria-expanded="true"] {
+  border-color: #fff !important; }
+  
+
+.card,
+.card-header {
+  border-color: #eee; }
+
+.card-header {
+  padding: 0.71429rem 1.07143rem; }
+
+.card-block {
+  padding: 1.07143rem; }
+  
+  

@@ -12,14 +12,18 @@
 		TO_CHAR( T1.CREATION_DATE , 'MM' ) AS CREATION_MONTH,
 		TO_CHAR( T1.RESOLUTION_DATE , 'MM' ) AS RESOLUTION_MONTH
 	FROM 
-		REP_ISSUE T1
+		REP_ISSUE T1, REP_PROJECT T2
 	WHERE 
 		( TO_CHAR(SYSDATE, 'YYYY') = TO_CHAR(T1.CREATION_DATE, 'YYYY') OR TO_CHAR(SYSDATE, 'YYYY') = TO_CHAR(T1.RESOLUTION_DATE, 'YYYY') )
 	]]><dynamic><![CDATA[  	
-	<#if data.projectId?? >
 		AND T1.OBJECT_TYPE = 19
-		AND T1.OBJECT_ID = ${data.projectId} 
+		AND T1.OBJECT_ID = T2.PROJECT_ID 
+	<#if data.projectId?? >
+		AND T2.PROJECT_ID = ${data.projectId} 
 	</#if>	
+	<#if data.contractor?? >
+		AND T2.CONTRACTOR =  '${data.contractor}'
+	</#if> 		
  	]]></dynamic></sql-query>
  	<sql-query name="SELECT_ISSUE_SUMMARY_BY_PERIOD" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[    	
 	SELECT  
@@ -42,6 +46,9 @@
 	WHERE 
 	T1.OBJECT_TYPE = 19
 	AND T1.OBJECT_ID = T2.PROJECT_ID 	
+	<#if data.contractor?? >
+		AND T2.CONTRACTOR =  '${data.contractor}'
+	</#if> 	
 	AND (
 	      ( T1.DUE_DATE IS NULL AND TO_CHAR( T1.CREATION_DATE , 'YYYYMMDD' ) BETWEEN '${data.startDate}' AND '${data.endDate}' )  
 	   OR ( T1.DUE_DATE IS NOT NULL AND TO_CHAR( T1.DUE_DATE , 'YYYYMMDD' ) BETWEEN '${data.startDate}' AND '${data.endDate}' ) 
@@ -59,6 +66,9 @@
 	WHERE 
 		T1.OBJECT_TYPE = 19
 		AND T1.OBJECT_ID = T2.PROJECT_ID
+		<#if data.contractor?? >
+		AND T2.CONTRACTOR =  '${data.contractor}'
+		</#if> 
 	  	AND ( T1.ISSUE_STATUS != '005' OR T1.ISSUE_STATUS IS NULL )
 		AND (
 		      ( T1.DUE_DATE IS NULL AND TO_CHAR( T1.CREATION_DATE , 'YYYYMMDD' ) <= '${data.endDate}' )  

@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,23 +24,22 @@ public class CommunityAnnounceService implements AnnounceService {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
+	@Inject
+	@Qualifier("announceDao")
 	private AnnounceDao announceDao;
     
+	@Inject
+	@Qualifier("announceCache")
 	private Cache announceCache;
     
+	@Inject
+	@Qualifier("userManager")
 	private UserManager userManager;
     
 	public CommunityAnnounceService() { 
 		
 	}
-
-	/**
-	 * @param announceDao
-	 *            설정할 announceDao
-	 */
-	public void setAnnounceDao(AnnounceDao announceDao) {
-		this.announceDao = announceDao;
-	}
+ 
 
 	public Announce createAnnounce(User user) {
 		// TODO 자동 생성된 메소드 스텁
@@ -80,17 +82,15 @@ public class CommunityAnnounceService implements AnnounceService {
 		if (announceCache.get(announceId) != null) {
 			announce = (Announce) announceCache.get(announceId).getValue();
 		}
-
 		if (announce == null) {
 			announce = announceDao.load(announceId);
-
 			User user;
 			try {
-				user = userManager.getUser(announce.getUserId());
+				log.debug("find user by {}", announce.getUser().getUserId() );
+				user = userManager.getUser(announce.getUser().getUserId());
+				log.debug("found user : {}", user );
 				announce.setUser(user);
-			} catch (UserNotFoundException e) {
-
-			}
+			} catch (UserNotFoundException e) {}
 			updateCache(announce);
 		}
 		return announce;

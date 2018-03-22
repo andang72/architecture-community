@@ -47,7 +47,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
-import architecture.community.board.Board;
 import architecture.community.board.BoardMessageNotFoundException;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.codeset.CodeSet;
@@ -458,35 +457,27 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_STATS_BY_YEAR");
 		customQueryService.query(dataSourceRequest, new RowCallbackHandler() {
 			public void processRow(ResultSet rs) throws SQLException {
-				
-				
-				
-				while(rs.next()) {
-					String type = rs.getString(1);   // TYPE
-					String status = rs.getString(2); // STATUS CODE
+				log.debug("extract database row {} ...." , rs.getRow() ); 
+					String type = rs.getString(1);   // ISSUE TYPE
+					String status = rs.getString(2); // ISSUE STATUS
 					String month1 = rs.getString(3); // DEU DATE
 					String month2 = rs.getString(4); // CREATION DATE
-					String month3 = rs.getString(5); // RESOLUTION DATE
-					
+					String month3 = rs.getString(5); // RESOLUTION DATE 
 					String monthToUse = month2 ;
 					if( !StringUtils.isEmpty( month1 ) ) {
 						monthToUse = month1;
-					}
-					
-					log.debug("holder {} , exist: {}, type:{}, DEU:{}, CREATION:{}, RESOLUTION:{}", monthToUse ,monthlyIssueCounts.containsKey(monthToUse), type, month1, month2, month3 );
-					
+					} 
+					log.debug("holder {} , exist: {}, type:{}, DEU:{}, CREATION:{}, RESOLUTION:{}", monthToUse , monthlyIssueCounts.containsKey(monthToUse), type, month1, month2, month3 ); 
 					MonthIssueCount issueCountToUse = monthlyIssueCounts.get(monthToUse);
 					if( issueCountToUse == null ) {
 						issueCountToUse = createMonthIssueCount(monthToUse, issueTypes);
-					}
-					
+					} 
 					issueCountToUse.aggregate.put(type, issueCountToUse.aggregate.get(type) + 1);					
 					if( !StringUtils.isEmpty(month3)) {
 						int closedCount = issueCountToUse.aggregate.get("000");
 						issueCountToUse.aggregate.put("000", closedCount + 1);
 					}
 					monthlyIssueCounts.put(monthToUse, issueCountToUse);
-				}
 			}});
 		
 		List<MonthIssueCount> list = new ArrayList<MonthIssueCount>(monthlyIssueCounts.values());

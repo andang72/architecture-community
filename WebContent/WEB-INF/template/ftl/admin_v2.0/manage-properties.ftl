@@ -17,6 +17,7 @@
     <!-- Bootstrap Theme CSS -->
     
     <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />
+    <link href="<@spring.url "/fonts/nanumgothic.min.css"/>" rel="stylesheet" type="text/css" />	 
     <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
     
     <!-- Community Admin CSS -->

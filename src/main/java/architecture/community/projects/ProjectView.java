@@ -229,6 +229,14 @@ public class ProjectView {
  
 	}
 
+	public String getContractor() {
+		return project.getContractor();
+	}
+
+	public void setContractor(String contractor) {
+ 
+	}
+	
 	public Double getMaintenanceCost() {
 		return project.getMaintenanceCost();
 	}

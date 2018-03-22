@@ -49,17 +49,51 @@
 
 }
 
-.u-listview .u-link-underline > h5{
+.u-listview .u-link-underline > h5, .u-listview .u-link-underline > .u-title{
 	border-bottom: 1px solid transparent;
 	padding-bottom: 1.5px;
 }
 
-.u-listview .u-link-underline:hover > h5{
+.u-listview .u-link-underline:hover > h5, .u-listview .u-link-underline:hover > .u-title {
 	border-bottom: 1px solid;
 	padding-bottom: 1.5px;
 }
 
+/* summernote custom.
+------------------------------------*/
 
+
+.note-editor {
+  height: auto !important;
+}
+.note-editor.fullscreen {
+  z-index: 2050;
+}
+.note-editor.note-frame.fullscreen {
+  z-index: 2020;
+}
+.note-editor.note-frame .note-editing-area .note-editable {
+  color: #676a6c;
+  padding: 15px;
+}
+.note-editor.note-frame {
+  border: none;
+}
+.note-editor.panel {
+  margin-bottom: 0;
+}
+.note-editor.note-frame {
+    border: 1px solid #e5e6e7!important;
+}
+.note-toolbar.panel-heading {
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+ 
 /*------------------------------------
   Variables
 ------------------------------------*/
@@ -73,7 +107,7 @@ html {
 body {
   font-weight: 400;
   font-size: 1rem;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Nanum Gothic", "Open Sans", Helvetica, Arial, sans-serif;
   line-height: 1.6;
   color: #333;
   -webkit-font-smoothing: antialiased;

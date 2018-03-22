@@ -1,7 +1,9 @@
 package architecture.community.web.spring.controller.data.admin.v1;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -20,22 +22,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import architecture.community.announce.Announce;
+import architecture.community.announce.AnnounceService;
 import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.DefaultBoard;
-import architecture.community.codeset.CodeSet;
-import architecture.community.codeset.CodeSetNotFoundException;
-import architecture.community.codeset.CodeSetService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.image.Image;
 import architecture.community.image.ImageLink;
 import architecture.community.image.ImageService;
-import architecture.community.menu.MenuItem;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.query.CustomQueryService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
+import architecture.community.user.User;
+import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
@@ -43,7 +45,7 @@ import architecture.community.web.spring.controller.data.v1.AbstractCommunityDat
 import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
 
-@Controller("community-data-v1-mgmt-core-controller")
+@Controller("data-api-v1-mgmt-community-controller")
 @RequestMapping("/data/api/mgmt/v1")
 public class CommunityMgmtDataController extends AbstractCommunityDateController {
 
@@ -60,10 +62,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@Inject
 	@Qualifier("communityAclService")
 	private JdbcCommunityAclService communityAclService;
-	
-	@Inject
-	@Qualifier("codeSetService")
-	private CodeSetService codeSetService;
+
 	
 	@Inject
 	@Qualifier("configService")
@@ -82,87 +81,13 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@Qualifier("customQueryService")
 	private CustomQueryService customQueryService;
 	
+	@Inject
+	@Qualifier("announceService")
+	private AnnounceService announceService;
+	
 	protected JdbcCommunityAclService getCommunityAclService() {
 		return communityAclService;
 	}
-
-	/**
-	 * CODESET API 
-	******************************************/
-	
-	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/codeset/{group}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public List<CodeSet> getCodeSetsByGroup(
-			@PathVariable String group,
-			@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
-			@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId ){
-
-		if (!StringUtils.isNullOrEmpty(group)) {
-			return codeSetService.getCodeSets(objectType, objectId, group);
-		}
-		return Collections.EMPTY_LIST;
-	}
-
-	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/codeset/{group}/code/{code}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public List<CodeSet> getCodeSetsByGroupAndCode(
-			@PathVariable String group,
-			@PathVariable String code,
-			@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
-			@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId ){
-		
-		List<CodeSet> codes = Collections.EMPTY_LIST ;
-		if (!StringUtils.isNullOrEmpty(group) && !StringUtils.isNullOrEmpty(code)) {
-			codes = codeSetService.getCodeSets(objectType, objectId, group, code);
-		}
-		return codes ;
-	}
-	
-	/**
-	@Secured({ "ROLE_ADMINISTRATOR" })
-	@RequestMapping(value = "/codeset/group/list.json", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public List<CodeSet> getCodeSets(
-			@RequestParam(value = "objectType", defaultValue = "0", required = false) Integer objectType,
-			@RequestParam(value = "objectId", defaultValue = "0", required = false) Long objectId,
-			@RequestParam(value = "name", defaultValue = "0", required = false) String name) {
-
-		if (!StringUtils.isNullOrEmpty(name)) {
-			return codeSetService.getCodeSets(objectType, objectId, name);
-		}
-		return Collections.EMPTY_LIST;
-	}
-	*/
-	
-	@RequestMapping(value = "/codeset/list.json", method = { RequestMethod.POST, RequestMethod.GET })
-    @ResponseBody
-    public List<CodeSet> getCodeSets(
-	    @RequestParam(value = "objectType", defaultValue = "0", required = false) Integer objectType,
-	    @RequestParam(value = "objectId", defaultValue = "0", required = false) Long objectId,
-	    @RequestParam(value = "codeSetId", defaultValue = "0", required = false) Integer codeSetId) { 
-		if (codeSetId > 0) {
-		    try {
-		    		CodeSet codeset = codeSetService.getCodeSet(codeSetId);
-				return codeSetService.getCodeSets(codeset);
-		    } catch (CodeSetNotFoundException e) {
-		    }
-		}
-		if (objectType == 1 && objectId > 0L) {
-		    return codeSetService.getCodeSets(null);
-		}
-		return Collections.EMPTY_LIST;
-    }
-	
-	@RequestMapping(value = "/codeset/save-or-update.json", method = RequestMethod.POST)
-    @ResponseBody
-    public CodeSet updateCodeSet(@RequestBody CodeSet codeset) {		
-		if (codeset.getParentCodeSetId() == null)
-		    codeset.setParentCodeSetId(-1L);			
-		codeSetService.saveOrUpdate(codeset);		
-		return codeset;
-    }	
 
 
 	/**
@@ -208,8 +133,58 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return boardService.getBoardById(boardToUse.getBoardId());
 	}
 	
+	/**
+	 * ANNOUNCE API 
+	******************************************/	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+    @RequestMapping(value = "/announces/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+	public ItemList getAnnounces(	
+		@RequestBody DataSourceRequest dataSourceRequest,
+		NativeWebRequest request) throws NotFoundException {
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");		
+		Date startDate = null;
+		Date endDate = null;		
+		
+		try {
+			if(dataSourceRequest.getDataAsString("startDate", null)!=null)
+				startDate = simpleDateFormat.parse(dataSourceRequest.getDataAsString("startDate", null));
+			if(dataSourceRequest.getDataAsString("endDate", null)!=null)
+				endDate = simpleDateFormat.parse(dataSourceRequest.getDataAsString("endDate", null));
+			if (startDate == null)
+			    startDate = Calendar.getInstance().getTime();
+			if (endDate == null)
+			    endDate = Calendar.getInstance().getTime();
+			
+		} catch (ParseException e) {}
+		
+		dataSourceRequest.setStatement("COMMUNITY_CS.COUNT_ANNOUNCE_BY_REQUEST");
+		int totalCount = customQueryService.queryForObject(dataSourceRequest, Integer.class);
+		
+		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_ANNOUNCE_IDS_BY_REQUEST");
+		List<Long> items = customQueryService.list(dataSourceRequest, Long.class);
+		
+		List<Announce> announces = new ArrayList<Announce>(totalCount);
+		for( Long id : items ) {
+			try {
+				announces.add(announceService.getAnnounce(id));
+			} catch (NotFoundException e) {
+			}
+		}
+		
+		return new ItemList(announces, totalCount );
+	}	
 	
-	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/announces/{announceId:[\\p{Digit}]+}/get.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Announce getAnnounce(
+		@PathVariable Long announceId, 
+		NativeWebRequest request) throws NotFoundException {
+		
+		return announceService.getAnnounce(announceId);
+	}
 	/**
 	 * PROJECT API 
 	******************************************/
@@ -217,9 +192,19 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public ItemList getProjects(NativeWebRequest request) {
+	public ItemList getProjects(@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {
 		List<Project> list = projectService.getProjects();
 		return new ItemList(list, list.size());
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/get.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Project getProject(
+		@PathVariable Long projectId, 
+		NativeWebRequest request) throws NotFoundException {
+		
+		return projectService.getProject(projectId);
 	}
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
@@ -236,6 +221,10 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 				boardToUse.setSummary(project.getSummary());
 			if (!StringUtils.isNullOrEmpty(project.getContractState()))			
 				boardToUse.setContractState(project.getContractState());
+			
+			if (!StringUtils.isNullOrEmpty(project.getContractor()))			
+				boardToUse.setContractor(project.getContractor());
+			
 			boardToUse.setMaintenanceCost(project.getMaintenanceCost());
 			
 			if( project.getStartDate()!= null)
@@ -251,6 +240,9 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 			boardToUse = new Project();
 			boardToUse.setName(project.getName());
 			boardToUse.setSummary(project.getSummary());
+			if (!StringUtils.isNullOrEmpty(project.getContractor()))			
+				boardToUse.setContractor(project.getContractor());
+			
 			if (!StringUtils.isNullOrEmpty(project.getContractState()))			
 				boardToUse.setContractState(project.getContractState());
 			if( project.getStartDate()!= null)

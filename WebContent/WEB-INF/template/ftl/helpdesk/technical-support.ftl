@@ -129,6 +129,7 @@
 					model: community.model.Project
 				}
 			}),
+			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/CONTRACTOR/list.json" />' , {} ),
 			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PROJECT/list.json" />' , {} ),
 			projectsDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/list_v2.json"/>' , {
 				schema: {
@@ -138,12 +139,14 @@
 				}
 			} ),
 			filter : {
+				PROJECT_CONTRACTOR : null,
 				PROJECT_CONTRACT : null,
 				NAME : null,
 				ID : null
 			},
 			clearFilters : function(){
 				var $this = this ;
+				$this.set('filter.PROJECT_CONTRACTOR' , null ) ;
 				$this.set('filter.PROJECT_CONTRACT' , null ) ;
 				$this.set('filter.NAME' , null ) ;
 				$this.set('filter.ID' , null ) ;
@@ -157,6 +160,8 @@
 					filters.push({ field: "name", operator: "contains", value: $this.filter.NAME });
 				}else if ($this.filter.ID != null ){
 					filters.push({ field: "projectId", operator: "eq", value: $this.filter.ID });
+				}else if ($this.filter.PROJECT_CONTRACTOR != null ){
+					filters.push({ field: "contractor", operator: "eq", value: $this.filter.PROJECT_CONTRACTOR });
 				}
 				
 				$this.dataSource.filter( filters );
@@ -184,7 +189,7 @@
  			}
     		});
     		observable.bind("change", function(e) { 
-    			if( e.field == 'filter.PROJECT_CONTRACT' || e.field == 'filter.NAME' || e.field == 'filter.ID' ) {
+    			if( e.field == 'filter.PROJECT_CONTRACT' || e.field == 'filter.NAME' || e.field == 'filter.ID' || e.field == 'filter.PROJECT_CONTRACTOR' ) {
     				observable.applyFilters();
     			}else if (e.field == 'filter2.ASSIGNEE_TYPE'){
     				observable.doFilter2();  				
@@ -229,7 +234,23 @@
 	function send ( data ) {
 		community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: data.projectId });
 	}
- 		
+ 
+	function getContractorName(code){
+		var name = "";
+		if( code == null )
+			return "";
+		console.log( code );
+		var renderTo = $('#page-top');
+		$.each( renderTo.data("model").contractorDataSource.data(), function( index, value ){
+			if( value.code == code )
+			{
+				name = value.name;
+				return ;
+			}
+		} );
+		return name;
+	}
+			
 	function createProjectListView(observable){
 		var renderTo = $('#project-listview');	    		
 		community.ui.listview( renderTo , {
@@ -286,13 +307,6 @@
 				dataBound: function() {		
 					if( this.items().length == 0)
 			        		renderTo.html('<tr class="g-height-50"><td colspan="7" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
-				    /*if(observable.isDeveloper && firstTime ){
-	       	 			setTimeout(function() {
-						  observable.showAllOpenIssue(); 
-						}, 500);
-	       	 		}		
-					firstTime = false;
-					*/
 			    }
 			});
 			community.ui.pager( $("#issue-listview-pager"), {
@@ -357,7 +371,25 @@
 		return $('#page-top').data('model').currentUser.hasRole('ROLE_DEVELOPER') ;
 	} 
  			
-	</script>		
+	</script>	
+	<style>
+	.card {
+	    position: relative;
+	    display: -webkit-box;
+	    display: -ms-flexbox;
+	    display: flex;
+	    -webkit-box-orient: vertical;
+	    -webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	    flex-direction: column;
+	    min-width: 0;
+	    word-wrap: break-word;
+	    background-color: #fff;
+	    background-clip: border-box;
+	    border: 1px solid rgba(0,0,0,.125);
+	    border-radius: .25rem;
+	}
+	</style>	
 </head>
 <body id="page-top" class="landing-page no-skin-config">
 	<!-- NAVBAR START -->   
@@ -390,7 +422,33 @@
         </div>
       </div>
     </section>
-
+    
+    <!-- ANNOUNCES -->
+    <#assign announces = CommunityContextHelper.getAnnounceService().getAnnounces(0,0) />	
+    <#if ( announces?size > 0 ) && SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
+	<section class="g-pt-50">
+		<div class="container"> 
+			<div class="row justify-content-center">
+				<div class="col-md-12 align-self-md-center">
+				<p class="lead g-mb-30"><i class="fa fa-bullhorn"></i> 새로운 공지가 있습니다.</p> 
+										
+				<#list announces as announce >
+				<!-- Announce -->
+				<div class="g-brd-around g-brd-gray-light-v4 g-brd-left-4 g-brd-blue-left g-line-height-1_8 g-rounded-3 g-pa-20 g-mb-30" role="alert">
+				  <h3 class="g-color-blue g-font-weight-600"> ${announce.subject}</h3>
+				  <p class="mb-0 g-font-size-20"> 
+				  ${announce.body}
+				  </p>
+				</div>
+  				<!-- End Announce -->				
+				</#list>
+				</div>	
+			</div>	
+		 </div>
+	</section>					
+    </#if>
+    <!-- END ANNOUNCES -->
+    
 	<section id="features" class="services">
 		<div class="wrapper wrapper-content">
             		<div class="container">            
@@ -408,8 +466,20 @@
                             		</div>                               		
                             		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 	                            	<div class="ibox-content ibox-heading g-pb-0" data-bind="visible:isDeveloper" sytle="display:none;">	                            	
-	                            		<p class="g-color-red g-mb-15"> 계약상태 또는 프로젝트 이름으로 필터를 적용할 수 있습니다.</p>
 	                            		<div class="row">
+	                            			<div class="col-sm-4 g-mb-15">
+	                            				<div class="form-group">					    
+												<input data-role="combobox" 
+													data-option-label="계약자를 선택하세요."
+													data-placeholder="프로젝트 계약자를 선택하세요."
+													data-value-primitive="true"
+													data-auto-bind="true"
+													data-text-field="name"
+													data-value-field="code"
+													data-bind="value: filter.PROJECT_CONTRACTOR, source: contractorDataSource"
+													style="width: 100%;" />
+								  			</div>	
+								  		</div>
 	                            			<div class="col-sm-4 g-mb-15">
 	                            				<div class="form-group">					    
 												<input data-role="combobox" 
@@ -435,11 +505,15 @@
 													data-bind="value: filter.ID, source: projectsDataSource"
 													style="width: 100%;" />
 								  			</div>	
+								  		</div>
+								  	</div>	
+								  	<div class="row">
+								  		<div class="col-sm-8 g-mb-15">			
 										  	<div class="form-group">
 												<input type="text" class="form-control" placeholder="프로젝트 이름을 입력하세요." data-bind="value:filter.NAME">
 											</div>
 								  		</div>	
-								  		<div class="col-sm-4 g-mb-15">
+								  		<div class="col-sm-4 g-mb-15 text-right">
 								  			<button class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" type="button" role="button" role="button" 
 								  				data-toggle="tooltip" data-placement="bottom" data-original-title="적용된 필터 조건을 초기화합니다." 
 								  				data-object-id="0" data-bind="click:clearFilters" >초기화</button>
@@ -529,7 +603,7 @@
 		<td class="align-middle text-center"> ISSUE-#: issueId # </td>
     		<td class="align-middle">
     		<a href="\\#" class="btn-link" data-action="view" data-object-id="#: project.projectId#" data-kind="project">
-    		#: project.name #
+    		<span class="u-label g-bg-pink g-rounded-20 g-px-15 g-mr-10 g-mb-0">#= getContractorName(project.contractor) #</span> #: project.name #
     		</a>
     		</td>
     		<td class="align-middle">
@@ -555,9 +629,14 @@
 						<div class="forum-icon">
  							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support #if ( new Date() > endDate ) {#g-opacity-0_3#}#"></i>
 						</div>						
-						<h2 class="g-ml-60 g-font-weight-100"># if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="\\#" data-action="view" data-object-id="#=projectId#" data-kind="project" class="btn-link"> #:name# </a></h4>						
-						<div class="g-ml-60 g-mb-5 text-warning"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
+						<h2 class="g-ml-60 g-font-weight-100">
+						# if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="\\#" data-action="view" data-object-id="#=projectId#" data-kind="project" class="btn-link"> #:name# </a></h4>						
+						<div class="g-ml-60 g-mb-5 text-warning">
+						#: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # # if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #</div>
 						#if( isDeveloper() ){ #
+						<div class="g-ml-60">	
+						<span class="u-label g-font-weight-500 g-font-size-14 g-bg-pink g-rounded-20 g-px-15 g-mr-10 g-mb-10">#= getContractorName(contractor) #</span>
+						</div>	
 						<div class="g-ml-60 g-mb-5"> 유지보수비용(월) : #: kendo.toString( maintenanceCost, 'c')  #</div>						
 						<div class="g-ml-60 g-mb-5">#if(summary != null ){# #= community.data.replaceLineBreaksToBr(summary) # #}#</div>
 						#}#

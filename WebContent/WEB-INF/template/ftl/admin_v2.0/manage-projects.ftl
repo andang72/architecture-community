@@ -71,7 +71,8 @@
 				data.copy($this.currentUser);
 				$this.set('userAvatarSrc', community.data.getUserProfileImage( $this.currentUser ) );
 				$this.set('userDisplayName', community.data.getUserDisplayName( $this.currentUser ) );
-			}
+			},
+			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/CONTRACTOR/list.json" />' , {} )
 		});
 				
 		// initialization of sidebar navigation component
@@ -82,13 +83,28 @@
 		community.ui.bind( $('#js-header') , observable );       
 		var renderTo = $('#features');
 		community.ui.bind( renderTo , observable );
+		renderTo.data("model", observable );	
 		
-	 	createProjectListView();
-		
-		renderTo.on("click", "button[data-object-type=project], a[data-object-type=project]", function(e){			
+		observable.contractorDataSource.fetch(function(e){
+			createProjectListView();
+		});
+	 	
+		renderTo.on("click", "button[data-object-type=project], .sorting[data-kind=project], a[data-object-type=project]", function(e){			
 			var $this = $(this);
-			var actionType = $this.data("action");		
-			var objectId = $this.data("object-id");		
+			var actionType = $this.data("action");	
+			if( actionType == 'sort'){
+				if( $this.data('dir') == 'asc' )
+					$this.data('dir', 'desc' );
+				else if 	( $this.data('dir') == 'desc' )
+					$this.data('dir', 'asc' );
+				community.ui.listview( $('#project-listview') ).dataSource.sort({ field:$this.data('field'), dir:$this.data('dir') });				
+				return false;				
+			}else if (actionType == 'view' || actionType == 'create'  || actionType == 'edit'  ){
+				community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/project-editor" />", { projectId: $this.data("object-id") });
+				return false;
+			}
+			
+			var objectId = $this.data("object-id");	
 			var targetObject = new community.model.Project();
 			if ( objectId > 0 ) {
 				targetObject = community.ui.listview( $('#project-listview') ).dataSource.get( objectId );				
@@ -99,11 +115,34 @@
 			 	
 	});
 
+	function getContractorName(code){
+		var name = "";
+		if( code == null )
+			return "";
+		console.log( code );
+		var renderTo = $('#features');
+		$.each( renderTo.data("model").contractorDataSource.data(), function( index, value ){
+			if( value.code == code )
+			{
+				name = value.name;
+				return ;
+			}
+		} );
+		return name;
+	}
 
 	function createProjectListView(){
 		var renderTo = $('#project-listview');		
 		var listview = community.ui.listview( renderTo , {
 			dataSource: community.ui.datasource('<@spring.url "/data/api/mgmt/v1/projects/list.json"/>', {
+				transport: { 
+					read:{
+						contentType: "application/json; charset=utf-8"
+					},
+					parameterMap: function (options, operation){	 
+						return community.ui.stringify(options);
+					}
+				},
 				schema: {
 					total: "totalCount",
 					data:  "items",
@@ -311,20 +350,65 @@
 					</div>				
 					<div class="row">
 	                		<div class="table-responsive">
-							<table class="table table-bordered js-editable-table u-table--v1 u-editable-table--v1 g-color-black g-mb-0">
+							<table class="table js-editable-table u-table--v1 u-editable-table--v1 g-color-black g-mb-0">
 								<thead class="g-hidden-sm-down g-color-gray-dark-v6">
 									<tr class="g-height-50">
+										<th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-py-15 g-width-60 sorting" data-kind="project" data-action="sort" data-dir="asc" data-field="projectId" >
+											<div class="media">
+												<div class="d-flex align-self-center">ID.</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-up"></i>
+													</a>
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-down"></i>
+													</a>
+													</span>
+												</div>
+											</div>	
+										</th>
+										<th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-py-15 g-width-150 sorting" data-kind="project" data-action="sort" data-dir="asc" data-field="contractor" >
+											<div class="media">
+												<div class="d-flex align-self-center">계약자</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-up"></i>
+													</a>
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-down"></i>
+													</a>
+													</span>
+												</div>
+											</div>	
+										</th>	   
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black">프로젝트</th>
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">비용(월)</th> 
+			                             <th class="g-bg-gray-light-v8 g-font-weight-400 g-valign-middle g-py-15 g-width-150 sorting" data-kind="project" data-action="sort" data-dir="asc" data-field="maintenanceCost" >
+											<div class="media">
+												<div class="d-flex align-self-center">비용(월)</div>
+												<div class="d-flex align-self-center ml-auto">
+													<span class="d-inline-block g-width-10 g-line-height-1 g-font-size-10">
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-up"></i>
+													</a>
+													<a class="g-color-gray-light-v6 g-color-lightblue-v3--hover g-text-underline--none--hover" href="#!">
+													<i class="community-admin-angle-down"></i>
+													</a>
+													</span>
+												</div>
+											</div>	
+										</th>
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="200">기간</th> 
-			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="150">수정일</th>   		
+			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100">생성일</th>  
+			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black text-center" width="100">수정일</th>   		
 			                             <th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black g-width-100">&nbsp;</th>								
 									</tr>
 								</thead>
-								<tbody id="project-listview" class=" u-listview"></tbody>
+								<tbody id="project-listview" class="g-brd-none u-listview"></tbody>
 							</table>
 						</div>
-						<div id="project-listview-pager" class="g-brd-top-none" style="width:100%;"></div>
+						<div id="project-listview-pager" class="g-brd-top-0 g-brd-right-0 g-brd-left-0" style="width:100%;"></div>
             			</div>
 				</div>
 				<!-- End Content Body -->
@@ -520,22 +604,23 @@
     	    	    
     	<script type="text/x-kendo-template" id="template">    	
 	<tr class="u-listview-item">
-		<td class="u-text-left">		
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">#= projectId #</td>
+		<td class="g-hidden-sm-down g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-pl-25">#= getContractorName( contractor ) #</td>
+		<td class="u-text-left">	
+		<a class="d-flex align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=projectId#" data-object-type="project">
 		<h5 class="g-font-weight-100">
 		# if ( new Date() > endDate ) {#  <span class="text-danger"><i class="icon-ban"></i> </span> #} #	
-		#= name # 
+		#= name # 	
+		</h5>
+		</a>
+		<p class="g-font-weight-300 g-color-gray-dark-v6 g-mt-5 g-ml-10 g-mb-0" > 
 		# if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } #
-		# if ( new Date() > endDate ) {#  <span class="text-danger"> 계약만료 </span> #} #		
-		</h5><!--
-		<div class="u-visible-on-select">
-			<div class="btn-group">
-			<button class="btn u-btn-outline-lightgray g-mt-5" data-action="edit" data-object-type="project" data-object-id="#= projectId#"  >수정</button>
-			<button class="btn u-btn-outline-lightgray g-mt-5" data-action="delete" data-object-type="project" data-object-id="#= projectId#" >삭제</button>
-			</div>
-	 	</div>-->
+		# if ( new Date() > endDate ) {#  <span class="u-label u-label-danger g-rounded-20 g-mr-10 g-mb-0">계약만료</span> #} #	
+		</p>
 		</td>
 		<td class="text-right align-middle"> #: kendo.toString( maintenanceCost, 'c')  # </td>
 		<td class="text-center align-middle"> #: community.data.getFormattedDate( startDate , 'yyyy-MM-dd')  # ~ #: community.data.getFormattedDate( endDate, 'yyyy-MM-dd' )  # </td>
+		<td class="text-center align-middle"> #: community.data.getFormattedDate( creationDate )  # </td>
 		<td class="text-center align-middle"> #: community.data.getFormattedDate( modifiedDate )  # </td>
 		<td class="align-middle">
 			<div class="d-flex align-items-center g-line-height-1">

@@ -2,8 +2,12 @@ package architecture.community.web.spring.controller.data.v1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +33,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import architecture.community.announce.Announce;
+import architecture.community.announce.AnnounceNotFoundException;
+import architecture.community.announce.AnnounceService;
 import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.board.Board;
@@ -67,7 +75,7 @@ import architecture.ee.util.StringUtils;
  *
  */
 
-@Controller("community-data-v1-core-controller")
+@Controller("data-api-v1-community-controller")
 @RequestMapping("/data/api/v1")
 public class CommunityDataController extends AbstractCommunityDateController {
 
@@ -98,6 +106,11 @@ public class CommunityDataController extends AbstractCommunityDateController {
 	@Qualifier("codeSetService")
 	private CodeSetService codeSetService;
 	
+	@Inject
+	@Qualifier("announceService")
+	private AnnounceService announceService;
+	
+	
 	protected BoardService getBoardService () {
 		return boardService;
 	}
@@ -125,6 +138,112 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		return codes ;
 	}
 
+
+	/**
+	 * ANNOUNCE API 
+	******************************************/
+	
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@RequestMapping(value = "/announces/save-or-update.json", method = RequestMethod.POST)
+	@ResponseBody
+	public Announce saveOrUpdateAnnounce(@RequestBody Announce announce, NativeWebRequest request)
+			throws AnnounceNotFoundException, UnAuthorizedException {
+
+		User user = SecurityHelper.getUser();
+		if (announce.getUser() == null && announce.getAnnounceId() == 0)
+			announce.setUser(user);
+
+		if (user.isAnonymous() || user.getUserId() != announce.getUser().getUserId())
+			throw new UnAuthorizedException();
+
+		Announce target;
+		if (announce.getAnnounceId() > 0) {
+			target = announceService.getAnnounce(announce.getAnnounceId());
+		} else {
+			target = announceService.createAnnounce(user, announce.getObjectType(), announce.getObjectId());
+		}
+
+		target.setSubject(announce.getSubject());
+		target.setBody(announce.getBody());
+		target.setStartDate(announce.getStartDate());
+		target.setEndDate(announce.getEndDate());
+		if (target.getAnnounceId() > 0) {
+			announceService.updateAnnounce(target);
+		} else {
+			announceService.addAnnounce(target);
+		}
+		return target;
+	}
+
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@RequestMapping(value = "/announces/{announceId:[\\p{Digit}]+}/delete.json", method = RequestMethod.POST)
+	@ResponseBody
+	public Result destoryAnnounce( @PathVariable Long announceId, NativeWebRequest request) throws AnnounceNotFoundException {
+		
+		User user = SecurityHelper.getUser();
+
+		Announce announce = announceService.getAnnounce(announceId);
+		if( announce.getUser().getUserId() == user.getUserId())
+			announceService.deleteAnnounce(announceId);
+		return Result.newResult();
+	}
+
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@RequestMapping(value = "/announces/{announceId:[\\p{Digit}]+}/get.json", method = RequestMethod.POST)
+	@ResponseBody
+	public Announce getAnnounce( @PathVariable Long announceId, NativeWebRequest request) throws AnnounceNotFoundException {
+		
+		User user = SecurityHelper.getUser();
+
+		Announce announce = announceService.getAnnounce(announceId);
+		
+		return announce;
+	}
+	
+	@PreAuthorize("permitAll")
+    @RequestMapping(value = "/announces/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+	public ItemList getAnnounces(
+		
+		@RequestParam(value = "objectType", defaultValue = "0", required = false) Integer objectType,
+		@RequestParam(value = "objectId", defaultValue = "0", required = false) Long objectId,			
+		@RequestBody DataSourceRequest dataSourceRequest,
+		NativeWebRequest request) throws NotFoundException {
+		ItemList items = new ItemList();
+		User user = SecurityHelper.getUser();
+
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");		
+		
+		Date startDate = null;
+		Date endDate = null;		
+		try {
+			
+			if(dataSourceRequest.getDataAsString("startDate", null)!=null)
+				startDate = simpleDateFormat.parse(dataSourceRequest.getDataAsString("startDate", null));
+			if(dataSourceRequest.getDataAsString("endDate", null)!=null)
+				endDate = simpleDateFormat.parse(dataSourceRequest.getDataAsString("endDate", null));
+			
+			if (startDate == null)
+			    startDate = Calendar.getInstance().getTime();
+			if (endDate == null)
+			    endDate = Calendar.getInstance().getTime();
+		} catch (ParseException e) {}
+		
+		items.setItems(announceService.getAnnounces(objectType, objectId, startDate, endDate));
+		items.setTotalCount(getTotalAnnounceCount(objectType, objectId, startDate, endDate));
+		
+		return items;
+	}
+
+	private int getTotalAnnounceCount(int objectType, long objectId, Date startDate, Date endDate) {
+		if (startDate != null) {
+		    return announceService.getAnnounceCount(objectType, objectId, startDate,
+			    endDate == null ? Calendar.getInstance().getTime() : endDate);
+		}
+		return announceService.getAnnounceCount(objectType, objectId,
+			endDate == null ? Calendar.getInstance().getTime() : endDate);
+	    }
+	
 	/**
 	 * BOARD API 
 	******************************************/

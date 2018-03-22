@@ -49,7 +49,7 @@ import architecture.ee.util.StringUtils;
  * @author donghyuck
  *
  */
-@Controller("community-data-v1-mgmt-security-controller")
+@Controller("data-api-v1-mgmt-security-controller")
 @RequestMapping("/data/api/mgmt/v1/security")
 public class SecurityMgmtDataController {
 

@@ -2029,12 +2029,12 @@ bottom
 }
 
 .u-header [aria-labelledby].u-dropdown--css-animation, .u-header [aria-labelledby].u-dropdown--jquery-slide
-	{
+{
 	opacity: 1;
 }
 
 .u-header--abs-top, .u-header--abs-bottom, .u-header--abs-top-2nd-screen
-	{
+{
 	position: absolute;
 }
 

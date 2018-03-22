@@ -27,6 +27,8 @@ public class Project {
 	
 	private String contractState   ;
 	
+	private String contractor ;
+	
 	private Double maintenanceCost;
 	
 	public Project() {
@@ -39,6 +41,7 @@ public class Project {
 		this.modifiedDate = this.creationDate;
 		this.contractState = "" ;
 		this.maintenanceCost = 0D ;
+		this.contractor = null;
 	}
 
 	public Project(long projectId) {
@@ -51,6 +54,15 @@ public class Project {
 		this.modifiedDate = this.creationDate;
 		this.contractState = "" ;
 		this.maintenanceCost = 0D ;
+		this.contractor = null;
+	}
+
+	public String getContractor() {
+		return contractor;
+	}
+
+	public void setContractor(String contractor) {
+		this.contractor = contractor;
 	}
 
 	public long getProjectId() {

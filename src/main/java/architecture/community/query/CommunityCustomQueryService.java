@@ -93,7 +93,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		else	
 			return customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), extractor );
 	}	
-	
+ 
 	
 	public void query(DataSourceRequest dataSourceRequest, RowCallbackHandler callback) {	
 		logger.debug("Paging not support.");		
@@ -102,9 +102,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), callback, getSqlParameterValues( dataSourceRequest.getParameters() ).toArray() );
 		else	
 			customQueryJdbcDao.getExtendedJdbcTemplate().query(sqlSource.getSql(), callback );		
-	}
-	
-	
+	}	
 	
 	public <T> List<T> list(DataSourceRequest dataSourceRequest, Class<T> elementType) {	
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		

@@ -103,21 +103,30 @@
 				var $this = this;
 				data.copy($this.currentUser);
 			},
+			contractor : null,
 			startDate: getLastSaturday(),
 			endDate : getThisFriday(),			
 			search : function(){
+				var $this = this;	
 				community.ui.listview( $('#summary-listview') ).dataSource.read(); 
+				drawingMonthlyStatsChart($this);
 			},
 			exportExcel : function(){
-				var $this = this, data = {};
-				data.startDate = community.data.getFormattedDate($this.get("startDate"), "yyyyMMdd" )	;
-				data.endDate = community.data.getFormattedDate($this.get("endDate"), "yyyyMMdd" )	;				
-				community.ui.send("<@spring.url "/data/api/v1/export/excel/ISSUE_OVERVIEWSTATS" />", { data : community.ui.stringify(data) }, "POST");
+				var $this = this;			
+				community.ui.send("<@spring.url "/data/api/v1/export/excel/ISSUE_OVERVIEWSTATS" />", { data : community.ui.stringify({
+					data : {
+						contractor : observable.get("contractor"),
+						startDate : community.data.getFormattedDate($this.get("startDate"), "yyyyMMdd" ),
+						endDate : community.data.getFormattedDate($this.get("endDate"), "yyyyMMdd" )	
+					}
+				}) }, "POST");
 			},
 			back : function(){
 				community.ui.send("<@spring.url "/display/pages/technical-support.html" />" );
 				return false;
 			},
+			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/PROJECT/list.json" />' , {} ),
+			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/CONTRACTOR/list.json" />' , {} ),
 			withinPeriodIssueCount : 0,
 			resolutionCount : 0,
 			unclosedTotalCount : 0
@@ -125,51 +134,71 @@
     		
     		
 		// google charts loading 
-		google.charts.load('current', {'packages':['corechart']});
-		
+		google.charts.load('visualization', '1', {packages:["corechart"]});
+		google.charts.setOnLoadCallback(drawingMonthlyStatsChart(observable));	 		
       	
-      	community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
-      		contentType : "application/json",	
-      		data: community.ui.stringify({}),
-			success: function(response){	
-				
-				setTimeout(function(){
-				var data = new google.visualization.DataTable();
-				data.addColumn('string', '월');
-				data.addColumn('number', '오류');
-				data.addColumn('number', '데이터작업');
-				data.addColumn('number', '기능변경');
-				data.addColumn('number', '추가개발');
-				data.addColumn('number', '기술지원');
-				data.addColumn('number', '영업지원');
-				
-				data.addColumn('number', '요청');
-				data.addColumn('number', '완료');
-				
-				$.each(response.items, function( index, item ) {				
-					data.addRow([ item.month + '월', item['aggregate']['001'],item['aggregate']['002'],item['aggregate']['003'],item['aggregate']['004'],item['aggregate']['005'],item['aggregate']['006'],
-					item['aggregate']['001']+item['aggregate']['002']+item['aggregate']['003']+item['aggregate']['004']+item['aggregate']['005']+item['aggregate']['006'],
-					item['aggregate']['000']
-					]);
-				});
-				google.charts.setOnLoadCallback(drawChart(data));				
-				}, 500);
-			}	
-		});
-			
-     	var renderTo = $('#page-top');
+      	var renderTo = $('#page-top');
     		renderTo.data('model', observable);
     		community.ui.bind(renderTo, observable );	    		
     		createSummaryListView(observable);
     		
 	});				
-	
+	 
+	function drawingMonthlyStatsChart(observable){  
+      	community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
+      		contentType : "application/json",	
+      		data: community.ui.stringify({
+      			data : { contractor : observable.get("contractor") }
+      		}),
+			success: function(response){	
+				community.ui.progress($('#year-stats-summary'), true);	
+				setTimeout(function(){ 
+					drawChart(response.items , getContractorName(observable.get("contractor")) + ' 누적 월별 현황' );  
+					community.ui.progress($('#year-stats-summary'), false);	
+				}, 1500);
+			}	
+		});	
+	}
+
+	function getContractorName(code){
+		var name = "";
+		if( code == null )
+			return "";
+		console.log( code );
+		var renderTo = $('#page-top');
+		$.each( renderTo.data("model").contractorDataSource.data(), function( index, value ){
+			if( value.code == code )
+			{
+				name = value.name;
+				return ;
+			}
+		} );
+		return name;
+	}
+			
 	/**
 	 * Drawing Charting .
 	 */
-	function drawChart(data) {
+	function drawChart(data, title) {
+		var chart_data = new google.visualization.DataTable();
+		chart_data.addColumn('string', '월');
+		chart_data.addColumn('number', '오류');
+		chart_data.addColumn('number', '데이터작업');
+		chart_data.addColumn('number', '기능변경');
+		chart_data.addColumn('number', '추가개발');
+		chart_data.addColumn('number', '기술지원');
+		chart_data.addColumn('number', '영업지원');
+		chart_data.addColumn('number', '요청');
+		chart_data.addColumn('number', '완료');
+        $.each(data, function( index, item ) {				
+           chart_data.addRow([ item.month + '월', item['aggregate']['001'],item['aggregate']['002'],item['aggregate']['003'],item['aggregate']['004'],item['aggregate']['005'],item['aggregate']['006'],
+					item['aggregate']['001']+item['aggregate']['002']+item['aggregate']['003']+item['aggregate']['004']+item['aggregate']['005']+item['aggregate']['006'],
+					item['aggregate']['000']
+           ]);
+        });
+				
         var options = {
-          title: '누적 월별 현황',
+          title: title,
           subtitle: '완료건은 해당기간에 요청된 이슈들에 대한 완료 건입니다.',
           series : {
           	0: {lineDashStyle: [10,2], lineWidth: 2  },
@@ -188,7 +217,7 @@
         	 }
         };
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
+        chart.draw(chart_data, options);
     }
       	
 	function getFirstDayOfWeek(){
@@ -218,6 +247,7 @@
 						contentType: "application/json; charset=utf-8"
 					},
 					parameterMap: function (options, operation){		
+						options.contractor = observable.get("contractor") ;
 						options.startDate = community.data.getFormattedDate(observable.get("startDate"), "yyyyMMdd" )	;
 						options.endDate = community.data.getFormattedDate(observable.get("endDate"), "yyyyMMdd" )	;
 						return community.ui.stringify( options );
@@ -274,6 +304,17 @@
 					<div class="ibox-content ibox-heading">
 						<div class="row">
 							<div class="col-sm-4 g-mb-15">
+								<h5 class="text-light-gray text-semibold"> 계약자 </h5>	
+								<input data-role="dropdownlist"
+									data-value-primitive="true" 
+									data-option-label="계약자를 선택하세요."
+									data-auto-bind="true"
+									data-text-field="name"
+									data-value-field="code"
+									data-bind="value:contractor, source: contractorDataSource"
+									style="width: 100%;" /> 
+							</div>
+							<div class="col-sm-4 g-mb-15">
 								<h5 class="text-light-gray text-semibold"> 시작일 </h5>	
 								<input data-role="datepicker" style="width: 100%" data-bind="value:startDate" placeholder="시작일">
 							</div>
@@ -284,7 +325,6 @@
 						</div>
 						<div class="row">
 							<div class="col-sm-12 text-right">
-							
 							<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:search}">검색</button>
 							<button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="{click:exportExcel}">엑셀 다운로드</button>
 							</div>
@@ -296,9 +336,9 @@
 		
 		
 
-        <div class="u-shadow-v11 g-rounded-7 g-pa-20 g-mb-50" >                 
+        <div class="u-shadow-v11 g-rounded-7 g-pa-20 g-mb-50" id="year-stats-summary" >                 
                 <div class="u-heading-v2-4--bottom g-mb-10">
-                      <h2 class="text-uppercase u-heading-v2__title g-mb-10">년간처리현황</h2>
+                      <h2 class="text-uppercase u-heading-v2__title g-mb-10">년간 월별 이슈처리 현황</h2>
                       <h4 class="g-font-weight-200">년간 전체 프로젝트 이슈처리 현황입니다.</h4>
                     	</div>    			
 			 <div id="chart_div" style="width: 100%; height: 500px;"></div>

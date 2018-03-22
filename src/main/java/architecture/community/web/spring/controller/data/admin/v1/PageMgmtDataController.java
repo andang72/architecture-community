@@ -49,7 +49,7 @@ import architecture.ee.service.ConfigService;
  * @author donghyuck
  *
  */
-@Controller("community-data-v1-mgmt-pages-controller")
+@Controller("data-api-v1-mgmt-pages-controller")
 @RequestMapping("/data/api/mgmt/v1/pages")
 public class PageMgmtDataController {
 

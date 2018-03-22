@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.SqlParameterValue;
 import architecture.community.announce.Announce;
 import architecture.community.announce.AnnounceNotFoundException;
 import architecture.community.model.Models;
+import architecture.community.user.UserTemplate;
 import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.service.ConfigService;
@@ -46,7 +47,7 @@ public class JdbcAnnounceDao extends ExtendedJdbcDaoSupport implements AnnounceD
 		    Announce announce = new Announce(announceId);
 		    announce.setObjectType(rs.getInt("OBJECT_TYPE"));
 		    announce.setObjectId(rs.getLong("OBJECT_ID"));
-		    announce.setUserId(rs.getLong("USER_ID"));
+		    announce.setUser( new UserTemplate(rs.getLong("USER_ID")));
 		    announce.setSubject(rs.getString("SUBJECT"));
 		    announce.setBody(rs.getString("BODY"));
 		    announce.setStartDate(rs.getTimestamp("START_DATE"));
@@ -106,7 +107,7 @@ public class JdbcAnnounceDao extends ExtendedJdbcDaoSupport implements AnnounceD
 				new SqlParameterValue(Types.VARCHAR, annoucne.getSubject()),
 				new SqlParameterValue(Types.VARCHAR, annoucne.getBody()),
 				new SqlParameterValue(Types.TIMESTAMP, annoucne.getStartDate()),
-				new SqlParameterValue(Types.DATE, annoucne.getEndDate()),
+				new SqlParameterValue(Types.TIMESTAMP, annoucne.getEndDate()),
 				new SqlParameterValue(Types.DATE, annoucne.getModifiedDate()),
 				new SqlParameterValue(Types.NUMERIC, annoucne.getAnnounceId()));
 	
@@ -116,7 +117,7 @@ public class JdbcAnnounceDao extends ExtendedJdbcDaoSupport implements AnnounceD
 	    public void insert(Announce announce) {
 
 			long announceIdToUse = announce.getAnnounceId();
-			if (announceIdToUse < 0)
+			if (announceIdToUse <= 0)
 			    announceIdToUse = getNextAnnounceId();
 			announce.setAnnounceId(announceIdToUse);
 	
@@ -124,7 +125,7 @@ public class JdbcAnnounceDao extends ExtendedJdbcDaoSupport implements AnnounceD
 				new SqlParameterValue(Types.NUMERIC, announce.getAnnounceId()),
 				new SqlParameterValue(Types.NUMERIC, announce.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, announce.getObjectId()),
-				new SqlParameterValue(Types.NUMERIC, announce.getUserId()),
+				new SqlParameterValue(Types.NUMERIC, announce.getUser().getUserId()),
 				new SqlParameterValue(Types.VARCHAR, announce.getSubject()),
 				new SqlParameterValue(Types.VARCHAR, announce.getBody()),
 				new SqlParameterValue(Types.TIMESTAMP, announce.getStartDate()),

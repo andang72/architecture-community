@@ -24,19 +24,19 @@
     
     <link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/css/animate/animate.css"/>" rel="stylesheet" type="text/css" />	
-
+	<link href="<@spring.url "/fonts/nanumgothic.min.css"/>" rel="stylesheet" type="text/css" />	
+    
     <!-- Community Admin CSS -->
-    <link href="<@spring.url "/css/community.ui/community.ui.icons.css"/>" rel="stylesheet" type="text/css" />    
     <link href="<@spring.url "/css/community.ui.admin/community-ui-admin-icons.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/css/community.ui.admin/community.ui.admin.css"/>" rel="stylesheet" type="text/css" />	
-  	     
- 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>' ></script>
+  	 	      	     
+ 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js'"/>></script>
  	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
-
+ 	
  	<!-- Application JavaScript
     		================================================== -->    	
 	<script>
-	var __pageId = <#if RequestParameters.pageId?? >${RequestParameters.pageId}<#else>0</#if>;
+	var __projectId = <#if RequestParameters.projectId?? >${RequestParameters.projectId}<#else>0</#if>;
 	
 	require.config({
 		shim : {
@@ -48,7 +48,8 @@
 	        "community.ui.core" 			: { "deps" :['jquery', "kendo.web.min", 'kendo.culture.ko-KR.min', 'kendo.extension.min'] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
 	        "community.ui.professional" 	: { "deps" :['jquery', 'community.ui.core'] },
-	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core', 'community.data'] }
+	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core', 'community.data'] },
+	        "summernote-ko-KR" : { "deps" :['summernote.min'] }
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
@@ -64,11 +65,14 @@
 			"community.ui.professional" 	: "/js/community.ui.components/community.ui.professional",
 			"community.data" 			: "/js/community.ui/community.data",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
-			"ace" 						: "/js/ace/ace"
+			"ace" 						: "/js/ace/ace",
+			"summernote.min"             : "/js/summernote/summernote.min",
+			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR",
+			"dropzone"					: "/js/dropzone/dropzone"			
 		}
 	});
-	require([ "jquery", "jquery.cookie", "popper", "kendo.web.min", "community.ui.core", "community.data", "community.ui.professional", "community.ui.admin", "ace"], function($, kendo ) { 
-	
+	require([ "jquery", "jquery.cookie", "popper", "kendo.web.min", "community.ui.core", "community.data", "community.ui.professional", "community.ui.admin", "dropzone" ], function($, kendo ) { 
+		
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -77,16 +81,15 @@
 		  		observable.setUser(e.token);
 		  	}
 		});
-		 
 		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
 			userAvatarSrc : "/images/no-avatar.png",
 			userDisplayName : "",
-			page : new community.model.Page(), 
 			visible : false,
 			editable : false,
 			isNew : true,
+			project : new community.model.Project(), 
 			formatedCreationDate : "",
 			formatedModifiedDate: "",
 			setUser : function( data ){
@@ -94,35 +97,56 @@
 				data.copy($this.currentUser);
 				$this.set('userAvatarSrc', community.data.getUserProfileImage( $this.currentUser ) );
 				$this.set('userDisplayName', community.data.getUserDisplayName( $this.currentUser ) );
-				$this.loadPage(__pageId);
+				$this.load(__projectId);
 			},
 			back : function(){
 				var $this = this;
-				community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/manage-pages" />");
+				community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/manage-projects" />");
 				return false;
 			},
 			cancle : function(){
 				var $this = this;
-				if( $this.page.get('pageId') > 0 ){
+				if( $this.project.get('projectId') > 0 ){
 					$this.set('editable', false );	
-					getCodeEditor().setReadOnly(true);
+					//getCodeEditor().setReadOnly(true);
 				}else{
 					$this.back();
-				}		 	
+				}
 			},
-			edit : function(){
+			edit : function(e){
+			 	var $this = this;
+			 	$this.set('editable', true );
+		 	},
+		 	saveOrUpdate : function(e){				
 				var $this = this;
-				console.log("edit..");
-				$this.set('editable', true );	
-				getCodeEditor().setReadOnly(false);
+				community.ui.progress(renderTo, true);	
+				community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/projects/save-or-update.json" />', {
+					data: community.ui.stringify($this.project),
+					contentType : "application/json",
+					success : function(response){ 
+						$this.setSource( new community.model.Project( response ) );
+					}
+				}).always( function () {
+					community.ui.progress(renderTo, false); 
+				});					
 			},
-			editor : {
-				source : null,
-				warp : true
-			},
-			editPageContents : function(e){
-				var $this = this;
-				getCodeEditor().setValue( "" );
+			setSource : function( data ){
+				var $this = this;		 
+				if( data.get('projectId') > 0 ){
+					data.copy( $this.project );
+					$this.set('editable', false );
+					//getCodeEditor().setReadOnly(true);
+					$this.set('isNew', false );
+				}else{
+					$this.set('editable', true );	
+					$this.set('isNew', true );
+					//getCodeEditor().setReadOnly(false);
+				}
+				$this.set('formatedCreationDate' , community.data.getFormattedDate( $this.project.creationDate) );
+				$this.set('formatedModifiedDate' , community.data.getFormattedDate( $this.project.modifiedDate) );
+								
+				if( !$this.get('visible') ) 
+					$this.set('visible' , true );
 			},
 			openSecurityModal : function(){
 				var $this = this;
@@ -134,123 +158,47 @@
 				openPropsModal($this);
 				return false;
 			},
-			editTemplateContents : function(e){
-				var $this = this;
-				if($this.page.template != null && $this.page.template.length > 1 ){
-					community.ui.progress($('.code-editor'), true);	
-					community.ui.ajax( "<@spring.url "/data/api/mgmt/v1/pages/get_template_content.json" />" , 
-						{
-							data : { path: $this.page.template , pageId : $this.page.pageId },
-							success : function(response){
-								getCodeEditor().setValue( response.fileContent );
-							}
-						}).always( function () {
-							community.ui.progress($('.code-editor'), false);
-					});
-				}
-			},	
-			saveOrUpdate : function(e){ 
-				var $this = this;
-				community.ui.progress($('#features'), true);	
-				community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/pages/save-or-update.json" />', {
-					data: community.ui.stringify($this.page),
-					contentType : "application/json",
-					success : function(response){
-						$this.setSource( new community.model.Page( response.data.item ) );
-					}
-				}).always( function () {
-					community.ui.progress($('#features'), false); 
-				});							
-			},					
-			setSource : function( data ){
+			load : function(objectId){
 				var $this = this;		
-				console.log( community.ui.stringify(data) );		
-				if( data.get('pageId') > 0 ){
-					data.copy( $this.page );
-					$this.set('editable', false );
-					getCodeEditor().setReadOnly(true);
-					$this.set('isNew', false );
-				}else{
-					$this.set('editable', true );	
-					$this.set('isNew', true );
-					getCodeEditor().setReadOnly(false);
-				}
-				$this.set('formatedCreationDate' , community.data.getFormattedDate( $this.page.creationDate) );
-				$this.set('formatedModifiedDate' , community.data.getFormattedDate( $this.page.modifiedDate) );
-								
-				if( !$this.get('visible') ) 
-					$this.set('visible' , true );
-					
-			},
-			loadPage : function(pageId){
-				var $this = this;		
-				if( pageId > 0 ){
+				if( objectId > 0 ){
 					community.ui.progress($('#features'), true);	
-					community.ui.ajax('<@spring.url "/data/api/mgmt/v1/pages/"/>' + pageId + '/get.json', {
+					community.ui.ajax('<@spring.url "/data/api/mgmt/v1/projects/"/>' + objectId + '/get.json', {
 						success: function(data){	
-							$this.setSource( new community.model.Page(data) );
+							$this.setSource( new community.model.Project(data) );
 						}	
 					}).always( function () {
 						community.ui.progress($('#features'), false);
 					});	
 				}else{
-					$this.setSource( new community.model.Page() );
-				}	
-
-			} 
-		});
-		observable.bind("change", function(e) {
-			if( e.field === 'editor.source' ){
-		    		if(observable.get('editor.source') === 'template'){
-		    			observable.editTemplateContents();
-		    		}
-		    		if(observable.get('editor.source') === 'page'){
-		    			observable.editPageContents();
-		    		}
-		    }else if ( e.field === 'editor.warp' ){
-		    		console.log(observable.get('editor.warp'));
-		    		getCodeEditor().getSession().setUseWrapMode(observable.get('editor.warp'));
-		    }
+					$this.setSource( new community.model.Project() );
+				}	 
+			},
+			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/PROJECT/list.json" />' , {} ),
+			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/CONTRACTOR/list.json" />' , {} )
+			
 		});
 		
-		community.ui.bind( $('#js-header') , observable );        
-		
+		community.ui.bind( $('#js-header') , observable );    
 		// initialization of sidebar navigation component
 	    community.ui.components.HSSideNav.init('.js-side-nav');
-	    
 	   	// initialization of HSDropdown component
 	    community.ui.components.HSDropdown.init($('[data-dropdown-target]'), {dropdownHideOnScroll: false});	  
-	     
-		var renderTo = $('#features');
+ 
+ 		var renderTo = $('#features');
 		community.ui.bind( renderTo , observable );
 		
-		createCodeEditor(observable);
-		
 	});
-	
-	function getCodeEditor(){
-		var renderTo = $("#htmleditor");
-		return ace.edit(renderTo.attr("id"))
-	}
-	
-	function createCodeEditor( observable ){
-		var renderTo = $("#htmleditor");
-		if( renderTo.contents().length == 0 ){ 
-			var editor = ace.edit(renderTo.attr("id"));		
-			editor.getSession().setMode("ace/mode/ftl");
-			editor.getSession().setUseWrapMode(observable.get('editor.warp'));
-		}
-	}
+
 	function openPropsModal(observable){
-		var renderTo = $('#pages-props-modal');
+		var renderTo = $('#projects-props-modal');
 		if( !renderTo.data("model") ){ 
-			var listview = community.ui.listview( $('#pages-props-listview'), {
+			var listview = community.ui.listview( $('#projects-props-listview'), {
 				dataSource : community.ui.datasource_v2({
 					transport: { 
-						read : 		{ url:'<@spring.url "/data/api/mgmt/v1/pages/"/>'+  observable.page.get('pageId') + '/properties/list.json',   type:'post', contentType : "application/json" },
-						create : 	{ url:'<@spring.url "/data/api/mgmt/v1/pages/"/>'+  observable.page.get('pageId') + '/properties/update.json', type:'post', contentType : "application/json" },
-						update : 	{ url:'<@spring.url "/data/api/mgmt/v1/pages/"/>'+  observable.page.get('pageId') + '/properties/update.json', type:'post', contentType : "application/json" },
-						destroy : 	{ url:'<@spring.url "/data/api/mgmt/v1/pages/"/>'+  observable.page.get('pageId') + '/properties/delete.json', type:'post', contentType : "application/json" },
+						read : 		{ url:'<@spring.url "/data/api/mgmt/v1/projects/"/>'+  observable.project.get('projectId') + '/properties/list.json',   type:'post', contentType : "application/json" },
+						create : 	{ url:'<@spring.url "/data/api/mgmt/v1/projects/"/>'+  observable.project.get('projectId') + '/properties/update.json', type:'post', contentType : "application/json" },
+						update : 	{ url:'<@spring.url "/data/api/mgmt/v1/projects/"/>'+  observable.project.get('projectId') + '/properties/update.json', type:'post', contentType : "application/json" },
+						destroy : 	{ url:'<@spring.url "/data/api/mgmt/v1/projects/"/>'+  observable.project.get('projectId') + '/properties/delete.json', type:'post', contentType : "application/json" },
 						parameterMap: function (options, operation){	 
 							if (operation !== "read" && options.models) { 
 								return community.ui.stringify(options.models);
@@ -264,22 +212,21 @@
 				}),
 				dataBound: function() {
 					if( this.items().length == 0)
-						$('#pages-props-listview').html('<tr class="g-height-50"><td colspan="3" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 데이터가 없습니다.</td></tr>');
+						$('#projects-props-listview').html('<tr class="g-height-50"><td colspan="3" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 데이터가 없습니다.</td></tr>');
 				},				
 				template: community.ui.template($("#property-template").html()),
 				editTemplate: community.ui.template($("#property-edit-template").html())
 			}); 
 			console.log('creating properties listview: ' + listview ); 
 			// fix for k-widget css problems.	
-			$('#pages-props-listview').removeClass('k-widget');
+			$('#projects-props-listview').removeClass('k-widget');
 			
 			var models = new community.ui.observable({ 	
 				create : function(){
 					listview.add();
 					return false;
 				},
-				setSource : function(){	
-				
+				setSource : function(){	 
 				}
 			});
 			renderTo.data("model", models );
@@ -287,14 +234,14 @@
 		}
 		renderTo.data("model").setSource(observable);
 		renderTo.modal('show');
-	}
-	
+	}	
+
 	function openSecurityModal(observable){
-		var renderTo = $('#pages-security-modal');
+		var renderTo = $('#projects-security-modal');
 		if( !renderTo.data("model") ){
 			console.log('creating permission acl listview.');
-			var listview = community.ui.listview( $('#pages-perms-listview'), {
-				dataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/"/>'+ observable.page.get('pageId') +'/list.json' , {
+			var listview = community.ui.listview( $('#projects-perms-listview'), {
+				dataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/"/>'+ observable.project.get('projectId') +'/list.json' , {
 					schema: {
 						total: "totalCount",
 						data: "items",
@@ -304,11 +251,11 @@
 				template: community.ui.template($("#perms-template").html()),
 				dataBound: function() {
 					if( this.items().length == 0)
-						$('#pages-perms-listview').html('<tr class="g-height-50"><td colspan="4" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 데이터가 없습니다.</td></tr>');
+						$('#projects-perms-listview').html('<tr class="g-height-50"><td colspan="4" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 데이터가 없습니다.</td></tr>');
 				}
 			}); 
 			
-			$('#pages-perms-listview').removeClass('k-widget');
+			$('#projects-perms-listview').removeClass('k-widget');
 			
 			var models = new community.ui.observable({ 	
 				permissionToType : "",  
@@ -332,7 +279,7 @@
 					var $this = this;
 					if( $this.accessControlEntry.get('grantedAuthorityOwner').length > 0  && $this.accessControlEntry.get('permission').length > 0 ){
 						community.ui.progress(renderTo, true);	
-						community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/" />' + observable.page.get('pageId') +'/add.json' , {
+						community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/" />' + observable.project.get('projectId') +'/add.json' , {
 							data: community.ui.stringify($this.accessControlEntry),
 							contentType : "application/json",
 							success : function(response){
@@ -348,7 +295,7 @@
 				removePermission : function (data) {
 					var $this = this;
 					community.ui.progress(renderTo, true);	
-					community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/" />' + observable.page.get('pageId') +'/remove.json', {
+					community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/" />' + observable.project.get('projectId') +'/remove.json', {
 						data:community.ui.stringify(data),
 						contentType : "application/json",
 						success : function(response){
@@ -371,7 +318,7 @@
 					$this.accessControlEntry.set('grantedAuthority' , "USER");					
 					$this.accessControlEntry.set('grantedAuthorityOwner' , "");			
 					$this.accessControlEntry.set('permission' , "");		
-					$this.accessControlEntry.set('domainObjectId' , observable.page.pageId);					
+					$this.accessControlEntry.set('domainObjectId' , observable.project.projectId);					
 				},
 			}); 
 			models.bind("change", function(e){						
@@ -399,21 +346,13 @@
 		}
 		renderTo.data("model").setSource(observable);
 		renderTo.modal('show');
-	}
-	
-	</script>
-	<style>
-	#htmleditor {
-		min-height:577px;
-	}
-	</style>	
+	}			
+	</script> 	
 </head>
-    
 <body class="">
 	<!-- Header -->
 	<#include "includes/admin-header.ftl">
 	<!-- End Header -->
-	
 	<section class="container-fluid px-0 g-pt-65">	
 	<div class="row no-gutters g-pos-rel g-overflow-x-hidden">
 		<!-- Sidebar Nav -->
@@ -424,16 +363,16 @@
 			<div class="g-hidden-sm-down g-bg-gray-light-v8 g-pa-20">
 				<ul class="u-list-inline g-color-gray-dark-v6">
 					<li class="list-inline-item g-mr-10">
-						<a class="u-link-v5 g-color-gray-dark-v6 g-color-lightblue-v3--hover g-valign-middle" href="#!">리소스</a> <i class="community-admin-angle-right g-font-size-12 g-color-gray-light-v6 g-valign-middle g-ml-10"></i>
+						<a class="u-link-v5 g-color-gray-dark-v6 g-color-lightblue-v3--hover g-valign-middle" href="#!">커뮤니티</a> <i class="community-admin-angle-right g-font-size-12 g-color-gray-light-v6 g-valign-middle g-ml-10"></i>
 					</li>
 					<li class="list-inline-item">
-						<span class="g-valign-middle">페이지</span>
+						<span class="g-valign-middle">프로젝트</span>
 					</li>
 				</ul>
 			</div>
 			<!-- End Breadcrumb-v1 -->
 			<div class="g-pa-20">
-				<h1 class="g-font-weight-300 g-font-size-28 g-color-black g-mb-30">페이지 관리</h1>
+				<h1 class="g-font-weight-300 g-font-size-28 g-color-black g-mb-30">프로젝트 관리</h1>
 				<!-- Content Body -->
 				<div id="features" class="container-fluid" data-bind="visible:visible" style="display:none;" >
 					<div class="row g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">
@@ -442,10 +381,10 @@
 		              			<div class="d-flex g-mb-15 g-mb-0--md">
 									<header class="g-mb-10">
 						            	<div class="u-heading-v6-2 text-uppercase" >
-						              <h2 class="h4 u-heading-v6__title g-font-weight-300" data-bind="text:page.name"></h2>
+						              <h2 class="h4 u-heading-v6__title g-font-weight-300" data-bind="text:project.name"></h2>
 						            	</div>
 						            	<div class="g-pl-90">
-						              <p data-bind="text:page.title"></p>
+						              <p data-bind="text:project.title"></p>
 						            	</div>
 						          	</header>		                				
 		             	 		</div>	
@@ -462,6 +401,7 @@
 		            			</div>
 	                  	</div>					
 					</div>
+					
 					<div class="row">
 						<div class="col-lg-9 g-mt-20 g-mb-10">
 							<div class="form-group g-mb-30">
@@ -470,100 +410,73 @@
 			                      	<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">
 				                  		<i class="hs-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
 				                		</span>
-		                      		<input id="input-page-name" class="form-control form-control-md g-rounded-4 g-px-14 g-py-10" type="text" placeholder="파일명을 입력하세요" data-bind="value: page.name, enabled:editable" autofocus>
-		                    			<small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">이 페이지를 호출할때 사용되는 이름입니다. ex) /display/pages/empty.html </small>
-		                    		</div>
-	                  		</div>
- 							<div class="form-group">
-	                    			<label class="g-mb-10 g-font-weight-600" for="input-page-title">페이지 타이틀 <span class="text-danger">*</span></label>
-		                    		<div class="g-pos-rel">
-			                      	<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">
-				                  		<i class="hs-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
-				                		</span>
-		                      		<input id="input-page-title" class="form-control form-control-md g-rounded-4 g-px-14 g-py-10" type="text" placeholder="파일명을 입력하세요" placeholder="페이지 타이틀을 입력하세요." data-bind="value: page.title, enabled:editable">
-		                    			<small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">페이지를 제목으로 사용되는 이름입니다.</small>
+		                      		<input id="input-page-name" class="form-control form-control-md g-rounded-4 g-px-14 g-py-10" type="text" placeholder="파일명을 입력하세요" data-bind="value: project.name, enabled:editable" autofocus>
 		                    		</div>
 	                  		</div>  
 							<div class="form-group">
 			                   	<label class="g-mb-10 g-font-weight-600" for="input-page-description">설명</label>			
-			                    	<textarea id="input-page-description" class="form-control form-control-md g-resize-none g-rounded-4" rows="3" placeholder="간략하게 페이지에 대한 설명을 입력하세요." data-bind="value:page.description, enabled:editable"></textarea>
-							</div>	                  		          	                  		          
- 							<div class="form-group">
-	                    			<label class="g-mb-10 g-font-weight-600" for="input-page-template">템플릿 <span class="text-danger">*</span></label>
-		                    		<div class="g-pos-rel">
-			                      	<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">
-				                  		<i class="hs-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
-				                		</span>
-		                      		<input id="input-page-template" class="form-control form-control-md g-rounded-4 g-px-14 g-py-10" type="text" placeholder="템플릿으로 사용할 파일 경로를 입력하세요" data-bind="value: page.template, enabled:editable">
-		                    		</div>
-	                  		</div> 
-	                  		<!-- EDITOR START-->
-	                  		
+			                    	<textarea id="input-page-description" class="form-control form-control-md g-resize-none g-rounded-4" rows="3" placeholder="간략하게 페이지에 대한 설명을 입력하세요." data-bind="value:project.summary, enabled:editable"></textarea>
+							</div>	 
+	                  		<!-- EDITOR START-->	                  		
 							<div class="card g-brd-gray-light-v7 g-rounded-3 g-mb-30">
 			                  <header class="card-header g-bg-transparent g-brd-gray-light-v7 g-px-15 g-px-30--sm g-pt-15 g-pt-20--sm g-pb-10 g-pb-15--sm">
-			 					<div class="media">
-					 				<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
-									  <label class="btn btn-secondary">
-									    <input type="radio" name="options-contents" value="template" autocomplete="off" data-bind="checked: editor.source" > 템플릿
-									  </label>
-									  <label class="btn btn-secondary">
-									    <input type="radio" name="options-contents" value="page"  autocomplete="off" data-bind="checked: editor.source"> 콘텐츠
-									  </label>
-									</div>                     
-			                      	<div class="media-body d-flex justify-content-end">      
-										<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mr-10 mb-0 g-width-300">                      
-					                      	<label class="d-flex align-items-center justify-content-between g-mb-0">
-												<span class="g-pr-20 g-font-weight-300">에디터 줄바꿈 설정/해지</span>
-												<div class="u-check">
-													<input class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" name="useWarp" value="true" data-bind="checked: editor.warp" type="checkbox">
-													<div class="u-check-icon-radio-v8">
-														<i class="fa" data-check-icon=""></i>
-													</div>
-												</div>
-											</label>
-				                      	</h3>
-			                      	</div>
-			                    </div>                  
+                					계약정보 
 			                  </header>
-			                  <div class="card-block code-editor g-pa-0" >
-			              		<div id="htmleditor"></div>	                                                         
+			                  <div class="card-block g-pa-15" >
+							 <div class="row g-mb-15" >
+			            			<div class="col-md-6">
+	                					<label class="g-mb-10 g-font-weight-600">계약자 <span class="text-danger">*</span></label>		
+		                				<div class="form-group g-pos-rel g-rounded-4 mb-0">
+					                    <input data-role="dropdownlist"
+										data-option-label="계약자를 선택하세요."
+										data-auto-bind="true"
+										data-text-field="name"
+										data-value-field="code"
+										data-bind="value: project.contractor, enabled:editable, source: contractorDataSource"
+										style="width: 100%;" /> 
+				                    </div>
+		                			</div>                			
+		                			<div class="col-md-6">
+		                				<label class="g-mb-10 g-font-weight-600">계약상태 <span class="text-danger">*</span></label>
+		                				<div class="form-group g-rounded-4 mb-0">
+		                					<input data-role="dropdownlist"
+										data-option-label="계약상태를 선택하세요."
+										data-auto-bind="true"
+										data-text-field="name"
+										data-value-field="code"
+										data-bind="value: project.contractState, enabled:editable, source: contractDataSource"
+										style="width: 100%;" />    
+										
+		                					
+		                				</div>		
+		                			</div> 
+			            		</div>
+			            		<div class="row g-mb-15" >
+			            			<div class="col-md-4">
+	                					<label class="g-mb-10 g-font-weight-600">비용(월) <span class="text-danger">*</span></label>		
+		                				<div class="form-group g-pos-relg-rounded-4 mb-0">
+					                		<input data-role="numerictextbox" data-format="c" data-bind="value:project.maintenanceCost, enabled:editable" style="width: 100%;" >
+				                    </div>
+		                			</div>  			            		
+			            			<div class="col-md-4">
+	                					<label class="g-mb-10 g-font-weight-600">시작일 <span class="text-danger">*</span></label>		
+		                				<div class="form-group g-pos-relg-rounded-4 mb-0">
+					                		<input data-role="datepicker" data-bind="value: project.startDate, enabled:editable" style="width: 100%">    
+				                    </div>
+		                			</div>                			
+		                			<div class="col-md-4">
+		                				<label class="g-mb-10 g-font-weight-600">종료일 <span class="text-danger">*</span></label>
+		                				<div class="form-group g-pos-rel g-rounded-4 mb-0">
+		                					<input data-role="datepicker" data-bind="value: project.endDate, enabled:editable" style="width: 100%">
+		                				</div>		
+		                			</div> 
+			            		</div>                    
 			                  </div>
-			                </div>		                  		
-	                  		
+			                </div>	 
 	                  		<!-- EDITOR END -->
 						</div>
 						<div class="g-brd-left--lg g-brd-gray-light-v4 col-md-3 g-mb-10 g-mb-0--md">
 							<section class="g-mb-10 g-mt-20">							
-								<div class="g-brd-around g-brd-gray-light-v7 g-rounded-4 g-pa-15 g-mb-15">
-									<div class="form-group">
-			                    			<label class="g-mb-10 g-font-weight-600">버전</label>
-				                    		<div class="g-pos-rel">
-					                      	<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">
-						                  		<i class="hs-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
-						                		</span>
-				                      		<input class="form-control" data-role="numerictextbox" placeholder="버전" data-min="0" data-max="100" data-bind="value: page.versionId, enabled:editable"  style="width: 100%"/>
-				                    		</div>
-			                  		</div>  
-									<div class="form-group">
-			                    			<label class="g-mb-10 g-font-weight-600">상태</label>
-				                    		<div class="g-pos-rel">
-					                      	<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">
-						                  		<i class="hs-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
-						                		</span>
-											<select class="form-control g-pos-rel" data-role="dropdownlist" data-bind="value: page.pageState, enabled:editable" style="width: 100%">
-											  <option value="INCOMPLETE">INCOMPLETE</option>
-											  <option value="APPROVAL">APPROVAL</option>
-											  <option value="PUBLISHED">PUBLISHED</option>
-											  <option value="REJECTED">REJECTED</option>
-											  <option value="ARCHIVED">ARCHIVED</option>
-											  <option value="DELETED">DELETED</option>
-											  <option value="NONE">NONE</option>
-											</select>
-				                    			<small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">PUBLISHED 상태인 경우에 페이지가 게시됩니다.</small>
-				                    		</div>
-			                  		</div> 								  
-								</div>											
-							
 			 					<div class="media g-mb-20">
 			                        <div class="d-flex align-self-center">
 			                          <img class="g-width-36 g-height-36 rounded-circle g-mr-15" data-bind="attr:{ src: userAvatarSrc }" src="/images/no-avatar.png" alt="Image description">
@@ -694,7 +607,7 @@
 	</div>
 	</section>
 	<!-- editor modal -->
-	<div class="modal fade" id="pages-props-modal" tabindex="-1" role="dialog" aria-labelledby="pages-props-modal-labal" aria-hidden="true">
+	<div class="modal fade" id="projects-props-modal" tabindex="-1" role="dialog" aria-labelledby="projects-props-modal-labal" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">				
 				<div class="modal-header">
@@ -738,7 +651,7 @@
 									<th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black g-color-black g-width-120">&nbsp;</th>
 								</tr>
 							</thead>
-							<tbody id="pages-props-listview" data-object-id="0">
+							<tbody id="projects-props-listview" data-object-id="0">
 							</tbody>
 						</table>
 					</div>
@@ -752,7 +665,7 @@
 		    <!-- /.modal-content -->
 		</div>
 	</div>			
-	<div class="modal fade" id="pages-security-modal" tabindex="-1" role="dialog" aria-labelledby="pages-security-modal-labal" aria-hidden="true">
+	<div class="modal fade" id="projects-security-modal" tabindex="-1" role="dialog" aria-labelledby="projects-security-modal-labal" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">	
 		      	<div class="modal-header">
@@ -775,19 +688,7 @@
 						</div>
 					</div>  
 					<!-- /.alert -->		
-            			<div class="g-ma-20"> 			    		 
-						<div class="form-group">
-		                    <label class="d-flex align-items-center justify-content-between">
-		                      <span>페이지 접근제한 활성화</span>
-		                      <div class="u-check">
-		                        <input class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" name="pages-options-acl-enabled" checked="" type="checkbox">
-		                        <div class="u-check-icon-radio-v8">
-		                          <i class="fa" data-check-icon=""></i>
-		                        </div>
-		                      </div>
-		                    </label>
-		                  </div>
-	                  </div>
+
 					 					<!-- permission listview -->						
 										<div class="g-mt-20"> 							
 											<table class="table w-100 g-mb-25">
@@ -799,7 +700,7 @@
 														<th class="g-valign-middle g-font-weight-300 g-bg-gray-light-v8 g-color-black g-width-150">&nbsp;</th>
 													</tr>
 												</thead>
-												<tbody id="pages-perms-listview" class="g-font-size-default g-color-black g-brd-0"></tbody>
+												<tbody id="projects-perms-listview" class="g-font-size-default g-color-black g-brd-0"></tbody>
 											</table>
 										</div>
 										<!-- ./permission listview -->	         
@@ -867,6 +768,8 @@
 		    <!-- /.modal-content -->
 		</div>
 	</div>		
+	
+		
 	<script type="text/x-kendo-template" id="perms-template">    	 	
 	<tr>
 		<td class="align-middle text-nowrap g-width-150" >
@@ -943,7 +846,8 @@
             <a class="btn btn-sm u-btn-outline-bluegray k-cancel-button" href="\\#">취소</a>
 		</td>
 	</td>
-	</script>								
+	</script>		
+	 	
 </body>
 </html>
-</#compress>
+</#compress> 	

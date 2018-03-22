@@ -35,10 +35,13 @@ import architecture.community.web.model.json.Result;
 
 /**
  * UI컴포넌트 관리자 API
+ * 
+ * <p>MENU</p> 
+ * 
  * @author donghyuck
  *
  */
-@Controller("community-data-v1-mgmt-ui-controller")
+@Controller("data-api-v1-mgmt-ui-controller")
 @RequestMapping("/data/api/mgmt/v1/ui")
 public class UIMgmtDataController {
 

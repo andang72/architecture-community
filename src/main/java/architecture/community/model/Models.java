@@ -44,7 +44,7 @@ public enum Models {
 	BOARD_THREAD(6, BoardThread.class),
 	BOARD_MESSAGE(7, BoardMessage.class),
 	COMMENT(8, Comment.class),
-	ANNOUNCE(8, Announce.class),
+	ANNOUNCE(9, Announce.class),
 	ATTACHMENT(10, Attachment.class),
 	IMAGE(11, Image.class),
 	LOGO_IMAGE(12, LogoImage.class),

@@ -25,8 +25,7 @@ public class Announce extends PropertyAwareSupport implements Serializable {
 
 	private Long announceId;
     private int objectType;
-    private Long objectId;
-    private Long userId;
+    private Long objectId; 
     private String subject;
     private String body;
     private Date startDate;
@@ -88,6 +87,7 @@ public class Announce extends PropertyAwareSupport implements Serializable {
 		this.announceId = announceId;
 		this.objectType = objectType;
 		this.objectId = objectId;
+		this.user = user;
 	}
 
     /**
@@ -135,22 +135,10 @@ public class Announce extends PropertyAwareSupport implements Serializable {
     		this.objectId = objectId;
     }
 
-    /**
-     * @return userId
-     */
-    public Long getUserId() {
-    		return userId;
-    }
 
-    /**
-     * @param userId
-     *            설정할 userId
-     */
-    public void setUserId(Long userId) {
-    		this.userId = userId;
-    }
 
-    /**
+
+	/**
      * @return subject
      */
     public String getSubject() {
@@ -327,11 +315,7 @@ public class Announce extends PropertyAwareSupport implements Serializable {
 			builder.append(announceId);
 			builder.append(", ");
 		}
-		if (userId != null) {
-			builder.append("userId=");
-			builder.append(userId);
-			builder.append(", ");
-		}
+ 
 		if (subject != null) {
 			builder.append("subject=");
 			builder.append(subject);
