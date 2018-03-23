@@ -153,8 +153,9 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		if (announce.getUser() == null && announce.getAnnounceId() == 0)
 			announce.setUser(user);
 
-		if (user.isAnonymous() || user.getUserId() != announce.getUser().getUserId())
+		if (user.isAnonymous() || ( !SecurityHelper.isUserInRole("ROLE_ADMINISTRATOR")  && user.getUserId() != announce.getUser().getUserId()) ) {
 			throw new UnAuthorizedException();
+		}
 
 		Announce target;
 		if (announce.getAnnounceId() > 0) {
