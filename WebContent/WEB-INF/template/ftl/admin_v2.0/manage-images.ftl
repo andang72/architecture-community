@@ -37,7 +37,8 @@
 	        "bootstrap" 					: { "deps" :['jquery'] },
 	        "kendo.ui.core.min" 			: { "deps" :['jquery'] },
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
-	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
+	        "kendo.messages.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
+	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min', 'kendo.messages.ko-KR.min' ] },
 	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
 	        "community.ui.admin" 		: { "deps" :['jquery', 'jquery.cookie', 'community.ui.core', 'community.data'] }
 		},
@@ -47,6 +48,7 @@
 			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap.bundle.min",
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
+			"kendo.messages.ko-KR.min"	: "/js/kendo.extension/kendo.core.messages.ko-KR",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
 			"community.ui.core" 			: "/js/community.ui/community.ui.core",
 			"community.data" 			: "/js/community.ui/community.data",
