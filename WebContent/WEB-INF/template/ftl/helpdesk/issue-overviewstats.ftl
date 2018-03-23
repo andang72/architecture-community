@@ -345,6 +345,15 @@
 		</div>	
 		
 		<div class="row text-center text-uppercase g-brd-gray g-brd-top-0 g-brd-left-0 g-brd-right-0  g-brd-style-solid  g-brd-3">
+  			<article class="g-pos-rel">
+  
+ 				<span class="text-center g-pos-abs g-top-0 g-left-0">
+                    <a class="btn u-btn-red text-uppercase rounded-0" href="#!">조회기간</a>
+                    <small class="g-bg-black g-color-white g-pa-5 d-block" data-bind="text:startDate" data-format="yyyy.MM.dd" ></small>
+                    <small class="g-bg-black g-color-white g-pa-5 d-block" data-bind="text:endDate" data-format="yyyy.MM.dd" ></small>
+                  </span>
+                   
+                    			                  			
 			<div class="col-lg-3 col-sm-6 g-brd-right g-brd-white-opacity-0_2 g-mb-25">
 				<div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:withinPeriodIssueCount">9</div>
 				<h4 class="h5 g-color-gray-dark-v4 g-mb-5">요청</h4>
@@ -361,6 +370,7 @@
 				<div class="js-counter g-font-size-35 g-font-weight-300 g-mb-7" data-bind="text:unclosedTotalCount">2</div>
 				<h4 class="h5 g-color-gray-dark-v4 g-mb-5">누적 미처리</h4>
 			</div>
+			</article>
 		</div>		
 		<div class="row">	
 			<div class="col-12">
