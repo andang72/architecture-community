@@ -13,7 +13,13 @@
  	<!-- Kendoui with bootstrap theme CSS -->			
 	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common-bootstrap.core.css"/>" rel="stylesheet" type="text/css" />
 	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	 
-	
+
+	<!-- Dzsparallaxer CSS -->
+	<link href="<@spring.url "/assets/vendor/dzsparallaxer/dzsparallaxer.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/assets/vendor/dzsparallaxer/dzsscroller/scroller.css"/>" rel="stylesheet" type="text/css" />	
+	<link href="<@spring.url "/assets/vendor/dzsparallaxer/advancedscroller/plugin.css"/>" rel="stylesheet" type="text/css" />	
+			
+					
 	<!-- Bootstrap core CSS -->
 	<link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
 	<link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
@@ -41,7 +47,10 @@
 	        "kendo.ui.core.min" : { "deps" :['jquery'] },
 	        "kendo.culture.ko-KR.min" : { "deps" :['kendo.ui.core.min'] },
 	        "community.ui.core" : { "deps" :['kendo.culture.ko-KR.min'] },
-	        "community.data" : { "deps" :['community.ui.core'] },	  
+	        "community.data" : { "deps" :['community.ui.core'] },	
+	        "dzsparallaxer" : { "deps" :['jquery'] },
+	        "dzsparallaxer.advancedscroller" : { "deps" :['jquery', 'dzsparallaxer' ] },
+	        "dzsparallaxer.dzsscroller" : { "deps" :['jquery', 'dzsparallaxer' ] }	          
 	    },
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-2.2.4.min",
@@ -51,11 +60,15 @@
 			"community.ui.core" 			: "/js/community.ui/community.ui.core",
 			"community.data" 			: "/js/community.ui/community.data",
 			"summernote.min"             : "/js/summernote/summernote.min",
-			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"		
+			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"	,
+			<!-- Dzsparallaxer -->		
+			"dzsparallaxer"           	: "/assets/vendor/dzsparallaxer/dzsparallaxer",
+			"dzsparallaxer.dzsscroller"	: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
+			"dzsparallaxer.advancedscroller"	: "/assets/vendor/dzsparallaxer/advancedscroller/plugin"				
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", 
+	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", 'dzsparallaxer.dzsscroller',
 	"https://www.gstatic.com/charts/loader.js"], function($, kendo ) {		
 	
 		community.ui.setup({
@@ -275,13 +288,19 @@
 			}
 		});
 	}	
-	</script>		
+	</script>	
+	<style>
+	.w-100{
+		width: 100%!important;
+	}
+	</style>	
 </head>
 <body id="page-top" class="landing-page no-skin-config">
 	<!-- NAVBAR START -->   
 	<#include "includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->  
-	<section class="g-brd-bottom g-brd-gray-light-v4 u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_3--after" style="background: url(/images/bg/black_panther.jpg)">
+	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_1--after dzsparallaxer auto-init height-is-based-on-content use-loading mode-scroll loaded dzsprx-readyall" data-options='{direction: "reverse", settings_mode_oneelement_max_offset: "150"}' >      
+    	  <div class="divimage dzsparallaxer--target w-100 g-bg-pos-bottom-center" style="height: 120%; background-image: url(  /images/bg/black_panther.jpg );"></div>    		
       <div class="container g-py-150">
         <div class="row">
           <div class="col-lg-6">
