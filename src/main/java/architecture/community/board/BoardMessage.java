@@ -25,6 +25,9 @@ public interface BoardMessage extends ModelObjectAware {
 	
 	public abstract void setBody(String body);	
 	
+ 
+	
+	
 	public abstract Date getCreationDate();
 
 	public abstract Date getModifiedDate();	

@@ -287,7 +287,7 @@ module.exports =
 	if (kendo.ui.FilterMultiCheck) {
 	kendo.ui.FilterMultiCheck.prototype.options.messages =
 	$.extend(true, kendo.ui.FilterMultiCheck.prototype.options.messages,{
-	  "search": "検索"
+	  "search": "검색" 
 	});
 	}
 

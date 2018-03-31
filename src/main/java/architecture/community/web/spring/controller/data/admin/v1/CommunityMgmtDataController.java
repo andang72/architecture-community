@@ -165,7 +165,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_ANNOUNCE_IDS_BY_REQUEST");
 		List<Long> items = customQueryService.list(dataSourceRequest, Long.class);
 		
-		List<Announce> announces = new ArrayList<Announce>(totalCount);
+		List<Announce> announces = new ArrayList<Announce>(items.size());
 		for( Long id : items ) {
 			try {
 				announces.add(announceService.getAnnounce(id));

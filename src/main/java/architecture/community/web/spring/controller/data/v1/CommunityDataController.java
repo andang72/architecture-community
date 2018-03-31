@@ -54,9 +54,11 @@ import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
+import architecture.community.image.Image;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
+import architecture.community.query.CustomQueryService;
 import architecture.community.model.Models;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.user.User;
@@ -109,6 +111,11 @@ public class CommunityDataController extends AbstractCommunityDateController {
 	@Inject
 	@Qualifier("announceService")
 	private AnnounceService announceService;
+	
+	
+	@Inject
+	@Qualifier("customQueryService")
+	private CustomQueryService customQueryService;
 	
 	
 	protected BoardService getBoardService () {
@@ -243,7 +250,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		}
 		return announceService.getAnnounceCount(objectType, objectId,
 			endDate == null ? Calendar.getInstance().getTime() : endDate);
-	    }
+	}
 	
 	/**
 	 * BOARD API 
@@ -314,6 +321,29 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		return new ItemList(list, totalSize);
 	}
 	
+	@RequestMapping(value = "/boards/{boardId:[\\p{Digit}]+}/threads/list_v2.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getThreadList2 (@PathVariable Long boardId, 
+			@RequestBody DataSourceRequest dataSourceRequest,
+			NativeWebRequest request) throws BoardNotFoundException {	
+				
+		Board board = boardService.getBoardById(boardId);	
+		dataSourceRequest.getData().put("boardId", board.getBoardId());
+		dataSourceRequest.setStatement("COMMUNITY_CS.COUNT_THREAD_BY_REQUEST");
+		int totalCount = customQueryService.queryForObject(dataSourceRequest, Integer.class);
+		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_THREAD_IDS_BY_REQUEST");
+		List<Long> items = customQueryService.list(dataSourceRequest, Long.class);
+		
+		List<BoardThread> threads = new ArrayList<BoardThread>(items.size());
+		for( Long id : items ) {
+			try {
+				threads.add(boardService.getBoardThread(id));
+			} catch (NotFoundException e) {
+			}
+		}
+		return new ItemList(threads, totalCount );
+	}	
+	
 
 	/**
 	 * 특정 스레드에 해당하는 게시물 목록 
@@ -363,7 +393,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/messages/save-or-update.json", method = { RequestMethod.POST })
 	@ResponseBody
-	public BoardMessage saveOrUpdate(@RequestBody DefaultBoardMessage newMessage, NativeWebRequest request) throws BoardThreadNotFoundException {
+	public BoardMessage saveOrUpdate(@RequestBody DefaultBoardMessage newMessage, NativeWebRequest request) throws BoardThreadNotFoundException, NotFoundException {
 
 		User user = SecurityHelper.getUser();
 		newMessage.setUser(user);
@@ -386,13 +416,36 @@ public class CommunityDataController extends AbstractCommunityDateController {
 				rootMessage.setBody(newMessage.getBody());
 				BoardThread thread = boardService.createThread(rootMessage.getObjectType(), rootMessage.getObjectId(), rootMessage);
 				boardService.addThread(rootMessage.getObjectType(), rootMessage.getObjectId(), thread);
-				return thread.getRootMessage();				
+				
+				return boardService.getBoardMessage(thread.getRootMessage().getMessageId());		
 			}
 		}		
 		return newMessage;
 	}	
 	
 	
+	
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/messages/{messageId:[\\p{Digit}]+}/attachments/{attachmentId:[\\p{Digit}]+}/remove.json", method = { RequestMethod.POST, RequestMethod.GET })	
+	@ResponseBody
+	public Result removeMessageAttachment (
+		@PathVariable Long messageId, 
+		@PathVariable Long attachmentId, 
+		@RequestBody DataSourceRequest dataSourceRequest, 
+		NativeWebRequest request) throws NotFoundException {
+		
+		
+		User user = SecurityHelper.getUser();
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		if( message.getUser().getUserId() == user.getUserId() )
+		{
+			Attachment attachment = attachmentService.getAttachment(attachmentId);
+			attachmentService.removeAttachment(attachment);
+		}
+		
+		return Result.newResult();
+	}	
+
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/messages/add.json", method = { RequestMethod.POST })
 	@ResponseBody

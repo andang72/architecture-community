@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
+import architecture.community.board.DefaultBoardThread;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
 import architecture.community.model.Models;
@@ -73,28 +74,29 @@ public class DisplayController {
 		model.addAttribute("__page", page); 
 		
 		if( page.getPageId() > 0 ) {
-
 			if( page.isSecured() ) {
 				PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Models.PAGE.getObjectClass(), page.getPageId());
-				//boolean allowed = communityAclService.isPermissionGrantedFinally(SecurityHelper.getAuthentication(), Page.class, page.getPageId(), Arrays.asList((Permission) CommunityPermissions.READ ));
 				if( !bundle.isRead() )
 					throw new UnAuthorizedException();
 			}
 			if( viewCountService!=null && !preview  )
 				viewCountService.addViewCount(page);	
-			
 		}
 		
-		if( threadId > 0 ) {
-			BoardThread thread = boardService.getBoardThread(threadId);
+		if( Boolean.parseBoolean(StringUtils.defaultString(page.getProperties().get("pages.board.thread"), "false")) )
+		{	
+			BoardThread thread ;
+			if( threadId > 0 ) {
+				thread = boardService.getBoardThread(threadId);
+				if( viewCountService!=null && !preview  )
+					viewCountService.addViewCount(thread);			
+			}else {
+				thread = new DefaultBoardThread();
+			}
 			model.addAttribute("__thread", thread);	
-			
-			if( viewCountService!=null && !preview  )
-				viewCountService.addViewCount(thread);			
 		}
 		
 		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
-		
 		String view = page.getTemplate();
 		if(StringUtils.isNotEmpty( view ) )
 		{

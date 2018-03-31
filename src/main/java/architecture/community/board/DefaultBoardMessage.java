@@ -33,13 +33,17 @@ public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMe
 	private Date creationDate;
 
 	private Date modifiedDate;
+	
+	//private int attachmentCount;
 
 	public DefaultBoardMessage() {
 		this.messageId = UNKNOWN_OBJECT_ID;
+		//this.attachmentCount = 0 ;
 	}
 	
 	public DefaultBoardMessage(long messageId) {
 		this.messageId = messageId;
+		//this.attachmentCount = 0 ;
 	}
 
 	public DefaultBoardMessage(int objectType, long objectId, User user) {
@@ -54,6 +58,7 @@ public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMe
 		Date now = new Date();
 		this.creationDate = now;
 		this.modifiedDate = now;
+		//this.attachmentCount = 0;
 		
 	}
 

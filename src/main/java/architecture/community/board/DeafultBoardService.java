@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import architecture.community.attachment.AttachmentService;
 import architecture.community.board.dao.BoardDao;
 import architecture.community.board.event.BoardThreadEvent;
 import architecture.community.i18n.CommunityLogLocalizer;
@@ -50,6 +51,10 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	@Inject
 	@Qualifier("messageTreeWalkerCache")
 	private Cache messageTreeWalkerCache;
+	
+	@Inject
+	@Qualifier("attachmentService")
+	private AttachmentService attachmentService;
 	
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -244,6 +249,10 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 				if( messageToUse.getUser().getUserId() > 0){
 					((DefaultBoardMessage)messageToUse).setUser(userManager.getUser(messageToUse.getUser()));
 				}	
+				
+				//int attachmentCount = attachmentService.getAttachmentCount(Models.BOARD_MESSAGE.getObjectType(), messageId);
+				//messageToUse.setAttachmentCount( attachmentCount );
+				
 				updateCaches(messageToUse);
 			} catch (Exception e) {
 				throw new BoardMessageNotFoundException(CommunityLogLocalizer.format("013007", messageId ));
