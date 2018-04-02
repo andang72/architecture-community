@@ -1,4 +1,4 @@
-package architecture.community.catelogy;
+package architecture.community.category;
 
 import javax.inject.Inject;
 
@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import architecture.community.catelogy.dao.CategoryDao;
+import architecture.community.category.dao.CategoryDao;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 

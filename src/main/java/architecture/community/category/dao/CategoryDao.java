@@ -1,7 +1,7 @@
-package architecture.community.catelogy.dao;
+package architecture.community.category.dao;
 
-import architecture.community.catelogy.Category;
-import architecture.community.catelogy.CategoryNotFoundException;
+import architecture.community.category.Category;
+import architecture.community.category.CategoryNotFoundException;
 
 public interface CategoryDao {
 

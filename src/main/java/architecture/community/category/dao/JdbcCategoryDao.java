@@ -1,4 +1,4 @@
-package architecture.community.catelogy.dao;
+package architecture.community.category.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,8 +13,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameterValue;
 
-import architecture.community.catelogy.Category;
-import architecture.community.catelogy.CategoryNotFoundException;
+import architecture.community.category.Category;
+import architecture.community.category.CategoryNotFoundException;
 import architecture.community.model.Models;
 import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;

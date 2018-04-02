@@ -1,4 +1,4 @@
-package architecture.community.catelogy;
+package architecture.community.category;
 
 import architecture.community.exception.NotFoundException;
 

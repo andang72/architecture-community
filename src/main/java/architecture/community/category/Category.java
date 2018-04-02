@@ -1,4 +1,4 @@
-package architecture.community.catelogy;
+package architecture.community.category;
 
 import java.io.Serializable;
 import java.util.Date;
