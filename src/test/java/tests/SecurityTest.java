@@ -3,8 +3,6 @@ package tests;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,9 +23,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import architecture.community.board.Board;
-import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.security.spring.acls.CommunityPermissions;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.security.spring.acls.ObjectAccessControlEntry;
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.security.spring.userdetails.CommunityUserDetailsService;
@@ -38,7 +34,6 @@ import architecture.community.user.RoleNotFoundException;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
-import architecture.ee.util.StringUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("WebContent/")
@@ -54,7 +49,7 @@ public class SecurityTest {
 	
 	@Autowired private CommunityUserDetailsService userDetailsManager;
 	
-	@Autowired private JdbcCommunityAclService aclService;
+	@Autowired private CommunityAclService aclService;
 	
 	@Rule public ExpectedException exception = ExpectedException.none();
 	
