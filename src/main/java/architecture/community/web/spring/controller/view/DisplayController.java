@@ -23,7 +23,7 @@ import architecture.community.exception.UnAuthorizedException;
 import architecture.community.model.Models;
 import architecture.community.page.Page;
 import architecture.community.page.PageService;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
 import architecture.community.util.SecurityHelper;
 import architecture.community.viewcount.ViewCountService;
@@ -51,7 +51,7 @@ public class DisplayController {
 	
 	@Inject
 	@Qualifier("communityAclService")
-	private JdbcCommunityAclService communityAclService;
+	private CommunityAclService communityAclService;
 	
 	@Inject
 	@Qualifier("viewCountService")

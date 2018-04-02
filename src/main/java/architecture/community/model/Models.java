@@ -21,6 +21,7 @@ import architecture.community.attachment.Attachment;
 import architecture.community.board.Board;
 import architecture.community.board.BoardMessage;
 import architecture.community.board.BoardThread;
+import architecture.community.catelogy.Category;
 import architecture.community.codeset.CodeSet;
 import architecture.community.comment.Comment;
 import architecture.community.image.Image;
@@ -40,6 +41,7 @@ public enum Models {
 	UNKNOWN(-1, null), 
 	USER(1, User.class), 
 	ROLE(3, Role.class),
+	CATEGORY(4, Category.class),
 	BOARD(5, Board.class),
 	BOARD_THREAD(6, BoardThread.class),
 	BOARD_MESSAGE(7, BoardMessage.class),
@@ -57,8 +59,6 @@ public enum Models {
 	MENU(20, Menu.class),
 	MENU_ITEM(21, MenuItem.class)
 	;
-	
-	
 	
 	
 	private int objectType;

@@ -121,8 +121,51 @@
  	</#list></#if>	
     ]]></dynamic></sql-query>	
 	
+	<!--  ====================================  -->
+	<!-- 	CATEGORY			      	 		-->
+	<!--  ====================================  -->		
+	<sql-query name="SELECT_CATEGORY_BY_ID" description="SELECT_ANNOUNCE_BY_ID"><![CDATA[
+	SELECT 
+		CATEGORY_ID,
+		OBJECT_TYPE,
+		OBJECT_ID,
+		NAME,
+		DISPLAY_NAME,
+		DESCRIPTION,
+		CREATION_DATE,
+		MODIFIED_DATE
+	FROM AC_CATEGORY
+	WHERE CATEGORY_ID = ?
+	]]></sql-query>
 	
-		
+	<sql-query name="UPDATE_CATEGORY" description="UPDATE_CATEGORY"><![CDATA[
+ 	UPDATE AC_CATEGORY SET 		
+		OBJECT_TYPE = ?,
+		OBJECT_ID = ?,
+		NAME = ?,
+		DISPLAY_NAME = ?,
+		DESCRIPTION = ?,
+		MODIFIED_DATE = ?
+	WHERE CATEGORY_ID = ?	
+	]]></sql-query>
+	
+	<sql-query name="INSERT_CATEGORY" description="INSERT INSERT_CATEGORY"><![CDATA[
+    INSERT INTO AC_CATEGORY (
+		CATEGORY_ID,
+		OBJECT_TYPE,
+		OBJECT_ID,
+		NAME,
+		DISPLAY_NAME,
+		DESCRIPTION,
+		CREATION_DATE,
+		MODIFIED_DATE
+	) VALUES ( ?,?,?,?,?,?,?,? )    	
+	]]></sql-query>
+	
+	<sql-query name="DELETE_CATEGORY" description="DELETE_CATEGORY"><![CDATA[
+	DELETE FROM AC_CATEGORY WHERE CATEGORY_ID = ?
+	]]></sql-query>		
+			
 	<!--  ====================================  -->
 	<!-- 	ANNOUNCE			      	 		-->
 	<!--  ====================================  -->	

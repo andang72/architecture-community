@@ -22,8 +22,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import architecture.community.exception.NotFoundException;
 import architecture.community.model.Models;
 import architecture.community.query.CustomQueryService;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.security.spring.acls.CommunityPermissions;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.security.spring.acls.ObjectAccessControlEntry;
 import architecture.community.user.CommunityUser;
 import architecture.community.user.DefaultRole;
@@ -56,7 +56,7 @@ public class SecurityMgmtDataController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	@Inject
 	@Qualifier("communityAclService")
-	private JdbcCommunityAclService communityAclService;
+	private CommunityAclService communityAclService;
 	
 	@Inject
 	@Qualifier("customQueryService")

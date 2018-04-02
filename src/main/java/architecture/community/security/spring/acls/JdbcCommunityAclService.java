@@ -28,13 +28,15 @@ import org.springframework.security.acls.model.UnloadedSidException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.user.Role;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 
-public class JdbcCommunityAclService extends JdbcMutableAclService {
+public class JdbcCommunityAclService extends JdbcMutableAclService implements CommunityAclService {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -211,14 +213,17 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		return isPermissionGranted(clazz, identifier, SecurityHelper.ANONYMOUS_USER_DETAILS , permissions);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public <T> void addAnonymousPermission(Class<T> clazz, Serializable identifier, Permission permission) {	
 		 addPermission(clazz, identifier, SecurityHelper.ANONYMOUS_USER_DETAILS.getUser() , permission);
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public <T> void removeAnonymousPermission(Class<T> clazz, Serializable identifier, Permission permission) {	
 		removePermission(clazz, identifier, SecurityHelper.ANONYMOUS_USER_DETAILS.getUser() , permission);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public <T> void addPermission(Class<T> clazz, Serializable identifier, User user, Permission permission) {
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz, identifier);
 		MutableAcl acl = isNewAcl(identity);
@@ -244,6 +249,7 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		return isGranted;
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public <T> void removePermission(Class<T> clazz, Serializable identifier, User user, Permission permission) {
 		Sid sid = new PrincipalSid(user.getUsername());
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);
@@ -257,6 +263,7 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		updateAcl(acl);
 	}
 	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public <T> void addPermission(Class<T> clazz, Serializable identifier, Role role, Permission permission) {
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz, identifier);
 		MutableAcl acl = isNewAcl(identity);
@@ -281,6 +288,7 @@ public class JdbcCommunityAclService extends JdbcMutableAclService {
 		return isGranted;
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public <T> void removePermission(Class<T> clazz, Serializable identifier, Role role, Permission permission) {
 		Sid sid = new GrantedAuthoritySid(role.getName());
 		ObjectIdentity identity = new ObjectIdentityImpl(clazz.getCanonicalName(), identifier);

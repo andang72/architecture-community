@@ -16,7 +16,7 @@ import architecture.community.model.Models;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectView;
 import architecture.community.security.spring.acls.CommunityPermissions;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.util.SecurityHelper;
@@ -25,11 +25,11 @@ public abstract class AbstractCommunityDateController {
 
 	protected Logger log = LoggerFactory.getLogger(getClass());	
 	
-	protected boolean hasPermission (JdbcCommunityAclService communityAclService, int objectType , long objectId,  CommunityPermissions permission ) {	
+	protected boolean hasPermission (CommunityAclService communityAclService, int objectType , long objectId,  CommunityPermissions permission ) {	
 		return communityAclService.isPermissionGrantedFinally(SecurityHelper.getAuthentication(), Models.valueOf(objectType).getObjectClass(), objectId, Arrays.asList( (Permission) permission));
 	}
 	
-	protected BoardView getBoardView(JdbcCommunityAclService communityAclService, BoardService boardService , Board board) {		
+	protected BoardView getBoardView(CommunityAclService communityAclService, BoardService boardService , Board board) {		
 		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();
 		log.debug("Board View : {} {} for {}.", board.getBoardId(),  board.getName(), userDetails.getUsername() );		
 		PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Board.class, board.getBoardId());				
@@ -50,7 +50,7 @@ public abstract class AbstractCommunityDateController {
 		return boardView;
 	}
 	
-	protected ProjectView getProjectView(JdbcCommunityAclService communityAclService, Project project) {		
+	protected ProjectView getProjectView(CommunityAclService communityAclService, Project project) {		
 		
 		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();
 		log.debug("Board View : {} {} for {}.", project.getProjectId(),  project.getName(), userDetails.getUsername() );		

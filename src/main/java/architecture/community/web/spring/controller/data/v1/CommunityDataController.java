@@ -54,12 +54,12 @@ import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
-import architecture.community.image.Image;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
-import architecture.community.query.CustomQueryService;
 import architecture.community.model.Models;
+import architecture.community.query.CustomQueryService;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
@@ -102,7 +102,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 	
 	@Inject
 	@Qualifier("communityAclService")
-	private JdbcCommunityAclService communityAclService;
+	private CommunityAclService communityAclService;
 
 	@Inject
 	@Qualifier("codeSetService")
@@ -122,7 +122,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		return boardService;
 	}
  
-	protected JdbcCommunityAclService getCommunityAclService() { 
+	protected CommunityAclService getCommunityAclService() { 
 		return communityAclService;
 	}
 	
