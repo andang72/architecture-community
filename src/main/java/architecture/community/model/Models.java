@@ -21,7 +21,7 @@ import architecture.community.attachment.Attachment;
 import architecture.community.board.Board;
 import architecture.community.board.BoardMessage;
 import architecture.community.board.BoardThread;
-import architecture.community.catelogy.Category;
+import architecture.community.category.Category;
 import architecture.community.codeset.CodeSet;
 import architecture.community.comment.Comment;
 import architecture.community.image.Image;
