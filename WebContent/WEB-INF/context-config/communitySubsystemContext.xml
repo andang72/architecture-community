@@ -409,7 +409,7 @@
 	<beans:bean id="externalLinkService" class="architecture.community.link.DefaultExternalLinkService" />		 
 
 	<!-- ================================= -->
-	<!-- ANNOUCNE						  -->
+	<!-- ANNOUCNE						   -->
 	<!-- ================================= -->
 	<beans:bean id="announceDao" class="architecture.community.announce.dao.JdbcAnnounceDao" p:dataSource-ref="dataSource" />
 	
@@ -424,6 +424,24 @@
 		p:diskExpiryThreadIntervalSeconds="0"
 		p:statisticsEnabled="true" />
 			
-	<beans:bean id="announceService" class="architecture.community.announce.CommunityAnnounceService" />		
+	<beans:bean id="announceService" class="architecture.community.announce.CommunityAnnounceService" />	
+	
+	<!-- ================================= -->
+	<!-- CATEGORY						   -->
+	<!-- ================================= -->
+	<beans:bean id="categoryDao" class="architecture.community.category.dao.JdbcCategoryDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="categoryCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean"
+		p:cacheName="categoryCache" 
+		p:maxElementsInMemory="5000"
+		p:diskPersistent="false" 
+		p:overflowToDisk="false" 
+		p:timeToIdle="300"
+		p:timeToLive="600" 
+		p:eternal="false" 
+		p:diskExpiryThreadIntervalSeconds="0"
+		p:statisticsEnabled="true" />
+			
+	<beans:bean id="categoryService" class="architecture.community.category.CommunityCategoryService" />			
 
 </beans:beans> 

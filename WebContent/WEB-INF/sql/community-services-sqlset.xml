@@ -124,6 +124,27 @@
 	<!--  ====================================  -->
 	<!-- 	CATEGORY			      	 		-->
 	<!--  ====================================  -->		
+    <sql-query name="SELECT_CATEGORY_IDS_BY_REQUEST" description="SELECT_CATEGORY_IDS_BY_REQUEST"><![CDATA[
+	SELECT  
+		CATEGORY_ID      	
+	FROM AC_CATEGORY
+	]]><dynamic><![CDATA[    
+	<#if filter?? && ( filter.filters?size > 0 ) > WHERE 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>	
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list></#if>
+    ]]></dynamic></sql-query>
+    	
 	<sql-query name="SELECT_CATEGORY_BY_ID" description="SELECT_ANNOUNCE_BY_ID"><![CDATA[
 	SELECT 
 		CATEGORY_ID,
@@ -165,7 +186,12 @@
 	<sql-query name="DELETE_CATEGORY" description="DELETE_CATEGORY"><![CDATA[
 	DELETE FROM AC_CATEGORY WHERE CATEGORY_ID = ?
 	]]></sql-query>		
-			
+
+    <sql-query name="SELECT_BOARD_IDS_BY_CATEGORY" description="SELECT_BOARD_IDS_BY_CATEGORY"><![CDATA[
+	SELECT BOARD_ID FROM REP_BOARD
+	WHERE CATEGORY_ID = ? 
+	]]></sql-query>
+    			
 	<!--  ====================================  -->
 	<!-- 	ANNOUNCE			      	 		-->
 	<!--  ====================================  -->	

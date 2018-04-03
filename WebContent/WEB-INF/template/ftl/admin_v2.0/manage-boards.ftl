@@ -349,10 +349,19 @@
 		                		<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">
 			                		<i class="community-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
 			                	</span>
-	                      	<input class="form-control g-brd-gray-light-v7 g-brd-gray-light-v3--focus g-rounded-4" type="text" placeholder="게시판 키" data-bind="value: board.name">
+	                      	<input class="form-control g-brd-gray-light-v7 g-brd-gray-light-v3--focus g-rounded-4" type="text" placeholder="게시판 이름" data-bind="value: board.name">
 	                      	<small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">게시판을 구분짓는 유일한 영문을 입력하세요.</small>
 	                    </div>
                   	</div>
+					<div class="form-group g-mb-10">
+		                	<div class="g-pos-rel">
+		                		<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">
+			                		<i class="community-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
+			                	</span>
+	                      	<input class="form-control g-brd-gray-light-v7 g-brd-gray-light-v3--focus g-rounded-4" type="text" placeholder="게시판 타이틀" data-bind="value: board.displayName">
+	                      	<small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">화면에 보여지는 게시판 이름입니다.</small>
+	                    </div>
+                  	</div>                  	
 					<div class="form-group g-mb-10">
 		                	<div class="g-pos-rel">
 		                		<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">

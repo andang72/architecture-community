@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 public class JsonDateSerializer extends JsonSerializer<Date> {
 
-    private static final ISO8601DateFormat formatter = new ISO8601DateFormat();
-
+    private static final ISO8601DateFormat formatter = new ISO8601DateFormat(); 
+    
     @Override
     public void serialize(Date value, JsonGenerator jgen, SerializerProvider provider)
 	    throws IOException, JsonProcessingException {

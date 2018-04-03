@@ -73,7 +73,7 @@ import architecture.community.projects.Stats;
 import architecture.community.query.CustomQueryService;
 import architecture.community.query.CustomQueryService.DaoCallback;
 import architecture.community.query.dao.CustomQueryJdbcDao;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
 import architecture.community.user.User;
 import architecture.community.user.UserTemplate;
@@ -82,6 +82,7 @@ import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 import architecture.ee.util.StringUtils;
+
 /**
  * Project & Issue Data Controller 
  * 
@@ -104,7 +105,7 @@ public class IssueDataController extends AbstractCommunityDateController  {
 	
 	@Inject
 	@Qualifier("communityAclService")
-	private JdbcCommunityAclService communityAclService;
+	private CommunityAclService communityAclService;
 
 	@Inject
 	@Qualifier("imageService")
@@ -123,6 +124,7 @@ public class IssueDataController extends AbstractCommunityDateController  {
 	private CustomQueryService customQueryService;
 	
 	public IssueDataController() {
+		
 	}
 	
 	/**

@@ -52,6 +52,8 @@ public interface CustomQueryService {
 	
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType);
 	
+	public Map<String, Object> queryForMap (DataSourceRequest dataSourceRequest);
+	
 	/**
 	 *  
 	 * Old style API
@@ -66,6 +68,8 @@ public interface CustomQueryService {
 	 * @return
 	 */
 	public <T> List<T> list( String statement, List<ParameterValue> values, RowMapper<T> rowmapper);
+	
+	public <T> List<T> list(String statement, List<ParameterValue> values, Class<T> elementType);
 	
 	
 	/**

@@ -28,16 +28,18 @@ import architecture.community.board.Board;
 import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.DefaultBoard;
+import architecture.community.category.Category;
+import architecture.community.category.CategoryNotFoundException;
+import architecture.community.category.CategoryService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.image.Image;
 import architecture.community.image.ImageLink;
 import architecture.community.image.ImageService;
+import architecture.community.menu.Menu;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.query.CustomQueryService;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
-import architecture.community.user.User;
-import architecture.community.util.SecurityHelper;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
@@ -61,7 +63,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	
 	@Inject
 	@Qualifier("communityAclService")
-	private JdbcCommunityAclService communityAclService;
+	private CommunityAclService communityAclService;
 
 	
 	@Inject
@@ -85,10 +87,61 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@Qualifier("announceService")
 	private AnnounceService announceService;
 	
-	protected JdbcCommunityAclService getCommunityAclService() {
+	@Inject
+	@Qualifier("categoryService")
+	private CategoryService categoryService;
+	
+	protected CommunityAclService getCommunityAclService() {
 		return communityAclService;
 	}
 
+
+	/**
+	 * CATEGORY API 
+	******************************************/
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/categories/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getCategories (@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {
+
+		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_CATEGORY_IDS_BY_REQUEST");
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<Category> categories = new ArrayList<Category>(ids.size());
+		for( Long categoryId : ids ) {
+			try {
+				categories.add(categoryService.getCategory(categoryId));
+			} catch (CategoryNotFoundException e) {
+				log.error(e.getMessage(), e);
+			}
+		}		
+		return new ItemList(categories, categories.size());	
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/categories/save-or-update.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public Category saveOrUpdate(@RequestBody Category category, NativeWebRequest request) throws CategoryNotFoundException {
+
+		Category categoryToUse = category;
+
+		if (category.getCategoryId() > 0) {
+			
+			categoryToUse = categoryService.getCategory(category.getCategoryId());
+			
+			if (!StringUtils.isNullOrEmpty(category.getName()))
+				categoryToUse.setName(category.getName()); 
+			if (!StringUtils.isNullOrEmpty(category.getDisplayName()))
+				categoryToUse.setDisplayName(category.getDisplayName()); 
+			if (!StringUtils.isNullOrEmpty(category.getDescription()))
+				categoryToUse.setDescription(category.getDescription()); 
+			Date modifiedDate = new Date();
+			categoryToUse.setModifiedDate(modifiedDate);
+			categoryService.saveOrUpdate(categoryToUse);
+		} else {
+			categoryService.saveOrUpdate(categoryToUse);
+		}
+		return categoryService.getCategory( categoryToUse.getCategoryId() );
+	}	
 
 	/**
 	 * BOARD API 

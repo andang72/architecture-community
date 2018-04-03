@@ -131,8 +131,12 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	}
 	
 	
-	
-	
+	public <T> List<T> list(String statement, List<ParameterValue> values, Class<T> elementType) {
+		if (values.size() > 0)
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql(), elementType, getSqlParameterValues(values).toArray());
+		else
+			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql(), elementType);
+	}	
 	
 
 	public List<Map<String, Object>> list( String statement, List<ParameterValue> values) {
@@ -199,4 +203,6 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		additionalParameter.put("user", dataSourceRequest.getUser());		
 		return additionalParameter;
 	}
+
+
 }

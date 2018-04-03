@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContextAware;
 import architecture.community.announce.AnnounceService;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.board.BoardService;
+import architecture.community.category.CategoryService;
 import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.menu.MenuService;
@@ -36,6 +37,10 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 
 	public static ConfigService getConfigService(){
 		return getComponent(ConfigService.class);
+	}
+	
+	public static CategoryService getCategoryService(){
+		return getComponent(CategoryService.class);
 	}
 	
 	public static BoardService getBoardService(){
