@@ -2,6 +2,7 @@ package architecture.community.web.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,12 +11,17 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+
 import architecture.ee.util.StringUtils;
 
 public class ServletUtils {
 
 	/** 디폴트로 웹 페이지 컨텐츠 타입. */
 	public static final String DEFAULT_HTML_CONTENT_TYPE = "text/html;charset=UTF-8";
+	
+	private static final ISO8601DateFormat formatter = new ISO8601DateFormat();
+
 	/**
 	 * 한글 처리를 위하여 response의 Content Type 속성을 변경하는 유틸리티. 
 	 * 
@@ -76,6 +82,8 @@ public class ServletUtils {
 		}
 	}
 	
-	
+	public static String getDataAsISO8601(Date date) {
+		return formatter.format(date);
+	}
 	
 }
