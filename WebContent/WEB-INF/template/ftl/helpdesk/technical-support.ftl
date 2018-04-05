@@ -603,6 +603,7 @@
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">유형</th>
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">우선순위</th>
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">담당자</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">등록일</th>
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
 							</tr>
 						</thead>	
@@ -620,26 +621,28 @@
 	<script type="text/x-kendo-template" id="template-issue">
 	<tr>
 		<td class="align-middle text-center"> ISSUE-#: issueId # </td>
-    		<td class="align-middle">
+    	<td class="align-middle">
     		<a href="\\#" class="btn-link" data-action="view" data-object-id="#: project.projectId#" data-kind="project">
     		<span class="u-label g-bg-pink g-rounded-20 g-px-15 g-mr-10 g-mb-0">#= getContractorName(project.contractor) #</span> #: project.name #
     		</a>
-    		</td>
-    		<td class="align-middle">
-    			# if ( new Date() >= new Date(dueDate) ) {# <i class="fa fa-exclamation-triangle g-color-red" aria-hidden="true"></i> #} else { #  # } # 
-        		<a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view2" data-object-id="#= issueId #" data-kind="issue" >#: summary # </a>        		
+    	</td>
+    	<td class="align-middle">
+    		# if ( new Date() >= new Date(dueDate) ) {# <i class="fa fa-exclamation-triangle g-color-red" aria-hidden="true"></i> #} else { #  # } # 
+        	<!--<a class="btn-link text-wrap g-font-weight-200 g-font-size-20" href="\\#" data-action="view2" data-object-id="#= issueId #" data-kind="issue" >#: summary # </a> -->   
+        	<a class="btn-link text-wrap g-font-weight-400 g-font-size-20" href="issue.html?projectId=#= project.projectId #&issueId=#= issueId #" target="_blank">#: summary # </a>     		
  		</td>
-    		<td class="align-middle">#: issueTypeName #</td>
-    		<td class="align-middle">#: priorityName #</td>
-    		<td class="align-middle">
+    	<td class="align-middle">#: issueTypeName #</td>
+    	<td class="align-middle text-center">#: priorityName #</td>
+    	<td class="align-middle">
 		#if ( assignee != null && assignee.userId > 0 ) {#
 		#= community.data.getUserDisplayName( assignee ) #
 		#} else {#
-			미지정
+			<span class="text-muted">미지정</span>
 		#}#
 		</td>
-    		<td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
-    	</tr>	
+    	<td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( creationDate , 'yyyy-MM-dd') # #}#</td>
+    	<td class="align-middle">#if (dueDate != null){ # #: community.data.getFormattedDate( dueDate , 'yyyy-MM-dd') # #}#</td>
+    </tr>	
 	</script>	
 	<script type="text/x-kendo-template" id="template">
 			<div class="forum-item">

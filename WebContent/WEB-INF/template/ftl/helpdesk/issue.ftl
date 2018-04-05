@@ -470,7 +470,7 @@
 		var myDropzone = new Dropzone("#issue-attachment-dropzone", {
 			url: '/data/api/v1/attachments/upload.json',
 			paramName: 'file',
-			maxFilesize: 1,
+			maxFilesize: 10,
 			previewsContainer: '#issue-attachment-dropzone .dropzone-previews'	,
 			previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div></div>'
 		});
