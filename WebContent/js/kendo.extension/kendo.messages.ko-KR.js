@@ -9,7 +9,8 @@
 
 (function(f){
     if (typeof define === 'function' && define.amd) {
-        define(["kendo.core"], f);
+        // define(["kendo.core"], f);
+    	f();
     } else {
         f();
     }
@@ -340,11 +341,11 @@ if (kendo.ui.Pager) {
 kendo.ui.Pager.prototype.options.messages =
 $.extend(true, kendo.ui.Pager.prototype.options.messages,{
 	"allPages": "All",
-		   "display": "{0} - {1} ({2} 항목 중)",
-		   "empty": "표시 할 항목이 없습니다",
+		   "display": "{0} - {1} (전체 {2} 건 중)",
+		   "empty": "표시 할 데이터가 없습니다",
 		   "page": "페이지",
 		   "of": "/ {0}",
-		   "itemsPerPage": "항목 (페이지 당)",
+		   "itemsPerPage": "건 (페이지 당)",
 		   "first": "첫 페이지로 이동",
 		   "previous": "이전 페이지로 이동",
 		   "next": "다음 페이지로 이동",

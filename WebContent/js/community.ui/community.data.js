@@ -11,6 +11,40 @@
 			value: { type: "string", defaultValue: "" }
 		}
 	});
+
+	community.model.Category = Model.define({ 		
+		id: "categoryId",
+		fields: { 		
+			categoryId: { type: "number", defaultValue: 0 },			
+			objectType: { type: "number", defaultValue: 0 },			
+			objectId: { type: "number", defaultValue: 0},			
+			name: { type: "string", defaultValue: "" },	
+			displayName: { type: "string", defaultValue: "" },
+			description: { type: "string", defaultValue: "" },
+			creationDate:{ type: "date" },			
+			modifiedDate:{ type: "date"}
+		},
+		formattedCreationDate : function(){		
+			return kendo.toString(this.get("creationDate"), "g");
+	    },
+	    formattedModifiedDate : function(){
+	    	return kendo.toString(this.get("modifiedDate"), "g");
+	    },
+		copy : function ( target ){
+		    target.categoryId = this.get("categoryId");
+		    target.set("name", this.get("name"));
+		    target.set("displayName", this.get("displayName"));
+		    target.set("objectType", this.get("objectType"));
+		    target.set("objectId", this.get("objectId"));
+		    target.set("description", this.get("description"));
+		    if( typeof this.get("properties") === 'object' )
+		    	target.set("properties", this.get("properties"));	  
+		    if(this.get("creationDate") != null )
+		    	target.set("creationDate", this.get("creationDate"));
+		    if(this.get("modifiedDate") != null )
+		    	target.set("modifiedDate", this.get("modifiedDate"));
+		}
+	});
 	
 	community.model.Menu = Model.define({ 		
 		id: "menuId",
