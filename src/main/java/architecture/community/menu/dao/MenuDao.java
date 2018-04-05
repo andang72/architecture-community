@@ -23,6 +23,8 @@ public interface MenuDao {
 	
 	public List<MenuItem> getMenuItemsByMenuId(long menuId);
 	
+	public List<Long> getMenuItemIds( long menuId );
+	
 	public MenuItemTreeWalker getTreeWalkerById(long menuId) ;
 	
 }

@@ -435,7 +435,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 						new SqlParameterValue(Types.INTEGER, page.getBodyContent().getBodyType().getId()),
 						new SqlParameterValue(Types.VARCHAR, page.getBodyContent().getBodyText()));
 				getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_PAGE.INSERT_PAGE_BODY_VERSION").getSql(),
-						new SqlParameterValue(Types.NUMERIC, bodyId),
+						new SqlParameterValue(Types.NUMERIC, bodyIdToUse),
 						new SqlParameterValue(Types.NUMERIC, page.getPageId()),
 						new SqlParameterValue(Types.NUMERIC, prevVersionId));
 			}

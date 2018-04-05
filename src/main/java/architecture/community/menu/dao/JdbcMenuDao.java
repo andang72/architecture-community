@@ -198,7 +198,9 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 
 	}
 
-	
+	public List<Long> getMenuItemIds( long menuId ){
+		return getExtendedJdbcTemplate().queryForList( getBoundSql("COMMUNITY_UI.SELECT_MENU_ITEM_IDS_BY_MENU_ID_2").getSql(),  Long.class,  new SqlParameterValue(Types.NUMERIC, menuId));
+	}
 	public long getMenuIdByName(String name) throws MenuNotFoundException {
 		return getExtendedJdbcTemplate().queryForObject( getBoundSql("COMMUNITY_UI.SELECT_MENU_ID_BY_NAME").getSql(),  Long.class,  new SqlParameterValue(Types.VARCHAR, name));
 	}

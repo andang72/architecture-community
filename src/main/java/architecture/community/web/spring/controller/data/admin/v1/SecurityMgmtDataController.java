@@ -1,7 +1,12 @@
 package architecture.community.web.spring.controller.data.admin.v1;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -18,13 +23,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import architecture.community.exception.NotFoundException;
+import architecture.community.exception.UnAuthorizedException;
 import architecture.community.model.Models;
+import architecture.community.model.Property;
 import architecture.community.query.CustomQueryService;
 import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.ObjectAccessControlEntry;
+import architecture.community.user.AvatarImage;
 import architecture.community.user.CommunityUser;
 import architecture.community.user.DefaultRole;
 import architecture.community.user.EmailAlreadyExistsException;
@@ -34,6 +44,7 @@ import architecture.community.user.RoleManager;
 import architecture.community.user.RoleNotFoundException;
 import architecture.community.user.User;
 import architecture.community.user.UserAlreadyExistsException;
+import architecture.community.user.UserAvatarService;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
 import architecture.community.util.SecurityHelper;
@@ -74,6 +85,11 @@ public class SecurityMgmtDataController {
 	@Inject
 	@Qualifier("configService")
 	private ConfigService configService;
+	
+	
+	@Inject
+	@Qualifier("userAvatarService")
+	private UserAvatarService userAvatarService;
 	
 	public SecurityMgmtDataController() {
 	}
@@ -141,8 +157,18 @@ public class SecurityMgmtDataController {
 		}else {
 			userManager.createUser(user);
 		}
-		return Result.newResult();
+		return Result.newResult("item", user);
     }
+	
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/get.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public User getUser(
+		@PathVariable Long userId, 
+		NativeWebRequest request) throws UserNotFoundException {
+		return userManager.getUser(userId);
+	}
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/roles/list.json", method = { RequestMethod.POST, RequestMethod.GET })
@@ -224,6 +250,93 @@ public class SecurityMgmtDataController {
 		}	
 		return Result.newResult();
     }
+
+	
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> getUserProperties(@PathVariable Long userId, NativeWebRequest request)
+			throws UserNotFoundException { 
+		if (userId <= 0) {
+			return Collections.EMPTY_LIST;
+		}		
+		User user = userManager.getUser(userId);
+		Map<String, String> properties = user.getProperties();
+		return toList(properties);
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/properties/update.json", method = RequestMethod.POST)
+	@ResponseBody
+	public List<Property> updateUserProperties(
+			@PathVariable Long userId,
+			@RequestBody List<Property> newProperties, 
+			NativeWebRequest request) throws UserNotFoundException, UserAlreadyExistsException {
+	 
+		User user = userManager.getUser(userId);
+		Map<String, String> properties = user.getProperties();
+		// update or create
+		for (Property property : newProperties) {
+			properties.put(property.getName(), property.getValue().toString());
+		}
+		if (newProperties.size() > 0) {
+			userManager.updateUser(user);
+		}
+		return toList(properties);
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/properties/delete.json", method = { RequestMethod.POST, RequestMethod.DELETE })
+	@ResponseBody
+	public List<Property> deleteUserProperties(
+			@PathVariable Long userId, 
+			@RequestBody List<Property> newProperties, 
+			NativeWebRequest request) throws NotFoundException, UserNotFoundException, UserAlreadyExistsException { 
+		User user = userManager.getUser(userId);
+		Map<String, String> properties = user.getProperties();
+		for (Property property : newProperties) {
+			properties.remove(property.getName());
+		}
+		if (newProperties.size() > 0) {
+			userManager.updateUser(user);
+		}
+		return toList(properties);
+	}
+
+	protected List<Property> toList(Map<String, String> properties) {
+		List<Property> list = new ArrayList<Property>();
+		for (String key : properties.keySet()) {
+			String value = properties.get(key);
+			list.add(new Property(key, value));
+		}
+		return list;
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/users/{userId:[\\p{Digit}]+}/avatar/upload.json", method = RequestMethod.POST)
+	@ResponseBody
+	public Result uploadMyAvatarImage(@PathVariable Long userId, MultipartHttpServletRequest request) throws IOException, UserNotFoundException {
+		Result result = Result.newResult();
+		result.setAnonymous(false);
+		User user = userManager.getUser(userId);
+		AvatarImage imageToUse = new AvatarImage(user);
+		Iterator<String> names = request.getFileNames();
+		while (names.hasNext()) {
+			String fileName = names.next();
+			MultipartFile mpf = request.getFile(fileName);
+			InputStream is = mpf.getInputStream();
+			logger.debug("upload  file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize(),
+					mpf.getContentType());
+			imageToUse.setFilename(mpf.getOriginalFilename());
+			imageToUse.setImageContentType(mpf.getContentType());
+			imageToUse.setImageSize((int) mpf.getSize());
+			userAvatarService.addAvatarImage(imageToUse, is, user);
+			result.setCount(result.getCount() + 1);
+		}
+		return result;
+	}
+	   
 	
 	/**
 	 * ROLE API 

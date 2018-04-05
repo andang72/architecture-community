@@ -265,7 +265,9 @@ public class JdbcUserDao extends ExtendedJdbcDaoSupport implements UserDao {
 	}
 
 
+	public void updateUserProperty(User user ) {
 		
+	}	
 	public User updateUser(User user) {
 		UserTemplate userToUse = (UserTemplate)user;
 		boolean useLastNameFirstName = userToUse.getFirstName() != null && userToUse.getLastName() != null;

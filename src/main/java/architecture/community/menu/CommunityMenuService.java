@@ -47,6 +47,7 @@ public class CommunityMenuService implements MenuService {
 		menuCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(30, TimeUnit.MINUTES).build(		
 				new CacheLoader<Long, Menu>(){			
 					public Menu load(Long menuId) throws Exception {
+						logger.debug("loading menu by {}", menuId);
 						return menuDao.getMenuById(menuId);
 				}}
 			);
@@ -54,19 +55,22 @@ public class CommunityMenuService implements MenuService {
 		menuIdCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(30, TimeUnit.MINUTES).build(		
 				new CacheLoader<String, Long>(){			
 					public Long load(String name) throws Exception {	
+						logger.debug("loading menu by {}", name);
 						return menuDao.getMenuIdByName(name);
 				}}
 		);
 		menuItemCache = CacheBuilder.newBuilder().maximumSize(200).expireAfterAccess(30, TimeUnit.MINUTES).build(		
 				new CacheLoader<Long, MenuItem>(){			
 					public MenuItem load(Long menuItemId) throws Exception {
+						logger.debug("loading menu item by {}", menuItemId);
 						return menuDao.getMenuItemById(menuItemId);
 				}}
 			);	
 		treewalkerCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(30, TimeUnit.MINUTES).build(		
 				new CacheLoader<Long, MenuItemTreeWalker>(){			
-					public MenuItemTreeWalker load(Long menuItemId) throws Exception {
-						return getTreeWalkerById(menuItemId);
+					public MenuItemTreeWalker load(Long menuId) throws Exception {
+						logger.debug("loading menu treewalker by {}", menuId);
+						return getTreeWalkerById(menuId);
 				}}
 			);			
 	}
@@ -108,10 +112,13 @@ public class CommunityMenuService implements MenuService {
 	
 	protected MenuItemTreeWalker getTreeWalkerById(long menuId) throws MenuNotFoundException {
 		MenuItemTreeWalker walker = menuDao.getTreeWalkerById(menuId);		
-		List<MenuItem> items = menuDao.getMenuItemsByMenuId(menuId);
+		List<Long> ids = menuDao.getMenuItemIds(menuId);
 		Map<Long, MenuItem> list = new HashMap<Long, MenuItem>();
-		for( MenuItem item : items )
-			list.put(item.getMenuItemId(), item);
+		for( Long id: ids )
+			try {
+				list.put(id, getMenuItemById(id));
+			} catch (MenuItemNotFoundException e) {
+			}
 		walker.setCache(list);
 		return walker;
 	}
@@ -160,18 +167,17 @@ public class CommunityMenuService implements MenuService {
 		
 		logger.debug("invalidate cache for {}", menuItem.getMenuItemId());
 		
-		menuDao.saveOrUpdate(menuItem);
+		menuDao.saveOrUpdate(menuItem); 
 		
 		menuItemCache.invalidate(menuItem.getMenuItemId());
-		treewalkerCache.invalidate(menuItem.getMenuId());
-		
+		treewalkerCache.invalidate(menuItem.getMenuId()); 
 		menuItemCache.asMap().remove(menuItem.getMenuItemId());
-		treewalkerCache.asMap().remove(menuItem.getMenuId());
-		
+		treewalkerCache.asMap().remove(menuItem.getMenuId()); 
 	}
  
 	public void deleteMenuItem(MenuItem menuItem) {
 		menuItemCache.invalidate(menuItem.getMenuItemId());
+		treewalkerCache.invalidate(menuItem.getMenuId()); 
 	}
 	
 	public List<Menu> getAllMenus() {
