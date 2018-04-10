@@ -32,7 +32,7 @@
 	require.config({
 		shim : {
 			"jquery.cookie" 				: { "deps" :['jquery'] },
-	        "bootstrap" 					: { "deps" :['jquery', 'popper'] },
+	        "bootstrap" 					: { "deps" :['jquery'] },
 	        "kendo.ui.core.min" 			: { "deps" :['jquery'] },
 	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
 	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
@@ -42,8 +42,7 @@
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
 			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle",
-			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap",
+			"bootstrap" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle", 
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",

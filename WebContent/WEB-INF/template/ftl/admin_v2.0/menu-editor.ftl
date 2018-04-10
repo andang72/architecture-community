@@ -50,22 +50,21 @@
 	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core', 'community.data'] }
 		},
 		paths : {
-			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
+			"jquery"    				: "/js/jquery/jquery-3.1.1.min",
 			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle",
-			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap.min",
+			"bootstrap" 				: "/js/bootstrap/4.0.0/bootstrap.bundle.min",
 			/*"kendo.ui.core.min" 		: "/js/kendo.ui.core/kendo.ui.core.min",*/
 			/*"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",*/
 			"kendo.web.min"	 			: "/js/kendo/2018.1.221/kendo.web.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo/2018.1.221/cultures/kendo.culture.ko-KR.min",	
 			"kendo.extension.min"		: "/js/kendo.extension/kendo.ko_KR",			
-			"community.ui.core" 			: "/js/community.ui/community.ui.core",
-			"community.ui.professional" 	: "/js/community.ui.components/community.ui.professional",
+			"community.ui.core" 		: "/js/community.ui/community.ui.core",
+			"community.ui.professional" : "/js/community.ui.components/community.ui.professional",
 			"community.data" 			: "/js/community.ui/community.data",
 			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin"
 		}
 	});
-	require([ "jquery", "jquery.cookie", "popper", "kendo.web.min", "community.ui.core", "community.data", "community.ui.professional", "community.ui.admin"], function($, kendo ) { 
+	require([ "jquery", "jquery.cookie", "kendo.web.min", "community.ui.core", "community.data", "community.ui.professional", "community.ui.admin"], function($, kendo ) { 
 	
 		community.ui.setup({
 		  	features : {
@@ -77,6 +76,9 @@
 		});
 		
 		var usingTreeList = true;
+		$.getScript( "/js/kendo.extension/kendo.messages.ko-KR.js" , function () {
+			observable.loadMenu();
+		});
 		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
@@ -88,7 +90,6 @@
 				data.copy($this.currentUser);
 				$this.set('userAvatarSrc', community.data.getUserProfileImage( $this.currentUser ) );
 				$this.set('userDisplayName', community.data.getUserDisplayName( $this.currentUser ) );
-				$this.loadMenu();
 			},
 			back : function(){
 				var $this = this;
@@ -100,32 +101,26 @@
 				community.ui.ajax('<@spring.url "/data/api/mgmt/v1/ui/menus/"/>' + __menuId + '/get.json', {
 					success: function(data){	
 						var data = new community.model.Menu(data);
-						data.copy( $this.menu );
-						
+						data.copy( $this.menu ); 
 						if( usingTreeList )
 							createItemsTreeList();
 						else
 							createItemsListView();
 					}	
-				});
-							
+				}); 		
 			} 
-		});
-		
-		community.ui.bind( $('#js-header') , observable );        
-		
+		}); 
+		community.ui.bind( $('#js-header') , observable );   
 		// initialization of sidebar navigation component
 	    community.ui.components.HSSideNav.init('.js-side-nav');
 	   	// initialization of HSDropdown component
-	    community.ui.components.HSDropdown.init($('[data-dropdown-target]'), {dropdownHideOnScroll: false});	  
-	     
+	    community.ui.components.HSDropdown.init($('[data-dropdown-target]'), {dropdownHideOnScroll: false});	   
 		var renderTo = $('#features');
-		community.ui.bind( renderTo , observable );
+		community.ui.bind( renderTo , observable ); 
 		
 		renderTo.on("click", "button[data-object-type=menu], a[data-object-type=menu], a[data-kind=menu], .sorting[data-kind=menu]", function(e){			
 			var $this = $(this);
-			var actionType = $this.data("action");	
-			
+			var actionType = $this.data("action");	 
 			if( actionType == 'sort'){
 				if( $this.data('dir') == 'asc' )
 					$this.data('dir', 'desc' );
@@ -138,8 +133,7 @@
 					community.ui.treelist($('#items-treelist')).dataSource.read();
 				}
 				return false;		
-			}
-			
+			} 
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.MenuItem();
 			if ( objectId > 0 ) {
@@ -148,8 +142,7 @@
 			if( usingTreeList )
 				community.ui.treelist($('#items-treelist')).addRow();				
  			else
- 				openMenuEditor(targetObject);
-			
+ 				openMenuEditor(targetObject); 
 			return false;		
 		});	
 	});
@@ -157,7 +150,7 @@
 	function createItemsTreeList(){
 		var renderTo = $('#items-treelist');	
 		if( !community.ui.exists(renderTo)){
-			community.ui.treelist(renderTo, {
+			var treelist = community.ui.treelist(renderTo, {
                     dataSource: {
                         transport: {
                             read: {
@@ -209,12 +202,12 @@
 									creationDate:{ type: "date" },			
 									modifiedDate:{ type: "date"}
 								},	
-								expanded: true
+								expanded: false
 							}
  							
                         }
                     },
-                    height: 500,
+                    height: 600,
                     filterable: false,
                     sortable: true,
                     toolbar: [ "create" ],
@@ -237,10 +230,10 @@
                         { field: "page" , title: "페이지" , sortable : false},
                         { field: "location" , title: "링크" , sortable : false},
                         { field: "roles", title: "권한" , width: 150, sortable : false},
-                        { title: " ", command: [ "edit" ], width: 200 }
+                        { title: " ", command: [ "edit", "destroy" ], width: 200 }
                     ],
                     save: function(e){
-				    		this.dataSource.read();  	
+				    	community.ui.treelist(renderTo).dataSource.read();
 				    }
              });
              community.ui.treelist(renderTo).bind(

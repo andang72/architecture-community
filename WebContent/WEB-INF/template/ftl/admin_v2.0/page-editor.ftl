@@ -120,10 +120,6 @@
 				source : null,
 				warp : true
 			},
-			editPageContents : function(e){
-				var $this = this;
-				getCodeEditor().setValue( "" );
-			},
 			openSecurityModal : function(){
 				var $this = this;
 				openSecurityModal($this);
@@ -138,21 +134,34 @@
 				var $this = this;
 				if($this.page.template != null && $this.page.template.length > 1 ){
 					community.ui.progress($('.code-editor'), true);	
-					community.ui.ajax( "<@spring.url "/data/api/mgmt/v1/pages/get_template_content.json" />" , 
-						{
-							data : { path: $this.page.template , pageId : $this.page.pageId },
-							success : function(response){
-								getCodeEditor().setValue( response.fileContent );
-							}
-						}).always( function () {
-							community.ui.progress($('.code-editor'), false);
+					community.ui.ajax( "<@spring.url "/data/api/mgmt/v1/pages/get_template_content.json" />" ,{
+						data : { path: $this.page.template , pageId : $this.page.pageId },
+						success : function(response){
+							getCodeEditor().setValue( response.fileContent );
+						}
+					}).always( function () { community.ui.progress($('.code-editor'), false);
 					});
 				}
 			},	
+			editPageContents : function(e){
+				var $this = this;
+				if( $this.page.bodyContent.bodyText != null )
+					getCodeEditor().setValue( $this.page.bodyContent.bodyText );
+				else
+					getCodeEditor().setValue( "" );
+			},		
 			saveOrUpdate : function(e){ 
 				var $this = this;
+				var saveOrUpdateUrl = '<@spring.url "/data/api/mgmt/v1/pages/save-or-update.json" />'; 
+				if( $this.get('editor.source' ) == 'page' ){
+					if( getCodeEditor().getValue().length > 0 || $this.page.bodyContent.bodyText != null ){
+						console.log('update contents');
+						$this.page.bodyContent.bodyText = getCodeEditor().getValue();
+						saveOrUpdateUrl = saveOrUpdateUrl + '?fields=bodyContent';
+					}
+				}
 				community.ui.progress($('#features'), true);	
-				community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/pages/save-or-update.json" />', {
+				community.ui.ajax( saveOrUpdateUrl, {
 					data: community.ui.stringify($this.page),
 					contentType : "application/json",
 					success : function(response){
@@ -176,17 +185,15 @@
 					getCodeEditor().setReadOnly(false);
 				}
 				$this.set('formatedCreationDate' , community.data.getFormattedDate( $this.page.creationDate) );
-				$this.set('formatedModifiedDate' , community.data.getFormattedDate( $this.page.modifiedDate) );
-								
+				$this.set('formatedModifiedDate' , community.data.getFormattedDate( $this.page.modifiedDate) ); 
 				if( !$this.get('visible') ) 
 					$this.set('visible' , true );
-					
 			},
 			loadPage : function(pageId){
 				var $this = this;		
 				if( pageId > 0 ){
 					community.ui.progress($('#features'), true);	
-					community.ui.ajax('<@spring.url "/data/api/mgmt/v1/pages/"/>' + pageId + '/get.json', {
+					community.ui.ajax('<@spring.url "/data/api/mgmt/v1/pages/"/>' + pageId + '/get.json?content=true', {
 						success: function(data){	
 							$this.setSource( new community.model.Page(data) );
 						}	
@@ -201,15 +208,15 @@
 		});
 		observable.bind("change", function(e) {
 			if( e.field === 'editor.source' ){
-		    		if(observable.get('editor.source') === 'template'){
-		    			observable.editTemplateContents();
-		    		}
-		    		if(observable.get('editor.source') === 'page'){
-		    			observable.editPageContents();
-		    		}
+		    	if(observable.get('editor.source') === 'template'){
+		    		observable.editTemplateContents();
+		    	}
+		    	if(observable.get('editor.source') === 'page'){
+		    		observable.editPageContents();
+		    	}
 		    }else if ( e.field === 'editor.warp' ){
-		    		console.log(observable.get('editor.warp'));
-		    		getCodeEditor().getSession().setUseWrapMode(observable.get('editor.warp'));
+		    	console.log(observable.get('editor.warp'));
+		    	getCodeEditor().getSession().setUseWrapMode(observable.get('editor.warp'));
 		    }
 		});
 		
@@ -498,38 +505,38 @@
 		                    		</div>
 	                  		</div> 
 	                  		<!-- EDITOR START-->
-	                  		
-							<div class="card g-brd-gray-light-v7 g-rounded-3 g-mb-30">
-			                  <header class="card-header g-bg-transparent g-brd-gray-light-v7 g-px-15 g-px-30--sm g-pt-15 g-pt-20--sm g-pb-10 g-pb-15--sm">
-			 					<div class="media">
-					 				<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
-									  <label class="btn btn-secondary">
-									    <input type="radio" name="options-contents" value="template" autocomplete="off" data-bind="checked: editor.source" > 템플릿
-									  </label>
-									  <label class="btn btn-secondary">
-									    <input type="radio" name="options-contents" value="page"  autocomplete="off" data-bind="checked: editor.source"> 콘텐츠
-									  </label>
-									</div>                     
-			                      	<div class="media-body d-flex justify-content-end">      
-										<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mr-10 mb-0 g-width-300">                      
-					                      	<label class="d-flex align-items-center justify-content-between g-mb-0">
-												<span class="g-pr-20 g-font-weight-300">에디터 줄바꿈 설정/해지</span>
-												<div class="u-check">
-													<input class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" name="useWarp" value="true" data-bind="checked: editor.warp" type="checkbox">
-													<div class="u-check-icon-radio-v8">
-														<i class="fa" data-check-icon=""></i>
-													</div>
-												</div>
-											</label>
-				                      	</h3>
-			                      	</div>
-			                    </div>                  
-			                  </header>
-			                  <div class="card-block code-editor g-pa-0" >
-			              		<div id="htmleditor"></div>	                                                         
-			                  </div>
-			                </div>		                  		
-	                  		
+									<div class="card g-brd-gray-light-v7 g-rounded-3 g-brd-top-1 g-mb-30">
+					                  <header class="card-header g-bg-transparent g-brd-gray-light-v7 g-px-15 g-px-30--sm g-pt-15 g-pt-20--sm g-pb-10 g-pb-15--sm">
+					 					<div class="media">
+					 						<a href="#!" class="btn u-btn-outline-darkgray g-mr-5 g-mb-0" data-bind="click:editTemplateContents">템플릿 파일 읽기</a>
+					 						 
+							 				<div class="btn-group btn-group-toggle btn-group-xs" data-toggle="buttons">
+											  <label class="btn u-btn-outline-blue">
+											    <input type="radio" name="options-contents" value="template" autocomplete="off" data-bind="checked: editor.source" > 템플릿
+											  </label>
+											  <label class="btn u-btn-outline-blue">
+											    <input type="radio" name="options-contents" value="page"  autocomplete="off" data-bind="checked: editor.source"> 콘텐츠
+											  </label>
+											</div>                  
+					                      	<div class="media-body d-flex justify-content-end">      
+												<h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-black g-mr-10 g-mt-5 g-mb-0 g-width-300">                      
+							                      	<label class="d-flex align-items-center justify-content-between g-mb-0">
+														<span class="g-pr-20 g-font-weight-300">에디터 줄바꿈 설정/해지</span>
+														<div class="u-check">
+															<input class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" name="useWarp" value="true" data-bind="checked: editor.warp" type="checkbox">
+															<div class="u-check-icon-radio-v8">
+																<i class="fa" data-check-icon=""></i>
+															</div>
+														</div>
+													</label>
+						                      	</h3>
+					                      	</div>
+					                    </div>                  
+					                  </header>
+					                  <div class="card-block code-editor g-pa-0" >
+					              		<div id="htmleditor"></div>	                                                         
+					                  </div>
+					                </div>
 	                  		<!-- EDITOR END -->
 						</div>
 						<div class="g-brd-left--lg g-brd-gray-light-v4 col-md-3 g-mb-10 g-mb-0--md">

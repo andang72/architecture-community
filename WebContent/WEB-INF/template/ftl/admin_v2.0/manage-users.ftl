@@ -34,21 +34,23 @@
 			"jquery.cookie" 				: { "deps" :['jquery'] },
 	        "bootstrap" 					: { "deps" :['jquery'] },
 	        "kendo.ui.core.min" 			: { "deps" :['jquery'] },
-	        "kendo.culture.ko-KR.min" 	: { "deps" :['jquery', 'kendo.ui.core.min'] },
-	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min'] },
-	        "community.data" 			: { "deps" :['jquery', 'community.ui.core'] },	 
-	        "community.ui.admin" 		: { "deps" :['jquery', 'community.ui.core', 'community.data'] }
+	        "kendo.culture.ko-KR.min" 		: { "deps" :['jquery', 'kendo.ui.core.min'] },
+	        "kendo.messages.ko-KR"	 		: { "deps" :['jquery', 'kendo.ui.core.min'] },
+	        "community.ui.core" 			: { "deps" :['jquery', 'kendo.culture.ko-KR.min', 'kendo.messages.ko-KR' ] },
+	        "community.data" 				: { "deps" :['jquery', 'community.ui.core'] },	 
+	        "community.ui.admin" 			: { "deps" :['jquery', 'community.ui.core', 'community.data'] }
 		},
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-3.1.1.min",
-			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"popper" 	   				: "/js/bootstrap/4.0.0/bootstrap.bundle",
+			"jquery.cookie"    				: "/js/jquery.cookie/1.4.1/jquery.cookie",
+			"popper" 	   					: "/js/bootstrap/4.0.0/bootstrap.bundle",
 			"bootstrap" 					: "/js/bootstrap/4.0.0/bootstrap.min",
 			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
-			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
-			"community.ui.admin" 		: "/js/community.ui.components/community.ui.admin",
+			"kendo.culture.ko-KR.min"		: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
+			"kendo.messages.ko-KR"			: "/js/kendo.extension/kendo.messages.ko-KR",
+			"community.ui.admin" 			: "/js/community.ui.components/community.ui.admin",
 			"community.ui.core" 			: "/js/community.ui/community.ui.core",
-			"community.data" 			: "/js/community.ui/community.data"
+			"community.data" 				: "/js/community.ui/community.data"
 		}
 	});
 	require([ "jquery", "jquery.cookie", "popper", "kendo.ui.core.min", "community.ui.core", "community.data", "community.ui.admin"], function($, kendo ) { 
@@ -84,8 +86,7 @@
 			}
 		});
 		
-		community.ui.bind( $('#js-header') , observable );        
-		
+		community.ui.bind( $('#js-header') , observable );         
 		// initialization of sidebar navigation component
 	    community.ui.components.HSSideNav.init('.js-side-nav');
 	   	// initialization of HSDropdown component
@@ -95,7 +96,7 @@
 		community.ui.bind( renderTo , observable );
 		
 		createUserListView();
-		
+				
 		renderTo.on("click", "button[data-object-type=user], a[data-object-type=user], .sorting[data-kind=user]", function(e){			
 			console.log("--");
 			var $this = $(this);
@@ -107,15 +108,21 @@
 					$this.data('dir', 'asc' );
 				community.ui.listview( $('#users-listview') ).dataSource.sort({ field:$this.data('field'), dir:$this.data('dir') });				
 				return false;
+			}else if (actionType == 'edit' || actionType == 'create'){
+				community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/user-editor" />", { userId: $this.data("object-id") });	
+				return false;
 			}
+			
 			
 			var objectId = $this.data("object-id");		
 			var targetObject = new community.model.User();
 			if ( objectId > 0 ) {
 				targetObject = community.ui.listview( $('#users-listview') ).dataSource.get( objectId );				
 			}				
+ 			
  			openUserEditor(targetObject);			
-			return false;		
+			return false;
+			
 		});	 	
 	 	
 	});
@@ -223,16 +230,15 @@
 				},
 				saveOrUpdate : function(e){				
 					var $this = this;
-					community.ui.progress(renderTo.find('.modal-content'), true);	
+					community.ui.progress(renderTo , true);	
 					community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/users/save-or-update.json" />', {
 						data: community.ui.stringify($this.user),
 						contentType : "application/json",
 						success : function(response){
-							community.ui.listview( $('#users-listview') ).dataSource.read();
+							
 						}
 					}).always( function () {
-						community.ui.progress(renderTo.find('.modal-content'), false);
-						renderTo.modal('hide');
+						community.ui.progress(renderTo , false);
 					});						
 				},
 				availableUserRoleDataSource : community.ui.datasource_v2({ data: [], schema:{ model:community.model.Role}}),
@@ -553,7 +559,6 @@
 								            		data-text-field="name"
 								                data-value-field="name">
 								            </select>
-								            
 								            <button type="button" class="btn u-btn-outline-darkgray g-mr-10 g-mb-15" data-bind="click:updateUserRoles">저장</button>			      			 	
 			      			 			</div>
 			      			</div>
@@ -574,11 +579,10 @@
 		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-px-5 g-px-10--sm">	
 		<img class="g-width-40 g-width-50--md g-height-40 g-height-50--md g-brd-around g-brd-2 g-brd-transparent g-brd-lightblue-v3--parent-opened rounded-circle g-mr-20--sm" src="#= community.data.getUserProfileImage(data) #" alt="Image Description">
 		
-		<a class="align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="view" data-object-id="#=userId#" data-object-type="page">
+		<a class="align-items-center u-link-v5 u-link-underline g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened" href="\#!" data-action="edit" data-object-id="#=userId#" data-object-type="user">
 		<span class="u-title">
 		<span class="g-hidden-sm-down"> #: name #</span>
-		<span class="g-font-weight-300 g-color-gray-dark-v6 mb-0">(#: username #)</span>
-		</span>
+		<span class="g-font-weight-300 mb-0">(#: username #)</span></span>
 		</a>
 		</td>		
 		<td class="g-valign-middle g-brd-top-none g-brd-bottom g-brd-gray-light-v7 g-py-15 g-py-30--md"> #: email # </td>
