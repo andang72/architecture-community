@@ -309,5 +309,14 @@ public class JdbcMenuDao extends ExtendedJdbcDaoSupport implements MenuDao {
 		}
 
 	}
+
+ 
+	public void delete(MenuItem item) {
+		if( item.getMenuItemId() > 0 ) {
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_UI.DELETE_MENU_ITEM").getSql(), new SqlParameterValue(Types.NUMERIC, item.getMenuItemId() ));
+			if( item.getProperties().size() > 0 )
+				deleteMenuItemProperties(item.getMenuItemId());
+		} 
+	}
 	
 }

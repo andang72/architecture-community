@@ -81,7 +81,7 @@
   	WHERE  T1.ROOT_MESSAGE_ID = T2.MESSAGE_ID
 	]]><dynamic><![CDATA[   
 	AND T1.OBJECT_TYPE = 5 AND T1.OBJECT_ID = ${data.boardId}
-	<#if filter?? && ( filter.filters?size > 0 ) > 
+	<#if filter?? && ( filter.filters?size > 0 ) ><#if filter.logic?? >${filter.logic}</#if>(
 	<#list filter.filters as item >
 	<#if item.logic??>${item.logic}</#if> ${item.field} 
 	<#if item.value?? >
@@ -94,7 +94,7 @@
 	<#else>
 	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
 	</#if>
- 	</#list></#if>	
+ 	</#list>)</#if>	
  	]]></dynamic></sql-query>	
     	
     <sql-query name="SELECT_THREAD_IDS_BY_REQUEST" description="SELECT_THREAD_IDS_BY_REQUEST"><![CDATA[
@@ -105,7 +105,7 @@
   	WHERE T1.ROOT_MESSAGE_ID = T2.MESSAGE_ID
 	]]><dynamic><![CDATA[    
 	AND T1.OBJECT_TYPE = 5 AND T1.OBJECT_ID = ${data.boardId}
-	<#if filter?? && ( filter.filters?size > 0 ) > 
+	<#if filter?? && ( filter.filters?size > 0 ) > <#if filter.logic?? >${filter.logic}</#if>(
 	<#list filter.filters as item >
 	<#if item.logic??>${item.logic}</#if> ${item.field} 
 	<#if item.value?? >
@@ -118,7 +118,7 @@
 	<#else>
 	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
 	</#if>
- 	</#list></#if>	
+ 	</#list>)</#if>	
     ]]></dynamic></sql-query>	
 	
 	<!--  ====================================  -->

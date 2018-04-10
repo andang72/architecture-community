@@ -358,6 +358,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 	public BoardThread getThread(@PathVariable Long threadId, NativeWebRequest request) throws BoardThreadNotFoundException { 
 		
 		BoardThread thread = boardService.getBoardThread(threadId);
+		
 		return thread ;
 	}	
 	
@@ -414,6 +415,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 				BoardMessage rootMessage = boardService.createMessage(newMessage.getObjectType(), newMessage.getObjectId(), user);
 				rootMessage.setSubject(newMessage.getSubject());
 				rootMessage.setBody(newMessage.getBody());
+				rootMessage.setKeywords(newMessage.getKeywords());
 				BoardThread thread = boardService.createThread(rootMessage.getObjectType(), rootMessage.getObjectId(), rootMessage);
 				boardService.addThread(rootMessage.getObjectType(), rootMessage.getObjectId(), thread);
 				
@@ -456,6 +458,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 			BoardMessage rootMessage = boardService.createMessage(newMessage.getObjectType(), newMessage.getObjectId(), user);
 			rootMessage.setSubject(newMessage.getSubject());
 			rootMessage.setBody(newMessage.getBody());
+			rootMessage.setKeywords(newMessage.getKeywords());
 			BoardThread thread = boardService.createThread(rootMessage.getObjectType(), rootMessage.getObjectId(), rootMessage);
 			boardService.addThread(rootMessage.getObjectType(), rootMessage.getObjectId(), thread);
 			return thread.getRootMessage();
@@ -463,6 +466,24 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		return newMessage;
 	}
 	
+	@RequestMapping(value = "/messages/{messageId:[\\p{Digit}]+}/delete.json", method = RequestMethod.POST)
+	@ResponseBody
+	public Result deleteMessage(@PathVariable Long messageId, @RequestParam(value = "recursive", defaultValue = "false", required = false) boolean recursive, NativeWebRequest request) throws NotFoundException {
+		if (messageId < 1) {
+			throw new BoardMessageNotFoundException();
+		}
+		BoardMessage message = boardService.getBoardMessage(messageId);
+		BoardThread thread = boardService.getBoardThread(message.getThreadId());
+
+		if( thread.getRootMessage().getMessageId() == message.getMessageId() ) {
+			// delete thread
+			boardService.deleteThread(thread);
+		}else {
+			boardService.deleteMessage(thread, message, recursive);
+		}
+		
+		return Result.newResult();
+	}	
 
 	@RequestMapping(value = "/messages/{messageId:[\\p{Digit}]+}/get.json", method = RequestMethod.POST)
 	@ResponseBody
@@ -484,6 +505,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		BoardMessage message = boardService.getBoardMessage(newMessage.getMessageId());
 		message.setSubject(newMessage.getSubject());
 		message.setBody(newMessage.getBody());
+		message.setKeywords(newMessage.getKeywords());
 		boardService.updateMessage(message);
 		
 		return message;

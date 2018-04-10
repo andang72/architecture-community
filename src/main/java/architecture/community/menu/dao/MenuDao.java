@@ -27,4 +27,6 @@ public interface MenuDao {
 	
 	public MenuItemTreeWalker getTreeWalkerById(long menuId) ;
 	
+	public void delete(MenuItem item);
+	
 }

@@ -9,6 +9,8 @@ public interface Board extends ModelObjectAware {
 
 	//public static final int MODLE_OBJECT_TYPE = 5;
 	
+	public abstract long getCategoryId();
+	
 	public abstract long getBoardId();
 	
 	public abstract String getName();

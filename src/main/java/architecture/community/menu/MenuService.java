@@ -12,6 +12,8 @@ public interface MenuService {
 
 	public abstract void deleteMenu(Menu menu);
 	
+	public abstract void deleteMenuItem(MenuItem menuItem);
+	
 	public abstract Menu getMenuById(long menuId) throws MenuNotFoundException ;
 	
 	public abstract Menu getMenuByName(String name) throws MenuNotFoundException ;
@@ -21,5 +23,7 @@ public interface MenuService {
 	public abstract MenuItem getMenuItemById(long menuItemId) throws MenuItemNotFoundException ;
 	
 	public abstract MenuItemTreeWalker getTreeWalker(String name) throws MenuNotFoundException ;
+	
+	public abstract void refresh(Menu menu) throws MenuNotFoundException ;
 	
 }

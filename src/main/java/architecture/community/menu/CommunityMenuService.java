@@ -175,9 +175,11 @@ public class CommunityMenuService implements MenuService {
 		treewalkerCache.asMap().remove(menuItem.getMenuId()); 
 	}
  
-	public void deleteMenuItem(MenuItem menuItem) {
-		menuItemCache.invalidate(menuItem.getMenuItemId());
-		treewalkerCache.invalidate(menuItem.getMenuId()); 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void deleteMenuItem(MenuItem item) {
+		menuDao.delete(item);
+		menuItemCache.invalidate(item.getMenuItemId());
+		treewalkerCache.invalidate(item.getMenuId()); 
 	}
 	
 	public List<Menu> getAllMenus() {
@@ -196,5 +198,11 @@ public class CommunityMenuService implements MenuService {
 		menuCache.invalidate(menu.getMenuId());
 		treewalkerCache.invalidate(menu.getMenuId());
 		menuIdCache.invalidate(menu.getName());
+	}
+
+
+	@Override
+	public void refresh(Menu menu) throws MenuNotFoundException {
+		invalidateMenuCache(menu);
 	}
 }

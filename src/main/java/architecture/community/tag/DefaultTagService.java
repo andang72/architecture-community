@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 
+import architecture.community.category.Category;
 import architecture.community.exception.UnAuthorizedException;
 import architecture.community.model.ModelObjectKey;
+import architecture.community.model.Models;
 import architecture.community.page.event.PageEvent;
 import architecture.community.tag.dao.TagDao;
 import architecture.ee.util.StringUtils;
@@ -259,5 +261,11 @@ public class DefaultTagService implements TagService {
 		log.debug("page event : " + event.getType().name());
 	}
 
+	
+	public TagDelegator getTagDelegator(Category category) {
+		
+		return new DefaultTagDelegator( Models.CATEGORY.getObjectType(), category.getCategoryId(), this);
+		
+	}
 	
 }

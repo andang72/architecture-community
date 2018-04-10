@@ -168,9 +168,27 @@ public class UIMgmtDataController {
 				newMenuItem.setMenuId(menu.getMenuId());
 		}
 		menuService.saveOrUpdateMenuItem(menuItem);
+		menuService.refresh(menu);
 		return Result.newResult();
     
 	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/menus/{menuId}/items/delete.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public Result deleteMenuItem(@PathVariable Long menuId, @RequestBody MenuItem newMenuItem, NativeWebRequest request) throws MenuNotFoundException, MenuAlreadyExistsException, MenuItemNotFoundException { 
+		
+		Menu menu = menuService.getMenuById(menuId);	 
+		
+		if( newMenuItem.getMenuItemId() > 0 )
+		{
+			MenuItem menuItem = menuService.getMenuItemById(newMenuItem.getMenuItemId());	
+			menuService.deleteMenuItem(menuItem);
+			menuService.refresh(menu);
+		}
+		return Result.newResult();
+    
+	}	
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/menus/save-or-update.json", method = { RequestMethod.POST, RequestMethod.GET })

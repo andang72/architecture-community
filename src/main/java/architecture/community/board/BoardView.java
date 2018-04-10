@@ -212,5 +212,11 @@ public class BoardView implements Board , Serializable {
 	}
 
 
+	@Override
+	public long getCategoryId() {
+		return board.getCategoryId();
+	}
+
+
 
 }

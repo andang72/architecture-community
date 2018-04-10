@@ -10,6 +10,8 @@ import architecture.community.model.json.JsonDateSerializer;
 
 public class DefaultBoard extends PropertyAwareSupport implements Board , Serializable {
 
+	private long categoryId;
+	
 	private long boardId;
 	
 	private int objectType;
@@ -27,6 +29,7 @@ public class DefaultBoard extends PropertyAwareSupport implements Board , Serial
 	private Date modifiedDate;
 	
 	public DefaultBoard() {
+		this.categoryId = 0;
 		this.boardId = -1L;
 		this.objectType = UNKNOWN_OBJECT_TYPE;
 		this.objectId = -1L;
@@ -35,6 +38,7 @@ public class DefaultBoard extends PropertyAwareSupport implements Board , Serial
 	}
 	
 	public DefaultBoard(long boardId) {
+		this.categoryId = 0;
 		this.boardId = boardId;
 		this.objectType = UNKNOWN_OBJECT_TYPE;
 		this.objectId = -1L;
@@ -96,6 +100,14 @@ public class DefaultBoard extends PropertyAwareSupport implements Board , Serial
             this.displayName = displayName;
             return;
         }
+	}
+
+	public long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
 	}
 
 	public String getDescription() {

@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import architecture.community.board.Board;
+import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
 import architecture.community.board.BoardThread;
+import architecture.community.board.DefaultBoard;
 import architecture.community.board.DefaultBoardThread;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
@@ -62,6 +65,7 @@ public class DisplayController {
     public String page (
     		@PathVariable String filename,
     		@RequestParam(value = "version", defaultValue = "1", required = false) int version,
+    		@RequestParam(value = "boardId", defaultValue = "0", required = false) long boardId,
     		@RequestParam(value = "threadId", defaultValue = "0", required = false) long threadId,
     		@RequestParam(value = "preview", defaultValue = "false", required = false) boolean preview,
 	    HttpServletRequest request, 
@@ -82,7 +86,17 @@ public class DisplayController {
 			if( viewCountService!=null && !preview  )
 				viewCountService.addViewCount(page);	
 		}
-		
+		if( Boolean.parseBoolean(StringUtils.defaultString(page.getProperties().get("pages.board"), "false")) )
+		{
+			Board board = new DefaultBoard();
+			if( boardId > 0 ) {
+				try {
+					board = boardService.getBoardById(boardId);
+				} catch (BoardNotFoundException e) { 
+				}	
+			} 
+			model.addAttribute("__board", board);	 
+		}
 		if( Boolean.parseBoolean(StringUtils.defaultString(page.getProperties().get("pages.board.thread"), "false")) )
 		{	
 			BoardThread thread ;

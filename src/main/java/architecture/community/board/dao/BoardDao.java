@@ -52,5 +52,10 @@ public interface BoardDao {
 	
 	public abstract MessageTreeWalker getTreeWalker(BoardThread thread) ;
 	
+	public abstract void updateParentMessage( long messageId, long newParentId );
+	
+	public abstract void deleteMessage(BoardMessage message);
+	
+	public void deleteThread(BoardThread thread);
 	
 }

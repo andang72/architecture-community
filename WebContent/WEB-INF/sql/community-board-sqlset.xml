@@ -30,6 +30,7 @@
 		SELECT
 		  BOARD_ID,
 		  NAME,
+		  CATEGORY_ID,
 		  DISPLAY_NAME,
 		  DESCRIPTION,
 		  CREATION_DATE,
@@ -104,11 +105,12 @@
 		  OBJECT_TYPE,
 		  OBJECT_ID,
 		  USER_ID,
+		  KEYWORDS,
 		  SUBJECT,
 		  BODY,
 		  CREATION_DATE,
 		  MODIFIED_DATE
-	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
     ]]></sql-query>	
   
   	<sql-query name="SELECT_BOARD_MESSAGE_BY_ID" description="FORUM MESSAGE 로드"><![CDATA[
@@ -119,6 +121,7 @@
 		  OBJECT_TYPE,
 		  OBJECT_ID,
 		  USER_ID,
+		  KEYWORDS,
 		  SUBJECT,
 		  BODY,
 		  CREATION_DATE,
@@ -129,12 +132,34 @@
     
 	<sql-query name="UPDATE_BOARD_MESSAGE" description="FORUM MESSAGE 업데이트"><![CDATA[    
     	UPDATE REP_BOARD_MESSAGE SET 
+		  KEYWORDS = ?,
 		  SUBJECT = ?,
 		  BODY = ?,
 		  MODIFIED_DATE = ?		 
 	WHERE MESSAGE_ID = ?
  	]]></sql-query> 
 	
+	<sql-query name="DELETE_BOARD_MESSAGE" description="DELETE_BOARD_MESSAGE"><![CDATA[    
+    DELETE FROM REP_BOARD_MESSAGE 
+	WHERE MESSAGE_ID = ?
+ 	]]></sql-query> 	
+ 	
+	<sql-query name="DELETE_BOARD_MESSAGE_BY_THREAD_ID" description="DELETE_BOARD_MESSAGE_BY_THREAD_ID"><![CDATA[    
+    DELETE FROM REP_BOARD_MESSAGE 
+	WHERE THREAD_ID = ?
+ 	]]></sql-query> 
+ 	
+	<sql-query name="DELETE_BOARD_THREAD" description="DELETE_BOARD_MESSAGE"><![CDATA[    
+    DELETE FROM REP_BOARD_THREAD 
+	WHERE THREAD_ID = ?
+ 	]]></sql-query> 
+ 	 	
+ 	 	 	
+	<sql-query name="UPDATE_PARENT_MESSAGE_ID" description="UPDATE_PARENT_MESSAGE_ID"><![CDATA[    
+    	UPDATE REP_BOARD_MESSAGE SET 
+		  PARENT_MESSAGE_ID = ?
+	WHERE PARENT_MESSAGE_ID = ?
+ 	]]></sql-query> 	
 	<sql-query name="SELECT_LATEST_BOARD_MESSAGE_ID_BY_THREAD_ID" description="FORUM LATEST MESSAGE ID"><![CDATA[   
 	SELECT MAX(T1.MESSAGE_ID) FROM REP_BOARD_MESSAGE T1
 	WHERE T1.THREAD_ID = ? AND T1.CREATION_DATE = (

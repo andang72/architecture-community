@@ -56,8 +56,9 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 	
 	private final RowMapper<Board> boardMapper = new RowMapper<Board>() {		
 		public Board mapRow(ResultSet rs, int rowNum) throws SQLException {			
-			DefaultBoard board = new DefaultBoard(rs.getLong("BOARD_ID"));			
+			DefaultBoard board = new DefaultBoard(rs.getLong("BOARD_ID"));	
 			board.setName(rs.getString("NAME"));
+			board.setCategoryId(rs.getLong("CATEGORY_ID"));
 			board.setDisplayName(rs.getString("DISPLAY_NAME"));
 			board.setDescription(rs.getString("DESCRIPTION"));
 			board.setCreationDate(rs.getDate("CREATION_DATE"));
@@ -180,6 +181,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 			message.setUser(new UserTemplate(rs.getLong("USER_ID")));
 			message.setSubject(rs.getString("SUBJECT"));
 			message.setBody(rs.getString("BODY"));
+			message.setKeywords(rs.getString("KEYWORDS"));
 			message.setCreationDate(rs.getTimestamp("CREATION_DATE"));
 			message.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));		
 			return message;
@@ -280,6 +282,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 				new SqlParameterValue(Types.NUMERIC, thread.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, thread.getObjectId()),
 				new SqlParameterValue(Types.NUMERIC, messageToUse.getUser().getUserId()),
+				new SqlParameterValue(Types.VARCHAR, messageToUse.getKeywords()),
 				new SqlParameterValue(Types.VARCHAR, messageToUse.getSubject()),
 				new SqlParameterValue(Types.VARCHAR, messageToUse.getBody()),
 				new SqlParameterValue(Types.TIMESTAMP, messageToUse.getCreationDate() ),
@@ -287,6 +290,21 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		);	
 	}
 
+	
+	public void deleteThread(BoardThread thread) {
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.DELETE_BOARD_MESSAGE_BY_THREAD_ID").getSql(),
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() ));
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.DELETE_BOARD_THREAD").getSql(),
+				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() ));		
+	}
+	
+	public void deleteMessage(BoardMessage message) {
+		
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.DELETE_BOARD_MESSAGE").getSql(),
+				new SqlParameterValue(Types.NUMERIC, message.getMessageId() ));
+		
+	}
+	
 	public BoardThread getBoardThreadById(long threadId) {
 		BoardThread thread = null;
 		if (threadId <= 0L) {
@@ -331,6 +349,7 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 		Date now = new Date();
 		message.setModifiedDate(now);		
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_BOARD_MESSAGE").getSql(), 
+				new SqlParameterValue(Types.VARCHAR, message.getKeywords() ),
 				new SqlParameterValue(Types.VARCHAR, message.getSubject() ),
 				new SqlParameterValue(Types.VARCHAR, message.getBody()),
 				new SqlParameterValue(Types.TIMESTAMP, message.getModifiedDate() ),	
@@ -396,6 +415,15 @@ public class JdbcBoardDao extends ExtendedJdbcDaoSupport implements BoardDao {
 				new SqlParameterValue(Types.NUMERIC, thread.getThreadId() ));
 		
 		return new MessageTreeWalker( thread.getThreadId(), tree);
+	}
+
+	@Override
+	public void updateParentMessage(long newParentId, long oldParentId) {
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_BOARD.UPDATE_PARENT_MESSAGE_ID").getSql(), 
+				new SqlParameterValue(Types.NUMERIC, newParentId ),
+				new SqlParameterValue(Types.NUMERIC, oldParentId)
+		);
+		
 	}
 
 	

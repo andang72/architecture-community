@@ -14,6 +14,7 @@ import architecture.community.category.CategoryService;
 import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.menu.MenuService;
+import architecture.community.tag.TagService;
 import architecture.community.viewcount.ViewCountService;
 import architecture.ee.exception.ComponentNotFoundException;
 import architecture.ee.service.ConfigService;
@@ -65,6 +66,10 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 	
 	public static MenuService getMenuService(){
 		return getComponent(MenuService.class);
+	}
+	
+	public static TagService getTagService(){
+		return getComponent(TagService.class);
 	}
 	
 	

@@ -76,5 +76,7 @@ public interface BoardService {
 	
 	public abstract MessageTreeWalker getTreeWalker(BoardThread thread);	
 	
+	public abstract void deleteThread(BoardThread thread) ;
 			
+	public abstract void deleteMessage(BoardThread thread, BoardMessage message, boolean recursive);
 }

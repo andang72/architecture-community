@@ -262,6 +262,7 @@
 			threadId: { type: "number", defaultValue: 0 },			
 			messageId: { type: "number", defaultValue: 0 },			
 			parentMessageId: { type: "number", defaultValue: 0 },			
+			keywords:{ type: "string", defaultValue: "" },		
 			subject:{ type: "string", defaultValue: "" },			
 			body:{type: "string", defaultValue: "" },			
 			replyCount:{ type: "number", defaultValue: 0 },	

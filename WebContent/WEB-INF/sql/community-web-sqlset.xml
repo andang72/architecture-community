@@ -420,7 +420,7 @@
 	<!--  ====================================  -->
 	<!--  TAG						 		   -->
 	<!--  ====================================  -->
-	
+	<!-- 
 	<sql-query name="INSERT_TAG" description="INSERT_TAG"><![CDATA[
 	INSERT INTO REP_OBJECT_TAG (
 		TAG_ID,
@@ -482,7 +482,7 @@
 	DELETE FROM REP_TAG
 	WHERE TAG_ID = ?
 	]]></sql-query>	
-	
+	 -->
 	<!-- ==================== -->
 	<!--  VIEW  COUNT 		 -->
 	<!-- ==================== -->

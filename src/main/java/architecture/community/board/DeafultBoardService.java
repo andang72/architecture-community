@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.board.dao.BoardDao;
 import architecture.community.board.event.BoardThreadEvent;
+import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.model.Models;
 import architecture.community.user.User;
@@ -56,7 +58,85 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 	@Qualifier("attachmentService")
 	private AttachmentService attachmentService;
 	
-
+	@Inject
+	@Qualifier("commentService")
+	private CommentService commentService;
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void deleteThread(BoardThread thread) {
+		
+		List<Long> messages = boardDao.getAllMessageIdsInThread(thread);
+		for(Long messageId : messages) {
+			// delete attachment. 
+			if (messageCache != null && messageCache.get( messageId) != null)
+			{
+				messageCache.remove( messageId );
+			}
+			for( Attachment attachment : attachmentService.getAttachments(Models.BOARD_MESSAGE.getObjectType(), messageId)) {
+				attachmentService.removeAttachment(attachment);
+			}
+		}
+		boardDao.deleteThread(thread);
+		evictCaches(thread);
+	}
+		
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void deleteMessage(BoardThread thread, BoardMessage message, boolean recursive)
+	{
+		if( thread.getThreadId() != message.getThreadId()) {
+			throw new IllegalArgumentException("Could not be deleted. It belogs to thread " + message.getThreadId() + ", and not thread " + thread.getThreadId() );
+		}
+		if( thread.getRootMessage().getMessageId() == message.getMessageId() ) {
+			throw new IllegalArgumentException("Could not be deleted root message.");
+		} 
+		try { 
+			BoardMessage messageToUse = getBoardMessage(message.getMessageId());
+			MessageTreeWalker walker = getTreeWalker(thread);
+			long newParentId = walker.getParent(messageToUse).getMessageId();
+			
+			// update parent message message.getMessageId(), parentId 
+			boardDao.updateParentMessage(message.getMessageId(), newParentId);
+			
+			// delete message messageToUse , parentId 
+			deleteMessage(message, recursive);
+			// fix update date for thread .
+			boardDao.updateModifiedDate(thread, new Date());
+			
+			// clear cache .. 
+			if( messageTreeWalkerCache != null && messageTreeWalkerCache.get( thread.getThreadId() )  != null)
+			{
+				messageTreeWalkerCache.remove(thread.getThreadId());
+			}
+			evictCaches(thread);
+			
+		} catch (BoardMessageNotFoundException e) {
+		}		
+	}
+	
+	public void deleteMessage(BoardMessage message,  boolean recursive ) {
+		if( message != null ) {
+			
+			try {
+				BoardThread threadToUse = getBoardThread(message.getThreadId());	
+				if(recursive) {
+					if( messageTreeWalkerCache != null && messageTreeWalkerCache.get( message.getThreadId() )  != null) {
+						MessageTreeWalker walker = (MessageTreeWalker) messageTreeWalkerCache.get( message.getThreadId() ).getObjectValue();
+						for ( long messageId : walker.getRecursiveChildren(message)) {
+							BoardMessage messageToUse = getBoardMessage(messageId);
+							deleteMessage(  threadToUse , messageToUse, false);
+						}
+					} 
+				}
+				boardDao.deleteMessage(message);
+				evictCaches(message);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			} 
+		}
+	}
+	
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Board createBoard(String name, String displayName, String description) {				
 		

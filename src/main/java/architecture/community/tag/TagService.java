@@ -3,9 +3,12 @@ package architecture.community.tag;
 import java.util.List;
 import java.util.Map;
 
+import architecture.community.category.Category;
 import architecture.community.exception.UnAuthorizedException;
 
 public interface TagService {
+	
+	public abstract TagDelegator getTagDelegator(Category category);
 
     public abstract ContentTag createTag(String name);
 

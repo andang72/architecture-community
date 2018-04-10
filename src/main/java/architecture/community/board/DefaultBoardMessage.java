@@ -34,15 +34,19 @@ public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMe
 
 	private Date modifiedDate;
 	
+	private String keywords;
+	
 	//private int attachmentCount;
 
 	public DefaultBoardMessage() {
 		this.messageId = UNKNOWN_OBJECT_ID;
 		//this.attachmentCount = 0 ;
+		this.keywords = null;
 	}
 	
 	public DefaultBoardMessage(long messageId) {
 		this.messageId = messageId;
+		this.keywords = null;
 		//this.attachmentCount = 0 ;
 	}
 
@@ -58,8 +62,17 @@ public class DefaultBoardMessage extends PropertyAwareSupport implements BoardMe
 		Date now = new Date();
 		this.creationDate = now;
 		this.modifiedDate = now;
+		this.keywords = null;
 		//this.attachmentCount = 0;
 		
+	}
+
+	public String getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
 	}
 
 	public User getUser() {
