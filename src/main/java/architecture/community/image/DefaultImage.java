@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import architecture.community.model.PropertyAwareSupport;
 import architecture.community.model.json.JsonDateDeserializer;
 import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.model.json.JsonUserDeserializer;
 import architecture.community.user.User;
 import architecture.community.util.SecurityHelper;
 
@@ -153,6 +154,7 @@ public class DefaultImage extends PropertyAwareSupport implements Image {
 		return user;
 	}
 
+	 @JsonDeserialize(using = JsonUserDeserializer.class)
 	public void setUser(User user) {
 		this.user = user;
 	}

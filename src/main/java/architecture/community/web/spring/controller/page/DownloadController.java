@@ -242,7 +242,7 @@ public class DownloadController {
 						InputStream input;
 						String contentType;
 						int contentLength;
-						if (width > 0 && width > 0) {
+						if (width > 0 && width > 0 && thumbnail ) {
 							input = imageService.getImageThumbnailInputStream(image, width, height);
 							contentType = image.getThumbnailContentType();
 							contentLength = image.getThumbnailSize();

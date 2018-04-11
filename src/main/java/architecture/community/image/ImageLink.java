@@ -23,24 +23,18 @@ public class ImageLink implements Serializable {
 		this.publicShared = publicShared;
 		this.filename = null;
 	}
-	
- 
-
+	 
 
 	public String getFilename() {
 		return filename;
 	}
-
-
-
+ 
 
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
 
-
-
-
+ 
 	/**
 	 * @return imageId
 	 */

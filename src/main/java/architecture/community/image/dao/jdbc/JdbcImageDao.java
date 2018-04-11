@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -43,6 +44,7 @@ import architecture.community.image.LogoImage;
 import architecture.community.image.dao.ImageDao;
 import architecture.community.model.Models;
 import architecture.community.user.UserTemplate;
+import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.spring.jdbc.ExtendedJdbcUtils.DB;
@@ -54,6 +56,13 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	@Inject
 	@Qualifier("sequencerFactory")
 	private SequencerFactory sequencerFactory;
+	
+	@Inject
+	@Qualifier("propertyDao")
+	private PropertyDao propertyDao;	
+	
+	private String propertyTableName = "AC_UI_IMAGE_PROPERTY";
+	private String propertyPrimaryColumnName = "IMAGE_ID";
 	
 	private Logger logger = LoggerFactory.getLogger(getClass().getName());
 	
@@ -98,10 +107,20 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 	
 	public long getNextLogoId(){
 		return sequencerFactory.getNextValue(Models.LOGO_IMAGE.getObjectType(), Models.LOGO_IMAGE.name());
+	} 
+
+	public Map<String, String> getImageProperties(long imageId) {
+		return propertyDao.getProperties(propertyTableName, propertyPrimaryColumnName, imageId);
+	}
+
+	public void deleteImageProperties(long imageId) {
+		propertyDao.deleteProperties(propertyTableName, propertyPrimaryColumnName, imageId);
 	}
 	
+	public void setImageProperties(long imageId, Map<String, String> props) {
+		propertyDao.updateProperties(propertyTableName, propertyPrimaryColumnName, imageId, props);
+	}
 	
-
 	public Image createImage(Image image) {
 		
 		Image toUse = image;		
@@ -121,6 +140,10 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 					new SqlParameterValue (Types.NUMERIC, image.getUser().getUserId()), 
 					new SqlParameterValue(Types.DATE, image.getCreationDate()),
 					new SqlParameterValue(Types.DATE, image.getModifiedDate()));	
+			
+			if( image.getProperties().size() > 0 )
+				setImageProperties(image.getImageId(), image.getProperties());
+			
 		}		
 		return  image;
 	}
@@ -136,6 +159,11 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 				//new SqlParameterValue(Types.DATE, image.getCreationDate()),
 				new SqlParameterValue(Types.DATE, image.getModifiedDate()),
 				new SqlParameterValue (Types.NUMERIC, image.getImageId()) );	
+		
+		deleteImageProperties(image.getImageId());
+		if( image.getProperties().size() > 0 )
+			setImageProperties(image.getImageId(), image.getProperties());
+		
 		return image;
 	}
 			
@@ -145,6 +173,7 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 		
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_IMAGE_DATA_BY_ID").getSql(), 	
 				new SqlParameterValue (Types.NUMERIC, image.getImageId()));	
+		deleteImageProperties(image.getImageId());
 	}
 
 	public InputStream getImageInputStream(Image image) {
@@ -178,8 +207,11 @@ public class JdbcImageDao extends ExtendedJdbcDaoSupport implements ImageDao {
 		}		
 	}
 
-	public Image getImageById(long imageId) {		
-		return getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_WEB.SELECT_IMAGE_BY_ID").getSql(), imageMapper, new SqlParameterValue (Types.NUMERIC, imageId ));			
+	public Image getImageById(long imageId) {		 
+		Image image = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_WEB.SELECT_IMAGE_BY_ID").getSql(), imageMapper, new SqlParameterValue (Types.NUMERIC, imageId ));		
+		Map<String, String> properties = getImageProperties(image.getImageId());
+		image.getProperties().putAll(properties);
+		return image;
 	}
 	
 	

@@ -76,21 +76,42 @@
 				$this.set('userAvatarSrc', community.data.getUserProfileImage( $this.currentUser ) );
 				$this.set('userDisplayName', community.data.getUserDisplayName( $this.currentUser ) );
 			},
+			objectTypes : [
+				{ text: "정의되지 않음", value: "0" },
+				{ text: "사용자", value: "1" },
+				{ text: "카테고리", value: "4" },
+				{ text: "게시글", value: "7" },
+				{ text: "덧글", value: "8" },
+				{ text: "공지", value: "9" },
+				{ text: "페이지", value: "14" },
+				{ text: "이슈", value: "18" },
+				{ text: "과정", value: "23" },
+				{ text: "강사", value: "22" }
+			],			
 			filter : {
 				NAME : "",
-				OBJECT_TYPE : "",
-				OBJECT_ID : ""
+				OBJECT_TYPE : 0,
+				OBJECT_ID : "0"
 			},
 			find : function (){
 				var $this = this, filters = [];
 				if( $this.filter.NAME != null && $this.filter.NAME.length > 0 ){
-					filters.push({ field: "NAME", operator: "startswith", value: $this.filter.NAME });
+					if( filters.length > 0 ) 
+						filters.push({ field: "NAME", operator: "startswith", value: $this.filter.NAME , logic : "AND"});
+					else
+						filters.push({ field: "NAME", operator: "startswith", value: $this.filter.NAME });	
 				}
 				if( $this.filter.OBJECT_TYPE != null && $this.filter.OBJECT_TYPE > 0 ){
-					filters.push({ field: "OBJECT_TYPE", operator: "eq", value: $this.filter.OBJECT_TYPE });
+					if( filters.length > 0 )
+						filters.push({ field: "OBJECT_TYPE", operator: "eq", value: $this.filter.OBJECT_TYPE, logic : "AND" });
+					else
+					    filters.push({ field: "OBJECT_TYPE", operator: "eq", value: $this.filter.OBJECT_TYPE });
 				}
 				if( $this.filter.OBJECT_ID != null && $this.filter.OBJECT_ID > 0 ){
-					filters.push({ field: "OBJECT_ID", operator: "eq", value: $this.filter.OBJECT_ID });
+					if( filters.length > 0 )
+						filters.push({ field: "OBJECT_ID", operator: "eq", value: $this.filter.OBJECT_ID , logic : "AND" });
+					else
+					    filters.push({ field: "OBJECT_ID", operator: "eq", value: $this.filter.OBJECT_ID });
 				}								
 				community.ui.listview( $('#images-listview') ).dataSource.filter( filters );
 			}
@@ -119,11 +140,15 @@
 				return false;
 			}else if (actionType == 'edit' || actionType == 'create' ){
 				var objectId = $this.data("object-id");		
+				/*
 				var targetObject = new community.model.Image();
 				if ( objectId > 0 ) {
 					targetObject = community.ui.listview( $('#images-listview') ).dataSource.get( objectId );				
 				}
 				openImageEditorModal( targetObject );
+				*/
+				community.ui.send("<@spring.url "/secure/display/ftl/admin_v2.0/image-editor" />", { imageId: $this.data("object-id") });	
+				return false;
 			}else if (actionType == 'delete'){
 				var objectId = $this.data("object-id");
 				if ( objectId > 0 ) {
@@ -320,7 +345,13 @@
 					<div class="row text-center text-uppercase g-bord-radias g-brd-gray-dark-v7 g-brd-top-0 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-3">						
 						<div class="media flex-wrap g-mb-30">
 			              <div class="d-flex align-self-center align-items-center"> 
-			                <input data-role="numerictextbox" placeholder="객체유형" data-min="-1" data-max="100"  data-format="###" data-bind="value:filter.OBJECT_TYPE" style="width: 100%"/>
+			               <input data-role="dropdownlist"
+						                   data-auto-bind="false"
+						                   data-value-primitive="true"
+						                   data-text-field="text"
+						                   data-value-field="value"
+						                   data-bind="value:filter.OBJECT_TYPE, source: objectTypes"
+						                   style="width: 150px" />  
 			              </div>
 			
 			              <div class="d-flex align-self-center align-items-center g-ml-10 g-ml-20--md g-ml-40--lg g-mr-20"> 		
@@ -529,7 +560,9 @@
 				<div class="media-body">
 					<!-- Figure Info -->
 					<h5 class="g-font-weight-100 g-mb-0">
+					<a class="u-link-v5 g-color-black g-color-lightblue-v3--hover g-color-lightblue-v3--opened g-mr-15" href="\#!" data-action="edit" data-object-type="image" data-object-id="#= imageId #">
 					#= name #
+					</a>
 					</h5> 
 					<div class="d-block g-mt-5">
                           <i class="g-color-primary g-font-size-default icon-location-pin"></i>

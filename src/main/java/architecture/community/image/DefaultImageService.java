@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -37,7 +38,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +48,8 @@ import architecture.community.attachment.AbstractAttachmentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.image.dao.ImageDao;
 import architecture.community.image.dao.ImageLinkDao;
+import architecture.community.query.CustomQueryService;
+import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.util.CommunityConstants.Platform;
@@ -95,6 +100,10 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 	@Inject
 	@Qualifier("userManager")
 	private UserManager userManager;
+	
+	@Autowired
+	@Qualifier("customQueryJdbcDao")
+	private CustomQueryJdbcDao customQueryJdbcDao;
 	
 	private ImageConfig imageConfig;;
 
@@ -590,7 +599,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				Date now = new Date();
 				((DefaultImage) image).setModifiedDate(now);
 				imageDao.updateImage(image);
-				imageDao.saveImageInputStream(image, image.getInputStream());
+				if( image.getInputStream() != null )
+					imageDao.saveImageInputStream(image, image.getInputStream());
 			}
 			invalidate(image, true);	
 		} catch (Exception e) {
@@ -608,7 +618,8 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 				Date now = new Date();
 				((DefaultImage) image).setModifiedDate(now);
 				imageDao.updateImage(image);
-				imageDao.saveImageInputStream(image, image.getInputStream());
+				if( image.getInputStream() != null )
+					imageDao.saveImageInputStream(image, image.getInputStream());
 			}
 			invalidate(image, true);
 			Image imageToUse = getImage(image.getImageId());
@@ -854,6 +865,25 @@ public class DefaultImageService extends AbstractAttachmentService implements Im
 
 	public void destroy() {
 
+	}
+
+	@Override
+	public List<Image> getImages(int objectType, long objectId) {
+		List<Long> ids = customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(
+			customQueryJdbcDao.getBoundSql("COMMUNITY_WEB.SELECT_IMAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID").getSql(),
+			Long.class,
+			new SqlParameterValue(Types.NUMERIC, objectType),
+			new SqlParameterValue(Types.NUMERIC, objectId)
+		);
+		List<Image> list = new ArrayList<Image>(ids.size());
+		for( Long id : ids ) {
+			try {
+				list.add(getImage(id));
+			} catch (NotFoundException e) {
+				
+			}
+		}
+		return list;
 	}
 
 }

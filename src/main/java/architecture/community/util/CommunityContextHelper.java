@@ -13,6 +13,7 @@ import architecture.community.board.BoardService;
 import architecture.community.category.CategoryService;
 import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
+import architecture.community.image.ImageService;
 import architecture.community.menu.MenuService;
 import architecture.community.tag.TagService;
 import architecture.community.viewcount.ViewCountService;
@@ -60,6 +61,10 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 		return getComponent(AttachmentService.class);
 	}
 
+	public static ImageService getImageService(){
+		return getComponent(ImageService.class);
+	}
+	
 	public static AnnounceService getAnnounceService(){
 		return getComponent(AnnounceService.class);
 	}

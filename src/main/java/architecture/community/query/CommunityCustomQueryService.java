@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
@@ -69,6 +70,9 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			return customQueryJdbcDao.getExtendedJdbcTemplate().queryForMap( sqlSource.getSql() );
 	}
 
+	public List<Map<String, Object>> list( DataSourceRequest dataSourceRequest ) {
+		return list(dataSourceRequest, getColumnMapRowMapper());
+	}
 	
 	public <T> List<T> list(DataSourceRequest dataSourceRequest, RowMapper<T> rowmapper) {			
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
@@ -204,5 +208,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		return additionalParameter;
 	}
 
-
+	protected RowMapper<Map<String, Object>> getColumnMapRowMapper() {
+		return new ColumnMapRowMapper();
+	}
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -32,10 +33,11 @@ import architecture.community.category.Category;
 import architecture.community.category.CategoryNotFoundException;
 import architecture.community.category.CategoryService;
 import architecture.community.exception.NotFoundException;
+import architecture.community.image.DefaultImage;
 import architecture.community.image.Image;
 import architecture.community.image.ImageLink;
 import architecture.community.image.ImageService;
-import architecture.community.menu.Menu;
+import architecture.community.model.Property;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
 import architecture.community.query.CustomQueryService;
@@ -342,6 +344,29 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	}	
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/images/save-or-update.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public Image saveOrUpdate(@RequestBody DefaultImage image, NativeWebRequest request) throws NotFoundException {
+		
+		DefaultImage imageToUse = 	(DefaultImage)imageService.getImage(image.getImageId());
+		if( !StringUtils.isNullOrEmpty(image.getName()) )
+		{
+			imageToUse.setName(image.getName());
+		}
+		if( imageToUse.getObjectType() != image.getObjectType())
+		{
+			imageToUse.setObjectType(image.getObjectType());
+		}
+		if( imageToUse.getObjectId() != image.getObjectId())
+		{
+			imageToUse.setObjectId(image.getObjectId());
+		}
+		imageService.saveOrUpdate(imageToUse); 
+		return imageToUse;
+	}
+	
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/images/{imageId:[\\p{Digit}]+}/delete.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Result removeImageAndLink (
@@ -354,6 +379,16 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		
 		return Result.newResult();
 	}	
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/images/{imageId:[\\p{Digit}]+}/get.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Image getImage (
+		@PathVariable Long imageId, 
+		NativeWebRequest request) throws NotFoundException {
+		Image image = 	imageService.getImage(imageId);
+		return image;
+	}
 	
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
@@ -369,4 +404,56 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	}	
 	
 	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/images/{imageId:[\\p{Digit}]+}/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> getImageProperties (
+		@PathVariable Long imageId, 
+		NativeWebRequest request) throws NotFoundException {
+		Image image = 	imageService.getImage(imageId);
+		Map<String, String> properties = image.getProperties(); 
+		return toList(properties);
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/images/{imageId:[\\p{Digit}]+}/properties/update.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> updateImageProperties (
+		@PathVariable Long imageId, 
+		@RequestBody List<Property> newProperties,
+		NativeWebRequest request) throws NotFoundException {
+		Image image = 	imageService.getImage(imageId);
+		Map<String, String> properties = image.getProperties();   
+		// update or create
+		for (Property property : newProperties) {
+		    properties.put(property.getName(), property.getValue().toString());
+		} 
+		imageService.saveOrUpdate(image); 
+		return toList(image.getProperties());
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/images/{imageId:[\\p{Digit}]+}/properties/delete.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> deleteImageProperties (
+		@PathVariable Long imageId, 
+		@RequestBody List<Property> newProperties,
+		NativeWebRequest request) throws NotFoundException {
+		Image image = 	imageService.getImage(imageId);
+		Map<String, String> properties = image.getProperties();  
+		for (Property property : newProperties) {
+		    properties.remove(property.getName());
+		}
+		imageService.saveOrUpdate(image);
+		return toList(image.getProperties());
+	}
+	
+	protected List<Property> toList(Map<String, String> properties) {
+		List<Property> list = new ArrayList<Property>();
+		for (String key : properties.keySet()) {
+		    String value = properties.get(key);
+		    list.add(new Property(key, value));
+		}
+		return list;
+	} 
 }

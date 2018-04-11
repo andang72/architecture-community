@@ -45,7 +45,8 @@
 	SELECT  
 		IMAGE_ID      	
 	FROM REP_IMAGE
-	]]><dynamic><![CDATA[    
+	]]><dynamic><![CDATA[
+	<#compress>
 	<#if filter?? && ( filter.filters?size > 0 ) > WHERE 
 	<#list filter.filters as item >
 	<#if item.logic??>${item.logic}</#if> ${item.field} 
@@ -59,7 +60,10 @@
 	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
 	</#if>
  	</#list></#if>	
-	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list></#if>
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
+	 order by CREATION_DATE desc
+	</#if>
+	</#compress>
     ]]></dynamic></sql-query>
     
     <sql-query name="UPDATE_IMAGE_OBJECT_TYPE_AND_OBJECT_ID" description="UPDATE_IMAGE_OBJECT_TYPE_AND_OBJECT_ID"><![CDATA[

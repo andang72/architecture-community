@@ -21,6 +21,11 @@
 	<import resource="classpath:context/community-security-context.xml"/>	
 	<import resource="classpath:context/community-subsystem-context.xml"/>
 	
+	
+	<beans:bean id="customQueryJdbcDao" class="architecture.community.query.dao.CustomQueryJdbcDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="customQueryService" class="architecture.community.query.CommunityCustomQueryService" />
+		
 	<!-- to activate annotations in beans already registered in the application  context -->
 	
 	<context:annotation-config />

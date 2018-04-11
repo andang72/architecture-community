@@ -130,5 +130,7 @@ public interface ImageService {
 	
 	public void removeImageLink( Image image ) ;
 	
+	public List<Image> getImages(int objectType, long objectId );
+	
 		
 }

@@ -23,7 +23,9 @@ public interface CustomQueryService {
 	 * API using DataSourceRequest 
 	 *
 	 */
+
 	
+	public List<Map<String, Object>> list( DataSourceRequest dataSourceRequest ) ;	
 	/**
 	 * 
 	 * @param dataSourceRequest
