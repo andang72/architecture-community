@@ -327,18 +327,27 @@
 					model: community.model.User
 				}
 			})		
-    		});
+    	});
+    	
+    	observable.bind("change", function(e){	
+    		if( e.field == "issue.resolution" ){
+    			//if( this.get(e.field) == '')
+    			observable.set('issue.status', '005');
+    		}
+    	});
     		
-    		if( __issueId > 0 ){
-    			observable.setupWithIssueAndProject(__issueId);
-    		}else{
-    			observable.setupWithProject(__projectId);
-    		} 
+    	if( __issueId > 0 ){
+    		observable.setupWithIssueAndProject(__issueId);
+    	}else{
+    		observable.setupWithProject(__projectId);
+    	} 
     		
 		//createIssueListView(observable);		
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	 
+		
+		
 		
 		renderTo.on("click", "button[data-kind=issue][data-action=create], a[data-kind=issue][data-action=create], a[data-kind=issue][data-action=edit]", function(e){			
 			var $this = $(this);
