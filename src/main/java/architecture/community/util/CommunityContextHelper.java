@@ -15,6 +15,8 @@ import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.image.ImageService;
 import architecture.community.menu.MenuService;
+import architecture.community.page.PageService;
+import architecture.community.query.CustomQueryService;
 import architecture.community.tag.TagService;
 import architecture.community.viewcount.ViewCountService;
 import architecture.ee.exception.ComponentNotFoundException;
@@ -39,6 +41,10 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 
 	public static ConfigService getConfigService(){
 		return getComponent(ConfigService.class);
+	}
+
+	public static PageService getPageService(){
+		return getComponent(PageService.class);
 	}
 	
 	public static CategoryService getCategoryService(){
@@ -77,6 +83,9 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 		return getComponent(TagService.class);
 	}
 	
+	public static CustomQueryService getCustomQueryService(){
+		return getComponent(CustomQueryService.class);
+	}
 	
 	public static <T> T getComponent(Class<T> requiredType) {
 		if (applicationContext == null) {
