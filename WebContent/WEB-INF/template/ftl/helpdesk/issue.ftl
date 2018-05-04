@@ -331,8 +331,9 @@
     	
     	observable.bind("change", function(e){	
     		if( e.field == "issue.resolution" ){
-    			//if( this.get(e.field) == '')
-    			observable.set('issue.status', '005');
+    			if( this.get(e.field) == '005') || this.get(e.field) == '001'){
+    				observable.set('issue.status', '005');
+    			}
     		}
     	});
     		
@@ -346,8 +347,7 @@
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	 
-		
-		
+		 
 		
 		renderTo.on("click", "button[data-kind=issue][data-action=create], a[data-kind=issue][data-action=create], a[data-kind=issue][data-action=edit]", function(e){			
 			var $this = $(this);
