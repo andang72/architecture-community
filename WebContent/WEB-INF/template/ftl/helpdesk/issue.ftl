@@ -331,7 +331,7 @@
     	
     	observable.bind("change", function(e){	
     		if( e.field == "issue.resolution" ){
-    			if( this.get(e.field) == '005') || this.get(e.field) == '001'){
+    			if( this.get(e.field) == '005') || this.get(e.field) == '001' )){
     				observable.set('issue.status', '005');
     			}
     		}
@@ -360,16 +360,7 @@
 			targetObject.set('repoter', observable.currentUser );
 			targetObject.set('status', '001');
 			observable.setSource(targetObject);
-			/*
-			if( objectId > 0 ){
-				targetObject = community.ui.listview($('#issue-listview')).dataSource.get(objectId);
-			}else{			
-				targetObject = new community.model.Issue();	
-				targetObject.set('objectType', 19);
-				targetObject.set('objectId', observable.project.projectId );
-			}			
- 			createOrOpenIssueEditor (targetObject);
- 			*/
+ 
 			return false;		
 		}); 
 		
