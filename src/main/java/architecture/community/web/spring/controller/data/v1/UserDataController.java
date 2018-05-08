@@ -13,17 +13,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import architecture.community.query.CustomQueryService;
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
+import architecture.community.user.UserNotFoundException;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
+import architecture.community.web.model.json.DataSourceRequest;
 
 @Controller("community-data-v1-user-controller")
 @RequestMapping("/data/api/v1/users")
@@ -32,6 +36,35 @@ public class UserDataController {
 	@Inject
 	@Qualifier("userManager")
 	private UserManager userManager;
+	
+	@Inject
+	@Qualifier("customQueryService")
+	private CustomQueryService customQueryService;
+	
+	@PreAuthorize("permitAll")
+    @RequestMapping(value = "/find_v2.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public ItemList findUsersBy(
+    	@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {	 
+		ItemList list = new ItemList();
+		dataSourceRequest.setStatement("COMMUNITY_USER.FIND_USER_IDS_BY_REQUEST");
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<User> items = new ArrayList<User>(ids.size());
+		
+		for( Long userId : ids ) {
+			User user;
+			try {
+				user = userManager.getUser(userId);
+				items.add(user);
+			} catch (UserNotFoundException e) {
+			}
+		}
+		
+		list.setTotalCount(items.size());
+		list.setItems(items);
+		
+		return list;
+	}
 	
 	
 	@PreAuthorize("permitAll")
@@ -59,6 +92,7 @@ public class UserDataController {
 		}
 		return list;
 	}
+
 	
 	@PreAuthorize("permitAll")
     @RequestMapping(value = "/me.json", method = { RequestMethod.POST, RequestMethod.GET })

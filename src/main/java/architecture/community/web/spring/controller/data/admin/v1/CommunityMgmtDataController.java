@@ -364,6 +364,52 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		imageService.saveOrUpdate(imageToUse); 
 		return imageToUse;
 	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/imagebrowser/{objectType:[\\p{Digit}]+}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getImagesByObjectType(
+		@RequestBody DataSourceRequest dataSourceRequest, 	
+		@PathVariable Integer objectType,
+		NativeWebRequest request) {
+		dataSourceRequest.setData("objectType", objectType);
+		
+		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_IMAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID");
+		List<Long> items = customQueryService.list(dataSourceRequest, Long.class);
+		List<Image> images = new ArrayList<Image>(items.size());
+		for( Long id : items ) {
+			try {
+				images.add(imageService.getImage(id));
+			} catch (NotFoundException e) {
+			}
+		}
+		return new ItemList(images, images.size() );
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/imagebrowser/{objectType:[\\p{Digit}]+}/{objectId:[\\p{Digit}]+}/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getImagesByObjectTypeAndObjectId(
+		@PathVariable Integer objectType,
+		@PathVariable Long objectId,
+		@RequestBody DataSourceRequest dataSourceRequest,
+		NativeWebRequest request) {
+		
+		dataSourceRequest.setData("objectType", objectType);
+		dataSourceRequest.setData("objectId", objectId);
+		
+		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_IMAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID");
+		List<Long> items = customQueryService.list(dataSourceRequest, Long.class);
+		List<Image> images = new ArrayList<Image>(items.size());
+		for( Long id : items ) {
+			try {
+				images.add(imageService.getImage(id));
+			} catch (NotFoundException e) {
+			}
+		}
+		return new ItemList(images, images.size() );
+		
+	}	
 	
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })

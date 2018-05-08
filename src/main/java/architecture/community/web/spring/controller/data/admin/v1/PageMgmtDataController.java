@@ -76,7 +76,7 @@ public class PageMgmtDataController {
 	@RequestMapping(value = "/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getPages(
-			@RequestParam(value = "startIndex", defaultValue = "0", required = false) Integer startIndex,
+			@RequestParam(value = "skip", defaultValue = "0", required = false) Integer startIndex,
 			@RequestParam(value = "pageSize", defaultValue = "15", required = false) Integer pageSize,
 			@RequestParam(value = "fields", defaultValue = "", required = false) String fields,
 			NativeWebRequest request) {

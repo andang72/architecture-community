@@ -82,9 +82,8 @@ public class AccountsDataController {
 		//logger.debug(user.getPassword());
 		
 		String usernameToUse = user.getUsername();
-		if( StringUtils.isNotEmpty( usernameToUse  ))
+		if( StringUtils.isEmpty( usernameToUse  ))
 			usernameToUse = user.getEmail();
-		
 		try {
 			
 			User newUser = new UserTemplate(usernameToUse, user.password, user.name, user.mameVisible, user.email, user.emailVisible);				
@@ -103,17 +102,13 @@ public class AccountsDataController {
 		return email.substring(0, index );
 	}
 	
-	
-	
-	private static class UserForm  {
-		
+	private static class UserForm  { 
 		private String username ;
 		private String name ;
 		private String password;
 		private String email;
 		private Boolean mameVisible;
-		private Boolean emailVisible;
-		 
+		private Boolean emailVisible; 
 		
 		public UserForm() {
 			mameVisible = false;
@@ -169,9 +164,7 @@ public class AccountsDataController {
 				builder.append("email=").append(email);
 			builder.append("]");
 			return builder.toString();
-		}
-
-		
+		} 
 		
 	}
 }
