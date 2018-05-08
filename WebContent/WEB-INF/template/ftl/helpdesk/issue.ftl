@@ -331,7 +331,7 @@
     	
     	observable.bind("change", function(e){	
     		if( e.field == "issue.resolution" ){
-    			if( this.get(e.field) == '005') || this.get(e.field) == '001' )){
+    			if( ( this.get(e.field) === '005' ) || ( this.get(e.field) == '001' ) ){
     				observable.set('issue.status', '005');
     			}
     		}

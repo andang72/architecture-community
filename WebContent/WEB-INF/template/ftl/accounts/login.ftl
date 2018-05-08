@@ -183,7 +183,7 @@
 					          </label>
 					        </div>
                         </div>                        
-                        <button type="submit" class="btn btn-success block full-width m-b ">로그인</button>
+                        <button type="submit" class="btn btn-success btn-block m-b ">로그인</button>
                         <a href="#">
                             <small>계정찾기</small>
                         </a>

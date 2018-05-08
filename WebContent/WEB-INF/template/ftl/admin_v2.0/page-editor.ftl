@@ -478,7 +478,9 @@
 				                  		<i class="hs-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
 				                		</span>
 		                      		<input id="input-page-name" class="form-control form-control-md g-rounded-4 g-px-14 g-py-10" type="text" placeholder="파일명을 입력하세요" data-bind="value: page.name, enabled:editable" autofocus>
-		                    			<small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">이 페이지를 호출할때 사용되는 이름입니다. ex) /display/pages/empty.html </small>
+		                    			<small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">
+		                    			이 페이지를 호출할때 사용되는 이름입니다. ex) /display/pages/<span data-bind="text: page.name"></span> 
+		                    			</small>
 		                    		</div>
 	                  		</div>
  							<div class="form-group">

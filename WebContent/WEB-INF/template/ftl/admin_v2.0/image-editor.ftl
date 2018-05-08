@@ -90,6 +90,7 @@
 			imageThumbnailUrl :"/images/no-image.jpg", 
 			formatedCreationDate : "",
 			formatedModifiedDate: "",
+			imageLink: "",
 			setUser : function( data ){
 				var $this = this;				
 				data.copy($this.currentUser);
@@ -133,7 +134,8 @@
 				{ text: "페이지", value: "14" },
 				{ text: "이슈", value: "18" },
 				{ text: "과정", value: "23" },
-				{ text: "강사", value: "22" }
+				{ text: "강사", value: "22" },
+				{ text: "교육장", value: "25" }
 			],
 			setSource : function( data ){
 				var $this = this;
@@ -145,6 +147,7 @@
 					$this.set('autherDisplayName', community.data.getUserDisplayName( $this.image.user ) );		
 					$this.set('imageThumbnailUrl' , community.data.getImageUrl($this.image, {thumbnail:false}) );
 					createImagePropsGrid($this); 
+					$this.getImageLink();
 				}else{
 					$this.set('editable', true );	
 					$this.set('isNew', true ); 
@@ -169,17 +172,33 @@
 				}).always( function () {
 					community.ui.progress(renderTo, false); 
 				});	
-			},				
+			},	
+			getImageLink : function(){
+					var $this = this;
+					if( $this.image.imageId > 0 ){
+						community.ui.progress(renderTo, true);
+						community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/images/" />' + $this.image.imageId + '/link.json?create=true', {
+							data: community.ui.stringify($this.menu),
+							contentType : "application/json",
+							success : function(response){
+								$this.set('imageLink', '<@spring.url "/download/images/" />' + response.linkId );
+							}
+						}).always( function () {
+							community.ui.progress(renderTo, false);
+						});	
+					}	
+					return false;
+			},			
 			load : function(objectId){
 				var $this = this;		
 				if( objectId > 0 ){
-					community.ui.progress($('#features'), true);	
+					community.ui.progress(renderTo, true);	
 					community.ui.ajax('<@spring.url "/data/api/mgmt/v1/images/"/>' + objectId + '/get.json', {
 						success: function(data){	
 							$this.setSource( new community.model.Image(data) );
 						}	
 					}).always( function () {
-						community.ui.progress($('#features'), false);
+						community.ui.progress(renderTo, false);
 					});	
 				}else{
 					$this.setSource( new community.model.Image() );
@@ -374,6 +393,18 @@
 			                    </div>
 		                  	</div>			   
 			                <!-- End File Size -->	
+							<div class="form-group g-mb-30">
+			                    <label class="g-mb-10" >이미지 Url</label>
+			                    <div class="g-pos-rel">
+			                      <button class="btn u-input-btn--v1 g-width-40 g-bg-primary" type="button" data-bind="click:getImageLink">
+			                        <i class="community-admin-cloud-down g-absolute-centered g-font-size-16 g-color-white"></i>
+			                      </button>
+			                      
+			                      <input class="form-control form-control-md g-brd-none g-brd-bottom g-brd-gray-light-v7 g-brd-gray-light-v3--focus rounded-0 px-0 g-py-10" type="text" placeholder="이미지 URL" data-bind="value:imageLink">
+			                      
+			                    </div>
+			                    <small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">아이콘을 클릭하면 이미지 링크를 생성할 수 있습니다.</small>
+			                  </div>			                
 			                </section>
 			                
 			                <div class="row">

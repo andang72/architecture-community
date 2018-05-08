@@ -272,9 +272,11 @@
 				},				
 				setSource : function(data){	
 					var $this = this;
+					$this.setUserRoles();
 				}
 			});
-			model.setUserRoles();
+			
+			model.rolesDataSource.fetch();
 			renderTo.data("model", model );
 			community.ui.bind(renderTo, model );
 		}
@@ -625,6 +627,7 @@
 					<div class="k-content wide">
 								        		
 								            <select id="listbox1" data-role="listbox" 
+								            
 								                data-text-field="name"
 								                data-value-field="name" 
 								                data-toolbar='{tools: [ "transferTo", "transferFrom", "transferAllTo", "transferAllFrom"]}'

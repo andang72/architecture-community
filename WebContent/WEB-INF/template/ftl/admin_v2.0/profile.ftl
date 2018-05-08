@@ -143,6 +143,9 @@
 	                       	 	<a class="u-badge-v2--lg u-badge--bottom-right g-width-32 g-height-32 g-bg-lightblue-v3 g-bg-primary--hover g-mb-20 g-mr-20" href="#!">
 			                        <i class="community-admin-upload g-absolute-centered g-font-size-16 g-color-white"></i>
 			                      </a>
+			                   	<a class="u-badge-v2--lg u-badge--bottom-right g-width-32 g-height-32 g-bg-lightblue-v3 g-bg-primary--hover g-mb-20 g-mr-20" href="#!">
+			                        <i class="community-admin-upload g-absolute-centered g-font-size-16 g-color-white"></i>
+			                    </a>   
 	                       	 </div>       
                        	 	<div class="dropzone-previews"></div>                 
 							 <div class="fallback">
