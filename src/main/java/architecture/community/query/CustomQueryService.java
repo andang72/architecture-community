@@ -12,18 +12,16 @@ import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.web.model.json.DataSourceRequest;
 
 public interface CustomQueryService {
+
+	public List<Map<String, Object>> list( String statement ) ;	
 	
-	/**
-	 * API directly access Spring JdbcTemplate Function .
-	 */
-	public void query(DataSourceRequest dataSourceRequest, RowCallbackHandler callback);
+	public List<Map<String, Object>> list( String statement , Map<String, Object> data) ;	
 	
 	/**
 	 *  
 	 * API using DataSourceRequest 
 	 *
 	 */
-
 	
 	public List<Map<String, Object>> list( DataSourceRequest dataSourceRequest ) ;	
 	/**
@@ -55,6 +53,16 @@ public interface CustomQueryService {
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType);
 	
 	public Map<String, Object> queryForMap (DataSourceRequest dataSourceRequest);
+	
+	public int update ( DataSourceRequest dataSourceRequest ) ;
+
+	
+	/**
+	 * API directly access Spring JdbcTemplate Function .
+	 */
+	public void query(DataSourceRequest dataSourceRequest, RowCallbackHandler callback);
+	
+	
 	
 	/**
 	 *  
@@ -93,6 +101,7 @@ public interface CustomQueryService {
 	
 	public abstract int update ( String statement , Object... args) ;
 
+	
 	
 	public abstract <T> T execute(DaoCallback<T> action) throws DataAccessException;	
 	

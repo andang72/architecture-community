@@ -44,6 +44,22 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	public CommunityCustomQueryService() {
 		
 	}
+
+
+	public List<Map<String, Object>> list(String statement) {
+		DataSourceRequest dataSourceRequest = new DataSourceRequest();
+		dataSourceRequest.setStatement(statement);
+		return list(dataSourceRequest, getColumnMapRowMapper());
+	}
+	
+	public List<Map<String, Object>> list(String statement, Map<String, Object> data) {
+		DataSourceRequest dataSourceRequest = new DataSourceRequest();
+		dataSourceRequest.setStatement(statement);
+		for( String name : data.keySet() ) {
+			dataSourceRequest.setData(name, data.get(name));
+		}
+		return list(dataSourceRequest, getColumnMapRowMapper());
+	}	
 	
 	
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {				
@@ -171,6 +187,15 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	public int update ( String statement , Object... args) {
 		return customQueryJdbcDao.getExtendedJdbcTemplate().update(customQueryJdbcDao.getBoundSql(statement).getSql(), args);
 	}
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public int update ( DataSourceRequest dataSourceRequest ) {
+		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));
+		if( dataSourceRequest.getParameters().size() > 0 ) 
+			return customQueryJdbcDao.getExtendedJdbcTemplate().update(  sqlSource.getSql(),  getSqlParameterValues( dataSourceRequest.getParameters() ).toArray());
+		else 
+			return customQueryJdbcDao.getExtendedJdbcTemplate().update( sqlSource.getSql()); 
+	}	
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public <T> T execute(DaoCallback<T> action) throws DataAccessException {
@@ -211,4 +236,5 @@ public class CommunityCustomQueryService implements CustomQueryService {
 	protected RowMapper<Map<String, Object>> getColumnMapRowMapper() {
 		return new ColumnMapRowMapper();
 	}
+
 }
