@@ -241,7 +241,7 @@
 		if( !renderTo.data("model") ){
 			console.log('creating permission acl listview.');
 			var listview = community.ui.listview( $('#projects-perms-listview'), {
-				dataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/"/>'+ observable.project.get('projectId') +'/list.json' , {
+				dataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/security/permissions/19/"/>'+ observable.project.get('projectId') +'/list.json' , {
 					schema: {
 						total: "totalCount",
 						data: "items",
@@ -279,7 +279,7 @@
 					var $this = this;
 					if( $this.accessControlEntry.get('grantedAuthorityOwner').length > 0  && $this.accessControlEntry.get('permission').length > 0 ){
 						community.ui.progress(renderTo, true);	
-						community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/" />' + observable.project.get('projectId') +'/add.json' , {
+						community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/permissions/19/" />' + observable.project.get('projectId') +'/add.json' , {
 							data: community.ui.stringify($this.accessControlEntry),
 							contentType : "application/json",
 							success : function(response){
@@ -295,7 +295,7 @@
 				removePermission : function (data) {
 					var $this = this;
 					community.ui.progress(renderTo, true);	
-					community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/permissions/14/" />' + observable.project.get('projectId') +'/remove.json', {
+					community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/permissions/19/" />' + observable.project.get('projectId') +'/remove.json', {
 						data:community.ui.stringify(data),
 						contentType : "application/json",
 						success : function(response){

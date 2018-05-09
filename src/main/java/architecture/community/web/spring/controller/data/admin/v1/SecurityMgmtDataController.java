@@ -403,11 +403,13 @@ public class SecurityMgmtDataController {
 	@RequestMapping(value = "/permissions/{objectType:[\\p{Digit}]+}/{objectId:[\\p{Digit}]+}/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public ItemList getAssignedPermissions (@PathVariable Integer objectType, @PathVariable Long objectId, NativeWebRequest request) {			
+		
 		List<AccessControlEntry> entries = communityAclService.getAsignedPermissions(Models.valueOf(objectType).getObjectClass(), objectId);
 		List<ObjectAccessControlEntry> list = new ArrayList<ObjectAccessControlEntry>(entries.size());
 		for( AccessControlEntry entry : entries )
 			list.add(new ObjectAccessControlEntry(entry));		
 		return new ItemList(list, list.size());		
+	
 	}
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })

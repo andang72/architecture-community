@@ -43,4 +43,11 @@ public interface UserManager {
 
     public abstract List<User> getUsers(int startIndex, int numResults);
     
+    /**
+     * 인자로 전달된 평문 비밀번호를 사용자 정보에 저장된 암호화된 값과 비교 검사하고 그결과를 불값으로 리턴한다.
+     * @param user
+     * @param password
+     * @return
+     */
+    public abstract boolean verifyPassword(User user, String password);
 }

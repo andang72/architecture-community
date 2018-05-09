@@ -331,6 +331,13 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		}
 
 	}
+	
+	
+	public boolean verifyPassword(User user, String password) {
+		if( user.getPassword() == null || StringUtils.isNullOrEmpty(password))
+			return false;
+		return passwordEncoder.matches(password, user.getPassword());
+	}	
 
 	private String getPasswordHash(User user) {
 		String passwd;
