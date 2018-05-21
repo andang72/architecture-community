@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -81,6 +82,7 @@ import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
+import architecture.ee.util.NumberUtils;
 import architecture.ee.util.StringUtils;
 
 /**
@@ -483,6 +485,16 @@ public class IssueDataController extends AbstractCommunityDateController  {
 			}});
 		
 		List<MonthIssueCount> list = new ArrayList<MonthIssueCount>(monthlyIssueCounts.values());
+		Collections.sort(list, new Comparator<MonthIssueCount>() { 
+			public int compare(MonthIssueCount o1, MonthIssueCount o2) { 
+				int o1n = NumberUtils.toInt(o1.month, 0);
+				int o2n = NumberUtils.toInt(o2.month, 0);
+				if( o1n > o2n )
+					return 1 ;
+				else if ( o1n < o2n )
+					return -1 ;
+				return 0;
+			}});
 		items.setTotalCount(list.size());
 		items.setItems(list);
 		return items;
