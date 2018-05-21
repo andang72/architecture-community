@@ -71,7 +71,9 @@
 			"dropzone"					: "/js/dropzone/dropzone"			
 		}
 	});
-	require([ "jquery", "jquery.cookie", "popper", "kendo.web.min", "community.ui.core", "community.data", "community.ui.professional", "community.ui.admin", "dropzone" ], function($, kendo ) { 
+	require([ 
+	"jquery", "jquery.cookie", "popper", "kendo.web.min", "community.ui.core", "community.data", 
+	"community.ui.professional", "community.ui.admin", "dropzone" ], function($, kendo ) { 
 		
 		community.ui.setup({
 		  	features : {
@@ -846,8 +848,7 @@
             <a class="btn btn-sm u-btn-outline-bluegray k-cancel-button" href="\\#">취소</a>
 		</td>
 	</td>
-	</script>		
-	 	
+	</script>			 	
 </body>
 </html>
 </#compress> 	
