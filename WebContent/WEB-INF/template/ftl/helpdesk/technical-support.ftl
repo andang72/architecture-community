@@ -177,7 +177,6 @@
 				}else if ($this.filter.PROJECT_CONTRACTOR != null ){
 					filters.push({ field: "contractor", operator: "eq", value: $this.filter.PROJECT_CONTRACTOR });
 				}
-				
 				$this.dataSource.filter( filters );
 			},
 			filter2 : {
@@ -555,7 +554,7 @@
 	</section>	
 	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 	<section id="worklist" class="gray-section" data-bind="visible:isDeveloper">
-	    <div class="container">
+	    <div class="container-fluid">
 	        <div class="row">
 	            <div class="col-lg-12 text-center">
 	                <div class="navy-line"></div>
@@ -592,19 +591,21 @@
 					</div>
 	            </div>
 	        </div>
-	        <div class="row features-block g-mb-50">
+	        <div class="row features-block g-mb-50  g-px-20">
 	        		<div class="table-responsive">
 	        			<table class="table table-bordered u-table--v2 g-mb-0">
 						<thead class="text-uppercase g-letter-spacing-1">
 							<tr class="g-height-50">
-								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">ID</th>
-								<th class="align-middle g-font-weight-300 g-color-black g-min-width-80">프로젝트</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-width-100">ID</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-width-100">계약자</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-min-width-250">프로젝트</th>
 								<th class="align-middle g-font-weight-300 g-color-black g-min-width-300">요약</th>
-								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">유형</th>
-								<th class="align-middle g-font-weight-300 g-color-black g-min-width-50">우선순위</th>
-								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">담당자</th>
-								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">등록일</th>
-								<th class="align-middle g-font-weight-300 g-color-black g-min-width-70 text-nowrap">예정일</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-width-60">유형</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-width-50">우선순위</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-width-50">상태</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-width-70 text-nowrap">담당자</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-width-70 text-nowrap">등록일</th>
+								<th class="align-middle g-font-weight-300 g-color-black g-width-70 text-nowrap">예정일</th>
 							</tr>
 						</thead>	
 	        				<tbody id="issue-listview" ></tbody>
@@ -621,9 +622,12 @@
 	<script type="text/x-kendo-template" id="template-issue">
 	<tr>
 		<td class="align-middle text-center"> ISSUE-#: issueId # </td>
+		<td class="align-middle">
+    		#= getContractorName(project.contractor) #
+    	</td>		
     	<td class="align-middle">
     		<a href="\\#" class="btn-link" data-action="view" data-object-id="#: project.projectId#" data-kind="project">
-    		<span class="u-label g-bg-pink g-rounded-20 g-px-15 g-mr-10 g-mb-0">#= getContractorName(project.contractor) #</span> #: project.name #
+    		# if ( project.contractState == '002') { # <span class="text-info" >무상</span> # } else if (project.contractState == '001') { # <span class="text-info"> 유상 </span> # } # #: project.name #
     		</a>
     	</td>
     	<td class="align-middle">
@@ -633,6 +637,7 @@
  		</td>
     	<td class="align-middle">#: issueTypeName #</td>
     	<td class="align-middle text-center">#: priorityName #</td>
+    	<td class="align-middle text-center">#: statusName #</td>
     	<td class="align-middle">
 		#if ( assignee != null && assignee.userId > 0 ) {#
 		#= community.data.getUserDisplayName( assignee ) #
