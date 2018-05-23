@@ -15,6 +15,10 @@
       Community Event 설정  
 	]]></beans:description>
 		
+	<beans:bean id="communitySpringEventPublisher" class="architecture.community.services.CommunitySpringEventPublisher"  />		
+	
 	<beans:bean id="userActivityEventListener" class="architecture.community.user.event.listener.UserActivityEventListener"  />		
-  
+	
+  	<beans:bean id="issueStateChangeEventListener" class="architecture.community.projects.event.IssueStateChangeEventListener"  />		
+  	
 </beans:beans> 

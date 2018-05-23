@@ -57,22 +57,27 @@
 	        "dzsparallaxer.dzsscroller" : { "deps" :['jquery', 'dzsparallaxer' ] }
 	    },
 		paths : {
-			"jquery"    					: "/js/jquery/jquery-2.2.4.min",
-			"bootstrap" 					: "/js/bootstrap/3.3.7/bootstrap.min",
-			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
-			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
-			"community.ui.core" 			: "/js/community.ui/community.ui.core",
-			"community.data" 			: "/js/community.ui/community.data",
-			"summernote.min"             : "/js/summernote/summernote.min",
-			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR",
+			"jquery"    						: "/js/jquery/jquery-2.2.4.min",
+			"bootstrap" 						: "/js/bootstrap/3.3.7/bootstrap.min",
+			"kendo.ui.core.min" 				: "/js/kendo.ui.core/kendo.ui.core.min",
+			"kendo.culture.ko-KR.min"			: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
+			"community.ui.core" 				: "/js/community.ui/community.ui.core",
+			"community.data" 					: "/js/community.ui/community.data",
+			"summernote.min"             		: "/js/summernote/summernote.min",
+			"summernote-ko-KR"           		: "/js/summernote/lang/summernote-ko-KR",
 			<!-- Dzsparallaxer -->		
-			"dzsparallaxer"           	: "/assets/vendor/dzsparallaxer/dzsparallaxer",
-			"dzsparallaxer.dzsscroller"	: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
-			"dzsparallaxer.advancedscroller"	: "/assets/vendor/dzsparallaxer/advancedscroller/plugin"
+			"dzsparallaxer"           			: "/assets/vendor/dzsparallaxer/dzsparallaxer",
+			"dzsparallaxer.dzsscroller"			: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
+			"dzsparallaxer.advancedscroller"	: "/assets/vendor/dzsparallaxer/advancedscroller/plugin",
+			"polyfills"							: "/js/polyfills/EventSource"
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "dzsparallaxer.advancedscroller", 'dzsparallaxer.dzsscroller'], function($, kendo ) {	
+	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", 
+		"community.data", "community.ui.core", 
+		"bootstrap", "dzsparallaxer.advancedscroller", 
+		'dzsparallaxer.dzsscroller',
+		'polyfills' ], function($, kendo ) {	
 		
 		community.ui.setup({
 		  	features : {
@@ -123,8 +128,26 @@
 				$this.set('isDeveloper', isDeveloper());
 				$this.set('enabled', true);
 				if($this.get('isDeveloper')){
-					createIssueListView($this);					
+					createIssueListView($this);	
+					createNotification($this);				
 				}
+			},
+			notificationEnabled : false,
+			requestPermission : function (){ 
+				var $this = this;
+				console.log('request permission..');
+				Notification.requestPermission(function (result) { 
+			        //요청을 거절하면,
+			        if (result === 'denied') {
+			       		$this.set('notificationEnabled' , false );
+			            return;
+			        }
+			        //요청을 허용하면,
+			        else {
+			        	$this.set('notificationEnabled' , true );
+			            return;
+			        }
+			    }); 
 			},
 			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
 				transport:{
@@ -143,7 +166,7 @@
 					model: community.model.Project
 				}
 			}),
-			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/CONTRACTOR/list.json" />' , {} ),
+			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/CONTRACTOR/list.json" />' , {} ),
 			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PROJECT/list.json" />' , {} ),
 			projectsDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/list_v2.json"/>' , {
 				schema: {
@@ -241,9 +264,68 @@
 			}						
  			createOrOpenIssueEditor (targetObject);		
 			return false;		
-		});		
+		});	 
+				
 	});
 
+	
+	var iconDataURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKBJREFUeNpiYBjpgBFd4P///wJAaj0QO9DEQiAg5ID9tLIcmwMYsDgABhqoaTHMUHRxpsGYBv5TGqTIZsDkYWLo6gc8BEYdMOqAUQeMOoAqDgAWcgZAfB9EU63SIAGALH8PZb+H8v+jVz64KiOK6wIg+ADEArj4hOoCajiAqMpqtDIadcCoA0YdQIoDDtCqQ4KtBY3NAYG0csQowAYAAgwAgSqbls5coPEAAAAASUVORK5CYII=";
+
+	function createNotification(observable){ 
+	
+		console.log('show notification... : ' + observable.get('notificationEnabled') );
+		console.log("create notification..");
+		if(window.Notification){
+			if( Notification.permission == 'denied' ){
+				observable.set('notificationEnabled', false);
+			}else{
+				observable.set('notificationEnabled', true);
+			}	
+		}			
+			
+		var template = kendo.template($("#notification-template").html());
+		const eventSource = new EventSource('/data/api/v1/notifications/issue.json'); 
+		eventSource.onmessage = function(e) { 
+			console.log('msg: ' + e.data);
+			var obj = JSON.parse(e.data);
+			var title = "";
+			if( obj.state == 'CREATED' ){
+				title = "신규 이슈 알림";
+			}else {
+				title = "이슈 변경 알림";
+			} 
+			
+			if(observable.get('notificationEnabled')){
+	 			var notification = new Notification(
+		        	title, 
+		        	{
+		        		body: template(obj),
+		        		icon: iconDataURI
+		        });
+		        
+		        //알림 후 5초 뒤,
+		        /*setTimeout(function () {
+		            //얼람 메시지 닫기
+		            notification.close();
+		        }, 5000);*/			
+			}else{
+				title = title + " : " + new Date().toLocaleTimeString() ;
+				community.ui.notification({ 
+					autoHideAfter:0, 
+					allowHideAfter: 0,
+					width : 500,
+					templates : [{
+						type : "alert",
+						template : '<div class="notification-info g-pa-20">#if(title){#<div class="notification-title g-font-weight-400">#= title #</div>#}#<div class="notification-mesage">#= message #</div></div>'
+					}]
+				}).show({ title:title, 'message': template(obj), time: new Date().toLocaleTimeString() },"alert");
+			}
+	        return;			
+		} 
+			
+	}
+	
+	
 	function send ( data ) {
 		community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: data.projectId });
 	}
@@ -422,7 +504,7 @@
               <h2 class="g-color-white g-font-weight-200 g-font-size-25 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
             </div>
             <!-- Promo Blocks - Input -->
-			<p data-bind="invisible:currentUser.anonymous" style="display:none;">				
+			<p data-bind="invisible:currentUser.anonymous" style="display:none;" class="g-mb-20">				
 				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" role="button" 
 					data-toggle="tooltip" data-placement="bottom" data-original-title="새로운 이슈를 등록합니다." 
 					data-action="create" data-action-target="issue" data-object-id="0" data-bind="disabled:currentUser.anonymous, enabled: enabled" >기술지원요청하기</a>
@@ -434,8 +516,15 @@
 	            		data-toggle="tooltip" data-placement="top" data-original-title="기간별 이슈 처리현황을 확인합니다." 
 	            		data-object-id="0" data-action="overviewstats">통계</button>	                            				                				
 				</#if> 
-			</p>            
-            <!-- End Promo Blocks - Input -->
+			</p>     
+			
+			<p data-bind="invisible:currentUser.anonymous"  >
+			<button  class="btn btn-lg u-btn-darkred g-mr-10 g-mt-25 g-font-weight-200 " data-bind="invisible: notificationEnabled, click:requestPermission"
+				data-toggle="tooltip" data-placement="top" data-original-title="새로운 이슈가 등록되거나 삭제되면 알림을 받을 수 있습니다." 
+				>데스크탑 알림 권한 요청</button>
+			</p>
+			
+			<!-- End Promo Blocks - Input -->
           </div>
         </div>
       </div>
@@ -619,6 +708,16 @@
 	<!-- FOOTER START -->   
 	<#include "includes/user-footer.ftl">
 	<!-- FOOTER END -->  
+	<script type="text/x-kendo-template" id="notification-template">
+	#if( state == 'CREATED') {#   
+	#if (source.assignee != null ) { # #: source.assignee.name # 님에게 # } else { # 담당자가 지정되지 않은 # } # 
+	새로운 이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= soruce.issueId #" target="_blank"> #: source.summary #</a> 가 등록되었습니다.
+	#} else {#
+	#if (source.assignee != null ) { # #: source.assignee.name # 님이 담당하는# } else { # 담당자가 지정되지 않은 # } #
+	이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= soruce.issueId #" target="_blank"> #: source.summary #</a> 가 변경되었습니다. 
+	#}#
+	<br/><span class="g-color-red">담당자는 꼭 확인 해주세요.</span>
+	</script>
 	<script type="text/x-kendo-template" id="template-issue">
 	<tr>
 		<td class="align-middle text-center"> ISSUE-#: issueId # </td>

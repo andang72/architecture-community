@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +21,17 @@ import com.google.common.cache.CacheLoader;
 import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetService;
 import architecture.community.projects.dao.ProjectDao;
+import architecture.community.projects.event.IssueStateChangeEvent;
+import architecture.community.services.CommunitySpringEventPublisher;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
+import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.json.DataSourceRequest;
+import architecture.ee.spring.event.EventSupport;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
-public class DefaultProjectService implements ProjectService {
+public class DefaultProjectService extends EventSupport implements ProjectService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass().getName());
 	
@@ -49,6 +54,11 @@ public class DefaultProjectService implements ProjectService {
 	@Inject
 	@Qualifier("codeSetService")
 	private CodeSetService codeSetService;
+
+	@Autowired(required = false)
+	@Qualifier("communitySpringEventPublisher")
+	private CommunitySpringEventPublisher eventPublisher;
+	
 	
 	private com.google.common.cache.LoadingCache<Long, Stats> projectIssueTypeStatsCache = null;
 	
@@ -168,6 +178,7 @@ public class DefaultProjectService implements ProjectService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdateProject(Project project) {
+		
 		if( project.getProjectId() > 0 && projectCache.get(project.getProjectId()) != null  ) {
 			projectCache.remove(project.getProjectId());
 		} 
@@ -247,11 +258,22 @@ public class DefaultProjectService implements ProjectService {
 			projectIssueCache.remove(issue.getIssueId());
 			clearProjectStats(issue.getObjectId());
 		}
-		projectDao.saveOrUpdateIssues(issues);
+		
+		projectDao.saveOrUpdateIssues(issues); 
+		
 	}
 	 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdateIssue(Issue issue) {
+		boolean isNew = true;
+		IssueStateChangeEvent.State state ;
+		if( issue.getIssueId() > 0 ) {
+			isNew = false;
+			state = IssueStateChangeEvent.State.UPDATED;
+		}else {
+			state = IssueStateChangeEvent.State.CREATED;
+		}
+		
 		if( issue.getIssueId() > 0 && projectIssueCache.get(issue.getIssueId()) != null  ) {
 			projectIssueCache.remove(issue.getIssueId());
 		} 
@@ -260,6 +282,10 @@ public class DefaultProjectService implements ProjectService {
 		logger.debug("save or update user {}" , issue );
 		
 		projectDao.saveOrUpdateIssue(issue);
+		
+		if( eventPublisher != null)
+			eventPublisher.fireEvent(new IssueStateChangeEvent( issue, SecurityHelper.getUser(), state ));
+		
 	}
 	
 	protected Issue geIssueInCache(long issueId){

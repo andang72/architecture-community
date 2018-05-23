@@ -12,8 +12,7 @@ public class AuthenticationApplicationListener {
 
 	public AuthenticationApplicationListener() {
 	}
-
-
+ 
 	@EventListener
 	public void handleSessionDestroyedEvent(SessionDestroyedEvent event) {
 		List<SecurityContext> lstSecurityContext = event.getSecurityContexts();
@@ -24,8 +23,7 @@ public class AuthenticationApplicationListener {
 			Authentication auth = securityContext.getAuthentication();
 			if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
 				return;
-			}
-
+			} 
 			// do something
 		}
 	}
