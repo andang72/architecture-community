@@ -26,6 +26,9 @@
 	<link href="<@spring.url "/css/community.ui/community.ui.components.css"/>" rel="stylesheet" type="text/css" />
   	<link href="<@spring.url "/css/community.ui/community.ui.style.css"/>" rel="stylesheet" type="text/css" />	
   		
+  	<!-- Carousel CSS -->	
+  	<link href="<@spring.url "/assets/vendor/slick-carousel/slick/slick.css"/>" rel="stylesheet" type="text/css" />	
+  		
 	<!-- Page landing js -->	   	
 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>   	
 	<!-- Requirejs for js loading -->
@@ -41,21 +44,31 @@
 	        "kendo.culture.ko-KR.min" : { "deps" :['kendo.ui.core.min'] },
 	        "community.ui.core" : { "deps" :['kendo.culture.ko-KR.min'] },
 	        "community.data" : { "deps" :['community.ui.core'] },	        
-	        "summernote-ko-KR" : { "deps" :['summernote.min'] }
+	        "community.ui.carousel" : { "deps" :['jquery'] }
 	    },
 		paths : {
-			"jquery"    					: "/js/jquery/jquery-2.2.4.min",
-			"bootstrap" 					: "/js/bootstrap/3.3.7/bootstrap.min",
-			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
+			"jquery"    				: "/js/jquery/jquery-2.2.4.min",
+			"bootstrap" 				: "/js/bootstrap/3.3.7/bootstrap.min",
+			"kendo.ui.core.min" 		: "/js/kendo.ui.core/kendo.ui.core.min",
 			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
-			"community.ui.core" 			: "/js/community.ui/community.ui.core",
+			"community.ui.core" 		: "/js/community.ui/community.ui.core",
 			"community.data" 			: "/js/community.ui/community.data",
-			"summernote.min"             : "/js/summernote/summernote.min",
-			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"		
+			"community.ui.carousel"     : "/js/community.ui/community.ui.carousel",
+			"slick"    			 		: "/assets/vendor/slick-carousel/slick/slick.min"					
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap"], function($, kendo ) {		
+	require([ 
+		"jquery", 
+		"kendo.ui.core.min",  
+		"kendo.culture.ko-KR.min", 
+		"community.data", 
+		"community.ui.core", 
+		"bootstrap",
+		"community.ui.carousel",
+		"slick"
+		], function($, kendo ) {		
+		
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -66,7 +79,10 @@
 		    		}
 		  	}
 		});		
-
+		
+		// init carousel 
+		$.community.ui.Carousel.init('.js-carousel');
+		
         // Topnav animation feature
  		var cbpAnimatedHeader = (function() {
         		var docElem = document.documentElement, header = document.querySelector( '.navbar-default' ), didScroll = false, changeHeaderOn = 200;
@@ -375,6 +391,74 @@
 		    </div>
 		
 		</section>
+		
+    <!-- Clients -->
+    <div class="container g-py-70">
+      <div class="js-carousel" data-infinite="true" data-autoplay="true" data-slides-show="6" data-responsive='[{
+               "breakpoint": 1200,
+               "settings": {
+                 "slidesToShow": 6
+               }
+             }, {
+               "breakpoint": 992,
+               "settings": {
+                 "slidesToShow": 5
+               }
+             }, {
+               "breakpoint": 768,
+               "settings": {
+                 "slidesToShow": 4
+               }
+             }, {
+               "breakpoint": 576,
+               "settings": {
+                 "slidesToShow": 2
+               }
+             }, {
+               "breakpoint": 446,
+               "settings": {
+                 "slidesToShow": 1
+               }
+             }]'>
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img1.png" alt="Image description">
+        </div>
+
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img2.png" alt="Image description">
+        </div>
+
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img3.png" alt="Image description">
+        </div>
+
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img4.png" alt="Image description">
+        </div>
+
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img5.png" alt="Image description">
+        </div>
+
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img6.png" alt="Image description">
+        </div>
+
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img7.png" alt="Image description">
+        </div>
+
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img8.png" alt="Image description">
+        </div>
+
+        <div class="js-slide u-block-hover">
+          <img class="mx-auto g-width-80 u-block-hover__main--grayscale g-opacity-0_3 g-opacity-1--hover g-cursor-pointer" src="/assets/img-temp/200x100/img9.png" alt="Image description">
+        </div>
+      </div>
+    </div>
+    <!-- End Clients -->
+    		
 	<!-- FOOTER START -->   
 	<#include "includes/user-footer.ftl">
 	<!-- FOOTER END -->  
