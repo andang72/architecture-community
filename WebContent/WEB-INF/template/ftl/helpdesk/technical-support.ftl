@@ -711,10 +711,10 @@
 	<script type="text/x-kendo-template" id="notification-template">
 	#if( state == 'CREATED') {#   
 	#if (source.assignee != null ) { # #: source.assignee.name # 님에게 # } else { # 담당자가 지정되지 않은 # } # 
-	새로운 이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= soruce.issueId #" target="_blank"> #: source.summary #</a> 가 등록되었습니다.
+	새로운 이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= source.issueId #" target="_blank"> #: source.summary #</a> 가 등록되었습니다.
 	#} else {#
 	#if (source.assignee != null ) { # #: source.assignee.name # 님이 담당하는# } else { # 담당자가 지정되지 않은 # } #
-	이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= soruce.issueId #" target="_blank"> #: source.summary #</a> 가 변경되었습니다. 
+	이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= source.issueId #" target="_blank"> #: source.summary #</a> 가 변경되었습니다. 
 	#}#
 	<br/><span class="g-color-red">담당자는 꼭 확인 해주세요.</span>
 	</script>
