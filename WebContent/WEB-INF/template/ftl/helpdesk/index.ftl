@@ -76,7 +76,7 @@
 		  	'features.accounts.authenticate' :function(e){
 		  		if( !e.token.anonymous ){
 		  			observable.setUser(e.token);
-		    		}
+		    	}
 		  	}
 		});		
 		

@@ -296,9 +296,9 @@
 				$this.refreshAdditionalInfo();
 				if(  $this.issue.issueId > 0 ){ 		
 					$this.set('editable', true );
-					createIssueCommentListView($this.issue); 
-				 	createIssueAttachmentListView($this.issue); 
-				 	createAttachmentDropzone($this.issue); 
+					createIssueCommentListView($this); 
+				 	createIssueAttachmentListView($this); 
+				 	createAttachmentDropzone($this); 
 				 	$('#features').find(".nav-tabs a:first").tab('show');	 
 				}else{
 					$this.set('isNew', true );	
@@ -403,10 +403,10 @@
 	    });
 	}
 
-	function createIssueCommentListView( model, renderTo ){			
+	function createIssueCommentListView( observable, renderTo ){			
 		renderTo = renderTo || $('#issue-comment-listview');	
 		var template = community.ui.template('/data/api/v1/issues/#= issueId #/comments/list.json'); 
-		var target_url = template(model);	
+		var target_url = template(observable.issue);	
 		var listview = community.ui.listview( renderTo , {
 			dataSource : community.ui.datasource(target_url, {
 				schema: {
@@ -438,14 +438,14 @@
 		} 
 	}
 
-	function createIssueAttachmentListView ( model, renderTo ){
+	function createIssueAttachmentListView ( observable, renderTo ){
 		renderTo = renderTo || $('#issue-attachment-listview');	
 		if( !community.ui.exists( renderTo ) ){		
 			var listview = community.ui.listview( renderTo , {
 				dataSource: community.ui.datasource('/data/api/v1/attachments/list.json', {
 					transport : {
 						parameterMap :  function (options, operation){
-							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 18 , objectId : model.issueId }
+							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 18 , objectId : observable.issue.issueId }
 						}
 					},
 					pageSize: 10,
@@ -463,7 +463,7 @@
 		}
 	}
 
-	function createAttachmentDropzone( model, renderTo ){	
+	function createAttachmentDropzone( observable, renderTo ){	
 		renderTo = renderTo || $('#issue-attachment-dropzone');	
 		 	
 		// attachment dorpzone
@@ -478,7 +478,7 @@
 		var featuresTo = $('#features');  		
 		myDropzone.on("sending", function(file, xhr, formData) {
 			formData.append("objectType", 18);
-			formData.append("objectId", model.issueId);
+			formData.append("objectId", observable.issue.issueId);
 		});			
 		myDropzone.on("success", function(file, response) {
 			file.previewElement.innerHTML = "";
