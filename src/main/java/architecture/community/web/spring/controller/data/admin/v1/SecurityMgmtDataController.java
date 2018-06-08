@@ -418,13 +418,10 @@ public class SecurityMgmtDataController {
 	public Result addPermission(@PathVariable Integer objectType, @PathVariable Long objectId, @RequestBody ObjectAccessControlEntry entry ) throws UserNotFoundException, RoleNotFoundException {	
 		Result result = Result.newResult();
 		if(org.apache.commons.lang3.StringUtils.equals(entry.getGrantedAuthority(), "USER")){
-			if(StringUtils.isNullOrEmpty(entry.getGrantedAuthorityOwner()) || org.apache.commons.lang3.StringUtils.equals(entry.getGrantedAuthorityOwner(), SecurityHelper.ANONYMOUS.getUsername()) ) {
-				
-				communityAclService.addAnonymousPermission(Models.valueOf(objectType).getObjectClass(), objectId, CommunityPermissions.getPermissionByName(entry.getPermission()));
-				
+			if(StringUtils.isNullOrEmpty(entry.getGrantedAuthorityOwner()) || org.apache.commons.lang3.StringUtils.equals(entry.getGrantedAuthorityOwner(), SecurityHelper.ANONYMOUS.getUsername()) ) { 
+				communityAclService.addAnonymousPermission(Models.valueOf(objectType).getObjectClass(), objectId, CommunityPermissions.getPermissionByName(entry.getPermission())); 
 			}else {
-				User user = userManager.getUser(entry.getGrantedAuthorityOwner());
-			
+				User user = userManager.getUser(entry.getGrantedAuthorityOwner()); 
 				communityAclService.addPermission(Models.valueOf(objectType).getObjectClass(), objectId, user, CommunityPermissions.getPermissionByName(entry.getPermission()));
 			
 			}		

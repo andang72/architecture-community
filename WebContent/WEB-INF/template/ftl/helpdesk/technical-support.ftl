@@ -88,8 +88,7 @@
 		  			observable.setUser(e.token);
 		    		}
 		  	}
-		});	     
-		
+		});	   
 		
         // Topnav animation feature
  		var cbpAnimatedHeader = (function() {
@@ -323,13 +322,15 @@
 	        return;			
 		} 
 			
-	}
-	
+	} 
 	
 	function send ( data ) {
 		community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: data.projectId });
 	}
  
+ 	/**
+ 	* 코드 값에 해당하는 계약자 이름을 리턴합니다.
+ 	*/
 	function getContractorName(code){
 		var name = "";
 		if( code == null )

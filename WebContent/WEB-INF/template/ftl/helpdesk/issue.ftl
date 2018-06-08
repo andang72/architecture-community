@@ -1268,9 +1268,7 @@
 		<td class="align-middle text-right"><span class='text-muted'>#: formattedSize() #</span></td>
 	</tr>            	        	        	
 	</script>  
- 
-      		
-      		     		     		
+       		     		     		
 </body>     		 
 </html>
 </#compress>

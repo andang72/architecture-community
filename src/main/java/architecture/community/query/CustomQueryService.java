@@ -100,8 +100,6 @@ public interface CustomQueryService {
 	public List<Map<String, Object>> list(String source, String statement, List<ParameterValue> values) ;
 	
 	public abstract int update ( String statement , Object... args) ;
-
-	
 	
 	public abstract <T> T execute(DaoCallback<T> action) throws DataAccessException;	
 	

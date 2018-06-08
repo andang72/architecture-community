@@ -144,7 +144,7 @@ public class SystemMgmtDataController {
 		for (Property property : newProperties) {
 			configService.setApplicationProperty(property.getName(), property.getValue());
 		}		
-		return getApplicationProperties();
+		return newProperties;
 	}
 
 	@Secured({ "ROLE_ADMINISTRATOR" })

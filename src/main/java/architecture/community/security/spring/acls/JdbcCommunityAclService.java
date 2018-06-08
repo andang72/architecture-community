@@ -400,6 +400,7 @@ public class JdbcCommunityAclService extends JdbcMutableAclService implements Co
  		private boolean createImage = false;
  		private boolean createComment = false;
  		private boolean readComment = false;
+ 		
 		public boolean isRead() {
 			return read;
 		}
