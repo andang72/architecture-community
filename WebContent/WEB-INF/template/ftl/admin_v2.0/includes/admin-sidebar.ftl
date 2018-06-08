@@ -17,7 +17,7 @@
 			<ul id="sub_menu_1" class="u-sidebar-navigation-v1-menu u-side-nav--second-level-menu mb-0">
 				<!-- Property -->
 				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
-					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-properties" data-page="manage-properties"> 
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-properties_v2" data-page="manage-properties_v2"> 
 						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
 							<i class="community-admin-layout-list-thumb"></i>
 						</span> 
