@@ -496,37 +496,41 @@
 	<#include "includes/user-top-navbar.ftl">
 	<!-- NAVBAR END -->   
 	<section class="u-bg-overlay g-bg-cover g-bg-size-cover g-bg-bluegray-opacity-0_1--after dzsparallaxer auto-init height-is-based-on-content use-loading mode-scroll loaded dzsprx-readyall" data-options='{direction: "reverse", settings_mode_oneelement_max_offset: "150"}' >      
-    		<div class="divimage dzsparallaxer--target w-100 g-bg-pos-bottom-center" style="height: 120%; background-image: url(  /images/bg/endless_streets_by_andreasrocha-d3fhbhg.jpg );"></div>
-      <div class="container text-center g-bg-cover__inner g-py-150">
+	<div class="divimage dzsparallaxer--target w-100 g-bg-pos-bottom-center" style="height: 120%; background-image: url(  /images/bg/endless_streets_by_andreasrocha-d3fhbhg.jpg );"></div>
+      <div class="container text-center g-bg-cover__inner g-pt-150">
         <div class="row justify-content-center">
           <div class="col-lg-6">
             <div class="mb-5">
               <h1 class="g-color-white g-font-size-60 mb-4"><#if __page?? >${__page.title}</#if></h1>
               <h2 class="g-color-white g-font-weight-200 g-font-size-25 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
             </div>
-            <!-- Promo Blocks - Input -->
-			<p data-bind="invisible:currentUser.anonymous" style="display:none;" class="g-mb-20">				
-				<a class="btn btn-lg u-btn-blue g-mr-10 g-mt-25 g-font-weight-200" href="#" role="button" role="button" 
-					data-toggle="tooltip" data-placement="bottom" data-original-title="새로운 이슈를 등록합니다." 
-					data-action="create" data-action-target="issue" data-object-id="0" data-bind="disabled:currentUser.anonymous, enabled: enabled" >기술지원요청하기</a>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+        	<div class="col-lg-3" data-bind="invisible:currentUser.anonymous" style="display:none;">
+ 				<a class="btn btn-lg rounded-0 btn-block u-btn-blue g-font-weight-200 g-mt-5 " href="#" role="button" role="button" 
+					data-toggle="tooltip" data-placement="top" data-original-title="새로운 이슈를 등록합니다." 
+					data-action="create" data-action-target="issue" data-object-id="0" data-bind="disabled:currentUser.anonymous, enabled: enabled" >기술지원요청하기</a>       	
+        	</div>
+        	<div class="col-lg-3">
 				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
-				<button class="btn btn-lg u-btn-red g-mr-10 g-mt-25 g-font-weight-200" type="button"  role="button" 
-					data-toggle="tooltip" data-placement="bottom" data-original-title="이번주에 내가 처리할 업무를 확인합니다." 
-					data-bind="click: showAllOpenIssue" >금주 나에게 배정된 업무 확인하기</button>
-	            <button class="btn btn-lg u-btn-purple g-mr-10 g-mt-25 g-font-weight-200" type="button"  role="button" 
+				<button class="btn btn-lg rounded-0 btn-block u-btn-red g-mr-10 g-mt-5 g-font-weight-200" type="button"  role="button" 
+					data-toggle="tooltip" data-placement="top" data-original-title="이번주에 내가 처리할 업무를 확인합니다." 
+					data-bind="click: showAllOpenIssue" >금주 나에게 배정된 업무 확인하기</button>                          				                				
+				</#if>         	
+        	</div>
+        	<div class="col-lg-3">
+				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
+	            <button class="btn btn-lg rounded-0 btn-block  u-btn-purple g-mr-10 g-mt-5 g-font-weight-200" type="button"  role="button" 
 	            		data-toggle="tooltip" data-placement="top" data-original-title="기간별 이슈 처리현황을 확인합니다." 
 	            		data-object-id="0" data-action="overviewstats">통계</button>	                            				                				
-				</#if> 
-			</p>     
-			
-			<p data-bind="invisible:currentUser.anonymous"  >
-			<button  class="btn btn-lg u-btn-darkred g-mr-10 g-mt-25 g-font-weight-200 " data-bind="invisible: notificationEnabled, click:requestPermission"
+				</#if>         	
+        	</div>
+        	<div class="col-lg-3" data-bind="invisible:currentUser.anonymous" style="display:none;"> 
+			<button  class="btn btn-lg btn-block rounded-0 u-btn-darkred g-mr-10 g-mt-5 g-font-weight-200 " data-bind="invisible: notificationEnabled, click:requestPermission"
 				data-toggle="tooltip" data-placement="top" data-original-title="새로운 이슈가 등록되거나 삭제되면 알림을 받을 수 있습니다." 
-				>데스크탑 알림 권한 요청</button>
-			</p>
-			
-			<!-- End Promo Blocks - Input -->
-          </div>
+				>데스크탑 알림 권한 요청</button> 
+        	</div>
         </div>
       </div>
     </section>
