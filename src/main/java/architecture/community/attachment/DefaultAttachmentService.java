@@ -16,8 +16,13 @@
 
 package architecture.community.attachment;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,7 +38,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
-import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.rendering.PDFRenderer; 
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -292,7 +299,9 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 	
 
 	public boolean hasThumbnail(Attachment attachment){
-		if (StringUtils.endsWithIgnoreCase(attachment.getContentType(), "pdf") || StringUtils.startsWithIgnoreCase(attachment.getContentType(), "image") ) 
+		if (StringUtils.endsWithIgnoreCase(attachment.getContentType(), "pdf") || 
+			StringUtils.endsWithIgnoreCase(attachment.getContentType(), "presentation") || 
+			StringUtils.startsWithIgnoreCase(attachment.getContentType(), "image") ) 
 			return true;
 		return false;
 	}
@@ -307,6 +316,7 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 	}
 
 	protected File getThumbnailFromCacheIfExist(Attachment attach, ThumbnailImage thumbnail ) throws IOException {
+		
 		log.debug("thumbnail generation {} x {} ... ", thumbnail.getWidth(), thumbnail.getHeight());
 		File dir = getAttachmentCacheDir();
 		File file = new File(dir, toThumbnailFilename(attach, thumbnail.getWidth(), thumbnail.getHeight()));
@@ -326,6 +336,31 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 			ImageIO.write(Thumbnails.of(image).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage(), "png", file);
 			thumbnail.setSize(file.length());
 			return file;
+		} else if (StringUtils.endsWithIgnoreCase(attach.getContentType(), "presentation")) {
+			log.debug("extracting image from pptx");
+			XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(originalFile));
+			Dimension pgsize = ppt.getPageSize();
+			log.debug("slide width x height : {}" , pgsize.toString());
+
+
+			 //render
+			java.util.List<XSLFSlide> slide = ppt.getSlides();
+			
+			log.debug("slide pages : {}" , slide.size() );
+			BufferedImage img = new BufferedImage( pgsize.width, pgsize.height, BufferedImage.TYPE_INT_RGB);
+			Graphics2D graphics = img.createGraphics();			
+			
+			 //clear the drawing area
+			graphics.setPaint(Color.white);
+			graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height )); 
+			slide.get(0).draw(graphics);  
+			
+			ImageIO.write(Thumbnails.of(img).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage(), "png", file);
+			
+			//ImageIO.write(img, "png", file);
+			
+			log.debug("done." );
+			
 		} else if (StringUtils.startsWithIgnoreCase(attach.getContentType(), "image")) {
 			BufferedImage originalImage = ImageIO.read(originalFile);
 			if (originalImage.getHeight() < thumbnail.getHeight() || originalImage.getWidth() < thumbnail.getWidth()) {
@@ -374,15 +409,11 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 			}
 			attachmentDao.move(objectType, objectId, targetObjectType, targetObjectId);
 		}
-	}
-
-
+	} 
 
 	@Override
 	public int getAttachmentCount(int objectType, long objectId) {		
 		return attachmentDao.getAttachmentCount(objectType, objectId);
-	}
-
-
+	} 
 
 }

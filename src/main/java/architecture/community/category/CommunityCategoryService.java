@@ -89,6 +89,18 @@ public class CommunityCategoryService implements CategoryService {
 		return list;
 	}
 
+	public Category getCategory(Board board) {
+		
+		long categoryId = board.getCategoryId();
+		if( categoryId > 0) {
+			try {
+				return getCategory(categoryId);
+			} catch (CategoryNotFoundException e) {
+			}
+		}
+		return null;
+	}
+	
 	public Category getCategory(Page page) {
 		Object val = page.getProperties().get("categoryId");
 		long categoryId = 0 ;

@@ -248,8 +248,21 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public ItemList getProjects(@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {
-		List<Project> list = projectService.getProjects();
-		return new ItemList(list, list.size());
+
+		dataSourceRequest.setStatement("COMMUNITY_WEB.COUNT_PROJECT_IDS");
+		int totalCount = customQueryService.queryForObject(dataSourceRequest, Integer.class);
+		
+		dataSourceRequest.setStatement("COMMUNITY_WEB.SELECT_PROJECT_IDS");
+		List<Long> items = customQueryService.list(dataSourceRequest, Long.class);
+		
+		List<Project> projects = new ArrayList<Project>(items.size());
+		for( Long projectId : items ) {
+			try {
+				projects.add(projectService.getProject(projectId));
+			} catch (NotFoundException e) {
+			}
+		}
+		return new ItemList(projects, totalCount); 
 	}
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })

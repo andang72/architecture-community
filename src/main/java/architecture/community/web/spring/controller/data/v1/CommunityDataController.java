@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import architecture.community.announce.Announce;
 import architecture.community.announce.AnnounceNotFoundException;
 import architecture.community.announce.AnnounceService;
@@ -47,6 +50,7 @@ import architecture.community.board.BoardThread;
 import architecture.community.board.BoardThreadNotFoundException;
 import architecture.community.board.BoardView;
 import architecture.community.board.DefaultBoardMessage;
+import architecture.community.board.DefaultBoardThread;
 import architecture.community.board.MessageTreeWalker;
 import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetService;
@@ -58,10 +62,11 @@ import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.model.Models;
+import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.query.CustomQueryService;
 import architecture.community.security.spring.acls.CommunityAclService;
-import architecture.community.security.spring.acls.JdbcCommunityAclService;
 import architecture.community.user.User;
+import architecture.community.util.CommunityContextHelper;
 import architecture.community.util.SecurityHelper;
 import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.model.ItemList;
@@ -337,7 +342,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		List<BoardThread> threads = new ArrayList<BoardThread>(items.size());
 		for( Long id : items ) {
 			try {
-				threads.add(boardService.getBoardThread(id));
+				threads.add( new UnmutableMessageThread ( boardService.getBoardThread(id) ));
 			} catch (NotFoundException e) {
 			}
 		}
@@ -345,6 +350,191 @@ public class CommunityDataController extends AbstractCommunityDateController {
 	}	
 	
 
+	public class UnmutableMessage implements BoardMessage{
+		
+		private BoardMessage message ;
+		
+		protected UnmutableMessage(architecture.community.board.BoardMessage message) {
+			this.message = message;
+		}
+
+		
+		public int getObjectType() {
+			return message.getObjectType();
+		}
+
+		@Override
+		public long getObjectId() {
+			return message.getObjectId();
+		}
+
+		@Override
+		public Map<String, String> getProperties() { 
+			return message.getProperties();
+		}
+
+		@Override
+		public void setProperties(Map<String, String> properties) {
+			message.setProperties(properties);
+		}
+
+		@Override
+		public User getUser() { 
+			return message.getUser();
+		}
+
+		@Override
+		public long getParentMessageId() {
+			return message.getParentMessageId();
+		}
+
+		@Override
+		public long getMessageId() {
+			// TODO Auto-generated method stub
+			return message.getMessageId();
+		}
+
+		@Override
+		public long getThreadId() {
+			return message.getThreadId();
+		}
+
+		@Override
+		public String getSubject() {
+			return message.getSubject();
+		}
+
+		@Override
+		public String getBody() {
+			return null;
+		}
+
+		@Override
+		public void setSubject(String subject) {
+			message.setSubject(subject);
+		}
+
+		@Override
+		public void setBody(String body) {
+			message.setBody(body);
+		}
+
+		@Override
+		public void setKeywords(String keywords) {
+			message.setKeywords(keywords);
+		}
+
+		@Override
+		public String getKeywords() {
+			return message.getKeywords();
+		}
+
+		@JsonSerialize(using = JsonDateSerializer.class)
+		public Date getCreationDate() { 
+			return message.getCreationDate();
+		}
+
+		@JsonSerialize(using = JsonDateSerializer.class)
+		public Date getModifiedDate() { 
+			return message.getModifiedDate();
+		}
+ 
+		public void setCreationDate(Date creationDate) { 
+		}
+ 
+		public void setModifiedDate(Date modifiedDate) { 
+		} 
+	}
+	
+	public class UnmutableMessageThread implements BoardThread { 
+		
+		private BoardThread thread ;
+ 
+
+		public UnmutableMessageThread(BoardThread thread) {
+			this.thread = thread;
+		}
+
+		@Override
+		public int getObjectType() { 
+			return thread.getObjectType();
+		}
+
+		@Override
+		public long getObjectId() { 
+			return thread.getObjectId();
+		}
+
+		@Override
+		public Map<String, String> getProperties() { 
+			return thread.getProperties();
+		}
+
+		@Override
+		public void setProperties(Map<String, String> properties) {
+			 
+		}
+
+		@Override
+		public long getThreadId() { 
+			return thread.getThreadId();
+		}
+
+		@JsonSerialize(using = JsonDateSerializer.class)
+		public Date getCreationDate() { 
+			return thread.getCreationDate();
+		}
+
+		@Override
+		public void setCreationDate(Date creationDate) { 
+			
+		}
+
+		@JsonSerialize(using = JsonDateSerializer.class)
+		public Date getModifiedDate() { 
+			return thread.getModifiedDate();
+		}
+
+		@Override
+		public void setModifiedDate(Date modifiedDate) { 
+			
+		}
+
+		@Override
+		public BoardMessage getLatestMessage() { 
+			return new UnmutableMessage( thread.getLatestMessage( ) );
+		}
+
+		@Override
+		public void setLatestMessage(BoardMessage latestMessage) { 
+			
+		}
+
+		@Override
+		public BoardMessage getRootMessage() { 
+			return new UnmutableMessage(thread.getRootMessage());
+		}
+
+		@Override
+		public void setRootMessage(BoardMessage rootMessage) { 
+			
+		}
+		
+
+		public int getViewCount(){
+			return ((DefaultBoardThread)thread).getViewCount();
+		}
+		
+	    public int getMessageCount()
+	    {
+		     return ((DefaultBoardThread)thread).getMessageCount();
+	    }
+
+		
+	}
+	
+	
+	
 	/**
 	 * 특정 스레드에 해당하는 게시물 목록 
 	 * 
@@ -361,8 +551,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		
 		return thread ;
 	}	
-	
-	
+	 
 
 	/**
 	 * 특정 스레드에 해당하는 게시물 목록 
@@ -387,9 +576,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		List<BoardMessage> list = getProjectView(skip, page, pageSize, walker.getChildIds(thread.getRootMessage()));
 		return new ItemList(list, totalSize);
 	}	
-	
-	
-	
+	 
 	
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/messages/save-or-update.json", method = { RequestMethod.POST })

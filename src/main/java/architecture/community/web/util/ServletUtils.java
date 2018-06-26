@@ -22,6 +22,14 @@ public class ServletUtils {
 	
 	private static final ISO8601DateFormat formatter = new ISO8601DateFormat();
 
+	public static Long getStringAsLong(String value) {
+		try {
+			return Long.parseLong(value);
+		} catch (NumberFormatException e) { }
+		
+		return 0L;
+	}
+	
 	/**
 	 * 한글 처리를 위하여 response의 Content Type 속성을 변경하는 유틸리티. 
 	 * 

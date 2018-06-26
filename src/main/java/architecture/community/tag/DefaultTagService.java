@@ -52,8 +52,7 @@ public class DefaultTagService implements TagService {
  
 	private final TagHelper tagHelper = new TagHelper(this);
 
-	public DefaultTagService() {
-		// TODO 자동 생성된 생성자 스텁
+	public DefaultTagService() { 
 	}
 	
 	public void initialize() { 
@@ -61,8 +60,7 @@ public class DefaultTagService implements TagService {
 
 	public void destroy() { 
 	}
-
-	@Override
+ 
 	public ContentTag createTag(String name) {
 		try {
 			return getTag(name);
@@ -102,8 +100,7 @@ public class DefaultTagService implements TagService {
 			}
 		}
 	}
-
-	@Override
+ 
 	public ContentTag getTag(long tagId) throws TagNotFoundException {
 		ContentTag tag;
 		if (tagCache.get(tagId) != null) {
@@ -118,8 +115,7 @@ public class DefaultTagService implements TagService {
 		}
 		return tag;
 	}
-
-	@Override
+ 
 	public void addTag(ContentTag tag, int objectType, long objectId) throws UnAuthorizedException {
 		if (objectType < 0 || objectId < 0L)
 			throw new IllegalStateException();
@@ -132,8 +128,7 @@ public class DefaultTagService implements TagService {
 			}
 		}
 		tagDao.addTag(tag.getTagId(), objectType, objectId);
-		// event.. fire
-
+		// event.. fire 
 	}
 
 	private Object getLock(int objectType, long objectId) {
@@ -165,13 +160,11 @@ public class DefaultTagService implements TagService {
 	public void setTags(String tags, int objectType, long objectId) {
 		try {
 			tagHelper.setTags(tags, objectType, objectId);
-		} catch (UnAuthorizedException e) {
-			// TODO Auto-generated catch block
+		} catch (UnAuthorizedException e) { 
 			e.printStackTrace();
 		}
 	}
-
-	@Override
+ 
 	public List<ContentTag> getTags(int objectType, long objectId) {
 		List<Long> tagIds = getTagIds(objectType, objectId);
 		List<ContentTag> tags = new ArrayList<ContentTag>(tagIds.size());
@@ -262,10 +255,8 @@ public class DefaultTagService implements TagService {
 	}
 
 	
-	public TagDelegator getTagDelegator(Category category) {
-		
-		return new DefaultTagDelegator( Models.CATEGORY.getObjectType(), category.getCategoryId(), this);
-		
+	public TagDelegator getTagDelegator(Category category) { 
+		return new DefaultTagDelegator( Models.CATEGORY.getObjectType(), category.getCategoryId(), this); 
 	}
 	
 }

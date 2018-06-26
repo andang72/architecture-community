@@ -56,6 +56,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 
 		User user = null;
 		if (template.getUserId() > 0L) {
+			log.debug("get user by {}", template.getUserId());
 			user = getUserInCache(template.getUserId());
 			if (user == null) {
 				log.debug("user {} cache does not exist", template.getUserId() );
@@ -70,11 +71,12 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		} 
 		
 		if (user == null && !StringUtils.isNullOrEmpty(template.getUsername())) {
+			
 			String nameToUse = template.getUsername();
-			long userIdToUse = getUserIdInCache(nameToUse);
-			log.debug("found {} in cache", template.getUserId() );
+			long userIdToUse = getUserIdInCache(nameToUse); 
+			log.debug("find cache by username {} > {}", nameToUse, userIdToUse );
 			if (userIdToUse > 0L) {
-				user = getUserInCache(template.getUserId());
+				user = getUserInCache(userIdToUse);
 			}
 			if (user == null) {
 				if (!caseSensitive) {

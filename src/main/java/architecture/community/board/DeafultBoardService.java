@@ -162,8 +162,18 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		evictCaches(board);
 		boardDao.saveOrUpdate(board);
 	}
+	
+	public boolean exist(long boardId) {
+		if( boardId > 0L ) {
+			try {
+				getBoardById( boardId );
+				return true;
+			} catch (BoardNotFoundException e) {
+			}
+		}
+		return false;
+	}
 
- 
 	public Board getBoardById(long boardId) throws BoardNotFoundException {				
 		
 		Board board = getBoardInCache(boardId);		
@@ -480,7 +490,5 @@ public class DeafultBoardService extends EventSupport implements BoardService {
 		messageTreeWalkerCache.put(new Element(thread.getThreadId(), treeWalker ));
 		return treeWalker;
 	}
-
-
 
 }

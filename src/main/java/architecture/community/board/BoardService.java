@@ -17,6 +17,7 @@ public interface BoardService {
 	
 	public abstract List<Board> getAllBoards();	
 	
+	public abstract boolean exist (long boardId);
 	
  	public abstract BoardMessage createMessage(int containerType, long containerId);
 	
