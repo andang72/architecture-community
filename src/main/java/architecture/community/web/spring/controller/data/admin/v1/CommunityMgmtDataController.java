@@ -294,6 +294,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 				boardToUse.setContractor(project.getContractor());
 			
 			boardToUse.setMaintenanceCost(project.getMaintenanceCost());
+			boardToUse.setEnabled( project.isEnabled());
 			
 			if( project.getStartDate()!= null)
 				boardToUse.setStartDate(project.getStartDate());
@@ -318,6 +319,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 			if( project.getEndDate()!= null)
 				boardToUse.setEndDate(project.getEndDate());
 			boardToUse.setMaintenanceCost(project.getMaintenanceCost());
+			boardToUse.setEnabled( project.isEnabled());
 			projectService.saveOrUpdateProject(boardToUse);
 		}		
 		return boardToUse;

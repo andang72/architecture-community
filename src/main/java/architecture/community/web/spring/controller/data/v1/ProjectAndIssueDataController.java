@@ -95,7 +95,7 @@ import architecture.ee.util.StringUtils;
  */
 @Controller("community-data-v1-issues-controller")
 @RequestMapping("/data/api/v1")
-public class IssueDataController extends AbstractCommunityDateController  {
+public class ProjectAndIssueDataController extends AbstractCommunityDateController  {
 
 	@Inject
 	@Qualifier("projectService")
@@ -125,7 +125,7 @@ public class IssueDataController extends AbstractCommunityDateController  {
 	@Qualifier("customQueryService")
 	private CustomQueryService customQueryService;
 	
-	public IssueDataController() {
+	public ProjectAndIssueDataController() {
 		
 	}
 	
@@ -258,6 +258,10 @@ public class IssueDataController extends AbstractCommunityDateController  {
 		issueToUse.setStatus(newIssue.getStatus());
 		issueToUse.setResolution(newIssue.getResolution());		
 		issueToUse.setPriority(newIssue.getPriority());	
+		issueToUse.setOriginalEstimate(newIssue.getOriginalEstimate());
+		issueToUse.setEstimate(newIssue.getEstimate());
+		issueToUse.setTimeSpent(newIssue.getTimeSpent());
+		
 		projectService.saveOrUpdateIssue(issueToUse);
 		if(descriptionUpdate) {		
 			customQueryService.execute(new DaoCallback<Integer>() {

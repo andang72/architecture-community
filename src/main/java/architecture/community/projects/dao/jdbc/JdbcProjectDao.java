@@ -49,6 +49,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			board.setMaintenanceCost(rs.getDouble("MAINTENANCE_COST"));
 			board.setStartDate(rs.getDate("START_DATE"));
 			board.setEndDate(rs.getDate("END_DATE"));
+			board.setEnabled(rs.getInt("PROJECT_ENABLED") == 1);
 			board.setCreationDate(rs.getDate("CREATION_DATE"));
 			board.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
 			return board;
@@ -74,6 +75,10 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			issue.setRepoter(new UserTemplate(rs.getLong("REPOTER")));
 			
 			issue.setDueDate(rs.getDate("DUE_DATE"));
+			
+			issue.setOriginalEstimate(rs.getLong("TIMEORIGINALESTIMATE"));
+			issue.setEstimate(rs.getLong("TIMEESTIMATE"));
+			issue.setTimeSpent(rs.getLong("TIMESPENT"));
 			
 			issue.setCreationDate(rs.getDate("CREATION_DATE"));
 			issue.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
@@ -116,6 +121,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getMaintenanceCost()),					
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getEndDate()),
+					new SqlParameterValue(Types.NUMERIC, toUse.isEnabled() ? 1 : 0 ),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));		
 			
@@ -130,6 +136,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getMaintenanceCost()),	
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getEndDate()),
+					new SqlParameterValue(Types.NUMERIC, toUse.isEnabled() ? 1 : 0 ),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getProjectId())
 					);		
@@ -199,6 +206,11 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
 					 
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
+					
+					new SqlParameterValue(Types.NUMERIC, toUse.getOriginalEstimate() == null ? 0L: toUse.getOriginalEstimate()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getEstimate() == null ? 0L: toUse.getEstimate()),	
+					new SqlParameterValue(Types.NUMERIC, toUse.getTimeSpent() == null ? 0L: toUse.getTimeSpent()),	
+					
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));					
 		} else {
@@ -216,6 +228,10 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
 					new SqlParameterValue(Types.NUMERIC, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
+
+					new SqlParameterValue(Types.NUMERIC, toUse.getEstimate() == null ? 0L: toUse.getEstimate()),	
+					new SqlParameterValue(Types.NUMERIC, toUse.getTimeSpent() == null ? 0L: toUse.getTimeSpent()),	
+					
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId())
 			);		

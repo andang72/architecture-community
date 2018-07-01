@@ -31,6 +31,8 @@ public class Project {
 	
 	private Double maintenanceCost;
 	
+	private boolean enabled;
+	
 	public Project() {
 		this.projectId = -1L;
 		this.name = null;
@@ -42,6 +44,7 @@ public class Project {
 		this.contractState = "" ;
 		this.maintenanceCost = 0D ;
 		this.contractor = null;
+		this.enabled = true;
 	}
 
 	public Project(long projectId) {
@@ -55,6 +58,7 @@ public class Project {
 		this.contractState = "" ;
 		this.maintenanceCost = 0D ;
 		this.contractor = null;
+		this.enabled = true;
 	}
 
 	public String getContractor() {
@@ -143,6 +147,14 @@ public class Project {
 
 	public void setMaintenanceCost(Double maintenanceCost) {
 		this.maintenanceCost = maintenanceCost;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 }

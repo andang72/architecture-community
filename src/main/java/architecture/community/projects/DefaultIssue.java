@@ -63,6 +63,11 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	
 	private Date modifiedDate;
 		
+	private Long estimate;
+	private Long timeSpent;
+	private Long originalEstimate ;
+	
+	
 	public DefaultIssue() {
 		super(-1, -1L);
 		this.issueId = -1L;
@@ -79,8 +84,10 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.resolutionName = null;
 		this.status = null;
 		this.statusName = null;
+		this.estimate = 0L;
+		this.timeSpent = 0L;
+		this.originalEstimate = 0L;
 	}
-
 	
 	public DefaultIssue(long issueId) {
 		super(-1, -1L);
@@ -132,6 +139,9 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.status = null;
 		this.statusName = null;
 		this.resolutionDate = null;
+		this.estimate = 0L;
+		this.timeSpent = 0L;
+		this.originalEstimate = 0L;		
 	}
 	
 	
@@ -331,6 +341,32 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.resolutionDate = resolutionDate;
 	}
 	
+	
+	
+	public Long getEstimate() {
+		return estimate;
+	}
+
+	public void setEstimate(Long estimate) {
+		this.estimate = estimate;
+	}
+
+	public Long getTimeSpent() {
+		return timeSpent;
+	}
+
+	public void setTimeSpent(Long timeSpent) {
+		this.timeSpent = timeSpent;
+	}
+
+	public Long getOriginalEstimate() {
+		return originalEstimate;
+	}
+
+	public void setOriginalEstimate(Long originalEstimate) {
+		this.originalEstimate = originalEstimate;
+	}
+
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("DefaultIssue [");

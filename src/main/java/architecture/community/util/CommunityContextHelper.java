@@ -16,6 +16,7 @@ import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.image.ImageService;
 import architecture.community.menu.MenuService;
 import architecture.community.page.PageService;
+import architecture.community.projects.ProjectService;
 import architecture.community.query.CustomQueryService;
 import architecture.community.tag.TagService;
 import architecture.community.viewcount.ViewCountService;
@@ -67,6 +68,10 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 		return getComponent(AttachmentService.class);
 	}
 
+	public static ProjectService getProjectService(){
+		return getComponent(ProjectService.class);
+	}
+	
 	public static ImageService getImageService(){
 		return getComponent(ImageService.class);
 	}

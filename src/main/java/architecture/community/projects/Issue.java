@@ -63,4 +63,17 @@ public interface Issue extends ModelObjectAware {
 
 	public abstract void setStatus(String status) ;
 	
+	public abstract Long getOriginalEstimate();
+	
+    public abstract Long getEstimate();
+
+    public abstract Long getTimeSpent();
+ 
+    public abstract void setOriginalEstimate(Long long1);
+
+    public abstract void setTimeSpent(Long long1);
+
+    public abstract void setEstimate(Long long1);    
+    
+	
 }
