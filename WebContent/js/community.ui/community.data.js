@@ -454,6 +454,7 @@
 			projectId: { type: "number", defaultValue: -1 },			
 			name: { type: "string", defaultValue: "" },			
 			summary:{ type: "string", defaultValue: "" },
+			enabled: { type: "boolean", defaultValue: true },
 			contractState: { type: "string", defaultValue: "" },
 			contractor: { type: "string", defaultValue: "" },
 			maintenanceCost : { type: "number", defaultValue: 0 },
@@ -474,6 +475,7 @@
 		    	target.set("endDate", this.get("endDate") );		
 		    	target.set("modifiedDate",this.get("modifiedDate") );
 		    	target.set("creationDate", this.get("creationDate") );
+		    	target.set("enabled", this.get("enabled") );
 		    	if( typeof this.get("properties") === 'object' )
 		    		target.set("properties", this.get("properties") );
 		}
@@ -497,6 +499,9 @@
 			status : { type: "string", defaultValue: "001"},
 			statusName: { type: "string", defaultValue: null },				
 			dueDate:{ type: "date", defaultValue: null },	
+			estimate: { type: "number", defaultValue: 0},	
+			timeSpent: { type: "number", defaultValue: 0},	
+			originalEstimate: { type: "number", defaultValue: 0},	
 			repoter:{ type: "object", defaultValue: new community.model.User() },
 			assignee:{ type: "object", defaultValue: new community.model.User() },
 			creationDate:{ type: "date" },			
@@ -521,6 +526,9 @@
 		    	target.set("modifiedDate",this.get("modifiedDate") );
 		    	target.set("creationDate", this.get("creationDate") );
 		    	target.set("resolutionDate", this.get("resolutionDate") );
+		    	target.set("timeSpent", this.get("timeSpent") );
+		    	target.set("estimate", this.get("estimate") );
+		    	target.set("originalEstimate", this.get("originalEstimate") );
 		    	if( typeof this.get("repoter") === 'object' )
 		    		target.set("repoter", this.get("repoter") );
 		    	if( typeof this.get("assignee") === 'object' )
@@ -668,6 +676,13 @@
 		return displayName ;
 	}
 	
+	function getFormattedNumber(num, format){
+		format = format || '###,##';		
+		if( typeof(num) == 'string')			
+			return kendo.toString(new Number( num ) , format);
+		return kendo.toString(num, format);
+	}
+	
 	function getFormattedDate(date, format ){		
 		format = format || "g";		
 		if( typeof(date) == 'string')			
@@ -750,6 +765,7 @@
 		uploadImageAndInsertLink: uploadImageAndInsertLink,
 		getImageUrl : getImageUrl,
 		getFormattedDate : getFormattedDate,
+		getFormattedNumber : getFormattedNumber,
 		getAttachmentUrl : getAttachmentThumbnailUrl,
 		getAttachmentThumbnailUrl :getAttachmentThumbnailUrl,
 		getUserDisplayName : getUserDisplayName ,

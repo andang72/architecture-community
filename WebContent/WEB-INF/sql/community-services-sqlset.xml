@@ -123,6 +123,9 @@
 	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
 	</#if>
  	</#list>)</#if>	
+ 	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
+ 	ORDER BY T2.MODIFIED_DATE DESC
+ 	</#if>
     ]]></dynamic></sql-query>	
 	
 	<!--  ====================================  -->

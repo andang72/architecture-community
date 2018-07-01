@@ -213,6 +213,15 @@
 			return renderTo.data("kendoValidator");
 		}
 		
+		function mediaplayer(renderTo, options){
+			options = options || {};		
+			if(!renderTo.data("kendoMediaPlayer")){			
+				 renderTo.kendoMediaPlayer(options);
+			}		
+			return renderTo.data("kendoMediaPlayer");
+		}
+
+
 		function grid(renderTo, options){
 			options = options || {};		
 			if(!renderTo.data("kendoGrid")){			
@@ -220,6 +229,7 @@
 			}		
 			return renderTo.data("kendoGrid");
 		}
+
 		
 	    function listbox ( renderTo, options ){
 	    		if(!renderTo.data("kendoListBox")){			
@@ -527,6 +537,7 @@
 			error : error,
 			defined : defined,
 			send : redirect,
+			alert : kendo.alert ,
 			datasource : datasource,
 			datasource_v2 : datasource_v2, 
 			datasource_v3 : datasource_v3,
@@ -535,6 +546,7 @@
 			listview : listview,
 			listbox : listbox,
 			validator: validator,
+			mediaplayer :mediaplayer,
 			grid :  grid,
 			pager :  pager,
 			fx : kendo.fx,

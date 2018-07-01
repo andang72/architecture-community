@@ -21,6 +21,9 @@
 		SUMMARY,
 		DESCRIPTION,
 		DUE_DATE,		
+		TIMEORIGINALESTIMATE,
+		TIMEESTIMATE,
+		TIMESPENT,
 		CREATION_DATE,
 		MODIFIED_DATE	
  	FROM REP_ISSUE 
@@ -37,7 +40,7 @@
  	<#elseif item.field == "END_DATE">
  	${item.logic} ( ( DUE_DATE is null AND CREATION_DATE <= '${item.value}' ) OR ( DUE_DATE <= '${item.value}' ) )
  	<#else>
- 	${item.logic} ${item.field}<#if item.operator == "eq" ><#if item.value??>=<#else> IS NULL</#if><#elseif item.operator == "neq"><#if item.value??>!=<#else> IS NOT NULL</#if><#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if><#if item.value?? >'${item.value}'</#if>
+ 	${item.logic} ${item.field}<#if item.operator == "eq" ><#if item.value??>=<#else> IS NULL</#if><#elseif item.operator == "contains" && item.value?? > LIKE '%${item.value}%'<#elseif item.operator == "neq"><#if item.value??>!=<#else> IS NOT NULL</#if><#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if><#if item.value?? && item.operator != "contains" >'${item.value}'</#if>
  	</#if></#list></#if>
  	 ]]></dynamic></sql-query>		
 
@@ -50,9 +53,11 @@
  	<#elseif item.field == "END_DATE">
  	${item.logic} ( ( DUE_DATE is null AND CREATION_DATE <= '${item.value}' ) OR ( DUE_DATE <= '${item.value}' ) )
  	<#else>
- 	${item.logic} ${item.field}<#if item.operator == "eq" ><#if item.value??>=<#else> IS NULL</#if><#elseif item.operator == "neq"><#if item.value??>!=<#else> IS NOT NULL</#if><#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if><#if item.value?? >'${item.value}'</#if>
+ 	${item.logic} ${item.field}<#if item.operator == "eq" ><#if item.value??>=<#else> IS NULL</#if><#elseif item.operator == "contains" && item.value?? > LIKE '%${item.value}%'<#elseif item.operator == "neq"><#if item.value??>!=<#else> IS NOT NULL</#if><#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if><#if item.value?? && item.operator != "contains" >'${item.value}'</#if>
  	</#if></#list></#if>
+ 	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
  	ORDER BY MODIFIED_DATE DESC
+ 	</#if>
  	 ]]></dynamic></sql-query>	
 
  	<sql-query name="INSERT_ISSUE" description="INSERT_ISSUE"><![CDATA[    	
@@ -71,9 +76,12 @@
 	 	ASSIGNEE,
 	 	REPOTER,
 	 	DUE_DATE,
+	 	TIMEORIGINALESTIMATE,
+		TIMEESTIMATE,
+		TIMESPENT,
 		CREATION_DATE,
 		MODIFIED_DATE
-	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
     ]]></sql-query>	
  
 					
@@ -90,7 +98,9 @@
 	 	DESCRIPTION = ?,
 	 	ASSIGNEE = ?,
 	 	REPOTER = ?,
-	 	DUE_DATE = ?,
+	 	DUE_DATE = ?, 
+		TIMEESTIMATE = ?,
+		TIMESPENT = ?,
 	 	MODIFIED_DATE = ?
  	WHERE ISSUE_ID = ? 
     ]]></sql-query>	        		
@@ -106,7 +116,7 @@
  	<#if data.TILL_THIS_WEEK??> AND ( to_char( T1.DUE_DATE, 'yyyyMMdd') <= '${data.TILL_THIS_WEEK}' or ( T1.DUE_DATE is null AND to_char( T1.CREATION_DATE, 'yyyyMMdd') <= '${data.TILL_THIS_WEEK}' ) )</#if>
  	<#if filter??><#list filter.filters as item >
  	<#if item.filters?has_content >
- 	${item.logic} ( 	<#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
+ 	${item.logic} ( <#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
  	<#else>
 	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE is null </#if>
  	<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
@@ -141,7 +151,7 @@
  	<#if data.TILL_THIS_WEEK??>AND ( to_char( T1.DUE_DATE, 'yyyyMMdd') <= '${data.TILL_THIS_WEEK}' or ( T1.DUE_DATE is null AND to_char( T1.CREATION_DATE, 'yyyyMMdd') <= '${data.TILL_THIS_WEEK}' ) )</#if>
  	<#if filter??><#list filter.filters as item >
  	<#if item.filters?has_content >
- 	${item.logic} ( 	<#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
+ 	${item.logic} ( <#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
  	<#else>
 	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE is null </#if>
  	<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
@@ -162,6 +172,7 @@
 		MAINTENANCE_COST,
 		START_DATE,
 		END_DATE,	
+		PROJECT_ENABLED,
 		CREATION_DATE,
 		MODIFIED_DATE	
  	FROM REP_PROJECT 
@@ -179,9 +190,10 @@
 		MAINTENANCE_COST,
 		START_DATE,
 		END_DATE,	
+		PROJECT_ENABLED,
 		CREATION_DATE,
 		MODIFIED_DATE
-    ) VALUES ( ?, ?, ? ,?, ?, ?, ?, ?, ?, ? )
+    ) VALUES ( ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ? )
     ]]></sql-query>		
  	<sql-query name="UPDATE_PROJECT" description="UPDATE_PROJECT"><![CDATA[    	
  	UPDATE REP_PROJECT
@@ -193,36 +205,53 @@
 	 	MAINTENANCE_COST = ?,
 	 	START_DATE = ?,
 	 	END_DATE = ?,
+	 	PROJECT_ENABLED = ?,
 	 	MODIFIED_DATE = ?
  	WHERE PROJECT_ID = ?
     ]]></sql-query>	
 	
  	<sql-query name="SELECT_PROJECT_IDS" description="SELECT_PROJECT_IDS"><![CDATA[    	
   	SELECT PROJECT_ID FROM REP_PROJECT    
- 	ORDER BY MODIFIED_DATE DESC 		
-    ]]></sql-query>		   
+ 	]]><dynamic><![CDATA[    	
+	<#compress>
+	<#if filter?? && ( filter.filters?size > 0 ) > WHERE 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>	
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
+	ORDER BY MODIFIED_DATE DESC 	
+	</#if>
+	</#compress>
+ 	 ]]></dynamic>    
+    </sql-query>		   
     
  	<sql-query name="COUNT_PROJECT_IDS" description="COUNT_PROJECT_IDS"><![CDATA[    	
   	SELECT COUNT(PROJECT_ID) FROM REP_PROJECT    
  	]]><dynamic><![CDATA[     		
- 	<#if filter??>
- 	WHERE
- 	<#list filter.filters as item>
- 	${item.logic} ${item.field}='${item.value}'
- 	</#list>
- 	</#if>
- 	ORDER BY CREATION_DATE DESC 	
+	<#if filter?? && ( filter.filters?size > 0 ) > WHERE 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>		
  	 ]]></dynamic></sql-query>		
-
- 	<sql-query name="SELECT_PROJECT_IDS" description="SELECT_PROJECT_IDS"><![CDATA[    	
-  	SELECT PROJECT_ID FROM REP_PROJECT
- 	]]><dynamic><![CDATA[   
- 	<#if filter??><#list filter.filters as item>
- 	WHERE
- 	${item.logic} ${item.field}='${item.value}'
- 	</#list></#if>
- 	ORDER BY CREATION_DATE DESC 	
- 	 ]]></dynamic></sql-query>	    
+  
 
 	<sql-query name="SELECT_ISSUE_TYPE_STATS_BY_PROJECT" description="SELECT_PROJECT_IDS"><![CDATA[        
 	SELECT ISSUE_TYPE , COUNT ( ISSUE_ID ) AS CNT FROM REP_ISSUE 
