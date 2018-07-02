@@ -68,6 +68,7 @@ import architecture.community.projects.Issue;
 import architecture.community.projects.IssueNotFoundException;
 import architecture.community.projects.IssueSummary;
 import architecture.community.projects.Project;
+import architecture.community.projects.ProjectNotFoundException;
 import architecture.community.projects.ProjectService;
 import architecture.community.projects.ProjectView;
 import architecture.community.projects.Stats;
@@ -136,14 +137,23 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 	@ResponseBody
 	public ItemList getProjecs (@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {		
 		
-		List<Project> list = projectService.getProjects();
-		List<Project> list2 = new ArrayList<Project> ();	
-		for( Project project : list) {
-			PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, project.getProjectId() );		
-			if( bundle.isAdmin() || bundle.isWrite() || bundle.isRead())
-				list2.add(project);
+		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_PROJECT_IDS_BY_REQUEST");
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<Project> list = new ArrayList<Project> ();
+		for( Long projectId : ids)
+		{	
+			Project project;
+			try {
+				project = projectService.getProject(projectId);
+				PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, project.getProjectId() );	
+				if( bundle.isAdmin() || bundle.isWrite() || bundle.isRead() || bundle.isCreate() )
+				{
+					list.add(project);
+				}
+			} catch (ProjectNotFoundException e) {
+			} 
 		}
-		return new ItemList(list2, list2.size());
+		return new ItemList(list, list.size()); 
 	}
 	
 	
@@ -151,18 +161,25 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 	@ResponseBody
 	public ItemList getProjects (@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {			
 		
-		List<Project> list = projectService.getProjects();
-		List<ProjectView> list2 = new ArrayList<ProjectView> ();		
-		
-		for( Project project : list)
+		dataSourceRequest.setStatement("COMMUNITY_CS.SELECT_PROJECT_IDS_BY_REQUEST");
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<ProjectView> list = new ArrayList<ProjectView> ();
+		for( Long projectId : ids)
 		{	
-			ProjectView v = getProjectView(communityAclService, project);
-			v.setIssueTypeStats(projectService.getIssueTypeStats(project));
-			v.setResolutionStats(projectService.getIssueResolutionStats(project));
-			if(v.isReadable())
-				list2.add(v);
+			Project project;
+			try {
+				project = projectService.getProject(projectId);
+				ProjectView v = getProjectView(communityAclService, project);
+				if( v.isReadable() )
+				{
+					v.setIssueTypeStats(projectService.getIssueTypeStats(project));
+					v.setResolutionStats(projectService.getIssueResolutionStats(project));
+					list.add(v);
+				}
+			} catch (ProjectNotFoundException e) {
+			} 
 		}
-		return new ItemList(list2, list2.size());
+		return new ItemList(list, list.size());
 	}
 	
 	

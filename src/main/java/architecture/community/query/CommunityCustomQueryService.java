@@ -61,6 +61,11 @@ public class CommunityCustomQueryService implements CustomQueryService {
 		return list(dataSourceRequest, getColumnMapRowMapper());
 	}	
 	
+	public String queryForString(String statement){
+		DataSourceRequest dataSourceRequest = new DataSourceRequest();
+		dataSourceRequest.setStatement(statement);
+		return queryForObject( dataSourceRequest, String.class);
+	}
 	
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType) {				
 		BoundSql sqlSource = customQueryJdbcDao.getBoundSqlWithAdditionalParameter(dataSourceRequest.getStatement(), getAdditionalParameter(dataSourceRequest));		

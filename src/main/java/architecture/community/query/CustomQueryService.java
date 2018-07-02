@@ -50,6 +50,8 @@ public interface CustomQueryService {
 	 */
 	public <T> List<T> list(DataSourceRequest dataSourceRequest, Class<T> elementType);
 	
+	public abstract String queryForString(String statement);
+	
 	public <T> T queryForObject (DataSourceRequest dataSourceRequest, Class<T> requiredType);
 	
 	public Map<String, Object> queryForMap (DataSourceRequest dataSourceRequest);
