@@ -33,10 +33,8 @@ public class CommunityMailService implements MailService {
 	private JavaMailSender mailSender;	 
 	
 	public boolean isEnabled () {  
-		
 		boolean defaultValue = repository.getSetupApplicationProperties().getBooleanProperty("services.mail.enabled", false);
-		boolean enabled = configService.getApplicationBooleanProperty("services.mail.enabled", defaultValue);
-	    
+		boolean enabled = configService.getApplicationBooleanProperty("services.mail.enabled", defaultValue); 
 		return enabled;
 	}	
 	
@@ -44,8 +42,7 @@ public class CommunityMailService implements MailService {
 	public void send(String fromUser, String toUser, String subject, String body, boolean html ) throws Exception {
         try {
         	
-        	log.debug("mail service enabled : {}", isEnabled());
-        
+        	log.debug("mail service enabled : {}", isEnabled()); 
 	        if(isEnabled()) {
 	        	MimeMessage message = mailSender.createMimeMessage();
 	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
