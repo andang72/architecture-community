@@ -19,6 +19,7 @@ package architecture.community.attachment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAttachmentService {
 	
 	protected Logger log = LoggerFactory.getLogger(getClass().getName());
+	
+	protected ReentrantLock lock = new ReentrantLock();
 	
 	public AbstractAttachmentService() {
 	}

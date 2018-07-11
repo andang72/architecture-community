@@ -44,7 +44,7 @@
 			<ul id="sub_menu_2" class="u-sidebar-navigation-v1-menu u-side-nav--second-level-menu mb-0">
 				<!-- Category -->
 				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
-					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-categories" data-page="manage-categories"> 
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-categories_v2" data-page="manage-categories"> 
 						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
 							<i class="community-admin-folder"></i>
 						</span> 
@@ -54,7 +54,7 @@
 				<!-- End Category -->				
 				<!-- Project -->
 				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
-					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-projects" data-page="manage-projects"> 
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-projects_v2" data-page="manage-projects"> 
 						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
 							<i class="community-admin-layout-media-left"></i>
 						</span> 

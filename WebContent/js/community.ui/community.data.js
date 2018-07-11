@@ -504,6 +504,7 @@
 			originalEstimate: { type: "number", defaultValue: 0},	
 			repoter:{ type: "object", defaultValue: new community.model.User() },
 			assignee:{ type: "object", defaultValue: new community.model.User() },
+			requestorName : {type: "string"},
 			creationDate:{ type: "date" },			
 			modifiedDate:{ type: "date" }	
 		},
@@ -529,6 +530,7 @@
 		    	target.set("timeSpent", this.get("timeSpent") );
 		    	target.set("estimate", this.get("estimate") );
 		    	target.set("originalEstimate", this.get("originalEstimate") );
+		    	target.set("requestorName", this.get("requestorName"));
 		    	if( typeof this.get("repoter") === 'object' )
 		    		target.set("repoter", this.get("repoter") );
 		    	if( typeof this.get("assignee") === 'object' )

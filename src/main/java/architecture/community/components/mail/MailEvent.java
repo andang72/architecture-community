@@ -1,30 +1,25 @@
-package architecture.community.projects.event;
+package architecture.community.components.mail;
 
 import org.springframework.context.ApplicationEvent;
 
-import architecture.community.projects.Issue;
 import architecture.community.user.User;
 
-public class IssueStateChangeEvent extends ApplicationEvent {
-	
+public class MailEvent extends ApplicationEvent {
+ 
 	public enum State {
 
-		CREATED,
-
-		UPDATED,
-
-		DELETED,
+		INBOUND,
 
 		MOVED
 	};
 	
-	private String eventType = "ISSUE";
+	private String eventType = "EMAIL";
 	
 	private User user;
 
 	private State state;
 	
-	public IssueStateChangeEvent(Issue source, User user, State state) {
+	public MailEvent(InboundMessage source, User user, State state) {
 		super(source);
 		this.user = user;
 		this.state = state;
@@ -53,5 +48,5 @@ public class IssueStateChangeEvent extends ApplicationEvent {
 	public void setEventType(String eventType) {
 		this.eventType = eventType;
 	}
-
+	
 }

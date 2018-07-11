@@ -154,6 +154,8 @@
 						contentType: "application/json; charset=utf-8"
 					},
 					parameterMap: function (options, operation){		
+						options.data = options.data || {} ;
+						options.data.enabled = true;
 						return community.ui.stringify(options)
 					} 			
 				},	
@@ -270,8 +272,7 @@
 	
 	var iconDataURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKBJREFUeNpiYBjpgBFd4P///wJAaj0QO9DEQiAg5ID9tLIcmwMYsDgABhqoaTHMUHRxpsGYBv5TGqTIZsDkYWLo6gc8BEYdMOqAUQeMOoAqDgAWcgZAfB9EU63SIAGALH8PZb+H8v+jVz64KiOK6wIg+ADEArj4hOoCajiAqMpqtDIadcCoA0YdQIoDDtCqQ4KtBY3NAYG0csQowAYAAgwAgSqbls5coPEAAAAASUVORK5CYII=";
 
-	function createNotification(observable){ 
-	
+	function createNotification(observable){  
 		console.log('show notification... : ' + observable.get('notificationEnabled') );
 		console.log("create notification..");
 		if(window.Notification){
@@ -280,50 +281,83 @@
 			}else{
 				observable.set('notificationEnabled', true);
 			}	
-		}			
-			
-		var template = kendo.template($("#notification-template").html());
+		}	 
+		var storage = JSON.parse(localStorage.getItem('NotificationList'));
+        if (!storage) {
+        	storage = {};
+         	localStorage.setItem('NotificationList', JSON.stringify(storage));
+        }
+        
+        $.each( Object.keys( storage ) , function( index , value ){
+        	showNotification( storage[value] );
+        });
+		
 		const eventSource = new EventSource('/data/api/v1/notifications/issue.json'); 
 		eventSource.onmessage = function(e) { 
 			console.log('msg: ' + e.data);
 			var obj = JSON.parse(e.data);
-			var title = "";
-			if( obj.state == 'CREATED' ){
-				title = "신규 이슈 알림";
-			}else {
-				title = "이슈 변경 알림";
-			} 
-			
 			if(observable.get('notificationEnabled')){
-	 			var notification = new Notification(
-		        	title, 
-		        	{
-		        		body: template(obj),
-		        		icon: iconDataURI
-		        });
-		        
+				var _eventType = obj.eventType;
+				var title = "";
+				var template = kendo.template($("#notification-template").html());
+				if( obj.state == 'CREATED' ){
+					title = "신규 이슈 알림";
+				}else {
+					title = "이슈 변경 알림";
+				}  			
+	 			var notification = new Notification( title, { body: template(obj), icon: iconDataURI });
 		        //알림 후 5초 뒤,
 		        /*setTimeout(function () {
 		            //얼람 메시지 닫기
 		            notification.close();
 		        }, 5000);*/			
 			}else{
-				title = title + " : " + new Date().toLocaleTimeString() ;
-				community.ui.notification({ 
-					autoHideAfter:0, 
-					allowHideAfter: 0,
-					width : 500,
-					templates : [{
-						type : "alert",
-						template : '<div class="notification-info g-pa-20">#if(title){#<div class="notification-title g-font-weight-400">#= title #</div>#}#<div class="notification-mesage">#= message #</div></div>'
-					}]
-				}).show({ title:title, 'message': template(obj), time: new Date().toLocaleTimeString() },"alert");
+				showNotification(obj); 
 			}
 	        return;			
-		} 
-			
+		}  
 	} 
 	
+	function showNotification(obj){
+		var _eventType = obj.eventType;
+		var _now = new Date();
+		var template = kendo.template($("#notification-template").html());
+		var title = "";
+		if( obj.state == 'CREATED' ){
+			title = "신규 이슈 알림";
+		}else {
+			title = "이슈 변경 알림";
+		}  	 
+		if( _eventType === 'EMAIL' ){
+			title = "새로운 메일이 있습니다";
+			_now = new Date( obj.source.sentDate );
+			title = title + " : " + _now.toLocaleTimeString() ;
+		}else{   
+			title = title + " : " + _now.toLocaleTimeString() ;
+		} 		
+		var storage = JSON.parse(localStorage.getItem('NotificationList'));
+        storage[obj.timestamp]=obj;
+		localStorage.setItem('NotificationList', JSON.stringify(storage));  
+		community.ui.notification({ 
+			autoHideAfter:0, 
+			allowHideAfter: 0,
+			width : 500,
+			hide : function (e){	 
+				var _timestamp = $(e.element).find('.notification-info').data('timestamp'); 
+				if( community.data.storageAvailable ('localStorage') ){		
+					var _storage = localStorage.getItem('NotificationList');
+					delete _storage[_timestamp];
+					localStorage.setItem('NotificationList', JSON.stringify(_storage)); 
+				} 
+			},
+			templates : [{
+				type : "alert",
+				template : '<div class="notification-info g-pa-20" data-timestamp="#= timestamp #">#if(title){#<div class="notification-title g-font-weight-400">#= title #</div>#}#<div class="notification-mesage">#= message #</div></div>'
+			}]
+		}).show({ title:title, 'message': template(obj), time: _now.toLocaleTimeString(), timestamp : obj.timestamp },"alert");	
+	}
+ 
+	 
 	function send ( data ) {
 		community.ui.send("<@spring.url "/display/pages/issues.html" />", { projectId: data.projectId });
 	}
@@ -527,7 +561,7 @@
 				</#if>         	
         	</div>
         	<div class="col-lg-3" data-bind="invisible:currentUser.anonymous" style="display:none;"> 
-			<button  class="btn btn-lg btn-block rounded-0 u-btn-darkred g-mr-10 g-mt-5 g-font-weight-200 " data-bind="invisible: notificationEnabled, click:requestPermission"
+			<button  class="btn btn-lg btn-block rounded-0 u-btn-darkred g-mr-10 g-mt-5 g-font-weight-200 disabled" disabled data-bind="invisible: notificationEnabled, click:requestPermission"
 				data-toggle="tooltip" data-placement="top" data-original-title="새로운 이슈가 등록되거나 삭제되면 알림을 받을 수 있습니다." 
 				>데스크탑 알림 권한 요청</button> 
         	</div>
@@ -713,16 +747,24 @@
 	<!-- FOOTER START -->   
 	<#include "includes/user-footer.ftl">
 	<!-- FOOTER END -->  
+	
 	<script type="text/x-kendo-template" id="notification-template">
+	#if(eventType === 'EMAIL'){ #
+		보낸사람: #: source.from[0].address # <br/>
+		제목: <span class="text-wrap g-font-weight-400 g-color-blue g-font-size-20">#: source.subject #<span><br/>
+		<span class="g-color-red"> ${ CommunityContextHelper.getConfigService().getApplicationProperty("website.contact.email", "") } 메일을 확인하고 이슈를 등록해주세요. </span>
+	# }else if (eventType === 'ISSUE') { #
 	#if( state == 'CREATED') {#   
-	#if (source.assignee != null ) { # #: source.assignee.name # 님에게 # } else { # 담당자가 지정되지 않은 # } # 
-	새로운 이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= source.issueId #" target="_blank"> #: source.summary #</a> 가 등록되었습니다.
-	#} else {#
-	#if (source.assignee != null ) { # #: source.assignee.name # 님이 담당하는# } else { # 담당자가 지정되지 않은 # } #
-	이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= source.issueId #" target="_blank"> #: source.summary #</a> 가 변경되었습니다. 
+		#if (source.assignee != null && source.assignee.userId > 0) { # #: source.assignee.name # 님에게 # } else { # 담당자가 지정되지 않은 # } # 
+		새로운 이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= source.issueId #" target="_blank"> #: source.summary #</a> 가 등록되었습니다.
+	# }else{ #
+		#if (source.assignee != null && source.assignee.userId > 0) { # #: source.assignee.name # 님이 담당하는# } else { # 담당자가 지정되지 않은 # } #
+		이슈 <br/> <a class="btn-link text-wrap g-font-weight-400 g-color-blue g-font-size-20" href="issue.html?projectId=#= source.objectId #&issueId=#= source.issueId #" target="_blank"> #: source.summary #</a> 가 변경되었습니다. 
 	#}#
-	<br/><span class="g-color-red">담당자는 꼭 확인 해주세요.</span>
+	<br/><span class="g-color-red">담당자는 꼭 확인 해주세요.</span>	
+	#}#	
 	</script>
+	
 	<script type="text/x-kendo-template" id="template-issue">
 	<tr>
 		<td class="align-middle text-center"> ISSUE-#: issueId # </td>
@@ -758,7 +800,8 @@
 				<div class="row">
 					<div class="col-md-9">
 						<div class="forum-icon">
- 							<i class="icon-svg icon-svg-sm icon-svg-ios-customer-support #if ( new Date() > endDate ) {#g-opacity-0_3#}#"></i>
+							
+ 							<i class="icon-svg icon-svg-sm #if (contractState === '004' ) { # icon-svg-ios-project # } else if (contractState === '005') { # icon-svg-ios-technical-support # } else { # icon-svg-ios-customer-support #} # #if ( new Date() > endDate ) {#g-opacity-0_3#}#"></i>
 						</div>						
 						<h2 class="g-ml-60 g-font-weight-100">
 						# if ( contractState == '002') { # <span class="text-info" >무상</span> # } else if (contractState == '001') { # <span class="text-info"> 유상 </span> # } # <a href="\\#" data-action="view" data-object-id="#=projectId#" data-kind="project" class="btn-link"> #:name# </a></h4>						

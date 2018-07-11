@@ -11,8 +11,14 @@ public interface Issue extends ModelObjectAware {
 
 	public abstract User getRepoter(); 
 	
+	
 	public abstract void setRepoter(User repoter) ; 
 
+
+	public abstract String getRequestorName ();
+	
+	public abstract void setRequestorName (String requestorName ); 
+	
 	public abstract void setIssueId(long issueId) ;
 
 	public abstract String getSummary() ;

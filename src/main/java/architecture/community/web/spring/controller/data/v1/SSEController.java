@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import architecture.community.components.mail.MailEvent;
 import architecture.community.projects.event.IssueStateChangeEvent;
 
 @Controller("sse-data-controller")
@@ -26,6 +27,7 @@ public class SSEController {
 	@GetMapping("/issue.json")
 	public SseEmitter handle() { 
 	    final SseEmitter emitter = new SseEmitter();
+	   
 	    this.emitters.add(emitter); 
 	    emitter.onCompletion( new Runnable() {
 			public void run() {
@@ -52,5 +54,18 @@ public class SSEController {
 		}
 		this.emitters.removeAll(deadEmitters);
 	}
+	
+	@EventListener
+	public void onIssueStateChangeEvent(MailEvent event) {
+		List<SseEmitter> deadEmitters = new ArrayList<>();
+		for(SseEmitter emitter : emitters ) { 
+			try {
+				emitter.send(event);
+			} catch (Exception e) {
+				deadEmitters.add(emitter);
+			}	 
+		}
+		this.emitters.removeAll(deadEmitters);
+	}	
 
 }

@@ -28,6 +28,8 @@ public interface ProjectDao {
 	
 	public abstract void saveOrUpdateIssues(List<Issue> issue) ;
 	
+	public abstract void deleteIssue(Issue issue);
+	
 	public abstract Issue getIssueById(long issueId);
 	
 	public abstract int getIssueCount( int objectType, long objectId ); 

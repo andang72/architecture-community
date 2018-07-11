@@ -2,6 +2,7 @@ package architecture.community.query;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +16,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
+import org.springframework.jdbc.support.JdbcUtils;
 
 import architecture.ee.jdbc.sqlquery.mapping.JdbcType;
 import architecture.ee.jdbc.sqlquery.mapping.ParameterMapping;
@@ -33,8 +35,23 @@ public class CustomColumnMapMapper extends ColumnMapRowMapper {
 	@Override
 	protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
 		
-		for(ParameterMapping mapping : parameterMappings){				
-			if(index == mapping.getIndex()){
+		ResultSetMetaData rsmd = rs.getMetaData();
+		
+		for(ParameterMapping mapping : parameterMappings){	
+			int indexToUse = mapping.getIndex();
+			/*
+			log.debug("compare {} with {} is {} ",
+				mapping.getColumn() , 
+				JdbcUtils.lookupColumnName(rsmd, index), 
+				org.apache.commons.codec.binary.StringUtils.equals( mapping.getColumn(), JdbcUtils.lookupColumnName(rsmd, index) ) 
+			);
+			**/
+			if( mapping.getIndex() == 0 && !StringUtils.isNullOrEmpty(mapping.getColumn()) 
+					&& org.apache.commons.codec.binary.StringUtils.equals( mapping.getColumn(), JdbcUtils.lookupColumnName(rsmd, index) )) {
+				indexToUse = index;
+			}
+			
+			if(index == indexToUse ){
 				if( String.class == mapping.getJavaType() ){	 
 					String value = null ;
 					if( mapping.getJdbcType() != null && ( mapping.getJdbcType() == JdbcType.DATE || mapping.getJdbcType() == JdbcType.TIMESTAMP )) {						
@@ -44,7 +61,7 @@ public class CustomColumnMapMapper extends ColumnMapRowMapper {
 						return value;
 					}else {
 						value = rs.getString(index); 
-					}
+					} 
 					
 					if(StringUtils.isEmpty(value))
 						value = "";		

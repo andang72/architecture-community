@@ -1,9 +1,9 @@
-<footer class="g-bg-gray-dark-v1 g-color-white-opacity-0_8 g-py-20">
+<footer class="g-bg-gray-dark-v1 g-color-white-opacity-0_8 g-py-20 g-font-size-14">
 	<div class="container">
         <div class="row">
           <div class="col-md-8 text-center text-md-left g-mb-10 g-mb-0--md">
             <div class="d-lg-flex">
-              <small class="d-block g-font-size-20 g-mr-10 g-mb-10 g-mb-0--md">2018 © All Rights Reserved.</small>
+              <small class="d-block g-font-size-14 g-mr-10 g-mb-10 g-mb-0--md">2018 © All Rights Reserved.</small>
              
               <ul class="u-list-inline">
               	<!--

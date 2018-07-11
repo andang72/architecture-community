@@ -100,6 +100,8 @@
 		createPropertiesGrid();
 	 	
 	});
+
+		
 	
 	function createPropertiesGrid(observable){
 		
@@ -189,7 +191,7 @@
 							</div>  
 						</div>
 						<div class="col-6 text-right">
-						<a href="javascript:void();" class="btn btn-xl u-btn-primary g-width-180--md g-mb-15 g-font-size-default g-ml-10" data-bind="click:createNewProperty" >새로운 프로퍼티 만들기</a>
+						<a href="javascript:void();" class="btn btn-xl u-btn-3d u-btn-primary g-width-200--md g-mb-15 g-font-size-default g-ml-10" data-bind="click:createNewProperty" >새로운 프로퍼티 만들기</a>
 						</div>
 					</div>			
 					<div class="row"> 

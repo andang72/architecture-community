@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +30,10 @@ import com.google.common.collect.HashBiMap;
 
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.query.CustomColumnMapMapper;
-import architecture.community.query.CustomQueryService;
 import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.services.excel.DataServiceConfig;
-import architecture.community.services.excel.DataServiceConfigXmlReader;
 import architecture.community.services.excel.DataServiceConfig.Column;
+import architecture.community.services.excel.DataServiceConfigXmlReader;
 import architecture.community.util.CommunityContextHelper;
 import architecture.community.util.excel.XSSFExcelWriter;
 import architecture.community.web.model.json.DataSourceRequest;
@@ -45,7 +46,7 @@ import architecture.ee.spring.jdbc.ExtendedJdbcDaoSupport;
 import architecture.ee.spring.jdbc.ExtendedJdbcTemplate;
 import architecture.ee.util.StringUtils;
 
-public class CommunityDataService {
+public class CommunityDataService implements FileAlterationListener {
 
 	@Autowired
 	@Qualifier("sqlConfiguration")
@@ -60,13 +61,13 @@ public class CommunityDataService {
 	private CustomQueryJdbcDao customQueryJdbcDao;
 	
 	@Autowired
-	@Qualifier("customQueryService")
-	private CustomQueryService customQueryService;
+	@Qualifier("customFileWatchService")
+	private CommunityWatchService customFileWatchService;
 	
 	private Logger log = LoggerFactory.getLogger(CommunityDataService.class);
 	
-	private String configFileName ;
-		
+	private String configFileName ; 
+	
 	private boolean usingTempFile = false;
 	
 	protected final BiMap<String, DataServiceConfig> exports = HashBiMap.create();
@@ -75,27 +76,65 @@ public class CommunityDataService {
 		
 	}
 
+	/**
+	 * FileAlterationListener Implements 
+	 */
+	public void onDirectoryChange(File directory) {
+
+	}
+
+	public void onDirectoryCreate(File directory) {
+	}
+
+	public void onDirectoryDelete(File directory) {
+	}
+
+	public void onFileChange(File file) {
+		log.debug("config file changed : {}", file.toURI().toString());
+		try {
+			DataServiceConfigXmlReader reader = new DataServiceConfigXmlReader(file, exports);
+			reader.parse();
+		} catch (Exception e) {
+			log.warn(CommunityLogLocalizer.format("014001", file.getAbsolutePath()));
+		}
+	}
+
+	public void onFileCreate(File file) {
+		log.debug("new {}", file.toURI().toString());
+
+	}
+
+	public void onFileDelete(File file) {
+		log.debug("remove {}", file.toURI().toString());
+	}
+
+	public void onStart(FileAlterationObserver observer) {
+	}
+
+	public void onStop(FileAlterationObserver observer) {
+
+	}
+	
 	public void setConfigFileName(String configFileName) {
 		this.configFileName = configFileName;
 	}
 
 	public void initialize() {
-		
 		File dir = repository.getFile("services-config");
 		File configFile = new File(dir, configFileName);
-		
-		log.debug("initailizing... with {}" , configFile.getAbsolutePath());
-		
+		log.debug("initailizing {} with {}" , this.getClass().getName(), configFile.getAbsolutePath()); 
 		if( configFile.exists() ) {
 			try {
+				
 				DataServiceConfigXmlReader reader = new DataServiceConfigXmlReader(configFile, exports);
 				reader.parse();
+				customFileWatchService.addListener(dir, this);
+				
 			} catch (Exception e) {
-				log.warn(CommunityLogLocalizer.format("014001", configFile.getAbsolutePath()));
-			}
-			
+				log.warn(CommunityLogLocalizer.format("014001", configFile.getAbsolutePath()), e);
+			} 
 		}
-	}
+	} 
 	
 	public DataServiceConfig getExcelExportConfig(String id) throws ServiceConfigNotFoundException {
 		if( !StringUtils.isNullOrEmpty(id) && exports.containsKey(id) ){
@@ -105,8 +144,8 @@ public class CommunityDataService {
 	}
 	
 	
-	public void export(String name, DataSourceRequest dataSourceRequest, HttpServletResponse response ) throws IOException {	
-		
+	public void export(String name, DataSourceRequest dataSourceRequest, HttpServletResponse response ) throws IOException {	 
+		log.debug("looking for {}", name);
 		final DataServiceConfig config = getExcelExportConfig(name);
 		List<Map<String, Object>> data = getData(config, dataSourceRequest);
 		
@@ -114,7 +153,7 @@ public class CommunityDataService {
 		log.debug("column mapping size : {}, header : {}", config.isSetParameterMappings() ? config.getParameterMappings().size() : 0 , config.isHeader());
 		XSSFExcelWriter writer = new XSSFExcelWriter();
 		writer.createSheet(StringUtils.defaultString(config.getSheetName(), "DATA"));
-		
+
 		for(Column column : config.getColumns()) {
 				log.debug("column {} , {} ", column.getIndex(), column.getField());
 				 writer.setColumn(column.getIndex(), column.getTitle(), column.getField(), column.getWidth() == 0 ? 3000 : column.getWidth() );
@@ -201,5 +240,6 @@ public class CommunityDataService {
 		}
 		return vals;
 	} 
+	
 	
 }

@@ -33,6 +33,8 @@ public interface ProjectService {
 	
 	public abstract Issue getIssue( long issueId ) throws  IssueNotFoundException ;
 	
+	public abstract void deleteIssue(Issue issue);
+	
 	public abstract List<Issue> getIssues(int objectType, long objectId);
 	
 	public abstract List<Issue> getIssues(DataSourceRequest dataSourceRequest);

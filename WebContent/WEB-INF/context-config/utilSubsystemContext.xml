@@ -19,4 +19,7 @@
 	
 	<beans:bean id="customDataService" class="architecture.community.services.CommunityDataService" init-method="initialize" p:configFileName="data-services-config.xml" />
 	
+	<beans:bean id="customFileWatchService" class="architecture.community.services.CommunityWatchService" init-method="initialize" destroy-method="destroy" />
+	
+	
 </beans:beans> 

@@ -19,6 +19,7 @@
 
 	<task:scheduled-tasks scheduler="taskScheduler">
 	    <task:scheduled ref="viewCountService" method="updateViewCounts" fixed-delay="180000" initial-delay="1000"/>
+	    <task:scheduled ref="emailMonitor" method="processMessages" fixed-delay="180000" initial-delay="1000"/>
 	</task:scheduled-tasks>
 
 

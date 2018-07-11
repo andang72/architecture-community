@@ -578,7 +578,7 @@ $.extend(true, kendo.ui.Dialog.prototype.options.localization, {
 if (kendo.ui.Alert) {
 kendo.ui.Alert.prototype.options.messages =
 $.extend(true, kendo.ui.Alert.prototype.options.localization, {
-  "okText": "좋아요"
+  "okText": "확인"
 });
 }
 
@@ -587,7 +587,7 @@ $.extend(true, kendo.ui.Alert.prototype.options.localization, {
 if (kendo.ui.Confirm) {
 kendo.ui.Confirm.prototype.options.messages =
 $.extend(true, kendo.ui.Confirm.prototype.options.localization, {
-	"okText": "좋아요",
+	"okText": "확인",
     "cancel": "취소"
 });
 }
@@ -596,7 +596,7 @@ $.extend(true, kendo.ui.Confirm.prototype.options.localization, {
 if (kendo.ui.Prompt) {
 kendo.ui.Prompt.prototype.options.messages =
 $.extend(true, kendo.ui.Prompt.prototype.options.localization, {
-	"okText": "좋아요",
+	"okText": "확인",
     "cancel": "취소"
 });
 }

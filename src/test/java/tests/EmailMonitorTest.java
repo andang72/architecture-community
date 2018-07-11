@@ -2,7 +2,7 @@ package tests;
 
 import org.junit.Test;
 
-import architecture.community.components.EmailMonitor;
+import architecture.community.components.mail.EmailMonitor;
 
 public class EmailMonitorTest {
 

@@ -11,6 +11,7 @@ import architecture.community.announce.AnnounceService;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.board.BoardService;
 import architecture.community.category.CategoryService;
+import architecture.community.codeset.CodeSetService;
 import architecture.community.comment.CommentService;
 import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.image.ImageService;
@@ -86,6 +87,11 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 	
 	public static TagService getTagService(){
 		return getComponent(TagService.class);
+	}
+	
+	
+	public static CodeSetService getCodeSetService(){
+		return getComponent(CodeSetService.class);
 	}
 	
 	public static CustomQueryService getCustomQueryService(){

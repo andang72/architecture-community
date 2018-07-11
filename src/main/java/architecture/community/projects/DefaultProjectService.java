@@ -263,6 +263,20 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		
 	}
 	 
+	
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void deleteIssue(Issue issue) {
+		if( issue.getIssueId() > 0L) {
+			if( issue.getIssueId() > 0 && projectIssueCache.get(issue.getIssueId()) != null  ) {
+				projectIssueCache.remove(issue.getIssueId());
+			} 
+			clearProjectStats(issue.getObjectId());
+			projectDao.deleteIssue(issue);
+		}
+	}
+	
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdateIssue(Issue issue) {
 		boolean isNew = true;

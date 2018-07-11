@@ -24,6 +24,7 @@
 		TIMEORIGINALESTIMATE,
 		TIMEESTIMATE,
 		TIMESPENT,
+		REQUESTOR_NAME,
 		CREATION_DATE,
 		MODIFIED_DATE	
  	FROM REP_ISSUE 
@@ -79,9 +80,10 @@
 	 	TIMEORIGINALESTIMATE,
 		TIMEESTIMATE,
 		TIMESPENT,
+		REQUESTOR_NAME,
 		CREATION_DATE,
 		MODIFIED_DATE
-	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
     ]]></sql-query>	
  
 					
@@ -101,10 +103,15 @@
 	 	DUE_DATE = ?, 
 		TIMEESTIMATE = ?,
 		TIMESPENT = ?,
+		REQUESTOR_NAME = ?,
 	 	MODIFIED_DATE = ?
  	WHERE ISSUE_ID = ? 
     ]]></sql-query>	        		
 
+	<sql-query name="DELETE_ISSUE_BY_ID" description="DELETE_ISSUE_BY_ID"><![CDATA[    
+	DELETE REP_ISSUE WHERE ISSUE_ID = ? 
+    ]]></sql-query>	  
+    
  	<sql-query name="COUNT_ISSUE_SUMMARY_BY_REQUEST" description="COUNT_ISSUE_SUMMARY_BY_REQUEST"><![CDATA[    	
 	SELECT 
 		count( T1.ISSUE_ID )
@@ -137,6 +144,7 @@
 		T1.PRIORITY AS ISSUE_PRIORITY,
 		T1.RESOLUTION AS ISSUE_RESOLUTION,
 		T1.ISSUE_STATUS, 
+		T1.REQUESTOR_NAME,
 		T1.REPOTER,
 		T1.ASSIGNEE,
 		T1.DUE_DATE,

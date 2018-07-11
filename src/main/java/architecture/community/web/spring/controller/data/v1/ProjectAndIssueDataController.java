@@ -201,6 +201,17 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		return v;
 	}
 	 
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = { "/issues/{issueId:[\\p{Digit}]+}/delete.json" }, method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public Result removeIssue (@PathVariable Long issueId, NativeWebRequest request) throws NotFoundException {	
+		User user = SecurityHelper.getUser(); 
+		Issue issue = projectService.getIssue(issueId);
+		projectService.deleteIssue(issue); 
+		return Result.newResult();
+	}
+	
+	
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/issues/save-or-update.json", method = { RequestMethod.POST })
 	@ResponseBody
@@ -215,7 +226,9 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 			isNew = false;
 			issueToUse = projectService.getIssue(newIssue.getIssueId());		
 			if( !org.apache.commons.lang3.StringUtils.equals(newIssue.getDescription(), issueToUse.getDescription())  ) {
+				
 				descriptionUpdate = true;
+				
 			}
 		}else {
 			issueToUse = projectService.createIssue(newIssue.getObjectType(), newIssue.getObjectId(), user );
@@ -278,6 +291,7 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		issueToUse.setOriginalEstimate(newIssue.getOriginalEstimate());
 		issueToUse.setEstimate(newIssue.getEstimate());
 		issueToUse.setTimeSpent(newIssue.getTimeSpent());
+		issueToUse.setRequestorName(newIssue.getRequestorName());
 		
 		projectService.saveOrUpdateIssue(issueToUse);
 		if(descriptionUpdate) {		

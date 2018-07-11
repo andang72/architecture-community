@@ -2,6 +2,7 @@ package architecture.community.web.spring.controller.data.v1;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,9 +18,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -58,15 +65,18 @@ import architecture.community.comment.Comment;
 import architecture.community.comment.CommentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
+import architecture.community.image.Image;
+import architecture.community.image.ImageService;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.model.ModelObjectTreeWalker;
 import architecture.community.model.ModelObjectTreeWalker.ObjectLoader;
 import architecture.community.model.Models;
 import architecture.community.model.json.JsonDateSerializer;
 import architecture.community.query.CustomQueryService;
+import architecture.community.query.CustomQueryService.DaoCallback;
+import architecture.community.query.dao.CustomQueryJdbcDao;
 import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.user.User;
-import architecture.community.util.CommunityContextHelper;
 import architecture.community.util.SecurityHelper;
 import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.model.ItemList;
@@ -97,9 +107,13 @@ public class CommunityDataController extends AbstractCommunityDateController {
 	private CommentService commentService;
 
 	@Inject
+	@Qualifier("imageService")
+	private ImageService imageService;
+	
+	@Inject
 	@Qualifier("attachmentService")
 	private AttachmentService attachmentService;
-	
+		
 	@Inject
 	@Qualifier("viewCountService")
 	private ViewCountService viewCountService
@@ -131,6 +145,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		return communityAclService;
 	}
 	
+	
 	/**
 	 * COMMON CODE API 
 	******************************************/
@@ -150,7 +165,13 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		return codes ;
 	}
 
-
+	@RequestMapping(value = "/objects/type/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Map<String, Object>> getObjectTypes(NativeWebRequest request){ 
+		List<Map<String, Object>> list = customQueryService.list("COMMUNITY_CS.SELECT_OBJECT_TYPE_ID_AND_NAME");
+		return list ;
+	}
+	
 	/**
 	 * ANNOUNCE API 
 	******************************************/
@@ -586,26 +607,57 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		User user = SecurityHelper.getUser();
 		newMessage.setUser(user);
 		log.debug("MESSAGE : " + newMessage.toString() );
+		boolean bodyChanged = false;
+		final BoardMessage messageToUse = newMessage;
 		// NEW THREAD MESSAGE...	
 		if ( newMessage.getThreadId() > 0) {
 			BoardThread thread = boardService.getBoardThread(newMessage.getThreadId());
 			if( newMessage.getMessageId() > 0 ) {
 				// UPDATE MESSAGE...	
+				BoardMessage message = boardService.getBoardMessage(newMessage.getMessageId());
 				boardService.updateMessage(newMessage);
+				if( !org.apache.commons.lang3.StringUtils.equals(message.getBody(), messageToUse.getBody())  ) {
+					customQueryService.execute(new DaoCallback<Integer>() {
+						public Integer process(CustomQueryJdbcDao dao) throws DataAccessException {
+							Document doc = Jsoup.parse(messageToUse.getBody());
+							Elements eles = doc.select("img");
+							int count = 0;
+							for( Element ele : eles ) {
+								log.debug("found img tag in content : {} ", ele.toString());
+								if( ele.hasAttr("data-external-id") ) {					
+									String link = ele.attr("data-external-id");
+									log.debug("it has external link : {}.", link);
+									try {
+										Image image = imageService.getImageByImageLink(link);
+										if( image.getObjectType() <= 0 && image.getObjectId() <= 0 ) {									
+											count = dao.getExtendedJdbcTemplate().update(dao.getBoundSql("COMMUNITY_CS.UPDATE_IMAGE_OBJECT_TYPE_AND_OBJECT_ID").getSql(), 
+												new SqlParameterValue(Types.NUMERIC, Models.BOARD_MESSAGE.getObjectType()),
+												new SqlParameterValue(Types.NUMERIC, messageToUse.getMessageId()),
+												new SqlParameterValue(Types.NUMERIC, image.getImageId())
+											);
+											imageService.invalidate(image, false);
+										}
+									} catch (Exception e) {
+									}
+								}
+							}
+							return count;
+						}
+					});				
+				}
 			}else {
-				// NEW MESSAGE...							
+				// ADD NEW MESSAGE...							
 				boardService.addMessage(thread, thread.getRootMessage(), newMessage);				
 			}		
 		}else {
 			if( newMessage.getMessageId() < 1 ) {
-				// NEW MESSAGE...
+				// NEW THREAD AND MESSAGE...
 				BoardMessage rootMessage = boardService.createMessage(newMessage.getObjectType(), newMessage.getObjectId(), user);
 				rootMessage.setSubject(newMessage.getSubject());
 				rootMessage.setBody(newMessage.getBody());
 				rootMessage.setKeywords(newMessage.getKeywords());
 				BoardThread thread = boardService.createThread(rootMessage.getObjectType(), rootMessage.getObjectId(), rootMessage);
 				boardService.addThread(rootMessage.getObjectType(), rootMessage.getObjectId(), thread);
-				
 				return boardService.getBoardMessage(thread.getRootMessage().getMessageId());		
 			}
 		}		

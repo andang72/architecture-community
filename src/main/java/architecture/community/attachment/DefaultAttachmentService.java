@@ -328,50 +328,50 @@ public class DefaultAttachmentService extends AbstractAttachmentService implemen
 			thumbnail.setSize(file.length());
 			return file;
 		}
-
-		if (StringUtils.endsWithIgnoreCase(attach.getContentType(), "pdf")) {
-			PDDocument document = PDDocument.load(originalFile);			
-			PDFRenderer pdfRenderer = new PDFRenderer(document);	
-			BufferedImage image = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
-			ImageIO.write(Thumbnails.of(image).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage(), "png", file);
-			thumbnail.setSize(file.length());
-			return file;
-		} else if (StringUtils.endsWithIgnoreCase(attach.getContentType(), "presentation")) {
-			log.debug("extracting image from pptx");
-			XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(originalFile));
-			Dimension pgsize = ppt.getPageSize();
-			log.debug("slide width x height : {}" , pgsize.toString());
-
-
-			 //render
-			java.util.List<XSLFSlide> slide = ppt.getSlides();
-			
-			log.debug("slide pages : {}" , slide.size() );
-			BufferedImage img = new BufferedImage( pgsize.width, pgsize.height, BufferedImage.TYPE_INT_RGB);
-			Graphics2D graphics = img.createGraphics();			
-			
-			 //clear the drawing area
-			graphics.setPaint(Color.white);
-			graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height )); 
-			slide.get(0).draw(graphics);  
-			
-			ImageIO.write(Thumbnails.of(img).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage(), "png", file);
-			
-			//ImageIO.write(img, "png", file);
-			
-			log.debug("done." );
-			
-		} else if (StringUtils.startsWithIgnoreCase(attach.getContentType(), "image")) {
-			BufferedImage originalImage = ImageIO.read(originalFile);
-			if (originalImage.getHeight() < thumbnail.getHeight() || originalImage.getWidth() < thumbnail.getWidth()) {
-				thumbnail.setSize(0);
-				return originalFile;
+		
+		lock.lock();
+		try {
+			if (StringUtils.endsWithIgnoreCase(attach.getContentType(), "pdf")) {
+				PDDocument document = PDDocument.load(originalFile);			
+				PDFRenderer pdfRenderer = new PDFRenderer(document);	
+				BufferedImage image = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
+				ImageIO.write(Thumbnails.of(image).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage(), "png", file);
+				thumbnail.setSize(file.length());
+				return file;
+			} else if (StringUtils.endsWithIgnoreCase(attach.getContentType(), "presentation")) {
+				log.debug("extracting image from pptx");
+				XMLSlideShow ppt = new XMLSlideShow(new FileInputStream(originalFile));
+				Dimension pgsize = ppt.getPageSize();
+				log.debug("slide width x height : {}" , pgsize.toString());
+				 //render
+				java.util.List<XSLFSlide> slide = ppt.getSlides();
+				
+				log.debug("slide pages : {}" , slide.size() );
+				BufferedImage img = new BufferedImage( pgsize.width, pgsize.height, BufferedImage.TYPE_INT_RGB);
+				Graphics2D graphics = img.createGraphics();			
+				 //clear the drawing area
+				graphics.setPaint(Color.white);
+				graphics.fill(new Rectangle2D.Float(0, 0, pgsize.width, pgsize.height )); 
+				slide.get(0).draw(graphics);  
+				ImageIO.write(Thumbnails.of(img).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage(), "png", file);
+				//ImageIO.write(img, "png", file);
+				log.debug("done." );
+				
+			} else if (StringUtils.startsWithIgnoreCase(attach.getContentType(), "image")) {
+				BufferedImage originalImage = ImageIO.read(originalFile);
+				if (originalImage.getHeight() < thumbnail.getHeight() || originalImage.getWidth() < thumbnail.getWidth()) {
+					thumbnail.setSize(0);
+					return originalFile;
+				}
+				BufferedImage image = Thumbnails.of(originalImage).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage();
+				ImageIO.write(image, "png", file);
+				thumbnail.setSize(file.length());
+				return file;
 			}
-			BufferedImage image = Thumbnails.of(originalImage).size(thumbnail.getWidth(), thumbnail.getHeight()).asBufferedImage();
-			ImageIO.write(image, "png", file);
-			thumbnail.setSize(file.length());
-			return file;
-		}
+			
+		}finally {
+			lock.unlock();
+		}		
 		return null;
 	}
 	

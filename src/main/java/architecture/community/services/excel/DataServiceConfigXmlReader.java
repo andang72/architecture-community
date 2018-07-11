@@ -136,15 +136,15 @@ public class DataServiceConfigXmlReader {
 				config.setResultMappings(getParameterMappings(resultMappingsEl.elements()));
 			}
 			
-			Element targerEl = ele.element("target");
-			
-			String typeString = StringUtils.defaultString( targerEl.elementText("type"), "NONE");
-			config.setType( DataServiceConfig.Type.valueOf(typeString.toUpperCase()) );
-			
-			if( config.getType() != DataServiceConfig.Type.NONE ) {
-				config.setFileName(targerEl.elementTextTrim("fileName"));
-				config.setSheetName(targerEl.elementTextTrim("sheetName"));
-			}
+			Element targetEl = ele.element("target");
+			if(targetEl!=null) {
+				String typeString = StringUtils.defaultString( targetEl.elementText("type"), "NONE");
+				config.setType( DataServiceConfig.Type.valueOf(typeString.toUpperCase()) );
+				if( config.getType() != DataServiceConfig.Type.NONE ) {
+					config.setFileName(targetEl.elementTextTrim("fileName"));
+					config.setSheetName(targetEl.elementTextTrim("sheetName"));
+				}
+			} 
 			
 			Element columnsEl = ele.element("columns");
 			if( columnsEl != null )
@@ -166,6 +166,7 @@ public class DataServiceConfigXmlReader {
 		List<ParameterMapping> parameterMappings = new ArrayList<ParameterMapping>();
 		for (Element child : elements ) {
 			ParameterMapping.Builder builder = new ParameterMapping.Builder(child.attributeValue(XmlStatementBuilder.XML_ATTR_NAME_TAG));
+			builder.column( child.attributeValue("name", null));
 			builder.index(Integer.parseInt(child.attributeValue("index", "0")));
 			builder.mode(child.attributeValue("mode", "NONE"));
 			builder.primary(Boolean.parseBoolean(child.attributeValue("primary", "false")));

@@ -56,6 +56,13 @@ i.icon-svg {
 }
 
 /* IOS Icons */
+.icon-svg-ios-technical-support {
+	background-image: url("/images/icons/ios/technical-support.svg");	
+}
+.icon-svg-ios-project {
+	background-image: url("/images/icons/ios/project.svg");	
+}
+
 .icon-svg-ios-login {
 	background-image: url("/images/icons/ios/login.svg");	
 }

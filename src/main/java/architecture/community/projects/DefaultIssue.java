@@ -21,6 +21,8 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	
 	private User assignee;
 	
+	private String requestorName;
+	
 	// 오류 , 기술지원, ..정기정검...
 	private String issueType;
 	
@@ -87,6 +89,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.estimate = 0L;
 		this.timeSpent = 0L;
 		this.originalEstimate = 0L;
+		this.requestorName = null;
 	}
 	
 	public DefaultIssue(long issueId) {
@@ -104,6 +107,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.status = null;
 		this.statusName = null;
 		this.resolutionDate = null;
+		this.requestorName = null;
 	}
 	
 	public DefaultIssue(int objectType, long objectId) {
@@ -121,6 +125,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.status = null;
 		this.statusName = null;
 		this.resolutionDate = null;
+		this.requestorName = null;
 	}
 	
 	public DefaultIssue(int objectType, long objectId, User repoter) {
@@ -142,9 +147,18 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.estimate = 0L;
 		this.timeSpent = 0L;
 		this.originalEstimate = 0L;		
+		this.requestorName = null;
 	}
 	
 	
+	public String getRequestorName() {
+		return requestorName;
+	}
+
+	public void setRequestorName(String requestorName) {
+		this.requestorName = requestorName;
+	}
+
 	public User getRepoter() {
 		return repoter;
 	}

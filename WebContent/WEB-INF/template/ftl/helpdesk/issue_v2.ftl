@@ -10,9 +10,9 @@
     <meta name="author" content="">
     <title><#if __page?? >${__page.title}</#if></title>
  	
- 	<!-- Kendoui with bootstrap theme CSS -->			 
-	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.common-bootstrap.core.min.css"/>" rel="stylesheet" type="text/css" />	
-	<link href="<@spring.url "/css/kendo.ui.core/web/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	 
+ 	<!-- Kendoui with bootstrap theme CSS -->		
+ 	<link href="<@spring.url "/css/kendo/2018.1.221/kendo.common.min.css"/>" rel="stylesheet" type="text/css" />	 
+	<link href="<@spring.url "/css/kendo/2018.1.221/kendo.bootstrap.min.css"/>" rel="stylesheet" type="text/css" /> 
 	
 	<!-- Bootstrap core CSS -->
 	<link href="<@spring.url "/css/bootstrap/3.3.7/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />
@@ -46,26 +46,36 @@
 	require.config({
 		shim : {
 	        "bootstrap" : { "deps" :['jquery'] },
-	        "kendo.ui.core.min" : { "deps" :['jquery'] },
-	        "kendo.culture.ko-KR.min" : { "deps" :['kendo.ui.core.min'] },
-	        "community.ui.core" : { "deps" :['kendo.culture.ko-KR.min'] },
-	        "community.data" : { "deps" :['community.ui.core'] },	        
+			<!-- Professional Kendo UI -->
+			"kendo.web.min" 			: { "deps" :['jquery'] },
+	        "kendo.culture.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	   
+	        "kendo.messages.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	  
+			<!-- community -- >
+	        "community.ui.core"			: { "deps" :['jquery', 'kendo.web.min', 'kendo.culture.min' ] },
+	        "community.data" 			: { "deps" :['jquery', 'kendo.web.min', 'community.ui.core' ] },        
 	        "summernote-ko-KR" : { "deps" :['summernote.min'] }
 	    },
 		paths : {
 			"jquery"    					: "/js/jquery/jquery-2.2.4.min",
 			"bootstrap" 					: "/js/bootstrap/3.3.7/bootstrap.min",
-			"kendo.ui.core.min" 			: "/js/kendo.ui.core/kendo.ui.core.min",
-			"kendo.culture.ko-KR.min"	: "/js/kendo.ui.core/cultures/kendo.culture.ko-KR.min",
-			"community.ui.core" 			: "/js/community.ui/community.ui.core",
-			"community.data" 			: "/js/community.ui/community.data",
+			<!-- Professional Kendo UI --> 
+			"kendo.web.min"	 			: "/js/kendo/2018.1.221/kendo.web.min",
+			"kendo.culture.min"			: "/js/kendo/2018.1.221/cultures/kendo.culture.ko-KR.min",	
+			"kendo.messages.min"		: "/js/kendo.extension/kendo.messages.ko-KR",	
+			<!-- community -- >
+			"community.ui.core" 		: "/js/community.ui/community.ui.core",
+			"community.data" 			: "/js/community.ui/community.data",   
+			<!-- summernote -->
 			"summernote.min"             : "/js/summernote/summernote.min",
-			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR",
+			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"	,
 			"dropzone"					: "/js/dropzone/dropzone"
 		}
 	});
 	
-	require([ "jquery", "kendo.ui.core.min",  "kendo.culture.ko-KR.min", "community.data", "community.ui.core", "bootstrap", "summernote.min", "summernote-ko-KR", "dropzone"], function($, kendo ) {	
+	require([ 
+		"jquery", "bootstrap", 
+		"community.data", "kendo.messages.min",
+		"summernote-ko-KR", "dropzone"], function($, kendo ) {	
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -215,24 +225,6 @@
 				});			 	
 				editorTo.summernote('code', $this.issue.get('description'));	
 		 	},	 	
-		 	delete : function (e){
-		 		var $this = this;
-		 		if( !currentUser.hasRole('ROLE_ADMINISTRATOR') ){
-		 			community.ui.alert("권한이 없습니다. 관리자에게 문의하여 주세요.");
-		 		}else{
-		 			community.ui.progress(featuresTo, true);
-					community.ui.ajax( '<@spring.url "/data/api/v1/issues/" />' + $this.issue.issueId  + '/delete.json', {
-						data: community.ui.stringify($this.issue),
-						contentType : "application/json",						
-						success : function(response){ 
-							window.history.back();
-						}
-					}).always( function () {
-						community.ui.progress(featuresTo, false);
-					});		 		
-		 		}
-		 		return ;
-		 	},
 		 	saveOrUpdate : function(e){				
 				var $this = this;		
 				var stopEditMode = true;				
@@ -323,6 +315,7 @@
 					$this.set('editable', false );
 					$this.edit();
 				}
+				getEmojis();
 			},
 			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
 			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
@@ -509,18 +502,51 @@
 			community.ui.listview( $('#issue-attachment-listview') ).dataSource.read();
 		});			
 	}
-					
+	
+	/** 
+	 * Emoji loading 
+	 */
+	 function getEmojis(){
+		$.ajax({
+		  url: 'https://api.github.com/emojis',
+		  async: false 
+		}).then(function(data) {
+		  window.emojis = Object.keys(data);
+		  window.emojiUrls = data; 
+		}); 
+	 }
+	
+											
 	function openMessageCommentModal(actionType , issueId , parentCommentId, targetObject){	
 		targetObject = targetObject || $('#issue-comment-listview');	
 		var renderTo = $('#issue-comment-modal');
 		if( !renderTo.data("model") ){
 			var editorRenderTo = $('#issue-comment-body');
 			editorRenderTo.summernote({
-				toolbar: [ 'codeview' ], 
-				placeholder: '댓글...',
+				toolbar:[ ['picture', ['picture']], ['video', ['video']], ['link', ['link']], 'codeview' ], 
+				placeholder: '댓글을 남겨주세요.',
 				dialogsInBody: true,
 				height: 200,
 				lang: 'ko-KR',
+				hint: {
+				    match: /:([\-+\w]+)$/,
+				    search: function (keyword, callback) {
+				      callback($.grep(emojis, function (item) {
+				        return item.indexOf(keyword)  === 0;
+				      }));
+				    },
+				    template: function (item) {
+				      var content = emojiUrls[item];
+				      return '<img src="' + content + '" width="20" /> :' + item + ':';
+				    },
+				    content: function (item) {
+				      var url = emojiUrls[item];
+				      if (url) {
+				        return $('<img />').attr('src', url).css('width', 20)[0];
+				      }
+				      return '';
+				    }
+				},
 				callbacks: {
 					onImageUpload : function(files, editor, welEditable) {
 				    		community.data.uploadImageAndInsertLink(files[0], editorRenderTo );
@@ -1271,7 +1297,7 @@
 		<td class="align-middle text-center" width="50">		
 			#if ( contentType.match("^image") ) {#	
 			<img class="g-width-50 g-height-50" src="#= community.data.getAttachmentThumbnailUrl( data, true) #" />
-			# }else if( contentType === "application/pdf" ){ #		
+			# }else if( contentType === "application/pdf" || contentType === "application/vnd.openxmlformats-officedocument.presentationml.presentation" ){ #	
 			<img class="g-brd-around g-brd-gray-light-v4 g-width-50 g-height-50" src="#= community.data.getAttachmentThumbnailUrl( data, true) #" />
 			# } else { #			
 				<i class="icon-svg icon-svg-sm icon-svg-dusk-attach m-t-xs"></i>

@@ -71,6 +71,8 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			issue.setPriority(rs.getString("PRIORITY"));
 			issue.setComponent(rs.getString("COMPONENT"));
 			
+			issue.setRequestorName(rs.getString("REQUESTOR_NAME"));
+			
 			issue.setAssignee(new UserTemplate(rs.getLong("ASSIGNEE")));
 			issue.setRepoter(new UserTemplate(rs.getLong("REPOTER")));
 			
@@ -182,6 +184,14 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	}
 
 	
+	 
+	public void deleteIssue(Issue issue) { 
+		Issue toUse = issue;
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_ISSUE_BY_ID").getSql(), 
+				new SqlParameterValue(Types.NUMERIC, toUse.getIssueId())
+		);
+	}
+
 	@Override
 	public void saveOrUpdateIssue(Issue issue) {
  
@@ -210,7 +220,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.getOriginalEstimate() == null ? 0L: toUse.getOriginalEstimate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getEstimate() == null ? 0L: toUse.getEstimate()),	
 					new SqlParameterValue(Types.NUMERIC, toUse.getTimeSpent() == null ? 0L: toUse.getTimeSpent()),	
-					
+					new SqlParameterValue(Types.VARCHAR, toUse.getRequestorName()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));					
 		} else {
@@ -231,7 +241,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 
 					new SqlParameterValue(Types.NUMERIC, toUse.getEstimate() == null ? 0L: toUse.getEstimate()),	
 					new SqlParameterValue(Types.NUMERIC, toUse.getTimeSpent() == null ? 0L: toUse.getTimeSpent()),	
-					
+					new SqlParameterValue(Types.VARCHAR, toUse.getRequestorName()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId())
 			);		

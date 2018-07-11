@@ -63,14 +63,7 @@
 	<script>
 	
 	var __boardId = <#if RequestParameters.boardId?? >${RequestParameters.boardId}<#else>0</#if>;
-	
-	<#if CommunityContextHelper.getBoardService().getBoardById( ServletUtils.getStringAsLong( RequestParameters.boardId ) )?? >
-	<#assign __board = CommunityContextHelper.getBoardService().getBoardById( ServletUtils.getStringAsLong( RequestParameters.boardId ) ) />
-	</#if>
-	
-	<#if __board?? && CommunityContextHelper.getCategoryService().getCategory(__board)?? >
-	<#assign __category = CommunityContextHelper.getCategoryService().getCategory(__board) />
-	</#if>
+	<#assign __board = CommunityContextHelper.getBoardService().getBoardById( ServletUtils.getStringAsLong( RequestParameters.boardId ) ) />	
 	
 	require.config({
 		shim : {
@@ -108,8 +101,8 @@
 			"hs.header" 	   				: "/js/bootstrap.theme/unify/components/hs.header",
 			"hs.hamburgers"   				: "/js/bootstrap.theme/unify/helpers/hs.hamburgers",
 			<!-- Dzsparallaxer -->		
-			"dzsparallaxer"           			: "/assets/vendor/dzsparallaxer/dzsparallaxer",
-			"dzsparallaxer.dzsscroller"			: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
+			"dzsparallaxer"           	: "/assets/vendor/dzsparallaxer/dzsparallaxer",
+			"dzsparallaxer.dzsscroller"	: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
 			"dzsparallaxer.advancedscroller"	: "/assets/vendor/dzsparallaxer/advancedscroller/plugin"
 		}
 	});
@@ -154,37 +147,15 @@
 			filter : {
 				SUBJECT : null
 			},
-			resetKeywordsFilters : function(){
-				var $this = this, cnt = 0 ;		
-				
-				$.each ( $('#filter-keywords input[data-kind=keywords]:checked') , function (index, value) {
-					console.log( $(value).parent().html() );
-					$(value).prop('checked', false );
-					cnt ++ ;
-				});
-				
-				if( cnt > 0 )
-					$this.search();		
-			},				
-			setKeywordsFilters : function( filters ){
-				$.each ( $('#filter-keywords input[data-kind=keywords]:checked') , function (index, value) {
-					if( index > 0 ){
-						filters.push({ field: "KEYWORDS", operator: "contains", value: $(value).data('object-value') , logic : "OR" });
-					}else{
-						filters.push({ field: "KEYWORDS", operator: "contains", value: $(value).data('object-value') });
-					}
-				}) ;
-			},			
 			search : function(e){
-				var $this = this , filters = []; 
-				$this.setKeywordsFilters(filters);  
+				var $this = this , filters = [];
+				console.log( $this.filter.SUBJECT ) ;
+				
 				if( $this.filter.SUBJECT != null ){
-					if( filters.length > 0 )
-						filters.push({ field: "SUBJECT", operator: "contains", value: $this.filter.SUBJECT, logic : "AND" });
-					else
-						filters.push({ field: "SUBJECT", operator: "contains", value: $this.filter.SUBJECT });
+					filters.push({ field: "SUBJECT", operator: "contains", value: $this.filter.SUBJECT, logic : "" });
 				}
-				community.ui.grid( $('#thread-grid') ).dataSource.filter( filters );		 
+				community.ui.grid( $('#thread-grid') ).dataSource.filter( filters );				
+				
 				return false;
 			},
 			load : function(objectId){
@@ -203,11 +174,6 @@
 		community.ui.bind( renderTo , observable );
     	observable.load( __boardId );
     	
-    	renderTo.on("click", "input[data-kind=keywords]", function(e){
-    		var $this = $(this);
-    		observable.search(); 
-    	});
-    	    	
     	renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
@@ -292,6 +258,7 @@
 			pageable: true, 
 			sortable: true,
 			filterable: false,
+ 			height: 600,
 			dataBound : function(e){
 				//$('[data-toggle="tooltip"]').tooltip();
 			},	
@@ -320,20 +287,11 @@
 	.k-grid-pager {
 		font-size : .9em;
 	}	
-
-	.k-grid-content {
-	    min-height: 600px;
-	}
-		
+	
 	.g-brd-bottom-1 {
 	    border-bottom-width: 1px !important;
 	    font-weight : 400;
 	}
-	
-	.g-brd-bottom-3 {
-	    border-bottom-width: 1px !important;
-	    font-weight : 400;
-	}	
 			
 	</style>			
 	</head>
@@ -352,7 +310,7 @@
 				<#if __board?? >${__board.displayName}</#if>
 		        <span class="g-color-primary"></span>
 				</h2>
-				<p class="g-font-size-18 g-font-weight-300" data-bind="text:board.description"><#if __board?? >${__board.description!""}</#if></p>
+				<p class="g-font-size-18 g-font-weight-300" data-bind="text:board.description">${__board.description!""}</p>
 			</header> 
 			
 			<div class="d-flex justify-content-end g-font-size-11">
@@ -378,30 +336,20 @@
     </section>
     <!-- End Promo Block -->
 	<section class="g-py-60">
-		<div class="container" > 
- 		<#if __category??>
-        <#assign __tagDelegator = CommunityContextHelper.getTagService().getTagDelegator(__category) />		
-        <div class="row align-items-center g-pt-40 g-pb-10">
-          <!-- Category -->
-          <div class="col-md-6 col-lg-12">
-            <h3 class="h6 mb-3">키워드:</h3> 
-			<ul class="list-inline g-font-size-15 g-font-weight-400" id="filter-keywords">
-             		<#list __tagDelegator.getTags() as item >
-	                   	<li class="my-2 list-inline-item">
-	                    <label class="form-check-inline u-check d-block u-link-v5 g-color-gray-dark-v4 g-color-primary--hover g-pl-30">
-	                      <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-object-id="${item.tagId}" data-object-value="${item.name}" data-kind="keywords"  >
-	                      <span class="d-block u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
-	                        <i class="fa" data-check-icon=""></i>
-	                      </span>
-	                      ${item.name}  
-	                    </label>
-	                  	</li>            		
-             		</#list>
-			</ul>
-          </div>
-          <!-- End Category -->
-       </div>
-       </#if>
+		<div class="container" >
+			<!--	
+			<div class="d-flex g-pos-rel justify-content-end align-items-center g-brd-bottom g-brd-gray-light-v4 g-pt-40 g-pb-20">
+				<div class="g-mr-60 g-pos-abs g-left-0 g-pb-30" >
+					<a href="/display/pages/community.html" class="back" data-toggle="tooltip" data-placement="top" title="" data-original-title="뒤로가기"><i class="icon-svg icon-svg-sm icon-svg-ios-back"></i></a>
+				</div>
+            </div>  
+        		
+			<div class="g-mt-25 mb-0">
+          		<h2 class="h3 g-color-black mb-0" data-bind="text:board.displayName"></h2>
+          		<div class="d-inline-block g-width-50 g-height-1 g-bg-black"></div>
+          		<p class="" data-bind="text:board.description"></p>
+          	</div>
+          	-->
 			<!-- Toolbar -->
 			<div class="d-flex g-pos-rel justify-content-end align-items-center g-brd-bottom g-brd-gray-light-v4 g-pt-40 g-pb-20" style="min-height: 110px;"> 
 				<div class="g-mr-60 g-pos-abs g-left-0" > 
@@ -418,13 +366,33 @@
 				</div>  
 	            <div class="g-mr-0">
 	            	<a href="#!" class="btn btn-md u-btn-3d u-btn-darkgray g-px-25 g-py-13" data-bind="click: back">이전</a>
-	            	<a href="#!" class="btn btn-md u-btn-3d u-btn-lightred g-px-25 g-py-13" style="display:none;" data-bind="{visible:board.createThread}" data-action="create" data-object-id="0" >새로운 글 게시하기</a> 
+	            	<a href="#!" class="btn btn-md u-btn-3d u-btn-lightred g-px-25 g-py-13" data-bind="{visible:board.createThread}" data-action="create" data-object-id="0" >새로운 글 게시하기</a> 
 	            </div> 
             </div> 
-        	<!-- Ent Toolbar --> 
+        	<!-- Ent Toolbar -->
+        	
  			<div class="row g-mb-0">
-				<div id="thread-grid" class="g-brd-0 g-brd-gray-dark-v4 g-brd-top-3 g-brd-style-solid g-min-height-500 g-brd-bottom-3" ></div>
-			</div> 
+				<div id="thread-grid" class="g-brd-0 g-brd-gray-dark-v4 g-brd-top-3 g-brd-style-solid g-min-height-500 g-brd-bottom-1" ></div>
+			</div>
+			
+			<!--       	
+        	<div class="table-responsive">
+	            <table class="table table-bordered u-table--v2 g-col-border-side-0 g-mb-0 g-brd-gray-dark-v6 g-brd-top-3 g-brd-style-solid">
+	                <thead class="text-uppercase g-letter-spacing-1 g-bg-gray-light-v5 g-font-size-14">
+	                   <tr>
+	                       <th class="g-font-weight-300 g-color-black g-width-50">&nbsp;</th>
+	                       <th class="g-font-weight-300 g-color-black g-min-width-200">제목</th>
+	                       <th class="g-font-weight-300 g-color-black g-width-100"> </th> 
+	                       <th class="g-font-weight-300 g-color-black g-width-100"> </th> 
+	                   </tr>
+	                </thead> 
+	            	<tbody id="thread-listview" class="g-brd-0 u-listview" >
+	            		<tr class="g-height-150"><td colspan="3" class="align-middle g-font-weight-300 g-color-black text-center"></td></tr>	            	
+	            	</tbody>
+	            </table>
+           	</div>
+           	<div id="thread-listview-pager" class="g-brd-top-0 g-brd-right-0 g-brd-left-0 g-font-size-14"  ></div>
+           	-->
 		</div>   
 	</section>
  	<script type="text/x-kendo-template" id="readcount-column-template">

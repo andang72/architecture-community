@@ -18,8 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.TaskScheduler;
 
+import architecture.community.services.CommunitySpringEventPublisher;
+import architecture.community.util.SecurityHelper;
 import architecture.ee.service.ConfigService;
 import architecture.ee.util.StringUtils;
 
@@ -27,85 +28,71 @@ public class EmailMonitor {
  
 	
 	private Logger log = LoggerFactory.getLogger(EmailMonitor.class);
-	
-	private Runnable checkMailTask;
+
+
+	@Autowired(required = false)
+	@Qualifier("communitySpringEventPublisher")
+	private CommunitySpringEventPublisher eventPublisher;
 	
 	@Autowired
 	@Qualifier("configService")
 	private ConfigService configService;
-	
-	@Autowired
-	@Qualifier("taskScheduler")
-	private TaskScheduler taskScheduler;	
 	
 	public EmailMonitor() {
 		
 	}
 	
 	public void initialize() {
-		if(isEnabled())
-            start();
+ 
 	}	
     
 	public boolean isEnabled()
     {
         return configService.getApplicationBooleanProperty("services.checkmail.enabled", false);
     }
-    
-	public void start()
-    {
-        int numSeconds = configService.getApplicationIntProperty("services.checkmail.frequency", 30);
-        long period = 1000L * (long)numSeconds;
-        long delay = 1000L * (long)numSeconds;
-        start(delay, period); 
-    }
-
-    public void start(long delay, long period)
-    {
-    	synchronized(this) {
-    		if(checkMailTask == null) {
-    			final EmailMonitor monitor = this; 
-    			checkMailTask = new Runnable() {  
-    				public void run() { 
-    					monitor.processMessages();
-    				}
-    			};
-    		}
-    		taskScheduler.scheduleWithFixedDelay(checkMailTask, delay);
-    	}
-    }
-        
+         
 	public void processMessages() {
-		Map senders = new HashMap();
-		EmailBatch newMessages = null;
-		try
-        {
-            newMessages = checkMailAccount();
-            if(newMessages == null)
-                return;
-            
-            Iterator<InboundMessage> iter = newMessages.getMessages();
-            while(iter.hasNext()) {
-            	InboundMessage message = iter.next();
-            	// don action ...
-            	log.debug(" message {}", message.getSubject() );
-            }
-            
-        }
-        catch(MessagingException mex)
-        {
-            log.warn("Error reading configured email account - no messages read.", mex);
-        }
-        catch(IOException ioe)
-        {
-            log.warn("Error reading configured email account - no messages read.", ioe);
-        }
-        finally
-        {
-            senders.clear();
-            if(newMessages != null)
-                newMessages.close();
-        }
+		
+		log.debug("email monitoring service is {}", isEnabled() );
+	 
+		if(isEnabled()){ 
+			Map senders = new HashMap();
+			EmailBatch newMessages = null;
+			try
+	        {
+	            newMessages = checkMailAccount();
+	            if(newMessages == null)
+	                return;
+	            
+	            Iterator<InboundMessage> iter = newMessages.getMessages();
+	            while(iter.hasNext()) {
+	            	InboundMessage message = iter.next();
+	            	// don action ... for inbound message.
+	            	log.debug(" message {}", message.getSubject() );
+	            	if( eventPublisher != null)
+	        			eventPublisher.fireEvent(new MailEvent( message, SecurityHelper.getUser(), MailEvent.State.INBOUND ));
+	            }
+	            
+	        }
+	        catch(MessagingException mex)
+	        {
+	            log.warn("Error reading configured email account - no messages read.", mex);
+	        }
+	        catch(IOException ioe)
+	        {
+	            log.warn("Error reading configured email account - no messages read.", ioe);
+	        }catch(Throwable e) {
+	        	log.warn("Error reading configured email account - no messages read.", e);
+	        }
+	        finally
+	        {
+	            senders.clear();
+	            if(newMessages != null)
+	                newMessages.close();
+	        }			
+		}else {
+			
+		}
 	}
 	
 	private EmailBatch checkMailAccount() throws MessagingException, IOException {   
@@ -115,8 +102,10 @@ public class EmailMonitor {
 		boolean ssl = configService.getApplicationBooleanProperty("services.checkmail.ssl", false);
 		String username = configService.getApplicationProperty("services.checkmail.username", "");
 		String password = configService.getApplicationProperty("services.checkmail.password", "");
-		String accountType = configService.getApplicationProperty("services.checkmail.ssl", "imap");
+		String accountType = configService.getApplicationProperty("services.checkmail.protocol", "imap");
 		
+		log.debug("email monitoring service with {}, {}, {}, {}", host, port, accountType, username );  
+		log.debug("email monitoring service : {}", !StringUtils.isNullOrEmpty(host) );
 		if( !StringUtils.isNullOrEmpty(host)) {
 			CheckMailStrategy strategy ;
 			if( accountType.equals("imap")) {
@@ -124,6 +113,9 @@ public class EmailMonitor {
 			}else {
 				throw new IllegalArgumentException("Only IMAP type supported.");
 			}
+			
+			log.debug("email monitoring service checkForMessages : {}", strategy.getClass().getName());
+			
 			return strategy.checkForMessages(host, port, username, password, ssl);
 		}else {
 			log.info("No host configured for incoming email - skipping email processing.");
@@ -136,11 +128,11 @@ public class EmailMonitor {
 	public boolean testConnection() {
 		
 		boolean success = false;
-		String host = "imap.worksmobile.com"; // JiveGlobals.getJiveProperty("checkmail.host");
+		String host = ""; // JiveGlobals.getJiveProperty("checkmail.host");
 		int port = 993; // JiveGlobals.getJiveIntProperty("checkmail.port", 110);
 		boolean ssl = false; // JiveGlobals.getJiveBooleanProperty("checkmail.useSSL", false);
-		String username = "dhson@podosw.com"; // JiveGlobals.getJiveProperty("checkmail.v", "");
-		String password = "dhson007A"; // JiveGlobals.getJiveProperty("checkmail.password", "");
+		String username = ""; // JiveGlobals.getJiveProperty("checkmail.v", "");
+		String password = ""; // JiveGlobals.getJiveProperty("checkmail.password", "");
 		String accountType = "imap"; // JiveGlobals.getJiveProperty("checkmail.protocol", "POP3");
 		Store store = null;
 		Folder folder = null;
