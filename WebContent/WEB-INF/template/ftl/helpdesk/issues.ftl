@@ -13,9 +13,9 @@
 	<!-- Bootstrap core CSS -->
    	<link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
    	
-	<!-- Professional Kendo UI --> 	
+	<!-- Professional Kendo UI --> 	 
 	<link href="<@spring.url "/css/bootstrap.theme/unify-bootstrap-v4/all.css"/>" rel="stylesheet" type="text/css" />	
-		
+ 
    	<!-- Fonts & Icons CSS -->
 	<link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
 	<link href="<@spring.url "/fonts/nanumgothic.min.css"/>" rel="stylesheet" type="text/css" />		
@@ -147,7 +147,7 @@
 				data.copy($this.currentUser)
 				$this.set('isDeveloper', isDeveloper() ); 
 				if( $this.currentUser.hasRole('ROLE_DEVELOPER') ){ 
-					createNotification($this);				
+					createNotifications($this);				
 				}
 			},
 			back : function(){
@@ -188,84 +188,7 @@
 			},
 			displayProjectInfo : function () {
 				var $this = this ;
-				createOrOpenProjectModal ( $this.project );
-			},
-			displayOverviewStats : function(){
-				var $this = this ;
-				if( !__renderTo3.data('load') ){
-					console.log('create overview stats'); 
-					//setTimeout(function(){
-								var data = new google.visualization.DataTable();
-								data.addColumn('string', '유형');
-								data.addColumn('number', '건수');
-								$.each( $this.project.issueTypeStats.items , function(index, item ){				
-									switch (item.name) {
-	  									case "001" :
-									 		data.addRow(['오류', item['value'] ]);
-									 	break;
-									 	case "002" :
-									 		data.addRow(['데이터작업', item.value ]);
-									 	break;
-									 	case "003" :
-									 		data.addRow(['기능변경', item['value'] ]);
-									 	break;
-									 	case "004" :
-									 		data.addRow(['추가개발', item['value'] ]);	
-									 	break;
-									 	case "005" :
-									 		data.addRow(['기술지원', item['value'] ]);
-									 	break;
-									 	case "006" :
-									 		data.addRow(['영업지원', item['value'] ]);
-									 	break;
-									 		default :
-									    break;
-									}
-								} );
-								google.charts.setOnLoadCallback(drawPieChart(data));										
-					//}, 500);
-												
-					<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
-						community.ui.progress($('#linechart_div'), true);			
-						community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
-				      		contentType : "application/json",	
-				      		data: community.ui.stringify({
-				      			data : { projectId : $this.project.projectId }
-				      		}),
-							success: function(response){	
-								//setTimeout(function(){
-								var data = new google.visualization.DataTable();
-								data.addColumn('string', '월');
-								data.addColumn('number', '오류');
-								data.addColumn('number', '데이터작업');
-								data.addColumn('number', '기능변경');
-								data.addColumn('number', '추가개발');
-								data.addColumn('number', '기술지원');
-								data.addColumn('number', '영업지원');
-					
-								data.addColumn('number', '요청');
-								data.addColumn('number', '완료');
-								
-								$.each(response.items, function( index, item ) {				
-									data.addRow([ item.month + '월', item['aggregate']['001'],item['aggregate']['002'],item['aggregate']['003'],item['aggregate']['004'],item['aggregate']['005'],item['aggregate']['006'],
-									item['aggregate']['001']+item['aggregate']['002']+item['aggregate']['003']+item['aggregate']['004']+item['aggregate']['005']+item['aggregate']['006'],
-									item['aggregate']['000']
-									]);
-								});
-								google.charts.setOnLoadCallback(drawLineChart(data));				
-								//}, 1000);
-							}	
-						}).always( function () {
-							community.ui.progress($('#linechart_div'), false);
-						});		
-					</#if>						
-					__renderTo3.data('load', true);
-				} 
-				if( __renderTo3.is(':visible') ){
-					__renderTo3.fadeOut();
-				}else{
-					__renderTo3.fadeIn();
-				} 
+				createOrOpenProjectModal ( $this );
 			},
 			search : function(){
 				var $this = this;
@@ -285,6 +208,7 @@
 				community.ui.grid( __renderTo2 ).dataSource.read();
 			},
 			filter : {
+				TASK : null,
 				SUMMARY : null,
 				ISSUE_TYPE : null,
 				ASSIGNEE : null,
@@ -300,9 +224,15 @@
 				var $this = this;
 				var filter = {filter:{filters: [], logic: "AND" } };
 				
+								
 				if( $this.filter.NO_CLOSED_ISSUE ){
 					filter.filter.filters.push( {field: "RESOLUTION", operator: "eq", logic: "AND" } );
-				}						
+				}	
+				
+				if( $this.filter.TASK != null ){
+					filter.filter.filters.push( {field: "TASK_ID", operator: "eq", logic: "AND",  value : $this.filter.TASK } );
+				} 
+									
 				if( $this.filter.SUMMARY != null && $this.filter.SUMMARY.length > 0 ){
 					filter.filter.filters.push( {field: "SUMMARY", operator: "contains", value : $this.filter.SUMMARY, logic: "AND" } );
 				} 
@@ -333,6 +263,21 @@
 			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
 			resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
 			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} ),
+			taskDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/" />' + __projectId + '/tasks/list.json' , {
+				transport : {
+					parameterMap: function (options, operation){	 
+						if (operation !== "read" && options.models) { 
+							return community.ui.stringify(options.models);
+						} 
+						return community.ui.stringify(options);
+					}				
+				},
+			 	schema: {
+					total: "totalCount",
+					data: "items",
+					model: community.model.Task
+				}
+			}),			
 			userDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/users/find.json" />' , {
 			 	serverFiltering: true,
 			 	transport: {
@@ -355,6 +300,7 @@
      	// google charts loading 
 		google.charts.load('current', {'packages':['corechart']}); 
     	observable.load(__projectId); 
+    	
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	
@@ -425,21 +371,21 @@
 	/**
 	 * Drawing Charting .
 	 */
-	function drawPieChart(data) {
+	function drawPieChart(elementId, data) {
         var options = {
-          title: '이슈 유형',
+          title: '',
           subtitle: '금일까지 요청된 이슈들에 대한 유형입니다.'
         };
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.PieChart(document.getElementById(elementId));
         chart.draw(data, options);
     }
     	
 	/**
 	 * Drawing Charting .
 	 */
-	function drawLineChart(data) {
+	function drawLineChart(elementId, data) {
         var options = {
-          title: '누적 월별 현황',
+          title: '',
           subtitle: '완료건은 해당기간에 요청된 이슈들에 대한 완료 건입니다.',
           series : {
           	0: {lineDashStyle: [10,2], lineWidth: 2  },
@@ -455,9 +401,9 @@
           x: {
             0: {side: 'top'}
           }
-        	 }
+         }
         };
-        var chart = new google.visualization.LineChart(document.getElementById('linechart_div'));
+        var chart = new google.visualization.LineChart(document.getElementById(elementId));
         chart.draw(data, options);
     }
         	
@@ -474,36 +420,7 @@
 						contentType: "application/json; charset=utf-8"
 					},
 					parameterMap: function (options, operation){							
-						var filter = observable.filters(); //{filter:{filters: [], logic: "AND" } };
-						/**
-						if( observable.filter.NO_CLOSED_ISSUE ){
-							filter.filter.filters.push( {field: "RESOLUTION", operator: "eq", logic: "AND" } );
-						}						
-						if( observable.filter.SUMMARY != null && observable.filter.SUMMARY.length > 0 ){
-							filter.filter.filters.push( {field: "SUMMARY", operator: "contains", value : observable.filter.SUMMARY, logic: "AND" } );
-						} 
-						if( observable.filter.ASSIGNEE != null && observable.filter.ASSIGNEE.userId > 0 ){
-							filter.filter.filters.push( {field: "ASSIGNEE", operator: "eq", value : observable.filter.ASSIGNEE.userId, logic: "AND" } );
-						}						
-						if( observable.filter.ISSUE_TYPE != null && observable.filter.ISSUE_TYPE.length > 0 ){
-							filter.filter.filters.push( {field: "ISSUE_TYPE", operator: "eq", value : observable.filter.ISSUE_TYPE, logic: "AND" } );
-						}
-						if( observable.filter.PRIORITY != null && observable.filter.PRIORITY.length > 0 ){
-							filter.filter.filters.push( {field: "PRIORITY", operator: "eq", value : observable.filter.PRIORITY, logic: "AND" } );
-						}
-						if( observable.filter.RESOLUTION != null && observable.filter.RESOLUTION.length > 0 ){
-							filter.filter.filters.push( {field: "RESOLUTION", operator: "eq", value : observable.filter.RESOLUTION, logic: "AND" } );
-						}
-						if( observable.filter.ISSUE_STATUS != null && observable.filter.ISSUE_STATUS.length > 0 ){
-							filter.filter.filters.push( {field: "ISSUE_STATUS", operator: "eq", value : observable.filter.ISSUE_STATUS, logic: "AND" } );
-						}
-						if( observable.filter.START_DATE != null ){
-							filter.filter.filters.push({ field: "START_DATE", operator: "gte", value : community.data.getFormattedDate( observable.filter.START_DATE, 'yyyyMMdd' ), logic: "AND" });
-						}
-						if( observable.filter.END_DATE != null ){
-							filter.filter.filters.push({ field: "END_DATE", operator: "lte", value : community.data.getFormattedDate( observable.filter.END_DATE, 'yyyyMMdd' ), logic: "AND" });
-						}
-						**/
+						var filter = observable.filters(); 
 						if( filter.filter.filters.length > 0 ){
 							options = $.extend( true, {}, filter, options );
 						}						
@@ -538,7 +455,8 @@
 				{ field: "ASSIGNEE", title: "담당자", filterable: false, sortable: true , template: '#if ( assignee.userId > 0 ) {##= community.data.getUserDisplayName( assignee ) ##}#', width: 80, attributes:{ class:"text-center" }},
 				{ field: "RESOLUTION", title: "결과", filterable: false, sortable: true , template: '#if(resolutionName!=null){##:resolutionName##}#', width: 80, attributes:{ class:"text-center" }},  
 				{ field: "ISSUE_STATUS", title: "상태", filterable: false, sortable: true , template: '#:statusName#', width: 80, attributes:{ class:"text-center" }},  
-				{ field: "DUE_DATE", title: "예정일", filterable: false, sortable: true , width : 100 , template:'#if(dueDate!=null){##= community.data.getFormattedDate( dueDate, "yyyy.MM.dd") ##}#' ,attributes:{ class:"text-center" } },
+				{ field: "START_DATE", title: "시작일", filterable: false, sortable: true , width : 100 , template:'#if(startDate!=null){##= community.data.getFormattedDate( startDate, "yyyy.MM.dd") ##}#' ,attributes:{ class:"text-center" } },
+				{ field: "DUE_DATE", title: "완료예정일", filterable: false, sortable: true , width : 100 , template:'#if(dueDate!=null){##= community.data.getFormattedDate( dueDate, "yyyy.MM.dd") ##}#' ,attributes:{ class:"text-center" } },
 				{ field: "RESOLUTION_DATE", title: "완료일", filterable: false, sortable: true , width : 100 , template:'#if(resolutionDate!=null){##= community.data.getFormattedDate( resolutionDate, "yyyy.MM.dd") ##}#' ,attributes:{ class:"text-center" } },
 				{ field: "CREATION_DATE", title: "등록일", filterable: false, sortable: true , width : 100 , template:'#= community.data.getFormattedDate( creationDate, "yyyy.MM.dd") #' ,attributes:{ class:"text-center g-font-size-14" } },
 				{ field: "MODIFIED_DATE", title: "수정일", filterable: false, sortable: true , width : 100 , template:'#= community.data.getFormattedDate( modifiedDate, "yyyy.MM.dd") #' ,attributes:{ class:"text-center g-font-size-14" } }
@@ -547,15 +465,14 @@
 	} 
 		 
  	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
- 	function createOrOpenProjectModal( project ){
- 		var renderTo = $('#project-view-modal');
- 		
- 		if( !community.ui.exists( renderTo ) ){		 
- 			var grid = community.ui.grid( renderTo.find('.grid') , {
+ 	function createOrOpenProjectModal( observable ){
+ 		var renderTo = $('#project-view-modal'); 
+ 		if( !community.ui.exists( renderTo ) ){	 
+ 			var grid = community.ui.grid( $('#project-view-modal-tabs--1 .grid') , {
 				dataSource: community.ui.datasource('/data/api/v1/attachments/list.json', {
 					transport : {
 						parameterMap :  function (options, operation){
-							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 19 , objectId : project.projectId }
+							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 19 , objectId : observable.project.projectId }
 						}
 					},
 					pageSize: 10,
@@ -564,21 +481,140 @@
 						data: "items",
 						model : community.model.Attachment
 					}
-				}),
+				}), 
 				pageable: false, 
 				sortable: false,
-				filterable: false,
-				height: 300,
+				filterable: false, 
 				columns: [
 					{ field: "name", title: "&nbsp;", width: 70, filterable: false, sortable: false , template : $('#thumbnail-column-template').html(), attributes:{ class:"text-center" }},
 					{ field: "name", title: "파일", filterable: false, sortable: true , template : $('#filename-column-template').html(), attributes:{ class:"g-font-size-14" } },
 					{ field: "size", title: "크기(Byte)", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(data.size) #', attributes:{ class:"text-right" } }
 				]		
-			}); 	
- 			community.ui.bind( renderTo, project );	 
+			});  
+			var renderTo2 = $('#project-view-modal-tabs--2 .grid') ; 
+ 			community.ui.bind( renderTo, observable );	  
+ 			renderTo.find('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+ 				console.log(  e  );
+ 				console.log(  $(e.target).html()  );
+ 				if($(e.target).data('kind') == 'task'){
+					createProjectTaskGrid(renderTo2, observable.project).dataSource.read();
+			  	}else if ($(e.target).data('kind') == 'stats'){ 
+			  		
+			  		if( !community.ui.defined( $($(e.target).attr('href')).data('load') ) ){ 
+						createProjectPieAndLineChart(observable);
+			  			$($(e.target).attr('href')).data('load', true);
+			  		} 
+			  	}
+		 	});
+		 				
  		}
  		renderTo.modal('show');
- 		
+ 	}
+ 	
+ 	function createProjectPieAndLineChart(observable){
+ 		var data = new google.visualization.DataTable();
+		data.addColumn('string', '유형');
+		data.addColumn('number', '건수');
+		$.each(observable.project.issueTypeStats.items , function(index, item ){				
+							switch (item.name) {
+								case "001" :
+									data.addRow(['오류', item['value'] ]);
+									break;
+								case "002" :
+									data.addRow(['데이터작업', item.value ]);
+									break;
+								case "003" :
+									data.addRow(['기능변경', item['value'] ]);
+									break;
+								case "004" :
+									data.addRow(['추가개발', item['value'] ]);	
+									break;
+								case "005" :
+									data.addRow(['기술지원', item['value'] ]);
+									break;
+								case "006" :
+									data.addRow(['영업지원', item['value'] ]);
+									break;
+								default :
+									break;
+							}
+		} );
+		google.charts.setOnLoadCallback(drawPieChart('project_piechart_div', data)); 
+		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >					
+		community.ui.progress($('#project_linechart_div'), true);
+		community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
+				      		contentType : "application/json",	
+				      		data: community.ui.stringify({
+				      			data : { projectId : observable.project.projectId }
+				      		}),
+							success: function(response){	 
+								data = new google.visualization.DataTable();
+								data.addColumn('string', '월');
+								data.addColumn('number', '오류');
+								data.addColumn('number', '데이터작업');
+								data.addColumn('number', '기능변경');
+								data.addColumn('number', '추가개발');
+								data.addColumn('number', '기술지원');
+								data.addColumn('number', '영업지원');
+					
+								data.addColumn('number', '요청');
+								data.addColumn('number', '완료');
+								
+								$.each(response.items, function( index, item ) {				
+									data.addRow([ item.month + '월', item['aggregate']['001'],item['aggregate']['002'],item['aggregate']['003'],item['aggregate']['004'],item['aggregate']['005'],item['aggregate']['006'],
+									item['aggregate']['001']+item['aggregate']['002']+item['aggregate']['003']+item['aggregate']['004']+item['aggregate']['005']+item['aggregate']['006'],
+									item['aggregate']['000']
+									]);
+								});
+								google.charts.setOnLoadCallback(drawLineChart('project_linechart_div', data));				
+							}	
+		}).always( function () {
+			community.ui.progress($('#project_linechart_div'), false);
+		});	
+		</#if>			
+ 	}
+	
+							
+ 	
+ 	function createProjectTaskGrid ( renderTo, data ){
+ 		if( !community.ui.exists( renderTo ) ){		 
+ 			community.ui.grid( renderTo, {
+				dataSource: {
+					transport: { 
+						read : { url:'<@spring.url "/data/api/mgmt/v1/tasks/list.json"/>', type:'post', contentType: "application/json; charset=utf-8"},
+						parameterMap: function (options, operation){	 
+							if (operation !== "read" && options.models) { 
+								return community.ui.stringify(options.models);
+							}
+							options.objectType = 19 ; 
+							options.objectId = data.projectId;
+							return community.ui.stringify(options);
+						}
+					},  
+					serverPaging: true,
+					pageSize: 15,
+					schema: {
+						total: "totalCount",
+						data:  "items",
+						model:community.model.Task 
+					}
+				}, 
+				resizable: true,
+				sortable: true,
+				filterable: false,
+				pageable: false,
+				columns: [
+					{ field: "taskName", title: "이름" , width:250, validation: { required: true} },
+					{ field: "version", title: "버전", width: 80  },
+					{ field: "price", title: "가격" , format: "{0:c}" , width: 130 },
+					{ field: "startDate", title: "시작일" , format: "{0:yyyy.MM.dd}", width: 100},
+					{ field: "endDate", title: "종료일", format: "{0:yyyy.MM.dd}",  width: 100 },
+					{ field: "progress", title: "진행율", width: 80  },
+					{ field: "description", title: "설명"  }
+				]
+			}); 
+ 		}
+ 		return community.ui.grid( renderTo );
  	}
  	
  	function createOrOpenIssueBatchEditor (parent, data){ 	
@@ -652,15 +688,12 @@
 	    text-align: center;
 		font-weight : 500;
 	}
-	
-	.k-grid-pager {
-		font-size : .9em;
-	}	
-
-	.k-grid-content {
-	    min-height: 600px;
-	} 
-	   
+ 
+	.g-brd-top-1 {
+	    border-top-width: 1px !important;
+	    font-weight : 400;
+	}
+		   	   
 	.g-brd-bottom-1 {
 	    border-bottom-width: 1px !important;
 	    font-weight : 400;
@@ -670,10 +703,11 @@
 	    border-bottom-width: 3px !important;
 	    font-weight : 400;
 	}
-			
-	.modal-body .k-grid-content {
-	    min-height: auto;
-	} 
+ 
+	
+	#project-view-modal .modal-lg {
+		max-width : 90%;
+	}
 	
 	</style>		
 </head>
@@ -699,11 +733,9 @@
 				</h2>
 				<div data-bind="visible: visible" style="display:none;" class="animated fadeIn"> 
 				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	 
-				<div class="btn-group">
+				<div class="btn-group" role="group">
 					<a class="btn btn-md u-btn-3d u-btn-darkpurple g-px-25 g-py-13" href="#!" style="display:none;" role="button" 
 					data-toggle="tooltip" data-placement="top" data-original-title="프로젝트 관련 정보를 확인할 수 있습니다." data-bind="click:displayProjectInfo,visible:isDeveloper">정보보기</a>
-					<a href="#!" class="btn btn-md u-btn-3d u-btn-purple g-px-25 g-py-13" 
-					data-toggle="tooltip" data-placement="top" data-original-title="프로젝트 이슈 누적 통계를 확인할 수 있습니다." data-bind="click: displayOverviewStats">통계보기</a> 
 				</div>
 				</#if>	
 				<!--
@@ -734,51 +766,7 @@
 		</div>
     </section>
     <!-- End Promo Block -->
-	<section id="features">
-	
-      	<section class="g-bg-white g-py-15 " id="project-overviewstats" style="display:none;" >
-		<div class="container">
-			<!-- Start Stats -->
-			<div class="u-shadow-v11 g-rounded-7 g-bg-white g-pa-20" >
-				<div class="u-heading-v2-4--bottom g-mb-10">
-					<!--<h2 class="text-uppercase u-heading-v2__title g-mb-10">프로젝트 이슈요약</h2>-->
-					<h4 class="g-font-weight-200"><span class="g-color-primary g-font-weight-400"><#if __project?? > ${__project.name} </#if></span> 에 대한 누적 이슈처리 현황입니다.</h4>
-				</div>
-				<div class="row">
-					<div class="col-lg-6">
-						<div id="chart_div" style="width: 100%; height:200px;"></div>
-					</div>
-					<div class="col-lg-6">			
-						<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div>
-							<span>전체</span>
-							</div>
-							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-							<div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount">0</div>
-							<span>오류</span>
-							</div>
-							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount">0</div>
-							<span>종결</span>
-							</div>
-							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div>
-							<span>미처리</span>
-							</div>			
-						</div>
-					</div>            		
-					<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
-					<div class="row">
-						<div class="col-sm-12">
-							<div id="linechart_div" style="width: 100%; height:300px;"></div>
-						</div>
-					</div>	
-					</#if>    
-			</div> 	
-			<!-- End Stats -->	
-		</div>
-		</section>	
-		
+	<section id="features"> 
       <!-- Filter -->
       <div class="u-shadow-v19 g-bg-gray-light-v5" id="project-filters" >
         <div class="container g-py-30 ">
@@ -856,14 +844,27 @@
 					data-text-field="name"
 					data-value-field="username"
 					data-autoBind: false,
-					data-bind="value:filter.ASSIGNEE, 
-					source: userDataSource,
-					visible:visible"
+					data-bind="value:filter.ASSIGNEE, source: userDataSource, visible:visible"
 					style="width: 100%;display:none;"/>
               <!-- End 담당자 -->
             </div>
-
-            <div class="col-sm-6 col-lg-8">
+            <!-- Task -->
+			<div class="col-sm-6 col-lg-4">
+				<div class="form-group" >
+					<input name="task-type"
+					data-role="combobox"   
+					data-placeholder="과업"
+					data-auto-bind="true"
+					data-text-field="taskName"
+					data-value-field="taskId"
+					data-value-primitive="true" 
+					data-bind="value:filter.TASK, source: taskDataSource, visible:visible" 
+					style="width: 100%;display:none;"/>
+							                   
+			  	</div>
+			</div>
+			<!-- End Task -->
+            <div class="col-sm-6 col-lg-4">
               <!-- 검색어 -->
 			  <div class="form-group" >
 				<input type="text" name="issue-summary" class="form-control" placeholder="검색어를 입력해여 주세요." 
@@ -989,42 +990,88 @@
 			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
 			        </button> 
 		      	</div>
-				<div class="modal-body g-pa-25 g-font-size-15">	
+				<div class="modal-body g-pa-25 g-font-size-15">	 
+					<div class="row">
+		                <div class="col-md-8 g-mb-30 g-brd-2 g-brd-blue">
+		                  <p class="g-font-size-16 g-font-weight-400" ><#if __project?? >${ __project.summary?html?replace("\n", "<br>")}</#if></p>
+		                </div>
+		                <div class="col-md-4 g-mb-30">
+		                  <!-- List -->
+		                  <ul class="list-unstyled g-color-text g-font-weight-400">
+							<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
+		                      <span>계약자:</span>
+		                      <span class="float-right g-color-black" ><#if __project?? >${ CommunityContextHelper.getCodeSetService().getCodeSetByCode("CONTRACTOR", __project.contractor).name }</#if></span>
+		                    </li>
+							<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
+		                      <span>계약상태:</span>
+		                      <span class="float-right g-color-black" ><#if ( __project??  &&  __project.contractState?? ) >${ CommunityContextHelper.getCodeSetService().getCodeSetByCode("PROJECT", __project.contractState).name }</#if></span>
+		                    </li>                    
+							<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
+		                      <span>비용(월):</span>
+		                      <span class="float-right g-color-black" ><#if __project?? >${__project.maintenanceCost?string.currency}</#if></span>
+		                    </li>
+		                    <li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
+		                      <span>시작일:</span>
+		                      <span class="float-right g-color-black" ><#if __project?? >${__project.startDate?string["yyyy.MM.dd"]}</#if></span>
+		                    </li>
+		                     <li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
+		                      <span>종료일:</span>
+		                      <span class="float-right g-color-black"><#if __project?? >${__project.endDate?string["yyyy.MM.dd"]}</#if></span>
+		                    </li>                   
+		                  </ul>
+		                  <!-- End List -->
+		                </div>
+					</div> 
+					<!-- Nav tabs -->
+					<ul class="nav justify-content-end u-nav-v5-3 u-nav-dark g-brd-bottom--md g-brd-gray-light-v4 g-font-weight-500 g-font-size-16" role="tablist" data-target="project-view-modal-tabs" data-tabs-mobile-type="slide-up-down" data-btn-classes="btn btn-md btn-block rounded-0 u-btn-outline-darkgray">
+					  <li class="nav-item">
+					    <a class="nav-link active" data-toggle="tab" href="#project-view-modal-tabs--1" role="tab" data-kind="attachment">관련자료</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--2" role="tab" data-kind="task">과업</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--3" role="tab" data-kind="stats" data-load="false" >통계</a>
+					  </li>					  
+					</ul>
+					<!-- End Nav tabs -->
+					<!-- Tab panes -->
+					<div id="project-view-modal-tabs" class="tab-content g-pt-20">
+					  <div class="tab-pane fade show active" id="project-view-modal-tabs--1" role="tabpanel">
+						<div class="grid g-brd-0 g-brd-gray-light-v4 g-brd-top-1 g-brd-bottom-1 g-brd-style-solid"></div>
+					  </div> 
+					  <div class="tab-pane fade" id="project-view-modal-tabs--2" role="tabpanel">
+					   	<div class="grid g-brd-0 g-brd-gray-light-v4 g-brd-top-1 g-brd-bottom-1 g-brd-style-solid"></div>
+					  </div>
+					  <div class="tab-pane fade" id="project-view-modal-tabs--3" role="tabpanel">
 					
-				<div class="row">
-                <div class="col-md-8 g-mb-30 g-brd-2 g-brd-blue">
-                  <p class="g-font-size-16 g-font-weight-400" ><#if __project?? >${ __project.summary?html?replace("\n", "<br>")}</#if></p>
-                </div>
-                <div class="col-md-4 g-mb-30">
-                  <!-- List -->
-                  <ul class="list-unstyled g-color-text g-font-weight-400">
-					<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-                      <span>계약자:</span>
-                      <span class="float-right g-color-black" ><#if __project?? >${ CommunityContextHelper.getCodeSetService().getCodeSetByCode("CONTRACTOR", __project.contractor).name }</#if></span>
-                    </li>
-					<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-                      <span>계약상태:</span>
-                      <span class="float-right g-color-black" ><#if ( __project??  &&  __project.contractState?? ) >${ CommunityContextHelper.getCodeSetService().getCodeSetByCode("PROJECT", __project.contractState).name }</#if></span>
-                    </li>                    
-					<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-                      <span>비용(월):</span>
-                      <span class="float-right g-color-black" ><#if __project?? >${__project.maintenanceCost?string.currency}</#if></span>
-                    </li>
-                    <li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-                      <span>시작일:</span>
-                      <span class="float-right g-color-black" ><#if __project?? >${__project.startDate?string["yyyy.MM.dd"]}</#if></span>
-                    </li>
-                     <li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-                      <span>종료일:</span>
-                      <span class="float-right g-color-black"><#if __project?? >${__project.endDate?string["yyyy.MM.dd"]}</#if></span>
-                    </li>                   
-                  </ul>
-                  <!-- End List -->
-                </div>
-              </div>					
-					<h2 class="h4 mb-3">관련자료</h2>
-					<div class="grid"></div>
-								
+					<div class="row">
+						<div class="col-lg-6">
+							<div id="project_piechart_div" style="width: 100%; height:200px;"></div>
+						</div>
+						<div class="col-lg-6">			
+							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
+							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div><span>전체</span></div>
+							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
+							<div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount">0</div><span>오류</span></div>
+							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
+							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount">0</div><span>종결</span></div>
+							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
+							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div><span>미처리</span></div>			
+						</div>        
+					</div>					   	 
+					<!-- linechart -->
+					<div class="row">
+						<div class="col-sm-12" >
+							<div id="project_linechart_div" style="width: 100%; min-height:300px;"></div>
+						</div>
+					</div>
+					<!-- end linechart -->	
+					  
+					  </div>
+					  
+					</div>
+					<!-- End Tab panes --> 
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-md u-btn-bluegray g-mr-10" data-dismiss="modal">닫기</button>

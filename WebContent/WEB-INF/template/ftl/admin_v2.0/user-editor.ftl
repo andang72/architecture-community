@@ -131,6 +131,11 @@
 		 	saveOrUpdate : function(e){		
 		 		$this = this;		
 				community.ui.progress(renderTo, true);	
+				
+				if( $this.user.userId == 0 ){
+					$this.user.set('password', '1234');
+				}
+				
 				community.ui.ajax( '<@spring.url "/data/api/mgmt/v1/security/users/save-or-update.json" />', {
 					data: community.ui.stringify($this.user),
 					contentType : "application/json",

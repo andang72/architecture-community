@@ -377,6 +377,21 @@
 			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
 			resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
 			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} )	,
+			taskDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/" />' + __projectId + '/tasks/list.json' , {
+				transport : {
+					parameterMap: function (options, operation){	 
+						if (operation !== "read" && options.models) { 
+							return community.ui.stringify(options.models);
+						} 
+						return community.ui.stringify(options);
+					}				
+				},
+			 	schema: {
+					total: "totalCount",
+					data: "items",
+					model: community.model.Task
+				}
+			}),	
 			userDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/users/find.json" />' , {
 			 	serverFiltering: true,
 			 	transport: {
@@ -922,12 +937,20 @@
 								        
 	 									<div class="form-group g-mb-20">
 	 										<h4 class="h6 text-light-gray text-semibold">고객사 담당자</h4>	
-								            <input type="text" name="issue-requestor-name" class="form-control form-control-md" placeholder="고객사 담당자 이름을 입력하세요." 
+								            <input type="text" name="issue-requestor-name" class="form-control" placeholder="고객사 담당자 이름을 입력하세요." 
 								            	data-bind="value: issue.requestorName, enabled:editing" />
 								        </div>								        
-								        
-								        
-								        
+								        <div class="form-group g-mb-20">
+	 										<h4 class="h6 text-light-gray text-semibold">과업 <span class="g-color-blue g-font-size-12">  특정 과업과 관련된 이슈인 경우 선택해 주세요.  </span></h4>	
+								            <input name="task-type"
+								               data-role="dropdownlist"   
+											   data-placeholder="선택"
+							                   data-auto-bind="true"
+							                   data-text-field="taskName"
+							                   data-value-field="taskId"
+							                   data-bind="value:issue.task, source: taskDataSource, enabled:editing" 
+							                   style="width:100%;"/>
+								        </div>
 										<div class="row">
 								            <div class="col-sm-6">
 								              <!-- Issue Type  -->
@@ -998,16 +1021,24 @@
 								            </div>
 								         </div>
 										 <div class="row" data-bind="visible: isDeveloper" style="display:none;">
-								            <div class="col-sm-6">
+										 	<div class="col-sm-4">
+								              <!-- Start Date  -->
+								              <div class="form-group g-mb-20">
+								              <h4 class="h6 g-mb-5">시작일</h4>
+								              <input data-role="datepicker" data-bind="value: issue.startDate, visible: isDeveloper, enabled: editingForAssignee" style="width: 100%">
+								               </div>
+								              <!-- End Start Date -->
+								            </div>	
+								            <div class="col-sm-4">
 								              <!-- Priority Type  -->
 								              <div class="form-group g-mb-20">
 								              <h4 class="h6 g-mb-5">완료예정일</h4>
-								              <input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled: editingForAssignee" style="width: 100%">
+								              <input data-role="datepicker" data-placeholder="완료예정일" data-bind="value: issue.dueDate, visible: isDeveloper, enabled: editingForAssignee" style="width: 100%">
 								               </div>
 								              <!-- End Priority -->
 								            </div>					
 								            <!-- Estimate Type  -->
-								            <div class="col-sm-6">
+								            <div class="col-sm-4">
 								             	<div class="form-group g-mb-20">
 								             		<h4 class="h6 g-mb-5">예상작업시간</h4>
 										            <input data-role="numerictextbox" 

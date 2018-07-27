@@ -51,17 +51,40 @@
 						<span class="media-body align-self-center">카테고리</span>
 					</a>
 				</li>
-				<!-- End Category -->				
+				<!-- End Category -->	
+				<!-- Tag -->
+				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-tags" data-page="manage-tags"> 
+						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
+							<i class="community-admin-folder"></i>
+						</span> 
+						<span class="media-body align-self-center">태그</span>
+					</a>
+				</li>
+				<!-- End Tag -->		
+									
 				<!-- Project -->
 				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
-					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-projects_v2" data-page="manage-projects"> 
+ 					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-projects_v2" data-page="manage-projects"> 
 						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
-							<i class="community-admin-layout-media-left"></i>
+							<i class="community-admin-comments"></i>
 						</span> 
 						<span class="media-body align-self-center">프로젝트</span>
 					</a>
 				</li>
 				<!-- End Project -->
+				
+				<!-- Announce -->
+				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
+					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-announces_v2" data-page="manage-announces"> 
+						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
+							<i class="community-admin-announcement"></i>
+						</span> 
+						<span class="media-body align-self-center">공지</span>
+					</a>
+				</li>
+				<!-- End Announce -->	
+								
 				<!-- Board -->
 				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
 					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-boards" data-page="manage-boards"> 
@@ -72,16 +95,7 @@
 					</a>
 				</li>
 				<!-- End Board -->	
-				<!-- Announce -->
-				<li class="u-sidebar-navigation-v1-menu-item u-side-nav--second-level-menu-item">
-					<a class="media u-side-nav--second-level-menu-link g-px-15 g-py-12" href="manage-announces" data-page="manage-announces"> 
-						<span class="d-flex align-self-center g-mr-15 g-mt-minus-1"> 
-							<i class="community-admin-announcement"></i>
-						</span> 
-						<span class="media-body align-self-center">공지</span>
-					</a>
-				</li>
-				<!-- End Announce -->								
+							
 			</ul> <!-- End Community: sub_menu_2 -->
 		</li>
 		<!-- End Community -->

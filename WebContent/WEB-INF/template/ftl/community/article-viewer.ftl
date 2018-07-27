@@ -401,7 +401,7 @@
 		var myDropzone = new Dropzone('#' + renderTo.attr('id'), {
 			url: '/data/api/v1/attachments/upload.json',
 			paramName: 'file',
-			maxFilesize: 10,
+			maxFilesize: 30,
 			previewsContainer: '#' + renderTo.attr('id') + ' .dropzone-previews',
 			previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div></div>',
 			maxfilesexceeded : function() {

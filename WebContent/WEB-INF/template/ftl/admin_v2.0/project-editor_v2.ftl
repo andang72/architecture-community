@@ -8,8 +8,9 @@
 	<title>${ CommunityContextHelper.getConfigService().getApplicationProperty("website.title", "REPLICANT") } | ADMIN v2.0</title>
 	
 	<!-- Professional Kendo UI --> 	
+	<!--
 	<link href="<@spring.url "/css/kendo/2018.1.221/kendo.common.min.css"/>" rel="stylesheet" type="text/css" />	
-	
+	-->
 	<link href="<@spring.url "/css/kendo/2018.1.221/kendo.bootstrap-v4.min.css"/>" rel="stylesheet" type="text/css" />	
 	
 	<!-- Bootstrap CSS -->
@@ -107,6 +108,7 @@
 				var $this = this;
 				if( $this.project.get('projectId') > 0 ){
 					$this.set('editable', false );	
+					$('#task-grid').attr('disabled', true);
 					//getCodeEditor().setReadOnly(true);
 				}else{
 					$this.back();
@@ -115,6 +117,9 @@
 			edit : function(e){
 			 	var $this = this;
 			 	$this.set('editable', true );
+			 	if($this.project.projectId > 0 ) {
+			 		$('#task-grid').attr('disabled', false);
+			 	}
 		 	},
 		 	saveOrUpdate : function(e){				
 				var $this = this;
@@ -145,6 +150,7 @@
 				$this.set('formatedModifiedDate' , community.data.getFormattedDate( $this.project.modifiedDate) );
 				
 				createAttachmentListView($this);
+				createTaskGrid($this);
 				
 				if( $this.get('isNew' )){
 					$this.edit();
@@ -217,6 +223,87 @@
 		    	renderTo.click();
 		    });
 		} 	
+	}
+	function nonEditor(container, options) {
+	    container.text(options.model[options.field]);
+	}  	
+	function createTaskGrid( observable ) {
+		var renderTo = $('#task-grid');	
+		if( !community.ui.exists( renderTo ) ){	 
+			community.ui.grid(renderTo, {
+				dataSource: {
+					transport: { 
+						read : { url:'<@spring.url "/data/api/mgmt/v1/tasks/list.json"/>', type:'post', contentType: "application/json; charset=utf-8"},
+						create : { url:'<@spring.url "/data/api/mgmt/v1/tasks/save-or-update.json"/>',  type:'post', contentType: "application/json; charset=utf-8"},
+						update : { url:'<@spring.url "/data/api/mgmt/v1/tasks/save-or-update.json"/>',  type:'post', contentType: "application/json; charset=utf-8"},
+						parameterMap: function (options, operation){	 
+							if (operation !== "read" && options.models) { 
+								return community.ui.stringify(options.models);
+							}
+							options.objectType = 19 ; 
+							options.objectId = observable.project.projectId;
+							return community.ui.stringify(options);
+						}
+					},  
+					serverPaging: true,
+					pageSize: 15,
+					schema: {
+						total: "totalCount",
+						data:  "items",
+						model: {
+								id: "taskId", 
+								fields: { 		 	
+									taskId: { type: "number", defaultValue: 0 },	
+									objectType: { type: "number", defaultValue: 19 },	
+									objectId: { type: "number", defaultValue: 0 },	
+									taskName: { type: "string", defaultValue: null },	
+									description: { type: "string", defaultValue: null },	
+									version: { type: "string", defaultValue: null },	
+									price : { type: "number", defaultValue: 0 },
+									startDate:{ type: "date" },			
+									endDate:{ type: "date"},
+									progress: { type: "string", defaultValue: null },
+									creationDate:{ type: "date" },			
+									modifiedDate:{ type: "date"}
+								}
+						}
+					}
+				}, 
+				resizable: true,
+				sortable: true,
+				filterable: false,
+				pageable: false, 
+				editable: "popup",
+				toolbar: ["create"],
+				edit: function(e) {
+				    $.each( e.container.find("input[data-role=numerictextbox]"), function( index, item ){
+				    	if( item.getAttribute("name") !== 'price' ){
+				    		$(item).data("kendoNumericTextBox").enable(false);
+				    	}
+				    });			
+				    if (e.model.isNew()) {
+				       	e.model.set('objectId', observable.project.projectId );
+				    }
+				 },
+				columns: [
+					{ field: "taskId", title: "ID", width:75 },
+					{ field: "objectType", title: "객체 유형" , width:80, validation: { required: true} },
+					{ field: "objectId", title: "객체 ID" , width:80, validation: { required: true} },
+					{ field: "taskName", title: "이름" , width:200, validation: { required: true} },
+					{ field: "version", title: "버전", width: 80  },
+					{ field: "price", title: "가격" , format: "{0:c}" , width: 100 },
+					{ field: "startDate", title: "시작일" , format: "{0:yyyy.MM.dd}", width: 100},
+					{ field: "endDate", title: "종료일", format: "{0:yyyy.MM.dd}" },
+					{ field: "progress", title: "진행율", width: 80  },
+					{ field: "description", title: "설명"  },
+					{ command: ["edit", "destroy"], title: "&nbsp;", width: "220"}
+				],
+				save : function(){
+					 
+				}
+			});					
+		
+		}
 	}
 	
 	function createAttachmentListView ( observable ){
@@ -568,11 +655,12 @@
 	                  		<section data-bind="invisible:isNew" style="display:none;" > 
 							<nav>
 							  <div class="nav nav-tabs" id="nav-tab" role="tablist"> 
-							    <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-attachment" role="tab" aria-controls="nav-attachment" aria-selected="false">첨부파일</a> 
+							    <a class="nav-item nav-link active" id="nav-attachment-tab" data-toggle="tab" href="#nav-attachment" role="tab" aria-controls="nav-attachment" aria-selected="false">첨부파일</a>  
+							    <a class="nav-item nav-link" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="false">과업</a>  
 							  </div>
 							</nav>
 							<div class="tab-content" id="nav-tabContent">
- 								<div class="tab-pane fade show active" id="nav-attachment" role="tabpanel" aria-labelledby="nav-profile-tab"> 
+ 								<div class="tab-pane fade show active" id="nav-attachment" role="tabpanel" aria-labelledby="nav-attachment-tab"> 
 									<section data-bind="visible:editable" style="display:none;" class="g-mt-10">
 										<div class="dropZoneElement file u-dropzone u-file-attach-v3 g-mb-15 dz-clickable">
 								                <div class="textWrapper">
@@ -581,14 +669,17 @@
 									                <p class="g-font-size-14 g-color-gray-light-v2 mb-0">최대파일 크기는 10MB 입니다.</p>
 												</div>
 								        </div>
-										<input name="files2" id="file-upload" type="file"  data-bind="enabled: editable"/>
+										<input name="files2" id="file-upload" type="file"  data-bind="enabled:editable"/>
 									</section> 
 									<table class="table u-table--v2 g-mt-15">
-				                  		<tbody id="attachments-listview" class="g-brd-0 u-listview" style="min-height:100px;"></tbody>
+				                  		<tbody id="attachments-listview" class="g-brd-0 u-listview" style="min-height:100px; data-bind="enabled:editable"></tbody>
 				            		</table> 
-									</div>							   
-								</div> 
-	                  		</section>
+								</div>
+								<div class="tab-pane fade" id="nav-task" role="tabpanel" aria-labelledby="nav-task-tab"> 
+									<div id="task-grid" class="g-brd-gray-light-v7 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-1 g-mt-5" data-bind="enabled:editable"></div> 
+								</div>						   							   
+							</div>
+	                  	</section>
 						</div>
 						<div class="g-brd-left--lg g-brd-gray-light-v4 col-md-3 g-mb-10 g-mb-0--md">
 							<section class="g-mb-10 g-mt-20">							
