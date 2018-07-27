@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import architecture.ee.service.ConfigService;
 import architecture.ee.service.Repository;
 
+
 public class CommunityMailService implements MailService {
 
 	private Logger log = LoggerFactory.getLogger(CommunityMailService.class);
@@ -31,19 +32,17 @@ public class CommunityMailService implements MailService {
 	@Qualifier("mailSender")
 	private JavaMailSender mailSender;	 
 	
-	public boolean isEnabled () { 
-		
+	public boolean isEnabled () {  
 		boolean defaultValue = repository.getSetupApplicationProperties().getBooleanProperty("services.mail.enabled", false);
 		boolean enabled = configService.getApplicationBooleanProperty("services.mail.enabled", defaultValue); 
-		
-	    return enabled;
+		return enabled;
 	}	
 	
 	@Async
 	public void send(String fromUser, String toUser, String subject, String body, boolean html ) throws Exception {
         try {
-        	log.debug("mail service enabled : {}", isEnabled());
-        
+        	
+        	log.debug("mail service enabled : {}", isEnabled()); 
 	        if(isEnabled()) {
 	        	MimeMessage message = mailSender.createMimeMessage();
 	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -80,6 +79,6 @@ public class CommunityMailService implements MailService {
         } catch (MessagingException e) {
         	log.error(e.getMessage(), e);
         }
-	}	
+	}
 	
 }

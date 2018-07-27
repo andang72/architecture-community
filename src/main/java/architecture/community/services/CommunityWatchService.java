@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
