@@ -62,7 +62,7 @@ public class SecurityTest {
 	
 	@Test
 	public void testPassword () {
-		String password = "1234";
+		String password = "hyshin";
 		String encPassword = passwordEncoder.encode(password);
 		log.debug( "PASSWORD : {} > {}", password, encPassword);
 		

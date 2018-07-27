@@ -2,6 +2,7 @@ package architecture.community.projects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +21,7 @@ import com.google.common.cache.CacheLoader;
 
 import architecture.community.codeset.CodeSet;
 import architecture.community.codeset.CodeSetService;
+import architecture.community.menu.Menu;
 import architecture.community.projects.dao.ProjectDao;
 import architecture.community.projects.event.IssueStateChangeEvent;
 import architecture.community.services.CommunitySpringEventPublisher;
@@ -46,10 +48,15 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 	@Inject
 	@Qualifier("projectIssueCache")
 	private Cache projectIssueCache;	
+ 
+	
+	@Inject
+	@Qualifier("taskService")
+	private TaskService taskService;
 	
 	@Inject
 	@Qualifier("userManager")
-	private UserManager userManager;
+	private UserManager userManager;	
 	
 	@Inject
 	@Qualifier("codeSetService")
@@ -63,10 +70,12 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 	private com.google.common.cache.LoadingCache<Long, Stats> projectIssueTypeStatsCache = null;
 	
 	private com.google.common.cache.LoadingCache<Long, Stats> projectResolutionStatsCache = null;
+
 	
 	public DefaultProjectService() { 
 		
 	}	
+	
 	public void initialize(){		
 		logger.debug("creating cache ...");		
 		projectIssueTypeStatsCache = CacheBuilder.newBuilder().maximumSize(500).expireAfterAccess( 60 * 100, TimeUnit.MINUTES).build(		
@@ -108,7 +117,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 						stats.add("TOTAL", total);	
 						return stats;
 					}			
-		});			
+		});	 
 	}
 	
 	public Stats getIssueTypeStats(Project project)  {
@@ -183,6 +192,15 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 			projectCache.remove(project.getProjectId());
 		} 
 		projectDao.saveOrUpdateProject(project);
+	}
+	
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void saveOrUpdateProject(Project project, Map<String, String> properties) {
+		
+		if( project.getProjectId() > 0 && projectCache.get(project.getProjectId()) != null  ) {
+			projectCache.remove(project.getProjectId());
+			projectDao.setProjectProperties(project.getProjectId(), properties); 
+		} 
 	}
 	
 	protected Project getProjectInCache(long projectId){
@@ -314,18 +332,24 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		if( issue == null ) {
 			issue = projectDao.getIssueById(issueId);
 			if( issue != null && issue.getIssueId() > 0 ) {
-				if( issue.getAssignee().getUserId() > 0)
+				
+				if( issue.getAssignee().getUserId() > 0) {
 					issue.setAssignee( userManager.getUser(issue.getAssignee()));
-					
-				if( issue.getRepoter().getUserId() > 0)
+				}
+				
+				if( issue.getRepoter().getUserId() > 0) {
 					issue.setRepoter( userManager.getUser(issue.getRepoter()));				
+				}
+				
+				if( issue.getTask().getTaskId() > 0 ) {
+					try {
+						issue.setTask(taskService.getTask(issue.getTask().getTaskId()));
+					} catch (TaskNotFoundException e) { }
+				}
 				
 				((DefaultIssue)issue).setIssueTypeName(getCodeText( "ISSUE_TYPE", issue.getIssueType()));
-				
-				((DefaultIssue)issue).setPriorityName(getCodeText( "PRIORITY", issue.getPriority()));		
-				
+				((DefaultIssue)issue).setPriorityName(getCodeText( "PRIORITY", issue.getPriority()));	
 				((DefaultIssue)issue).setStatusName(getCodeText( "ISSUE_STATUS", issue.getStatus()));
-				
 				((DefaultIssue)issue).setResolutionName(getCodeText( "RESOLUTION", issue.getResolution()));
 				
 				projectIssueCache.put(new Element(issueId, issue ));
@@ -353,8 +377,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 			logger.error(e.getMessage(), e);
 			return null;
 		}
-	}
-
+	} 
 	
 	public int getIssueSummaryCount(DataSourceRequest dataSourceRequest) {
 		return projectDao.getIssueSummaryCount(dataSourceRequest);
@@ -385,5 +408,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 			
 		}
 		return list;
-	}
+	}  
+
+	
 }

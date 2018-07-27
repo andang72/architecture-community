@@ -151,13 +151,13 @@ public class SecurityMgmtDataController {
     public Result updateRole(@RequestBody CommunityUser user , NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException, EmailAlreadyExistsException { 
 		
 		logger.debug("Save or update user {} ", user.toString());
-		
-		if( user.getUserId() > 0 ) {
-			userManager.updateUser(user);
+		User userToUse = user ;
+		if( userToUse.getUserId() > 0 ) {
+			userManager.updateUser(userToUse);
 		}else {
-			userManager.createUser(user);
+			userToUse = userManager.createUser(userToUse);
 		}
-		return Result.newResult("item", user);
+		return Result.newResult("item", userToUse);
     }
 	
 	
@@ -182,7 +182,6 @@ public class SecurityMgmtDataController {
 			result.setItems(items);
 			result.setTotalCount(items.size());
 		}
-	
 		return result;
     }
 

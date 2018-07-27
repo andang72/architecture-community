@@ -2,11 +2,14 @@ package architecture.community.web.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -92,6 +95,33 @@ public class ServletUtils {
 	
 	public static String getDataAsISO8601(Date date) {
 		return formatter.format(date);
+	}
+	
+	public static Date getDateAsISO8601(String date){ 
+		try {
+			if ( StringUtils.isNullOrEmpty(date) )
+				return null; 
+			Date sDate = formatter.parse(date);
+			return sDate;
+		} catch (ParseException e) {
+			return null;
+		}
+	}
+	
+	public static String getDeviceType(HttpServletRequest request) {
+		Device device = DeviceUtils.getCurrentDevice(request);        
+	    if (device == null) {
+	        return "device is null";
+	    }
+	    String deviceType = "unknown";
+	    if (device.isNormal()) {
+	        deviceType = "nomal";
+	    } else if (device.isMobile()) {
+	        deviceType = "mobile";
+	    } else if (device.isTablet()) {
+	        deviceType = "tablet";
+	    }
+	    return deviceType;
 	}
 	
 }

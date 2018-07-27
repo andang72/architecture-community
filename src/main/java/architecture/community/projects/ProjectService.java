@@ -1,6 +1,7 @@
 package architecture.community.projects;
 
 import java.util.List;
+import java.util.Map;
 
 import architecture.community.user.User;
 import architecture.community.web.model.json.DataSourceRequest;
@@ -21,6 +22,8 @@ public interface ProjectService {
 	
 	public abstract void saveOrUpdateProject(Project project);
 	
+	public abstract void saveOrUpdateProject(Project project, Map<String, String> properties );
+	
 	public abstract void saveOrUpdateIssues(List<Issue> issue) ;
 	
 	public abstract Issue createIssue(int objectType, long objectId, User repoter);
@@ -40,6 +43,7 @@ public interface ProjectService {
 	public abstract List<Issue> getIssues(DataSourceRequest dataSourceRequest);
 	
 	public abstract List<Issue> getIssues(int objectType, long objectId, int startIndex, int numResults);
+
 	
 	/*
 	 * IssueSummary API
@@ -48,4 +52,5 @@ public interface ProjectService {
 	
 	public abstract List<IssueSummary> getIssueSummary(DataSourceRequest dataSourceRequest); 
 	
+
 }

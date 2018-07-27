@@ -26,10 +26,13 @@ import architecture.community.projects.DefaultIssue;
 import architecture.community.projects.Issue;
 import architecture.community.projects.IssueSummary;
 import architecture.community.projects.Project;
+import architecture.community.projects.Scm;
 import architecture.community.projects.Stats;
+import architecture.community.projects.Task;
 import architecture.community.projects.dao.ProjectDao;
 import architecture.community.user.UserTemplate;
 import architecture.community.web.model.json.DataSourceRequest;
+import architecture.ee.jdbc.property.dao.PropertyDao;
 import architecture.ee.jdbc.sequencer.SequencerFactory;
 import architecture.ee.jdbc.sqlquery.mapping.BoundSql;
 import architecture.ee.service.ConfigService;
@@ -38,7 +41,25 @@ import architecture.ee.util.StringUtils;
 
 public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao {
 
-
+	private final RowMapper<Task> taskMapper = new RowMapper<Task>() {		
+		
+		public Task mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			Task task = new Task(rs.getInt("OBJECT_TYPE"), rs.getLong("OBJECT_ID"), rs.getLong("TASK_ID"));			
+			task.setTaskName(rs.getString("TASK_NAME"));
+			task.setDescription(rs.getString("DESCRIPTION"));
+			task.setVersion(rs.getString("VERSION"));
+			task.setProgress(rs.getString("PROGRESS")); 
+			task.setPrice(rs.getDouble("PRICE"));
+			task.setStartDate(rs.getDate("START_DATE"));
+			task.setEndDate(rs.getDate("END_DATE"));
+			task.setUser(new UserTemplate(rs.getLong("USER_ID")));
+			task.setCreationDate(rs.getDate("CREATION_DATE"));
+			task.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
+			
+			return task;
+		}		
+	};
+	
 	private final RowMapper<Project> projectMapper = new RowMapper<Project>() {				
 		public Project mapRow(ResultSet rs, int rowNum) throws SQLException {			
 			Project board = new Project(rs.getLong("PROJECT_ID"));			
@@ -71,12 +92,15 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			issue.setPriority(rs.getString("PRIORITY"));
 			issue.setComponent(rs.getString("COMPONENT"));
 			
+			
 			issue.setRequestorName(rs.getString("REQUESTOR_NAME"));
 			
 			issue.setAssignee(new UserTemplate(rs.getLong("ASSIGNEE")));
 			issue.setRepoter(new UserTemplate(rs.getLong("REPOTER")));
 			
 			issue.setDueDate(rs.getDate("DUE_DATE"));
+			issue.setStartDate(rs.getDate("START_DATE"));
+			issue.setTask( new Task(issue.getObjectType(), issue.getIssueId(), rs.getLong("TASK_ID")) );
 			
 			issue.setOriginalEstimate(rs.getLong("TIMEORIGINALESTIMATE"));
 			issue.setEstimate(rs.getLong("TIMEESTIMATE"));
@@ -88,6 +112,21 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		}		
 	};
 	
+	private final RowMapper<Scm> scmMapper = new RowMapper<Scm>() {				
+		public Scm mapRow(ResultSet rs, int rowNum) throws SQLException {			
+			Scm scm = new Scm(rs.getInt("OBJECT_TYPE"), rs.getLong("OBJECT_ID"), rs.getLong("SCM_ID"));			
+			scm.setName(rs.getString("NAME"));
+			scm.setDescription(rs.getString("DESCRIPTION"));
+			scm.setUrl(rs.getString("URL"));
+			scm.setUsername(rs.getString("USERNAME"));
+			scm.setPassword(rs.getString("PASSWORD"));
+			scm.setTags(rs.getString("TAGS"));
+			scm.setCreationDate(rs.getDate("CREATION_DATE"));
+			scm.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
+			return scm;
+		}		
+	};
+	
 	@Inject
 	@Qualifier("configService")
 	private ConfigService configService;
@@ -95,6 +134,16 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	@Inject
 	@Qualifier("sequencerFactory")
 	private SequencerFactory sequencerFactory;
+
+	@Inject
+	@Qualifier("propertyDao")
+	private PropertyDao propertyDao;	
+	
+	private String projectPropertyTableName = "AC_SD_PROJECT_PROPERTY";
+	private String projectPropertyPrimaryColumnName = "PROJECT_ID";
+	
+	private String scmPropertyTableName = "AC_SD_SCM_PROPERTY";
+	private String scmPropertyPrimaryColumnName = "SCM_ID";	
 	
 	public JdbcProjectDao() { 
 	}
@@ -107,6 +156,72 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	public long getNextIssueId(){
 		logger.debug("next id for {}, {}", Models.ISSUE.getObjectType(), Models.ISSUE.name() );
 		return sequencerFactory.getNextValue(Models.ISSUE.getObjectType(), Models.ISSUE.name());
+	}
+	
+	public long getNextTaskId(){
+		logger.debug("next id for {}, {}", Models.TASK.getObjectType(), Models.TASK.name() );
+		return sequencerFactory.getNextValue(Models.TASK.getObjectType(), Models.TASK.name());
+	}
+	
+	public long getNextScmId(){
+		logger.debug("next id for {}, {}", Models.SCM.getObjectType(), Models.SCM.name() );
+		return sequencerFactory.getNextValue(Models.SCM.getObjectType(), Models.SCM.name());
+	}	
+	
+	public Map<String, String> getProjectProperties(long projectId) {
+		return propertyDao.getProperties(projectPropertyTableName, projectPropertyPrimaryColumnName, projectId);
+	}
+
+	public void deleteProjectProperties(long projectId) {
+		propertyDao.deleteProperties(projectPropertyTableName, projectPropertyPrimaryColumnName, projectId);
+	}
+	
+	public void setProjectProperties(long projectId, Map<String, String> props) {
+		propertyDao.updateProperties(projectPropertyTableName, projectPropertyPrimaryColumnName, projectId, props);
+	}	
+	
+	public Map<String, String> getScmProperties(long scmId) {
+		return propertyDao.getProperties(scmPropertyTableName, scmPropertyPrimaryColumnName, scmId);
+	}
+
+	public void deleteScmProperties(long scmId) {
+		propertyDao.deleteProperties(scmPropertyTableName, scmPropertyPrimaryColumnName, scmId);
+	}
+	
+	public void setScmProperties(long scmId, Map<String, String> props) {
+		propertyDao.updateProperties(scmPropertyTableName, scmPropertyPrimaryColumnName, scmId, props);
+	}	
+	
+	public String getScmPropertyTableName() {
+		return scmPropertyTableName;
+	}
+
+	public void setScmPropertyTableName(String scmPropertyTableName) {
+		this.scmPropertyTableName = scmPropertyTableName;
+	}
+
+	public String getScmPropertyPrimaryColumnName() {
+		return scmPropertyPrimaryColumnName;
+	}
+
+	public void setScmPropertyPrimaryColumnName(String scmPropertyPrimaryColumnName) {
+		this.scmPropertyPrimaryColumnName = scmPropertyPrimaryColumnName;
+	}
+
+	public String getProjectPropertyTableName() {
+		return projectPropertyTableName;
+	}
+
+	public void setProjectPropertyTableName(String projectPropertyTableName) {
+		this.projectPropertyTableName = projectPropertyTableName;
+	}
+
+	public String getProjectPropertyPrimaryColumnName() {
+		return projectPropertyPrimaryColumnName;
+	}
+
+	public void setProjectPropertyPrimaryColumnName(String projectPropertyPrimaryColumnName) {
+		this.projectPropertyPrimaryColumnName = projectPropertyPrimaryColumnName;
 	}
 
 	@Override
@@ -125,7 +240,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getEndDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.isEnabled() ? 1 : 0 ),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
-					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));		
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));
 			
 		} else {
 			Date now = Calendar.getInstance().getTime();
@@ -141,17 +256,20 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.NUMERIC, toUse.isEnabled() ? 1 : 0 ),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getProjectId())
-					);		
-			
+			);
 		}	
 	}
  
 	public Project getProjectById(long projectId) {
 		try {
-			return getExtendedJdbcTemplate().queryForObject(
+			Project project = getExtendedJdbcTemplate().queryForObject(
 				getBoundSql("COMMUNITY_WEB.SELECT_PROJECT_BY_ID").getSql(),
 				projectMapper,
 				new SqlParameterValue(Types.NUMERIC, projectId));
+			
+			Map<String, String> properties = getProjectProperties(project.getProjectId());
+			project.getProperties().putAll(properties);
+			return project;
 		} catch (DataAccessException e) {
 			logger.warn(e.getMessage());
 			return null;
@@ -168,8 +286,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 
 	public Stats getResolutionStats(long projectId) {
 		return getStats(projectId, "COMMUNITY_WEB.SELECT_RESOLUTION_STATS_BY_PROJECT");
-	}
-	
+	} 
 	
 	private Stats getStats(long projectId , String statement) {
 		return getExtendedJdbcTemplate().query(getBoundSql(statement).getSql(), new ResultSetExtractor<Stats>() { 
@@ -181,9 +298,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 				return stats;
 			}			
 		}, new SqlParameterValue(Types.NUMERIC, projectId ));
-	}
-
-	
+	} 
 	 
 	public void deleteIssue(Issue issue) { 
 		Issue toUse = issue;
@@ -195,9 +310,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	@Override
 	public void saveOrUpdateIssue(Issue issue) {
  
-		Issue toUse = issue;
-		
-		
+		Issue toUse = issue; 
 		if (toUse.getIssueId() < 1L) {
 			toUse.setIssueId(getNextIssueId());			
 			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_ISSUE").getSql(),
@@ -213,14 +326,18 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.VARCHAR, toUse.getResolution()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getResolutionDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
-					new SqlParameterValue(Types.NUMERIC, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
-					 
-					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
+					new SqlParameterValue(Types.NUMERIC, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	 
+					
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()), 
 					
 					new SqlParameterValue(Types.NUMERIC, toUse.getOriginalEstimate() == null ? 0L: toUse.getOriginalEstimate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getEstimate() == null ? 0L: toUse.getEstimate()),	
 					new SqlParameterValue(Types.NUMERIC, toUse.getTimeSpent() == null ? 0L: toUse.getTimeSpent()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getRequestorName()),
+					
+					new SqlParameterValue(Types.NUMERIC, toUse.getTask() == null ? -1L: toUse.getTask().getTaskId()),	
+					
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getCreationDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()));					
 		} else {
@@ -237,11 +354,16 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 					new SqlParameterValue(Types.VARCHAR, toUse.getDescription()),					
 					new SqlParameterValue(Types.NUMERIC, toUse.getAssignee() == null ? -1L: toUse.getAssignee().getUserId()),	
 					new SqlParameterValue(Types.NUMERIC, toUse.getRepoter() == null ? -1L: toUse.getRepoter().getUserId()),	
+					
+					new SqlParameterValue(Types.TIMESTAMP, toUse.getStartDate()),
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getDueDate()),
 
 					new SqlParameterValue(Types.NUMERIC, toUse.getEstimate() == null ? 0L: toUse.getEstimate()),	
 					new SqlParameterValue(Types.NUMERIC, toUse.getTimeSpent() == null ? 0L: toUse.getTimeSpent()),	
 					new SqlParameterValue(Types.VARCHAR, toUse.getRequestorName()),
+					
+					new SqlParameterValue(Types.NUMERIC, toUse.getTask() == null ? -1L: toUse.getTask().getTaskId()),	
+					
 					new SqlParameterValue(Types.TIMESTAMP, toUse.getModifiedDate()),
 					new SqlParameterValue(Types.NUMERIC, toUse.getIssueId())
 			);		
@@ -398,7 +520,68 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 				Integer.class
 			);
 	}
-
+ 
+	public void saveOrUpdateTask(Task task) {
+		Task taskToUse = task;
+		if (taskToUse.getTaskId() < 1L) {
+			taskToUse.setTaskId(getNextTaskId());			
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_TASK").getSql(),
+					new SqlParameterValue(Types.NUMERIC, taskToUse.getTaskId()),
+					new SqlParameterValue(Types.NUMERIC, taskToUse.getObjectType()),
+					new SqlParameterValue(Types.NUMERIC, taskToUse.getObjectId()),
+					new SqlParameterValue(Types.VARCHAR, taskToUse.getTaskName()),
+					new SqlParameterValue(Types.VARCHAR, taskToUse.getVersion()),					
+					
+					
+					new SqlParameterValue(Types.NUMERIC, taskToUse.getPrice()),					
+					new SqlParameterValue(Types.DATE, taskToUse.getStartDate()),
+					new SqlParameterValue(Types.DATE, taskToUse.getEndDate()),
+					new SqlParameterValue(Types.VARCHAR, taskToUse.getProgress()),
+					
+					new SqlParameterValue(Types.VARCHAR, taskToUse.getDescription()),
+					new SqlParameterValue(Types.NUMERIC, taskToUse.getUser() == null ? -1L: taskToUse.getUser().getUserId()),	
+					new SqlParameterValue(Types.TIMESTAMP, taskToUse.getCreationDate()),
+					new SqlParameterValue(Types.TIMESTAMP, taskToUse.getModifiedDate()));					
+		} else {
+			Date now = Calendar.getInstance().getTime();
+			taskToUse.setModifiedDate(now);		
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_TASK").getSql(), 
+					new SqlParameterValue(Types.VARCHAR, taskToUse.getTaskName()),
+					new SqlParameterValue(Types.VARCHAR, taskToUse.getVersion()),					
+					
+					new SqlParameterValue(Types.NUMERIC, taskToUse.getPrice()),					
+					new SqlParameterValue(Types.DATE, taskToUse.getStartDate()),
+					new SqlParameterValue(Types.DATE, taskToUse.getEndDate()),					
+					
+					new SqlParameterValue(Types.VARCHAR, taskToUse.getProgress()),
+					new SqlParameterValue(Types.VARCHAR, taskToUse.getDescription()),				
+					new SqlParameterValue(Types.NUMERIC, taskToUse.getUser() == null ? -1L: taskToUse.getUser().getUserId()),	
+					new SqlParameterValue(Types.TIMESTAMP, taskToUse.getModifiedDate()),
+					new SqlParameterValue(Types.NUMERIC, taskToUse.getTaskId())
+			);		
+			
+		}	
+	}
+ 
+	public void deleteTask(Task task) {
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_TASK_BY_ID").getSql());
+		
+	}
+ 
+	public Task getTaskById(long taskId) {
+		Task task = null;
+		if (taskId <= 0L) {
+			return task;
+		}		
+		try {
+			task = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_WEB.SELECT_TASK_BY_ID").getSql(), 
+					taskMapper, 
+					new SqlParameterValue(Types.NUMERIC, taskId ));
+		} catch (DataAccessException e) {
+			logger.error(CommunityLogLocalizer.format("013005", taskId), e);
+		}
+		return task;
+	}
  
 	private final RowMapper<IssueSummary> summaryMapper = new RowMapper<IssueSummary>() {				
 		public IssueSummary mapRow(ResultSet rs, int rowNum) throws SQLException {			
@@ -459,4 +642,63 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		
 		return additionalParameter;
 	}
+ 
+	
+	public void saveOrUpdateScm(Scm scm) {
+		Scm scmToUse = scm;
+		if (scmToUse.getScmId() < 1L) {
+			scmToUse.setScmId(getNextScmId());			
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_SCM").getSql(),
+					new SqlParameterValue(Types.NUMERIC, scmToUse.getScmId()),
+					new SqlParameterValue(Types.NUMERIC, scmToUse.getObjectType()),
+					new SqlParameterValue(Types.NUMERIC, scmToUse.getObjectId()),
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getName()),
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getDescription()),	 		
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getUrl()),
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getPassword()),
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getUsername()), 
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getTags()), 	
+					new SqlParameterValue(Types.TIMESTAMP, scmToUse.getCreationDate()),
+					new SqlParameterValue(Types.TIMESTAMP, scmToUse.getModifiedDate()));					
+		} else {
+			Date now = Calendar.getInstance().getTime();
+			scmToUse.setModifiedDate(now);		
+			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_SCM").getSql(), 
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getName()), 
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getDescription()),	
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getUrl()),
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getUsername()), 
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getPassword()),
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getTags()), 						
+					new SqlParameterValue(Types.TIMESTAMP, scmToUse.getModifiedDate()),
+					new SqlParameterValue(Types.NUMERIC, scmToUse.getScmId())
+			);		
+			if(!scmToUse.getProperties().isEmpty())
+				setScmProperties(scmToUse.getScmId(), scmToUse.getProperties()); 
+		} 
+	}
+ 
+	public void deleteScm(Scm scm) {
+		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_SCM_BY_ID").getSql(), new SqlParameterValue(Types.NUMERIC, scm.getScmId()) );
+		deleteScmProperties(scm.getScmId());
+	}
+ 
+	public Scm getScmById(long scmId) {
+		Scm scm = null;
+		if (scmId <= 0L) {
+			return scm;
+		}		
+		try {
+			scm = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_WEB.SELECT_SCM_BY_ID").getSql(), 
+					scmMapper, 
+					new SqlParameterValue(Types.NUMERIC, scmId ));
+			
+			Map<String, String> properties = getScmProperties(scm.getScmId());
+			scm.getProperties().putAll(properties);
+			
+		} catch (DataAccessException e) {
+			logger.error(CommunityLogLocalizer.format("013005", scmId), e);
+		}
+		return scm;
+	}	
 }

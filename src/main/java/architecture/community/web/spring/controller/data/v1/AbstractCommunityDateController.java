@@ -3,6 +3,8 @@ package architecture.community.web.spring.controller.data.v1;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +17,13 @@ import architecture.community.board.BoardView;
 import architecture.community.model.Models;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectView;
-import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.CommunityAclService;
+import architecture.community.security.spring.acls.CommunityPermissions;
 import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.util.SecurityHelper;
+import architecture.community.web.util.ServletUtils;
+import architecture.ee.util.StringUtils;
 
 public abstract class AbstractCommunityDateController {
 
@@ -78,5 +82,28 @@ public abstract class AbstractCommunityDateController {
 		}
     }
     
-    
+    protected void setJsonAsDate( String getKey, String setKey, Map<String, Object> row) {
+		String dateStr = (String) row.get(getKey);
+		dateStr = StringUtils.defaultString(dateStr, null);
+		Date date = null;
+		try {
+			date = ServletUtils.getDateAsISO8601(dateStr);
+		}catch(Exception e) {}
+		row.put(StringUtils.defaultString(setKey, getKey), date );
+	}
+	
+	protected void setDateAsJson( String getKey, String setKey, Map<String, Object> row) {
+		if( row.get(getKey) != null) {
+			Date date = (Date) row.get(getKey);
+			row.put(StringUtils.defaultString(setKey, getKey), ServletUtils.getDataAsISO8601(date));
+		}
+	}
+	
+	protected void setDateAsJson( Map<String, Object> row) {
+		Date creattionDate = (Date) row.get("CREATION_DATE");
+		Date modifiedDate = (Date) row.get("MODIFIED_DATE");			
+		row.put("CREATION_DATE", ServletUtils.getDataAsISO8601(creattionDate));
+		row.put("MODIFIED_DATE", ServletUtils.getDataAsISO8601(modifiedDate));	
+	}
+	
 }

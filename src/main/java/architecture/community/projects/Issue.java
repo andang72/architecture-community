@@ -11,9 +11,7 @@ public interface Issue extends ModelObjectAware {
 
 	public abstract User getRepoter(); 
 	
-	
 	public abstract void setRepoter(User repoter) ; 
-
 
 	public abstract String getRequestorName ();
 	
@@ -40,7 +38,11 @@ public interface Issue extends ModelObjectAware {
 	public abstract String getIssueType() ;
 
 	public abstract void setIssueType(String issueType) ;
- 
+  
+	public abstract Date getStartDate();
+	
+	public abstract void setStartDate(Date startDate) ;
+	
 	public abstract Date getDueDate() ;
  
 	public abstract void setDueDate(Date dueDate);  
@@ -81,5 +83,8 @@ public interface Issue extends ModelObjectAware {
 
     public abstract void setEstimate(Long long1);    
     
+	public abstract Task getTask();
+
+	public abstract void setTask(Task task); 
 	
 }

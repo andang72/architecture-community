@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
-import architecture.community.i18n.CommunityLogLocalizer;
 import architecture.community.query.CustomQueryService;
 import architecture.community.user.AvatarImage;
 import architecture.community.user.AvatarImageNotFoundException;

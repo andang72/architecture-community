@@ -1,5 +1,7 @@
 package architecture.community.web.spring.controller.data.admin.v1;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,8 +43,15 @@ import architecture.community.image.ImageService;
 import architecture.community.model.Property;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
+import architecture.community.projects.Task;
+import architecture.community.projects.TaskNotFoundException;
+import architecture.community.projects.TaskService;
 import architecture.community.query.CustomQueryService;
 import architecture.community.security.spring.acls.CommunityAclService;
+import architecture.community.tag.ContentTag;
+import architecture.community.tag.DefaultContentTag;
+import architecture.community.tag.TagService;
+import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
@@ -64,6 +74,10 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	private ProjectService projectService;
 	
 	@Inject
+	@Qualifier("taskService")
+	private TaskService taskService;
+	
+	@Inject
 	@Qualifier("communityAclService")
 	private CommunityAclService communityAclService;
 
@@ -71,6 +85,10 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@Inject
 	@Qualifier("configService")
 	private ConfigService configService;
+	
+	@Inject
+	@Qualifier("tagService")
+	private TagService tagService;
 	
 
 	protected BoardService getBoardService() {
@@ -191,7 +209,7 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	/**
 	 * ANNOUNCE API 
 	******************************************/	
-	@Secured({ "ROLE_ADMINISTRATOR" })
+	@Secured({ "ROLE_ADMINISTRATOR" , "ROLE_DEVELOPER"})
     @RequestMapping(value = "/announces/list.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
 	public ItemList getAnnounces(	
@@ -240,6 +258,181 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		
 		return announceService.getAnnounce(announceId);
 	}
+
+	/**
+	 * TASK API 
+	******************************************/
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/tasks/list.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public ItemList getTasks(
+			@RequestBody DataSourceRequest dataSourceRequest,
+			NativeWebRequest request) throws NotFoundException { 
+
+		dataSourceRequest.setStatement("COMMUNITY_WEB.SELECT_TASK_IDS");
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<Task> list = new ArrayList<Task> ();
+		for( Long taskId : ids)
+		{	 
+			try {
+				Task task = taskService.getTask(taskId);
+				list.add(task);
+			} catch (TaskNotFoundException e) {
+			} 
+		}
+		return new ItemList(list, list.size());  
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/tasks/save-or-update.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public Task saveOrUpdate(@RequestBody Task task, NativeWebRequest request) throws NotFoundException { 
+		
+		Task taskToUse ;
+		if (task.getTaskId() > 0) {
+			taskToUse = taskService.getTask(task.getTaskId());
+			if (!StringUtils.isNullOrEmpty(task.getTaskName()))
+				taskToUse.setTaskName(task.getTaskName()); 
+			if (!StringUtils.isNullOrEmpty(task.getDescription()))
+				taskToUse.setDescription(task.getDescription()); 
+			if (!StringUtils.isNullOrEmpty(task.getProgress()))			
+				taskToUse.setProgress(task.getProgress()); 
+			if (!StringUtils.isNullOrEmpty(task.getVersion()))			
+				taskToUse.setVersion(task.getVersion()); 
+			
+			if ( task.getStartDate() != null )			
+				taskToUse.setStartDate(task.getStartDate()); 
+			if ( task.getEndDate() != null )			
+				taskToUse.setEndDate(task.getEndDate()); 
+			taskToUse.setPrice(task.getPrice()); 
+			
+			if( task.getUser() == null || task.getUser().isAnonymous() ) {
+				taskToUse.setUser(SecurityHelper.getUser());
+			}
+			
+			Date modifiedDate = new Date();
+			taskToUse.setModifiedDate(modifiedDate);
+			taskService.saveOrUpdateTask(taskToUse);
+			
+		} else {
+			// create...
+			taskToUse = new Task( task.getObjectType(), task.getObjectId());
+			taskToUse.setTaskName(task.getTaskName());
+			if (!StringUtils.isNullOrEmpty(task.getDescription()))
+				taskToUse.setDescription(task.getDescription()); 
+			if (!StringUtils.isNullOrEmpty(task.getProgress()))			
+				taskToUse.setProgress(task.getProgress()); 
+			if (!StringUtils.isNullOrEmpty(task.getVersion()))			
+				taskToUse.setVersion(task.getVersion()); 
+			
+			if ( task.getStartDate() != null )			
+				taskToUse.setStartDate(task.getStartDate()); 
+			if ( task.getEndDate() != null )			
+				taskToUse.setEndDate(task.getEndDate()); 
+			taskToUse.setPrice(task.getPrice()); 
+			
+			taskService.saveOrUpdateTask(taskToUse);
+		}		
+		return taskToUse;
+		
+	}
+
+	/**
+	 * TAG API 
+	******************************************/	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/tags/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getTags(@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {
+		dataSourceRequest.setStatement("COMMUNITY_UI.SELECT_CONTENT_TAGS");
+		dataSourceRequest.setUser(SecurityHelper.getUser()); 
+		List<DefaultContentTag> list = customQueryService.list(dataSourceRequest, new RowMapper<DefaultContentTag>() {
+			public DefaultContentTag mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return new DefaultContentTag(rs.getLong(1), rs.getString(2), rs.getTimestamp(3));
+			}
+		}); 
+		return new ItemList(list, list.size()); 
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/tags/create.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public ContentTag saveOrUpdate(@RequestBody DefaultContentTag tag, NativeWebRequest request) throws NotFoundException { 
+		 
+		if (tag.getTagId() > 0) { 
+			return tag;
+			
+		} else {
+			return tagService.createTag(tag.getName()); 
+		} 
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/tags/object-list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getTagObjects(@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {
+		dataSourceRequest.setStatement("COMMUNITY_UI.SELECT_TAG_OBJECTS");
+		dataSourceRequest.setUser(SecurityHelper.getUser());  
+		List<TagObject> list = customQueryService.list(dataSourceRequest, new RowMapper<TagObject>() {
+			public TagObject mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return new TagObject(rs.getInt(1), rs.getLong(2), rs.getLong(3));
+			}
+		}); 
+		return new ItemList(list, list.size()); 
+	}	
+	
+	
+	public static class TagObject {
+		
+		private int objectType;
+		
+		private long objectId;
+		
+		private long tagId;
+		
+		private String key ;
+
+		public TagObject(int objectType, long objectId, long tagId) {
+
+			this.objectType = objectType;
+			this.objectId = objectId;
+			this.tagId = tagId;
+		}
+
+		public int getObjectType() {
+			return objectType;
+		}
+
+		public void setObjectType(int objectType) {
+			this.objectType = objectType;
+		}
+
+		public long getObjectId() {
+			return objectId;
+		}
+
+		public void setObjectId(long objectId) {
+			this.objectId = objectId;
+		}
+
+		public long getTagId() {
+			return tagId;
+		}
+
+		public void setTagId(long tagId) {
+			this.tagId = tagId;
+		}
+
+		public String getKey() {
+			return tagId + "_" + objectType + "_" + objectId ;
+		}
+
+		public void setKey(String key) {
+			
+		} 
+		
+	}
+	
 	/**
 	 * PROJECT API 
 	******************************************/
@@ -325,7 +518,51 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 		return boardToUse;
 		
 	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> getProjectProperties (
+		@PathVariable Long projectId, 
+		NativeWebRequest request) throws NotFoundException {
+		Project project = 	projectService.getProject(projectId);
+		Map<String, String> properties = project.getProperties(); 
+		return toList(properties);
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/properties/update.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> updateProjectProperties (
+		@PathVariable Long projectId, 
+		@RequestBody List<Property> newProperties,
+		NativeWebRequest request) throws NotFoundException {
+		Project project = 	projectService.getProject(projectId);
+		Map<String, String> properties = project.getProperties();   
+		// update or create
+		for (Property property : newProperties) {
+		    properties.put(property.getName(), property.getValue().toString());
+		} 
+		projectService.saveOrUpdateProject(project, properties); 
+		return toList(project.getProperties());
+	}
 	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/properties/delete.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> deleteProjectProperties (
+		@PathVariable Long projectId, 
+		@RequestBody List<Property> newProperties,
+		NativeWebRequest request) throws NotFoundException {
+		Project project = 	projectService.getProject(projectId);
+		Map<String, String> properties = project.getProperties();  
+		for (Property property : newProperties) {
+		    properties.remove(property.getName());
+		}
+		projectService.saveOrUpdateProject(project, properties); 
+		return toList(project.getProperties());
+	}
+		
 	/**
 	 * IMAGES API 
 	******************************************/

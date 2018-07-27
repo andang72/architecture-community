@@ -31,6 +31,8 @@ import architecture.community.menu.MenuItem;
 import architecture.community.page.Page;
 import architecture.community.projects.Issue;
 import architecture.community.projects.Project;
+import architecture.community.projects.Scm;
+import architecture.community.projects.Task;
 import architecture.community.tag.ContentTag;
 import architecture.community.user.AvatarImage;
 import architecture.community.user.Role;
@@ -56,8 +58,10 @@ public enum Models {
 	CODESET(17, CodeSet.class),
 	ISSUE(18, Issue.class),
 	PROJECT(19, Project.class),
-	MENU(20, Menu.class),
-	MENU_ITEM(21, MenuItem.class)
+	TASK(20, Task.class),
+	SCM(21, Scm.class),
+	MENU(25, Menu.class),
+	MENU_ITEM(26, MenuItem.class)
 	;
 	
 	

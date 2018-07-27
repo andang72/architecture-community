@@ -72,6 +72,9 @@ import architecture.community.projects.ProjectNotFoundException;
 import architecture.community.projects.ProjectService;
 import architecture.community.projects.ProjectView;
 import architecture.community.projects.Stats;
+import architecture.community.projects.Task;
+import architecture.community.projects.TaskNotFoundException;
+import architecture.community.projects.TaskService;
 import architecture.community.query.CustomQueryService;
 import architecture.community.query.CustomQueryService.DaoCallback;
 import architecture.community.query.dao.CustomQueryJdbcDao;
@@ -101,6 +104,11 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 	@Inject
 	@Qualifier("projectService")
 	private ProjectService projectService;
+	
+	
+	@Inject
+	@Qualifier("taskService")
+	private TaskService taskService;
 		
 	@Inject
 	@Qualifier("commentService")
@@ -129,6 +137,38 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 	public ProjectAndIssueDataController() {
 		
 	}
+
+	
+	/**
+	 * TASK API 
+	******************************************/
+	
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/tasks/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getTask (		
+			@PathVariable Long projectId, 
+			@RequestBody DataSourceRequest dataSourceRequest, 
+			NativeWebRequest request) {		
+		
+		dataSourceRequest.setData("objectType", Models.PROJECT.getObjectType());
+		dataSourceRequest.setData("objectId", projectId);		
+		//dataSourceRequest.setStatement("COMMUNITY_CS.COUNT_TASK_IDS");
+		//int total = customQueryService.queryForObject(dataSourceRequest, Integer.class);
+		dataSourceRequest.setStatement("COMMUNITY_WEB.SELECT_TASK_IDS");
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<Task> list = new ArrayList<Task> ();
+		for( Long taskId : ids)
+		{	 
+			try {
+				Task task = taskService.getTask(taskId);
+				list.add(task);
+			} catch (TaskNotFoundException e) {
+			} 
+		}
+		return new ItemList(list, list.size()); 
+	}	
+	
 	
 	/**
 	 * PROJECT & ISSUE API 
@@ -225,15 +265,20 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		if ( newIssue.getIssueId() > 0) {
 			isNew = false;
 			issueToUse = projectService.getIssue(newIssue.getIssueId());		
-			if( !org.apache.commons.lang3.StringUtils.equals(newIssue.getDescription(), issueToUse.getDescription())  ) {
-				
-				descriptionUpdate = true;
-				
+			if( !org.apache.commons.lang3.StringUtils.equals(newIssue.getDescription(), issueToUse.getDescription())  ) { 
+				descriptionUpdate = true; 
 			}
+			if( newIssue.getTask() != null && newIssue.getTask().getTaskId() > 0 && newIssue.getTask().getTaskId() != issueToUse.getTask().getTaskId()) {
+				issueToUse.setTask( newIssue.getTask() );
+			} 
 		}else {
 			issueToUse = projectService.createIssue(newIssue.getObjectType(), newIssue.getObjectId(), user );
 			if( StringUtils.isNullOrEmpty(newIssue.getStatus()))
-				statusCodeToUse = "001";			
+				statusCodeToUse = "001";		
+			if(newIssue.getTask() != null && newIssue.getTask().getTaskId() > 0) {
+				issueToUse.setTask(newIssue.getTask());
+			}
+				
 			descriptionUpdate = true;
 		}
 		if( !StringUtils.isNullOrEmpty(newIssue.getResolution()))
@@ -246,7 +291,7 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 			}
 		}
 		
-		// reopen closed issue.
+		// REOPEN CLOSED ISSUE.
 		if( !StringUtils.isNullOrEmpty(newIssue.getStatus()) && !org.apache.commons.lang3.StringUtils.equals(newIssue.getStatus(), "005") ) {
 			if( org.apache.commons.lang3.StringUtils.equals(issueToUse.getStatus(), "005") && 
 				!StringUtils.isNullOrEmpty( issueToUse.getResolution() )	) {
@@ -276,9 +321,14 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 			}
 		}
 
+		if( newIssue.getStartDate() != null && newIssue.getStartDate() != issueToUse.getStartDate() ) {
+			issueToUse.setStartDate(newIssue.getStartDate());
+		} 
+		
 		if( newIssue.getDueDate() != null && newIssue.getDueDate() != issueToUse.getDueDate() ) {
 			issueToUse.setDueDate(newIssue.getDueDate());
-		}
+		} 
+		
 		
 		issueToUse.setStatus(statusCodeToUse);
 		issueToUse.setComponent(newIssue.getComponent());
@@ -294,6 +344,7 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		issueToUse.setRequestorName(newIssue.getRequestorName());
 		
 		projectService.saveOrUpdateIssue(issueToUse);
+		
 		if(descriptionUpdate) {		
 			customQueryService.execute(new DaoCallback<Integer>() {
 				public Integer process(CustomQueryJdbcDao dao) throws DataAccessException {
@@ -321,10 +372,8 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 					return null;
 				}
 				
-			});
-			
-		}
-		
+			}); 
+		} 
 		return issueToUse;
 	}	 
 	
@@ -833,6 +882,8 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		}
 		return new ItemList(list, totalSize);
 	}
+	
+	
 	
 	@RequestMapping(value = "/issues/{issueId:[\\p{Digit}]+}/get-with-project.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody

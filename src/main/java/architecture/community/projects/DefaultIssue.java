@@ -57,9 +57,17 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	
 	private String statusName;
 	
+	// 작업시작일 
+	
+	// 완료일 
 	private Date resolutionDate;
+	
+	
+	private Date startDate;
+	
 	// 예정일 
 	private Date dueDate;
+	
 	
 	private Date creationDate;
 	
@@ -69,6 +77,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	private Long timeSpent;
 	private Long originalEstimate ;
 	
+	private Task task;
 	
 	public DefaultIssue() {
 		super(-1, -1L);
@@ -80,6 +89,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.modifiedDate = creationDate;
 		this.resolutionDate = null;
 		this.dueDate = null;
+		this.startDate = null;
 		this.assignee = null;
 		this.repoter = null;
 		this.resolution = null;
@@ -90,6 +100,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.timeSpent = 0L;
 		this.originalEstimate = 0L;
 		this.requestorName = null;
+		this.task = null;
 	}
 	
 	public DefaultIssue(long issueId) {
@@ -101,6 +112,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
 		this.dueDate = null;
+		this.startDate = null;
 		this.assignee = null;
 		this.repoter = null;
 		this.resolution = null;
@@ -108,6 +120,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.statusName = null;
 		this.resolutionDate = null;
 		this.requestorName = null;
+		this.task = null;
 	}
 	
 	public DefaultIssue(int objectType, long objectId) {
@@ -119,6 +132,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
 		this.dueDate = null;
+		this.startDate = null;
 		this.assignee = null;
 		this.repoter = null;
 		this.resolution = null;
@@ -126,6 +140,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.statusName = null;
 		this.resolutionDate = null;
 		this.requestorName = null;
+		this.task = null;
 	}
 	
 	public DefaultIssue(int objectType, long objectId, User repoter) {
@@ -137,6 +152,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
 		this.dueDate = null;
+		this.startDate = null;
 		this.assignee = null;
 		this.repoter = repoter;
 		this.resolution = null;
@@ -148,6 +164,7 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 		this.timeSpent = 0L;
 		this.originalEstimate = 0L;		
 		this.requestorName = null;
+		this.task = null;
 	}
 	
 	
@@ -161,15 +178,12 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 
 	public User getRepoter() {
 		return repoter;
-	}
-
+	} 
 
 	@JsonDeserialize(using = JsonUserDeserializer.class)
 	public void setRepoter(User repoter) {
 		this.repoter = repoter;
-	}
-
-
+	} 
 
 	public long getIssueId() {
 		return issueId;
@@ -228,6 +242,16 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	} 
+	
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getStartDate() {
+		return startDate;
+	}
+	
+	@JsonDeserialize(using = JsonDateDeserializer.class)
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
 	public String getIssueType() {
@@ -379,6 +403,16 @@ public class DefaultIssue extends ModelObjectAwareSupport implements Issue {
 
 	public void setOriginalEstimate(Long originalEstimate) {
 		this.originalEstimate = originalEstimate;
+	}
+
+	
+	
+	public Task getTask() {
+		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
 	}
 
 	public String toString() {
