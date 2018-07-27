@@ -49,9 +49,9 @@
 			 			
 			<pooledDataSourceProvider>
                                 <driverClassName>oracle.jdbc.OracleDriver</driverClassName>
-                                <url>jdbc:oracle:thin:@//222.122.47.196:1521/PODODB</url>
-                                <username>U_HELPDESK</username>
-                                <password>podoq23$</password>
+                                <url> </url>
+                                <username> </username>
+                                <password> </password>
                                 <connectionProperties>
                                         <initialSize>1</initialSize>
                                         <maxActive>8</maxActive>
@@ -68,9 +68,9 @@
 		
 <!--  			<pooledDataSourceProvider>
 				<driverClassName>oracle.jdbc.OracleDriver</driverClassName>
-				<url>jdbc:oracle:thin:@//222.122.52.5:1521/CNP</url>
-				<username>U_PORTAL</username>
-				<password>cnp1234</password>
+				<url> </url>
+				<username> </username>
+				<password> </password>
 				<connectionProperties>
 					<initialSize>1</initialSize>
 					<maxActive>8</maxActive>
