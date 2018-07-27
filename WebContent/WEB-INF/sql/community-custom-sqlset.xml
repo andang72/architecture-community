@@ -65,6 +65,7 @@
 	]]><dynamic><![CDATA[  	
 		AND T1.OBJECT_TYPE = 19
 		AND T1.OBJECT_ID = T2.PROJECT_ID 
+		AND T2.CONTRACT_STATE NOT IN ( '004' )
 	<#if data.projectId?? >
 		AND T2.PROJECT_ID = ${data.projectId} 
 	</#if>	
@@ -93,6 +94,7 @@
 	WHERE 
 	T1.OBJECT_TYPE = 19
 	AND T1.OBJECT_ID = T2.PROJECT_ID 	
+	AND T2.CONTRACT_STATE NOT IN ( '004' )
 	<#if data.contractor?? >
 		AND T2.CONTRACTOR =  '${data.contractor}'
 	</#if> 	
@@ -113,6 +115,7 @@
 	WHERE 
 		T1.OBJECT_TYPE = 19
 		AND T1.OBJECT_ID = T2.PROJECT_ID
+		AND T2.CONTRACT_STATE NOT IN ( '004' )
 		<#if data.contractor?? >
 		AND T2.CONTRACTOR =  '${data.contractor}'
 		</#if> 

@@ -8,7 +8,66 @@
 	<!--  ====================================  -->
 	<!--  TAG						 		   -->
 	<!--  ====================================  -->
-	
+
+ 	<sql-query name="SELECT_CONTENT_TAGS" description="SELECT_CONTENT_TAG_IDS"><![CDATA[    	
+  	SELECT 
+		TAG_ID,
+		TAG_NAME,
+		CREATION_DATE
+	 FROM AC_UI_TAG    
+ 	]]><dynamic><![CDATA[    	
+	<#compress>
+	<#if filter?? && ( filter.filters?size > 0 ) > WHERE 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>	
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
+	ORDER BY CREATION_DATE DESC 	
+	</#if>
+	</#compress>
+ 	 ]]></dynamic>    
+    </sql-query>	
+ 
+ 	<sql-query name="SELECT_TAG_OBJECTS" description="SELECT_TAG_OBJECTS"><![CDATA[    	
+  	SELECT 		
+		OBJECT_TYPE,
+		OBJECT_ID,
+		TAG_ID
+	FROM AC_UI_OBJECT_TAG  
+	]]><dynamic><![CDATA[    	
+	<#compress>
+	WHERE
+	<#if data.tagId??>
+	TAG_ID = ${data.tagId}
+	</#if>
+	<#if filter?? && ( filter.filters?size > 0 ) > 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>	
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
+	ORDER BY CREATION_DATE DESC 	
+	</#if>
+	</#compress>
+ 	 ]]></dynamic>    
+    </sql-query>   	
 	<sql-query name="INSERT_TAG" description="INSERT_TAG"><![CDATA[
 	INSERT INTO AC_UI_OBJECT_TAG (
 		TAG_ID,
@@ -38,6 +97,7 @@
 	WHERE OBJECT_TYPE = ?
 	AND  OBJECT_ID = ?
 	]]></sql-query>			
+	
 	
 	<sql-query name="SELECT_CONTENT_TAG_BY_ID" description="SELECT_CONTENT_TAG_BY_ID"><![CDATA[
 	SELECT 

@@ -2,8 +2,115 @@
 <sqlset>
 	<name>COMMUNITY_WEB</name>
 	<description>VIEWCOUNT, IMAGE, ATTACHMENT 쿼리</description> 
+
 	<!--  ====================================  -->
-	<!-- ISSUE						 		   -->
+	<!--  TASK						 		   	-->
+	<!--  ====================================  -->
+	<sql-query name="SELECT_TASK_IDS" description="SELECT_TASK_IDS"><![CDATA[    	
+  	SELECT TASK_ID FROM AC_TASK    
+ 	]]><dynamic><![CDATA[    	
+	<#compress>
+	WHERE 
+	OBJECT_TYPE = ${data.objectType}
+	AND OBJECT_ID = ${data.objectId} 
+	<#if filter?? && ( filter.filters?size > 0 ) > 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>	
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
+	ORDER BY MODIFIED_DATE DESC 	
+	</#if>
+	</#compress>
+ 	 ]]></dynamic>    
+    </sql-query>		   
+    
+ 	<sql-query name="COUNT_TASK_IDS" description="COUNT_TASK_IDS"><![CDATA[    	
+  	SELECT COUNT(TASK_ID) FROM AC_TASK    
+ 	]]><dynamic><![CDATA[     		
+	<#if filter?? && ( filter.filters?size > 0 ) > WHERE 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>		
+ 	 ]]></dynamic></sql-query>			
+	
+	<sql-query name="SELECT_TASK_BY_ID" description="SELECT_TASK_BY_ID"><![CDATA[    	
+ 	SELECT 
+		OBJECT_TYPE,
+		OBJECT_ID,
+		TASK_ID,
+		TASK_NAME,
+		VERSION,
+		DESCRIPTION,
+		PROGRESS,
+		PRICE,
+		START_DATE,
+		END_DATE,		
+		USER_ID,
+		CREATION_DATE,
+		MODIFIED_DATE
+ 	FROM AC_TASK 
+ 	WHERE 
+ 		TASK_ID = ?
+    ]]></sql-query>		
+
+	<sql-query name="DELETE_TASK_BY_ID" description="DELETE_TASK_BY_ID"><![CDATA[    
+	DELETE AC_TASK WHERE TASK_ID = ? 
+    ]]></sql-query>	 
+        	
+	<sql-query name="INSERT_TASK" description="DELETE_TASK_BY_ID"><![CDATA[    
+	INSERT INTO AC_TASK
+	(
+		TASK_ID,
+		OBJECT_TYPE,
+		OBJECT_ID,
+		TASK_NAME,
+		VERSION,
+		PRICE,
+		START_DATE,
+		END_DATE,
+		PROGRESS,
+		DESCRIPTION,
+		USER_ID,
+		CREATION_DATE,
+		MODIFIED_DATE
+	) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) 
+    ]]></sql-query>	 
+        	
+	<sql-query name="UPDATE_TASK" description="UPDATE_TASK"><![CDATA[    
+ 	UPDATE AC_TASK
+ 	SET 
+		TASK_NAME = ?,
+		VERSION = ?,
+		PRICE = ?,
+		START_DATE = ?,
+		END_DATE = ?,
+		PROGRESS = ?,
+		DESCRIPTION = ?,
+		USER_ID = ?,
+	 	MODIFIED_DATE = ?
+ 	WHERE TASK_ID = ? 
+    ]]></sql-query>	 
+        	        	        	
+	<!--  ====================================  -->
+	<!-- ISSUE						 		   	-->
 	<!--  ====================================  -->
 	<sql-query name="SELECT_ISSUE_BY_ID" description="SELECT_ISSUE_BY_ID"><![CDATA[    	
  	SELECT 
@@ -20,11 +127,13 @@
 		REPOTER,
 		SUMMARY,
 		DESCRIPTION,
+		START_DATE,
 		DUE_DATE,		
 		TIMEORIGINALESTIMATE,
 		TIMEESTIMATE,
 		TIMESPENT,
 		REQUESTOR_NAME,
+		TASK_ID,
 		CREATION_DATE,
 		MODIFIED_DATE	
  	FROM REP_ISSUE 
@@ -76,14 +185,16 @@
 	 	RESOLUTION_DATE,
 	 	ASSIGNEE,
 	 	REPOTER,
+	 	START_DATE,
 	 	DUE_DATE,
 	 	TIMEORIGINALESTIMATE,
 		TIMEESTIMATE,
 		TIMESPENT,
 		REQUESTOR_NAME,
+		TASK_ID,
 		CREATION_DATE,
 		MODIFIED_DATE
-	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
+	) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)		 
     ]]></sql-query>	
  
 					
@@ -100,10 +211,12 @@
 	 	DESCRIPTION = ?,
 	 	ASSIGNEE = ?,
 	 	REPOTER = ?,
+	 	START_DATE = ?,
 	 	DUE_DATE = ?, 
 		TIMEESTIMATE = ?,
 		TIMESPENT = ?,
 		REQUESTOR_NAME = ?,
+		TASK_ID = ?,
 	 	MODIFIED_DATE = ?
  	WHERE ISSUE_ID = ? 
     ]]></sql-query>	        		
@@ -147,6 +260,7 @@
 		T1.REQUESTOR_NAME,
 		T1.REPOTER,
 		T1.ASSIGNEE,
+		T1.START_DATE,
 		T1.DUE_DATE,
 		T1.RESOLUTION_DATE,
 		T1.CREATION_DATE,
