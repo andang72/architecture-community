@@ -47,8 +47,13 @@
 	
 	<beans:bean id="taskCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" p:cacheName="taskCache"   p:maxElementsInMemory="5000"   p:diskPersistent="false"  p:overflowToDisk="false"   p:timeToIdle="1800" p:timeToLive="3600"  p:eternal="false"   p:diskExpiryThreadIntervalSeconds="0"   p:statisticsEnabled="true" />
    
-	 <beans:bean id="taskService" class="architecture.community.projects.CommunityTaskService"  />	  	
-	      		
+	<beans:bean id="taskService" class="architecture.community.projects.CommunityTaskService"  />	  	
+	
+	<!-- ================================= -->
+	<!-- SCM	     					   -->
+	<!-- ================================= -->
+	<beans:bean id="scmService" class="architecture.community.projects.CommunityScmService" init-method="initialize" />	
+		      		
 	<!-- ================================= -->
 	<!-- CODESET						   -->
 	<!-- ================================= -->

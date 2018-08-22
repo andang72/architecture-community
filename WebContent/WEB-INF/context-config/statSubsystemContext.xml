@@ -16,6 +16,5 @@
  
  	<beans:bean id="inkium-csr-datasource" class="architecture.ee.spring.jdbc.datasource.DataSourceFactoryBean" p:profileName="external2" lazy-init="true"/>
  
- 
 
 </beans:beans> 
