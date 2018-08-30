@@ -414,6 +414,7 @@
 			tagsString: { type: "string", defaultValue: "" },	
 			title: { type: "string", defaultValue: "" },
 			template: { type: "string", defaultValue: "" },
+			pattern: { type: "string", defaultValue: "" },
 			secured: { type: "boolean", defaultValue: false },
 			properties: { type: "object", defaultValue : {} },
 			bodyText: { type: "string", defaultValue: "" },	
@@ -435,7 +436,8 @@
 		    	target.set("tagsString", this.get("tagsString"));
 		    	target.set("title", this.get("title"));
 		    	target.set("template", this.get("template"));
-		    target.set("secured", this.get("secured"));
+		    	target.set("pattern", this.get("pattern"));
+		    	target.set("secured", this.get("secured"));
 		    	target.set("bodyText", this.get("bodyText"));
 		    	target.set("modifiedDate",this.get("modifiedDate") );
 		    	target.set("creationDate", this.get("creationDate") )
@@ -466,7 +468,7 @@
 		},
 		copy: function ( target ){
 			target.projectId = this.get("projectId");
-		    	target.set("name",this.get("name") );
+				target.set("name",this.get("name") );
 		    	target.set("summary", this.get("summary") );
 		    	target.set("contractor", this.get("contractor") );
 		    	target.set("contractState", this.get("contractState") );
@@ -478,6 +480,41 @@
 		    	target.set("enabled", this.get("enabled") );
 		    	if( typeof this.get("properties") === 'object' )
 		    		target.set("properties", this.get("properties") );
+		}
+	});	
+
+	community.model.Task = Model.define({ 		
+		id: "taskId", 
+		fields: { 		 	
+			taskId: { type: "number", defaultValue: 0 },	
+			objectType: { type: "number", defaultValue: 19 },	
+			objectId: { type: "number", defaultValue: 0 },	
+			taskName: { type: "string", defaultValue: null },	
+			description: { type: "string", defaultValue: null },	
+			version: { type: "string", defaultValue: null },	
+			price : { type: "number", defaultValue: 0 },
+			startDate:{ type: "date" },			
+			endDate:{ type: "date"},
+			progress: { type: "string", defaultValue: null },
+			creationDate:{ type: "date" },			
+			modifiedDate:{ type: "date"},
+			properties: { type: "object", defaultValue : {} },
+		},
+		copy: function ( target ){
+			target.taskId = this.get("taskId");
+			target.set("objectType",this.get("objectType") );
+	    	target.set("objectId", this.get("objectId"));
+		   	target.set("taskName",this.get("taskName") );
+		   	target.set("description", this.get("description") );
+		   	target.set("version", this.get("version") ); 
+		   	target.set("price", this.get("price") );
+		   	target.set("startDate",this.get("startDate") );
+		   	target.set("endDate", this.get("endDate") );		
+		   	target.set("modifiedDate",this.get("modifiedDate") );
+		   	target.set("creationDate", this.get("creationDate") );
+		   	target.set("progress", this.get("progress") );
+		   	if( typeof this.get("properties") === 'object' )
+		   		target.set("properties", this.get("properties") );
 		}
 	});	
 	
@@ -497,13 +534,15 @@
 			resolutionName: { type: "string", defaultValue: null },	
 			resolutionDate : { type: "date", defaultValue: null},
 			status : { type: "string", defaultValue: "001"},
-			statusName: { type: "string", defaultValue: null },				
+			statusName: { type: "string", defaultValue: null },
+			startDate:{ type: "date", defaultValue: null },	
 			dueDate:{ type: "date", defaultValue: null },	
 			estimate: { type: "number", defaultValue: 0},	
 			timeSpent: { type: "number", defaultValue: 0},	
 			originalEstimate: { type: "number", defaultValue: 0},	
 			repoter:{ type: "object", defaultValue: new community.model.User() },
 			assignee:{ type: "object", defaultValue: new community.model.User() },
+			task:{ type: "object", defaultValue: new community.model.Task() },
 			requestorName : {type: "string"},
 			creationDate:{ type: "date" },			
 			modifiedDate:{ type: "date" }	
@@ -523,6 +562,7 @@
 		    	target.set("priorityName",this.get("priorityName") );	
 		    	target.set("description", this.get("description") );
 		    	target.set("maintenanceCost", this.get("maintenanceCost") );
+		    	target.set("startDate",this.get("startDate") );	
 		    	target.set("dueDate",this.get("dueDate") );	
 		    	target.set("modifiedDate",this.get("modifiedDate") );
 		    	target.set("creationDate", this.get("creationDate") );
@@ -531,6 +571,8 @@
 		    	target.set("estimate", this.get("estimate") );
 		    	target.set("originalEstimate", this.get("originalEstimate") );
 		    	target.set("requestorName", this.get("requestorName"));
+		    	if( typeof this.get("task") === 'object' )
+		    		target.set("task", this.get("task") );
 		    	if( typeof this.get("repoter") === 'object' )
 		    		target.set("repoter", this.get("repoter") );
 		    	if( typeof this.get("assignee") === 'object' )
@@ -542,46 +584,16 @@
 	community.model.Announce = kendo.data.Model.define({
 		id : "announceId", // the identifier of the model
 		fields : {
-			announceId : {
-				type : "number",
-				editable : false,
-				defaultValue : 0
-			},
-			objectType : {
-				type : "number",
-				editable : true,
-				defaultValue : 0
-			},
-			objectId : {
-				type : "number",
-				editable : true,
-				defaultValue : 0
-			},
-			subject : {
-				type : "string",
-				editable : true
-			},
-			body : {
-				type : "string",
-				editable : true
-			},
-			startDate : {
-				type : "date",
-				editable : true
-			},
-			endDate : {
-				type : "date",
-				editable : true
-			},
-			user : {
-				type : "common.ui.data.User"
-			},
-			modifiedDate : {
-				type : "date"
-			},
-			creationDate : {
-				type : "date"
-			}
+			announceId : { type : "number", editable : false, defaultValue : 0 },
+			objectType : { type : "number", editable : true, defaultValue : 0 },
+			objectId : { type : "number", editable : true, defaultValue : 0 },
+			subject : { type : "string", editable : true },
+			body : { type : "string", editable : true },
+			startDate : { type : "date", editable : true },
+			endDate : { type : "date", editable : true },
+			user : { type : "common.ui.data.User" },
+			modifiedDate : { type : "date" },
+			creationDate : { type : "date" }
 		},
 		authorPhotoUrl : function() {
 			if (typeof this.get("user") === 'object')

@@ -29,12 +29,13 @@ public class SVNTest {
 	@Test
 	public void testDoNothing() {}
 	
+	
 	public void testRepository() throws SVNException {
 		setupLibrary();
 		/*
          * default values:
          */
-        String url = "http://222.122.47.196/svn/products/2016";
+        String url = "http://222.122.47.196/svn/products/2016/KSA07";
         String name = "andang";
         String password = "son3107";
         SVNRepository repository = null;
@@ -84,12 +85,13 @@ public class SVNTest {
              */
             System.out.println("Repository UUID: " + repository.getRepositoryUUID(true));
             System.out.println("");
-
+            
+            
             /*
              * Displays the repository tree at the current path - "" (what means
              * the path/to/repository directory)
              */
-            listEntries2(repository, "");
+            listEntries(repository, "");
         } catch (SVNException e) {
             System.err.println("error while listing entries: "
                     + e.getMessage());
@@ -116,7 +118,8 @@ public class SVNTest {
          */
         Collection entries = repository.getDir(path, -1, null, (Collection) null);
         for( Object obj : entries ) {
-        	SVNDirEntry entry = (SVNDirEntry) obj;
+        	SVNDirEntry entry = (SVNDirEntry) obj; 
+        	
         	System.out.println("/" + (path.equals("") ? "" : path + "/")
                     + entry.getName() + " (author: '" + entry.getAuthor()
                     + "'; revision: " + entry.getRevision() + "; date: " + entry.getDate() + ")");
@@ -164,6 +167,8 @@ public class SVNTest {
                 listEntries(repository, (path.equals("")) ? entry.getName()
                         : path + "/" + entry.getName());
             }
+            entry.getCommitMessage();
+            
         }
     }
     

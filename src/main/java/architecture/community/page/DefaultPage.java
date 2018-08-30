@@ -37,6 +37,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 	private Date modifiedDate;
 	private User user;
 	private boolean secured;
+	private String pattern;
 	
 	public DefaultPage() {
 		super(-1, -1L);
@@ -50,6 +51,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
 		this.secured = false;
+		this.pattern = null;
 	}
 
 	public DefaultPage(Long pageId) {
@@ -64,6 +66,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
 		this.secured = false;
+		this.pattern = null;
 	}
 
 	public DefaultPage(int objectType, long objectId) {
@@ -78,6 +81,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = creationDate;
 		this.secured = false;
+		this.pattern = null;
 	}
 
  
@@ -327,6 +331,16 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.secured = secured;
 	}
 
+	@JsonProperty
+	public String getPattern() {
+		return pattern;
+	}
+	
+	@JsonProperty
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -353,7 +367,5 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 			builder.append("user=").append(user).append(", ");
 		builder.append("secured=").append(secured).append("]");
 		return builder.toString();
-	} 
-	
-	
-}
+	}  
+} 

@@ -109,6 +109,7 @@
 				if( $this.project.get('projectId') > 0 ){
 					$this.set('editable', false );	
 					$('#task-grid').attr('disabled', true);
+					$('#scm-grid').attr('disabled', true);
 					//getCodeEditor().setReadOnly(true);
 				}else{
 					$this.back();
@@ -119,6 +120,7 @@
 			 	$this.set('editable', true );
 			 	if($this.project.projectId > 0 ) {
 			 		$('#task-grid').attr('disabled', false);
+			 		$('#scm-grid').attr('disabled', false);
 			 	}
 		 	},
 		 	saveOrUpdate : function(e){				
@@ -147,11 +149,10 @@
 				}
 				
 				$this.set('formatedCreationDate' , community.data.getFormattedDate( $this.project.creationDate) );
-				$this.set('formatedModifiedDate' , community.data.getFormattedDate( $this.project.modifiedDate) );
-				
+				$this.set('formatedModifiedDate' , community.data.getFormattedDate( $this.project.modifiedDate) ); 
 				createAttachmentListView($this);
 				createTaskGrid($this);
-				
+				createScmGrid($this);
 				if( $this.get('isNew' )){
 					$this.edit();
 				}
@@ -227,6 +228,82 @@
 	function nonEditor(container, options) {
 	    container.text(options.model[options.field]);
 	}  	
+	
+	function createScmGrid( observable ) {
+		var renderTo = $('#scm-grid');	
+		if( !community.ui.exists( renderTo ) ){	 
+			community.ui.grid(renderTo, {
+				dataSource: {
+					transport: { 
+						read : { url:'<@spring.url "/data/api/mgmt/v1/scm/list.json"/>', type:'post', contentType: "application/json; charset=utf-8"},
+						create : { url:'<@spring.url "/data/api/mgmt/v1/scm/save-or-update.json"/>',  type:'post', contentType: "application/json; charset=utf-8"},
+						update : { url:'<@spring.url "/data/api/mgmt/v1/scm/save-or-update.json"/>',  type:'post', contentType: "application/json; charset=utf-8"},
+						parameterMap: function (options, operation){	 
+							if (operation !== "read" && options.models) { 
+								return community.ui.stringify(options.models);
+							}
+							options.objectType = 19 ; 
+							options.objectId = observable.project.projectId;
+							return community.ui.stringify(options);
+						}
+					},  
+					serverPaging: true,
+					pageSize: 15,
+					schema: {
+						total: "totalCount",
+						data:  "items",
+						model: {
+								id: "scmId", 
+								fields: { 		 	
+									scmId: { type: "number", defaultValue: 0 },	
+									objectType: { type: "number", defaultValue: 19 },	
+									objectId: { type: "number", defaultValue: 0 },	
+									name: { type: "string", defaultValue: null },	
+									description: { type: "string", defaultValue: null },	
+									url: { type: "string", defaultValue: null },	
+									username : { type: "string", defaultValue: null },
+									password: { type: "string", defaultValue: null },	
+									creationDate:{ type: "date" },			
+									modifiedDate:{ type: "date"}
+								}
+						}
+					}
+				}, 
+				resizable: true,
+				sortable: true,
+				filterable: false,
+				pageable: false, 
+				editable: "popup",
+				toolbar: ["create"],
+				edit: function(e) {
+				    $.each( e.container.find("input[data-role=numerictextbox]"), function( index, item ){
+				    	if( item.getAttribute("name") === 'scmId' ){
+				    		$(item).data("kendoNumericTextBox").enable(false);
+				    	}
+				    });			
+				    if (e.model.isNew()) {
+				       	e.model.set('objectId', observable.project.projectId );
+				    }
+				 },
+				columns: [
+					{ field: "scmId", title: "ID", width:75 },
+					{ field: "objectType", title: "객체 유형" , width:80, validation: { required: true} },
+					{ field: "objectId", title: "객체 ID" , width:80, validation: { required: true} },
+					{ field: "name", title: "이름" , width:200, validation: { required: true} },
+					{ field: "description", title: "설명" },  
+					{ field: "url", title: "URL", width: 100  },
+					{ field: "username", title: "User", width: 100  },
+					{ field: "password", title: "Password", width: 100  },
+					{ command: ["edit", "destroy"], title: "&nbsp;", width: "220"}
+				],
+				save : function(){
+					 
+				}
+			});					
+		
+		}
+	}
+		
 	function createTaskGrid( observable ) {
 		var renderTo = $('#task-grid');	
 		if( !community.ui.exists( renderTo ) ){	 
@@ -657,6 +734,7 @@
 							  <div class="nav nav-tabs" id="nav-tab" role="tablist"> 
 							    <a class="nav-item nav-link active" id="nav-attachment-tab" data-toggle="tab" href="#nav-attachment" role="tab" aria-controls="nav-attachment" aria-selected="false">첨부파일</a>  
 							    <a class="nav-item nav-link" id="nav-task-tab" data-toggle="tab" href="#nav-task" role="tab" aria-controls="nav-task" aria-selected="false">과업</a>  
+							    <a class="nav-item nav-link" id="nav-task-tab" data-toggle="tab" href="#nav-scm" role="tab" aria-controls="nav-scm" aria-selected="false">형상관리</a>  
 							  </div>
 							</nav>
 							<div class="tab-content" id="nav-tabContent">
@@ -677,9 +755,12 @@
 								</div>
 								<div class="tab-pane fade" id="nav-task" role="tabpanel" aria-labelledby="nav-task-tab"> 
 									<div id="task-grid" class="g-brd-gray-light-v7 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-1 g-mt-5" data-bind="enabled:editable"></div> 
-								</div>						   							   
+								</div>			
+								<div class="tab-pane fade" id="nav-scm" role="tabpanel" aria-labelledby="nav-scm-tab"> 
+									<div id="scm-grid" class="g-brd-gray-light-v7 g-brd-left-0 g-brd-right-0 g-brd-style-solid g-brd-1 g-mt-5" data-bind="enabled:editable"></div> 
+								</div>			   							   
 							</div>
-	                  	</section>
+	                  		</section>
 						</div>
 						<div class="g-brd-left--lg g-brd-gray-light-v4 col-md-3 g-mb-10 g-mb-0--md">
 							<section class="g-mb-10 g-mt-20">							
@@ -713,7 +794,6 @@
 		                      		<li class="g-brd-top g-brd-gray-light-v7 mb-0 ms-hover">
 		                        			<a class="d-flex align-items-center u-link-v5 g-parent g-py-15" href="#!" data-bind="click:openSecurityModal">
 		                          			<span class="g-font-size-18 g-color-gray-light-v6 g-color-lightred-v3--parent-hover g-color-lightred-v3--parent-active g-mr-15">
-												
 												<i class="community-admin-lock"></i>
 											</span>
 		                          			<span class="g-color-gray-dark-v6 g-color-lightred-v3--parent-hover g-color-lightred-v3--parent-active">접근 권한 설정</span>
@@ -801,7 +881,7 @@
 						</table>
 						</div>					
 						<div id="items-listview-pager" class="g-brd-top-none" style="width:100%;"></div>
-            				<!-- menu listview end -->
+            			<!-- menu listview end -->
 					</div>
 				</div>
 				<!-- End Content Body -->

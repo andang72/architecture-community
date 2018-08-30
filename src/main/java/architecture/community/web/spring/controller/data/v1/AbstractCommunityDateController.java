@@ -61,7 +61,7 @@ public abstract class AbstractCommunityDateController {
 		
 		PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, project.getProjectId() );				
 		ProjectView projectView = new ProjectView(project);
- 
+		projectView.setAdmin(bundle.isAdmin());
 		projectView.setWritable(bundle.isWrite());
 		projectView.setReadable(bundle.isRead());
 		projectView.setCreateAttachement(bundle.isCreateAttachment());

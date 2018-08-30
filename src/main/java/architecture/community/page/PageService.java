@@ -43,4 +43,6 @@ public interface PageService {
 	public abstract List<Page> getPages(int objectType, long objectId, PageState state);
 
 	public abstract List<Page> getPages(int objectType, long objectId, PageState state, int startIndex, int maxResults);
+
+	public abstract List<PathPattern> getPathPatterns(String prefix);
 }

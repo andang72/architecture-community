@@ -43,6 +43,9 @@ import architecture.community.image.ImageService;
 import architecture.community.model.Property;
 import architecture.community.projects.Project;
 import architecture.community.projects.ProjectService;
+import architecture.community.projects.Scm;
+import architecture.community.projects.ScmNotFoundException;
+import architecture.community.projects.ScmService;
 import architecture.community.projects.Task;
 import architecture.community.projects.TaskNotFoundException;
 import architecture.community.projects.TaskService;
@@ -76,6 +79,10 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	@Inject
 	@Qualifier("taskService")
 	private TaskService taskService;
+	
+	@Inject
+	@Qualifier("scmService")
+	private ScmService scmService;
 	
 	@Inject
 	@Qualifier("communityAclService")
@@ -434,9 +441,74 @@ public class CommunityMgmtDataController extends AbstractCommunityDateController
 	}
 	
 	/**
-	 * PROJECT API 
+	 * SCM API 
 	******************************************/
 	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/scm/list.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public ItemList getScms(
+			@RequestBody DataSourceRequest dataSourceRequest,
+			NativeWebRequest request) throws NotFoundException { 
+
+		dataSourceRequest.setStatement("SERVICE_DESK.SELECT_SCM_IDS");
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<Scm> list = new ArrayList<Scm> ();
+		for( Long scmId : ids)
+		{	 
+			try {
+				Scm scm = scmService.getScmById(scmId);
+				list.add(scm);
+			} catch (ScmNotFoundException e) {
+			} 
+		}
+		return new ItemList(list, list.size());  
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/scm/save-or-update.json", method = { RequestMethod.POST })
+	@ResponseBody
+	public Scm saveOrUpdate(@RequestBody Scm scm, NativeWebRequest request) throws NotFoundException { 
+		
+		Scm scmToUse ;
+		if (scm.getScmId() > 0) {
+			scmToUse = scmService.getScmById(scm.getScmId());
+			if (!StringUtils.isNullOrEmpty(scm.getName()))
+				scmToUse.setName(scm.getName()); 
+			if (!StringUtils.isNullOrEmpty(scm.getDescription()))
+				scmToUse.setDescription(scm.getDescription()); 
+			if (!StringUtils.isNullOrEmpty(scm.getUrl()))			
+				scmToUse.setUrl(scm.getUrl()); 
+			if (!StringUtils.isNullOrEmpty(scm.getUsername()))			
+				scmToUse.setUsername(scm.getUsername()); 
+			if (!StringUtils.isNullOrEmpty(scm.getPassword()))			
+				scmToUse.setPassword(scm.getPassword()); 
+			Date modifiedDate = new Date();
+			scmToUse.setModifiedDate(modifiedDate); 
+			scmToUse.setProperties(scm.getProperties());
+			scmService.saveOrUpdateScm(scmToUse); 
+		} else {
+			// create...
+			scmToUse = new Scm( scm.getObjectType(), scm.getObjectId());
+			scmToUse.setName(scm.getName());
+			if (!StringUtils.isNullOrEmpty(scm.getDescription()))
+				scmToUse.setDescription(scm.getDescription()); 
+			if (!StringUtils.isNullOrEmpty(scm.getUrl()))			
+				scmToUse.setUrl(scm.getUrl()); 
+			if (!StringUtils.isNullOrEmpty(scm.getUsername()))			
+				scmToUse.setUsername(scm.getUsername()); 
+			if (!StringUtils.isNullOrEmpty(scm.getPassword()))			
+				scmToUse.setPassword(scm.getPassword()); 
+			scmToUse.setProperties(scm.getProperties());
+			scmService.saveOrUpdateScm(scmToUse);
+		}		
+		return scmToUse; 
+	}
+	
+	
+	/**
+	 * PROJECT API 
+	******************************************/ 
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/projects/list.json", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody

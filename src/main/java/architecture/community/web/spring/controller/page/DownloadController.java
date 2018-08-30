@@ -162,12 +162,12 @@ public class DownloadController {
 			    				response.addHeader("Location", url);
 			    			}		    				
 		    			} else {
-						InputStream input = attachmentService.getAttachmentInputStream(attachment);
-						response.setContentType(attachment.getContentType());
-						response.setContentLength(attachment.getSize());
-						IOUtils.copy(input, response.getOutputStream());
-						response.setHeader("contentDisposition", "attachment;filename=" + ServletUtils.getEncodedFileName(attachment.getName()));
-						response.flushBuffer();
+							InputStream input = attachmentService.getAttachmentInputStream(attachment);
+							response.setContentType(attachment.getContentType());
+							response.setContentLength(attachment.getSize());
+							IOUtils.copy(input, response.getOutputStream());
+							response.setHeader("contentDisposition", "attachment;filename=" + ServletUtils.getEncodedFileName(attachment.getName()));
+							response.flushBuffer();
 		    			}
 			} else {
 			    throw new NotFoundException();

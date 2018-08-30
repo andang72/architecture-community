@@ -75,5 +75,7 @@ public interface CommunityAclService extends MutableAclService {
 	public <T> void removePermission(Class<T> clazz, Serializable identifier, Role role, Permission permission);
 	
 	public PermissionsBundle getPermissionBundle( Authentication authentication, Class objectType , long objectId );
+	
+	public PermissionsBundle getPermissionBundle( Object object );
     
 }

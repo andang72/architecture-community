@@ -125,6 +125,7 @@ public class PageMgmtDataController {
 					|| !StringUtils.equals(page.getSummary(), pageToUse.getSummary()) 
 					|| !StringUtils.equals(page.getTemplate(), pageToUse.getTemplate()) 
 					|| pageToUse.isSecured() != page.isSecured()
+					|| !StringUtils.equals(page.getPattern(), pageToUse.getPattern()) 
 					|| includeBodyContent 
 					|| includeProperties ) {
 				doUpdate = true;
@@ -142,6 +143,7 @@ public class PageMgmtDataController {
 			if( page.getPageState() != null)
 					pageToUse.setPageState(page.getPageState());
 			
+			pageToUse.setPattern(page.getPattern());
 			pageToUse.setSummary(page.getSummary());
 			pageToUse.setTemplate(page.getTemplate());
 			pageToUse.setSecured(page.isSecured());
@@ -314,8 +316,7 @@ public class PageMgmtDataController {
 				this.size = FileUtils.sizeOfDirectory(file);
 			} else {
 				this.size = FileUtils.sizeOf(file);
-			}
-
+			} 
 			this.customized = false;
 		}
 

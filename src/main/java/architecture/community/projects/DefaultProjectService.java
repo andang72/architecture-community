@@ -76,6 +76,8 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		
 	}	
 	
+	
+	
 	public void initialize(){		
 		logger.debug("creating cache ...");		
 		projectIssueTypeStatsCache = CacheBuilder.newBuilder().maximumSize(500).expireAfterAccess( 60 * 100, TimeUnit.MINUTES).build(		

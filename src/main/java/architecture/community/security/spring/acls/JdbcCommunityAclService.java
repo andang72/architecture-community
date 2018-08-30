@@ -31,6 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import architecture.community.projects.Project;
 import architecture.community.security.spring.userdetails.CommuintyUserDetails;
 import architecture.community.user.Role;
 import architecture.community.user.User;
@@ -321,7 +322,14 @@ public class JdbcCommunityAclService extends JdbcMutableAclService implements Co
 		return acl;
 	}
 
-
+ 
+	public PermissionsBundle getPermissionBundle(Object object) {
+		if( object instanceof Project) {
+			return getPermissionBundle( SecurityHelper.getAuthentication(), Project.class, ((Project) object ).getProjectId() );
+		}
+		return new PermissionsBundle();
+	}
+	
     public PermissionsBundle getPermissionBundle( Authentication authentication, Class objectType , long objectId ) {    
     		
     		final PermissionsBundle bundle = new PermissionsBundle();    		
@@ -437,4 +445,5 @@ public class JdbcCommunityAclService extends JdbcMutableAclService implements Co
  		
  		
 	 }
+
 }

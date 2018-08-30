@@ -3,6 +3,13 @@
 	<name>COMMUNITY_PAGE</name>
 	<description>COMMUNITY PAGE SUBSYSTEM QUERIES</description>	
 	
+	<sql-query name="SELECT_ALL_PATTERN_AND_ID" description="SELECT_ALL_PATTERN_AND_ID"><![CDATA[    	
+ 		SELECT 
+ 			PAGE_ID, PATTERN
+		FROM REP_PAGE
+		WHERE PATTERN IS NOT NULL
+    ]]></sql-query>
+    
 	<sql-query name="COUNT_PAGE_BY_OBJECT_TYPE_AND_OBJECT_ID" description="COUNT_PAGE_BY_OBJECT_TYPE_AND_OBJECT_ID"><![CDATA[    	
  	SELECT count( PAGE_ID ) FROM REP_PAGE 
  	WHERE 
@@ -15,15 +22,15 @@
  	WHERE 
  		OBJECT_TYPE = ? 
  		AND OBJECT_ID = ?
- 	ORDER BY 	MODIFIED_DATE 	DESC	
+ 	ORDER BY MODIFIED_DATE DESC	
     ]]></sql-query>		
  	<sql-query name="COUNT_PAGE_BY_OBJECT_TYPE_AND_STATE" description="COUNT_PAGE_BY_OBJECT_TYPE_AND_STATE"><![CDATA[    	
- 	SELECT count( T1.PAGE_ID ) FROM REP_PAGE T1, REP_PAGE_version t2
+ 	SELECT COUNT( T1.PAGE_ID ) FROM REP_PAGE T1, REP_PAGE_VERSION T2
  	WHERE 
-	    t1.object_type = ?
-	    and t2.state = ?
-	    and t1.page_id = t2.page_id 
-	    and t1.version_id = t2.version_id	  	
+	    T1.OBJECT_TYPE = ?
+	    AND T2.STATE = ?
+	    AND T1.PAGE_ID = T2.PAGE_ID 
+	    AND T1.VERSION_ID = T2.VERSION_ID	  	
     ]]></sql-query>	
 	
  	<sql-query name="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_STATE" description="SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_STATE"><![CDATA[    	
@@ -74,12 +81,13 @@
 			OBJECT_TYPE,
 			OBJECT_ID,
 			NAME,
+			PATTERN,
 			VERSION_ID,
 			USER_ID,
 			CREATION_DATE,
 			MODIFIED_DATE
 		) VALUES (
-			?, ?, ?, ?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?, ?, ?, ?
 		)
     ]]></sql-query>	
  	<sql-query name="UPDATE_PAGE" description="UPDATE_PAGE"><![CDATA[    	
@@ -89,6 +97,7 @@
 			OBJECT_TYPE = ?,
 			OBJECT_ID = ?,
 			NAME = ?,
+			PATTERN = ?,
 			VERSION_ID = ?,
 			USER_ID = ?,
 			MODIFIED_DATE = ?
@@ -115,6 +124,7 @@
 			pv.TITLE,
 			pv.SUMMARY,
 			pv.TEMPLATE,
+			p.PATTERN,
 			pv.SECURED
     	FROM 
     		REP_PAGE p, REP_PAGE_VERSION pv
@@ -130,7 +140,7 @@
 			STATE,
 			TITLE,
 			SUMMARY,
-			TEMPLATE,
+			TEMPLATE, 
 			SECURED,
 			USER_ID,
 			CREATION_DATE,
@@ -146,7 +156,7 @@
 			STATE = ?,
 			TITLE = ?,
 			SUMMARY = ?,
-			TEMPLATE = ?,
+			TEMPLATE = ?, 
 			SECURED = ?,
 			USER_ID = ?,
 			MODIFIED_DATE = ?		

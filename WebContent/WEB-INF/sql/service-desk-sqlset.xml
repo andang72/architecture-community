@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlset>
+	<name>SERVICE_DESK</name>
+	<description>SERVICE DESK SUBSYSTEM QUERIES</description>	
+ 	
+ 	<sql-query name="SELECT_SCM_IDS" description="SELECT_SCM_IDS"><![CDATA[    	
+  	SELECT SCM_ID FROM AC_SD_SCM    
+ 	]]><dynamic><![CDATA[    	
+	<#compress>
+	WHERE 
+	OBJECT_TYPE = ${data.objectType}
+	AND OBJECT_ID = ${data.objectId} 
+	<#if filter?? && ( filter.filters?size > 0 ) > 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>	
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
+	ORDER BY MODIFIED_DATE DESC 	
+	</#if>
+	</#compress>
+ 	 ]]></dynamic>    
+    </sql-query>		  
+    	
+	<sql-query name="SELECT_SCM_BY_ID" description="SELECT_SCM_BY_ID"><![CDATA[    	
+ 	SELECT 
+		SCM_ID,
+		OBJECT_TYPE,
+		OBJECT_ID,
+		NAME,
+		DESCRIPTION ,
+		URL,
+		USERNAME,
+		PASSWORD,
+		TAGS ,
+		CREATION_DATE,
+		MODIFIED_DATE
+ 	FROM AC_SD_SCM 
+ 	WHERE 
+ 		SCM_ID = ?
+    ]]></sql-query>		
+           	
+	<sql-query name="INSERT_SCM" description="INSERT_SCM"><![CDATA[    
+	INSERT INTO AC_SD_SCM
+	(
+		SCM_ID,
+		OBJECT_TYPE,
+		OBJECT_ID,
+		NAME,
+		DESCRIPTION ,
+		URL,
+		USERNAME,
+		PASSWORD,
+		TAGS ,
+		CREATION_DATE,
+		MODIFIED_DATE
+	) VALUES (?,?,?,?,?,?,?,?,?,?,?) 
+    ]]></sql-query>	 
+    
+ 	<sql-query name="UPDATE_SCM" description="UPDATE_SCM"><![CDATA[    
+	UPDATE AC_SD_SCM
+ 	SET 
+		NAME,
+		DESCRIPTION ,
+		URL,
+		USERNAME,
+		PASSWORD,
+		TAGS ,
+	 	MODIFIED_DATE = ?
+ 	WHERE SCM_ID = ? 
+    ]]></sql-query>	
+    
+	<sql-query name="DELETE_SCM_BY_ID" description="DELETE_SCM_BY_ID"><![CDATA[    
+	DELETE AC_SD_SCM WHERE SCM_ID = ? 
+    ]]></sql-query>	                 	
+</sqlset>

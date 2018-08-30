@@ -18,7 +18,9 @@ import architecture.community.image.ImageService;
 import architecture.community.menu.MenuService;
 import architecture.community.page.PageService;
 import architecture.community.projects.ProjectService;
+import architecture.community.projects.ScmService;
 import architecture.community.query.CustomQueryService;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.tag.TagService;
 import architecture.community.viewcount.ViewCountService;
 import architecture.ee.exception.ComponentNotFoundException;
@@ -97,6 +99,15 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 	public static CustomQueryService getCustomQueryService(){
 		return getComponent(CustomQueryService.class);
 	}
+	
+	public static CommunityAclService getCommunityAclService() {
+		return getComponent(CommunityAclService.class);
+	}
+	
+	public static ScmService getScmService(){
+		return getComponent(ScmService.class);
+	}
+	
 	
 	public static <T> T getComponent(Class<T> requiredType) {
 		if (applicationContext == null) {

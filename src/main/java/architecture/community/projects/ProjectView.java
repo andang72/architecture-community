@@ -15,6 +15,8 @@ public class ProjectView {
 	@JsonIgnore
 	private Project project;
 	
+	private boolean admin = false ;	
+	
 	private boolean writable = false ;	
 	
 	private boolean readable = false ;
@@ -219,6 +221,17 @@ public class ProjectView {
 	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setModifiedDate(Date modifiedDate) {
  
+	}
+	
+	
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	@JsonIgnore
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
 	public String getContractState() {

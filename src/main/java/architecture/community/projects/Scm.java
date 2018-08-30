@@ -3,7 +3,12 @@ package architecture.community.projects;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import architecture.community.model.ModelObjectAwareSupport;
+import architecture.community.model.json.JsonDateDeserializer;
+import architecture.community.model.json.JsonDateSerializer;
 
 public class Scm extends ModelObjectAwareSupport {
 
@@ -105,21 +110,24 @@ public class Scm extends ModelObjectAwareSupport {
 		this.password = password;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
 
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getModifiedDate() {
 		return modifiedDate;
 	}
 
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
- 
 	
 }

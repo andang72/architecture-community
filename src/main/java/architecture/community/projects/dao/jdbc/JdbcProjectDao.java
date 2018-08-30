@@ -648,22 +648,23 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 		Scm scmToUse = scm;
 		if (scmToUse.getScmId() < 1L) {
 			scmToUse.setScmId(getNextScmId());			
-			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.INSERT_SCM").getSql(),
+			getExtendedJdbcTemplate().update(getBoundSql("SERVICE_DESK.INSERT_SCM").getSql(),
 					new SqlParameterValue(Types.NUMERIC, scmToUse.getScmId()),
 					new SqlParameterValue(Types.NUMERIC, scmToUse.getObjectType()),
 					new SqlParameterValue(Types.NUMERIC, scmToUse.getObjectId()),
 					new SqlParameterValue(Types.VARCHAR, scmToUse.getName()),
 					new SqlParameterValue(Types.VARCHAR, scmToUse.getDescription()),	 		
 					new SqlParameterValue(Types.VARCHAR, scmToUse.getUrl()),
-					new SqlParameterValue(Types.VARCHAR, scmToUse.getPassword()),
 					new SqlParameterValue(Types.VARCHAR, scmToUse.getUsername()), 
+					new SqlParameterValue(Types.VARCHAR, scmToUse.getPassword()),
+					
 					new SqlParameterValue(Types.VARCHAR, scmToUse.getTags()), 	
 					new SqlParameterValue(Types.TIMESTAMP, scmToUse.getCreationDate()),
 					new SqlParameterValue(Types.TIMESTAMP, scmToUse.getModifiedDate()));					
 		} else {
 			Date now = Calendar.getInstance().getTime();
 			scmToUse.setModifiedDate(now);		
-			getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.UPDATE_SCM").getSql(), 
+			getExtendedJdbcTemplate().update(getBoundSql("SERVICE_DESK.UPDATE_SCM").getSql(), 
 					new SqlParameterValue(Types.VARCHAR, scmToUse.getName()), 
 					new SqlParameterValue(Types.VARCHAR, scmToUse.getDescription()),	
 					new SqlParameterValue(Types.VARCHAR, scmToUse.getUrl()),
@@ -679,7 +680,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 	}
  
 	public void deleteScm(Scm scm) {
-		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_WEB.DELETE_SCM_BY_ID").getSql(), new SqlParameterValue(Types.NUMERIC, scm.getScmId()) );
+		getExtendedJdbcTemplate().update(getBoundSql("SERVICE_DESK.DELETE_SCM_BY_ID").getSql(), new SqlParameterValue(Types.NUMERIC, scm.getScmId()) );
 		deleteScmProperties(scm.getScmId());
 	}
  
@@ -689,7 +690,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			return scm;
 		}		
 		try {
-			scm = getExtendedJdbcTemplate().queryForObject(getBoundSql("COMMUNITY_WEB.SELECT_SCM_BY_ID").getSql(), 
+			scm = getExtendedJdbcTemplate().queryForObject(getBoundSql("SERVICE_DESK.SELECT_SCM_BY_ID").getSql(), 
 					scmMapper, 
 					new SqlParameterValue(Types.NUMERIC, scmId ));
 			

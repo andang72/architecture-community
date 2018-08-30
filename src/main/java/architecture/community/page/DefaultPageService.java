@@ -1,7 +1,10 @@
 package architecture.community.page;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -13,9 +16,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+
 import architecture.community.page.dao.PageDao;
 import architecture.community.page.dao.PageVersionDao;
 import architecture.community.page.event.PageEvent;
+import architecture.community.projects.Scm;
 import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
@@ -55,10 +62,29 @@ public class DefaultPageService extends EventSupport implements PageService {
 	@Qualifier("pageVersionsCache")
 	private Cache pageVersionsCache;
 
+	private com.google.common.cache.LoadingCache<String, List<PathPattern>> pagePatternMatchersCache = null;
+	
 	public DefaultPageService() {
-
+		pagePatternMatchersCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(60 * 100, TimeUnit.MINUTES).build(		
+				new CacheLoader<String, List<PathPattern>>(){			
+					public List<PathPattern>  load(String prefix) throws Exception {
+						List<PathPattern> matchers =  new ArrayList<PathPattern>();
+						for( Page p : pageDao.getAllPageHasPatterns()) {
+							matchers.add(new PathPattern(p.getPageId(), prefix + p.getPattern()));
+						} 
+						return matchers;
+				}}
+		);
 	}
-
+	 
+	public List<PathPattern> getPathPatterns(String prefix){  
+		try {
+			return pagePatternMatchersCache.get(prefix);
+		} catch (ExecutionException e) {
+			return Collections.emptyList();
+		}
+	}
+	
 	public Page createPage(User user, BodyType bodyType, String name, String title, String body) {
 		if (bodyType == null)
 			throw new IllegalArgumentException("A page content type is required to create a page.");
@@ -95,9 +121,12 @@ public class DefaultPageService extends EventSupport implements PageService {
 				fireEvent(new PageEvent(page, PageEvent.Type.UPDATED));
 			}
 		}
-
+		
+		pagePatternMatchersCache.invalidateAll();
+		
 		if (pageCache.get(page.getPageId()) != null) {
 			pageCache.remove(page.getPageId());
+			
 		}
 		String key = getVersionListCacheKey(page.getPageId());
 		if (pageVersionsCache.get(key) != null) {
@@ -240,7 +269,8 @@ public class DefaultPageService extends EventSupport implements PageService {
 			}
 		}
 		return list;
-	}
+	} 
+
 
 	public List<Page> getPages(int objectType, long objectId, int startIndex, int maxResults) {
 		List<Long> ids = pageDao.getPageIds(objectType, objectId, startIndex, maxResults);

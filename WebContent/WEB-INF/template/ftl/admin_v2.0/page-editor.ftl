@@ -483,6 +483,18 @@
 		                    			</small>
 		                    		</div>
 	                  		</div>
+							<div class="form-group g-mb-30">
+	                    			<label class="g-mb-10 g-font-weight-600" for="input-page-name">패턴</label>
+		                    		<div class="g-pos-rel">
+			                      	<span class="g-pos-abs g-top-0 g-right-0 d-block g-width-40 h-100 opacity-0 g-opacity-1--success">
+				                  		<i class="hs-admin-check g-absolute-centered g-font-size-default g-color-lightblue-v3"></i>
+				                		</span>
+		                      		<input id="input-page-name" class="form-control form-control-md g-rounded-4 g-px-14 g-py-10" type="text" placeholder="패턴을 입력하세요" data-bind="value: page.pattern, enabled:editable">
+		                    			<small class="g-font-weight-300 g-font-size-12 g-color-gray-dark-v6 g-pt-5">
+		                    			패턴을 기반으로 페이지를 호출합니다. ex) /display/pages<span data-bind="text: page.pattern"></span> 
+		                    			</small>
+		                    		</div>
+	                  		</div>	                  		
  							<div class="form-group">
 	                    			<label class="g-mb-10 g-font-weight-600" for="input-page-title">페이지 타이틀 <span class="text-danger">*</span></label>
 		                    		<div class="g-pos-rel">

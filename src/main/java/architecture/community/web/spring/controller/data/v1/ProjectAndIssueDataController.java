@@ -71,6 +71,9 @@ import architecture.community.projects.Project;
 import architecture.community.projects.ProjectNotFoundException;
 import architecture.community.projects.ProjectService;
 import architecture.community.projects.ProjectView;
+import architecture.community.projects.Scm;
+import architecture.community.projects.ScmNotFoundException;
+import architecture.community.projects.ScmService;
 import architecture.community.projects.Stats;
 import architecture.community.projects.Task;
 import architecture.community.projects.TaskNotFoundException;
@@ -105,6 +108,9 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 	@Qualifier("projectService")
 	private ProjectService projectService;
 	
+	@Inject
+	@Qualifier("scmService")
+	private ScmService scmService;
 	
 	@Inject
 	@Qualifier("taskService")
@@ -138,6 +144,33 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		
 	}
 
+	/**
+	 * TASK API 
+	******************************************/
+	
+	@Secured({ "ROLE_USER" })
+	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/scms/list.json", method = { RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public ItemList getScms (		
+			@PathVariable Long projectId, 
+			@RequestBody DataSourceRequest dataSourceRequest, 
+			NativeWebRequest request) {		
+		
+		dataSourceRequest.setData("objectType", Models.PROJECT.getObjectType());
+		dataSourceRequest.setData("objectId", projectId);		
+		dataSourceRequest.setStatement("SERVICE_DESK.SELECT_SCM_IDS");
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<Scm> list = new ArrayList<Scm> ();
+		for( Long scmId : ids)
+		{	 
+			try {
+				Scm scm = scmService.getScmById(scmId);
+				list.add(scm);
+			} catch (ScmNotFoundException e) {
+			} 
+		}
+		return new ItemList(list, list.size()); 
+	}
 	
 	/**
 	 * TASK API 
@@ -146,7 +179,7 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/projects/{projectId:[\\p{Digit}]+}/tasks/list.json", method = { RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public ItemList getTask (		
+	public ItemList getTasks (		
 			@PathVariable Long projectId, 
 			@RequestBody DataSourceRequest dataSourceRequest, 
 			NativeWebRequest request) {		

@@ -41,6 +41,7 @@ public class SecurityHelper {
 		return ANONYMOUS_USER_DETAILS ;
 	}
 	
+	
 	public static User getUser() {
 		try {
 		    Authentication authen = getAuthentication();

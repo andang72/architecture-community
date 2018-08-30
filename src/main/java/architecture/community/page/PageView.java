@@ -197,4 +197,14 @@ public class PageView implements Page {
 		page.setSecured(secured);		
 	}
 
+	@JsonProperty
+	public String getPattern() {
+		return page.getPattern();
+	}
+
+	@Override
+	public void setPattern(String pattern) {
+		page.setPattern( pattern );
+	}
+
 }

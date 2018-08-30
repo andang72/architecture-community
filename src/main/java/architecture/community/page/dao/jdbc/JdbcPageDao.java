@@ -95,6 +95,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.NUMERIC, page.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, page.getObjectId()),
 				new SqlParameterValue(Types.VARCHAR, page.getName()),
+				page.getPattern() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getPattern()),	
 				new SqlParameterValue(Types.NUMERIC, page.getVersionId()),
 				new SqlParameterValue(Types.NUMERIC, page.getUser().getUserId()),
 				new SqlParameterValue(Types.TIMESTAMP, page.getCreationDate()),
@@ -267,7 +268,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
 				new SqlParameterValue(Types.VARCHAR, page.getTitle()), 
 				page.getSummary() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getSummary()),
-				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()),				
+				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()), 
 				new SqlParameterValue(Types.NUMERIC, page.isSecured() ? 1 : 0 ),								
 				new SqlParameterValue(Types.NUMERIC, page.getVersionId() <= 1 ? page.getUser().getUserId() : SecurityHelper.getUser().getUserId()),
 				new SqlParameterValue(Types.DATE, page.getCreationDate()),
@@ -342,6 +343,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 						new SqlParameterValue(Types.NUMERIC, page.getPageId()),
 						new SqlParameterValue(Types.NUMERIC, page.getBodyContent().getBodyType().getId()),
 						new SqlParameterValue(Types.CLOB, new SqlLobValue(page.getBodyText(), getLobHandler())));
+				
 				getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_PAGE.INSERT_PAGE_BODY_VERSION").getSql(),
 						new SqlParameterValue(Types.NUMERIC, bodyId),
 						new SqlParameterValue(Types.NUMERIC, page.getPageId()),
@@ -367,6 +369,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.NUMERIC, page.getObjectType()),
 				new SqlParameterValue(Types.NUMERIC, page.getObjectId()),
 				new SqlParameterValue(Types.VARCHAR, page.getName()),
+				page.getPattern() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getPattern()),	
 				new SqlParameterValue(Types.NUMERIC, page.getVersionId()),
 				new SqlParameterValue(Types.NUMERIC, page.getUser().getUserId()),
 				new SqlParameterValue(Types.TIMESTAMP, page.getModifiedDate()),
@@ -400,7 +403,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
 				new SqlParameterValue(Types.VARCHAR, page.getTitle()),
 				new SqlParameterValue(Types.VARCHAR, page.getSummary()),
-				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()),
+				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()), 
 				new SqlParameterValue(Types.NUMERIC, page.isSecured() ? 1 : 0 ),			
 				new SqlParameterValue(Types.NUMERIC, modifierId),
 				new SqlParameterValue(Types.DATE, page.getModifiedDate()),
@@ -489,6 +492,8 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 					page.setTitle(rs.getString("TITLE"));
 					page.setSummary(rs.getString("SUMMARY"));
 					page.setTemplate(rs.getString("TEMPLATE"));
+					page.setPattern(rs.getString("PATTERN"));
+					
 					page.setSecured(rs.getInt("SECURED") == 1 ? true : false);
 					page.setCreationDate(rs.getTimestamp("CREATION_DATE"));
 					page.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));
@@ -598,16 +603,14 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.NUMERIC, objectId )
 				);
 	}
-
-	@Override
+ 
 	public List<Long> getPageIds(int objectType, PageState state) {
 		return getExtendedJdbcTemplate().queryForList(
 				getBoundSql("COMMUNITY_PAGE.SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_STATE").getSql(), Long.class,
 				new SqlParameterValue(Types.NUMERIC, objectType),
 				new SqlParameterValue(Types.VARCHAR, state.name().toLowerCase()));
 	}
-
-	@Override
+ 
 	public List<Long> getPageIds(int objectType, PageState state, int startIndex, int maxResults) {
 		return getExtendedJdbcTemplate().query(
 				getBoundSql("COMMUNITY_PAGE.SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_STATE").getSql(), 
@@ -618,16 +621,14 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.VARCHAR, state.name().toLowerCase() )
 				);
 	}
-
-	@Override
+ 
 	public int getPageCount(int objectType, PageState state) {
 		return getExtendedJdbcTemplate().queryForObject(
 				getBoundSql("COMMUNITY_PAGE.COUNT_PAGE_BY_OBJECT_TYPE_AND_STATE").getSql(), Integer.class,
 				new SqlParameterValue(Types.NUMERIC, objectType),
 				new SqlParameterValue(Types.VARCHAR, state.name().toLowerCase()));
 	}
-
-	@Override
+ 
 	public List<Long> getPageIds(int objectType, long objectId, PageState state) {
 		return getExtendedJdbcTemplate().queryForList(
 				getBoundSql("COMMUNITY_PAGE.SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_STATE").getSql(),
@@ -635,8 +636,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.NUMERIC, objectId),
 				new SqlParameterValue(Types.VARCHAR, state.name().toLowerCase()));
 	}
-
-	@Override
+ 
 	public List<Long> getPageIds(int objectType, long objectId, PageState state, int startIndex, int maxResults) {
 		return getExtendedJdbcTemplate().query(
 				getBoundSql("COMMUNITY_PAGE.SELECT_PAGE_IDS_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_STATE").getSql(),
@@ -648,13 +648,24 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.VARCHAR, state.name().toLowerCase())
 				);
 	}
-
-	@Override
+ 
 	public int getPageCount(int objectType, long objectId, PageState state) {
 		return getExtendedJdbcTemplate().queryForObject(
 				getBoundSql("COMMUNITY_PAGE.COUNT_PAGE_BY_OBJECT_TYPE_AND_OBJECT_ID_AND_STATE").getSql(), Integer.class,
 				new SqlParameterValue(Types.NUMERIC, objectType), new SqlParameterValue(Types.NUMERIC, objectId),
 				new SqlParameterValue(Types.VARCHAR, state.name().toLowerCase()));
+	}
+ 
+	public List<Page> getAllPageHasPatterns() {
+		return getExtendedJdbcTemplate().query(
+				getBoundSql("COMMUNITY_PAGE.SELECT_ALL_PATTERN_AND_ID").getSql(),
+				new RowMapper<Page>() {
+					public Page mapRow(ResultSet rs, int rowNum) throws SQLException {
+						Page page = new DefaultPage(rs.getLong(1));
+						page.setPattern(rs.getString(2));
+						return page;
+					}
+				});
 	}
 
 }
