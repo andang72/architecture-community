@@ -492,18 +492,19 @@
 				]		
 			});  
 			var renderTo2 = $('#project-view-modal-tabs--2 .grid') ; 
+			var renderTo3 = $('#project-view-modal-tabs--3 .grid') ; 
  			community.ui.bind( renderTo, observable );	  
  			renderTo.find('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
- 				console.log(  e  );
- 				console.log(  $(e.target).html()  );
+ 
  				if($(e.target).data('kind') == 'task'){
 					createProjectTaskGrid(renderTo2, observable.project).dataSource.read();
-			  	}else if ($(e.target).data('kind') == 'stats'){ 
-			  		
+			  	}else if ($(e.target).data('kind') == 'stats'){  
 			  		if( !community.ui.defined( $($(e.target).attr('href')).data('load') ) ){ 
 						createProjectPieAndLineChart(observable);
 			  			$($(e.target).attr('href')).data('load', true);
 			  		} 
+			  	}else if ($(e.target).data('kind') == 'scm'){  
+			  		createProjectScmGrid(renderTo3, observable.project ).dataSource.read();
 			  	}
 		 	});
 		 				
@@ -574,20 +575,66 @@
 		</#if>			
  	}
 	
-							
+	function createProjectScmGrid ( renderTo, data ){
+		if( !community.ui.exists( renderTo ) ){		 
+ 			community.ui.grid( renderTo, {
+				dataSource: {
+					transport: { 
+						read : { url:'<@spring.url "/data/api/v1/projects/"/>' + data.projectId + "/scms/list.json", type:'post', contentType: "application/json; charset=utf-8"},
+						parameterMap: function (options, operation){	 
+							if (operation !== "read" && options.models) { 
+								return community.ui.stringify(options.models);
+							}
+							return community.ui.stringify(options);
+						}
+					},  
+					serverPaging: true,
+					pageSize: 15,
+					schema: {
+						total: "totalCount",
+						data:  "items",
+						model: {
+								id: "scmId", 
+								fields: { 		 	
+									scmId: { type: "number", defaultValue: 0 },	
+									objectType: { type: "number", defaultValue: 19 },	
+									objectId: { type: "number", defaultValue: 0 },	
+									name: { type: "string", defaultValue: null },	
+									description: { type: "string", defaultValue: null },	
+									url: { type: "string", defaultValue: null },	
+									username : { type: "string", defaultValue: null },
+									password: { type: "string", defaultValue: null },	
+									creationDate:{ type: "date" },			
+									modifiedDate:{ type: "date"}
+								}
+						}
+					}
+				}, 
+				autoBind : false,
+				resizable: true,
+				sortable: true,
+				filterable: false,
+				pageable: false,
+				columns: [
+					{ field: "scmId", title: "ID" , width:100 },
+					{ field: "name", title: "이름",  width: 200, template : '<a href="<@spring.url "/display/pages/scm/"/>#=data.scmId#/scm-viewer.html" target="_blank;" class="btn btn-link">#: data.name #</a>' },
+					{ field: "description", title: "설명"  }
+				]
+			});  
+ 		}
+ 		return community.ui.grid( renderTo );	
+	}						
  	
  	function createProjectTaskGrid ( renderTo, data ){
  		if( !community.ui.exists( renderTo ) ){		 
  			community.ui.grid( renderTo, {
 				dataSource: {
 					transport: { 
-						read : { url:'<@spring.url "/data/api/mgmt/v1/tasks/list.json"/>', type:'post', contentType: "application/json; charset=utf-8"},
+						read : { url:'<@spring.url "/data/api/v1/projects/"/>' + data.projectId + '/tasks/list.json' , type:'post', contentType: "application/json; charset=utf-8"},
 						parameterMap: function (options, operation){	 
 							if (operation !== "read" && options.models) { 
 								return community.ui.stringify(options.models);
-							}
-							options.objectType = 19 ; 
-							options.objectId = data.projectId;
+							} 
 							return community.ui.stringify(options);
 						}
 					},  
@@ -599,6 +646,7 @@
 						model:community.model.Task 
 					}
 				}, 
+				autoBind : false,
 				resizable: true,
 				sortable: true,
 				filterable: false,
@@ -1031,8 +1079,12 @@
 					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--2" role="tab" data-kind="task">과업</a>
 					  </li>
 					  <li class="nav-item">
-					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--3" role="tab" data-kind="stats" data-load="false" >통계</a>
-					  </li>					  
+					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--3" role="tab" data-kind="scm" data-load="false" >형상관리</a>
+					  </li>	
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--4" role="tab" data-kind="stats" data-load="false" >통계</a>
+					  </li>	
+					  				  
 					</ul>
 					<!-- End Nav tabs -->
 					<!-- Tab panes -->
@@ -1044,6 +1096,10 @@
 					   	<div class="grid g-brd-0 g-brd-gray-light-v4 g-brd-top-1 g-brd-bottom-1 g-brd-style-solid"></div>
 					  </div>
 					  <div class="tab-pane fade" id="project-view-modal-tabs--3" role="tabpanel">
+					    p>이름을 클릭하면 형상관리 내용을 확인 할 수 있습니다.</p>
+					   	<div class="grid g-brd-0 g-brd-gray-light-v4 g-brd-top-1 g-brd-bottom-1 g-brd-style-solid"></div>
+					  </div>
+					  <div class="tab-pane fade" id="project-view-modal-tabs--4" role="tabpanel">
 					
 					<div class="row">
 						<div class="col-lg-6">

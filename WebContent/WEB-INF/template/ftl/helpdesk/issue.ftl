@@ -125,7 +125,7 @@
 		    	$.HSCore.components.HSTabs.init('[role="tablist"]');
 		    }, 200);
 		});
-  				
+ 	
 		community.ui.setup({
 		  	features : {
 				accounts: true
@@ -133,7 +133,7 @@
 		  	'features.accounts.authenticate' :function(e){
 		  		if( !e.token.anonymous ){
 		  			observable.setUser(e.token);
-		    		}
+		    	}
 		  	}
 		});	        
 		
@@ -784,7 +784,7 @@
 	}
 
 	function isDeveloper( user ){ 
-		return user.hasRole('ROLE_DEVELOPER') ;
+		return user.hasRole('ROLE_DEVELOPER') || <#if __project?? >${ CommunityContextHelper.getCommunityAclService().getPermissionBundle(__project).admin?string } </#if> ;
 	} 
  			
 	</script>	
@@ -876,7 +876,9 @@
 				<#if __project?? >${__project.name}</#if>
 		        <span class="g-color-primary"></span>
 				</h2>
+				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 				<p class="g-font-size-16 g-font-weight-400" ><#if __project?? >${ __project.summary?html?replace("\n", "<br>")}</#if></p> 
+				</#if>   
 			</header> 
 			<div class="d-flex justify-content-end g-font-size-11">
             <ul class="u-list-inline g-bg-gray-dark-v1 g-font-weight-300 g-rounded-50 g-py-5 g-px-20">
@@ -1146,6 +1148,7 @@
 				                        -->
 				                        <div class="g-brd-top g-brd-gray-light-v3 g-pt-10 g-mt-10">
 				                        	<button class="btn btn-sm u-btn-outline-indigo g-mb-15 g-mr-10 " type="button" role="button" data-bind="click:assignMe, invisible:isAssigned">나를 담당자로 지정합니다.</button>
+				                        	
 				                        	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") > 
 				                          	<span class="d-block g-font-size-13 g-mb-5">또는 이름 또는 아이디로 검색 후 지정합니다.</span>
 				                          	<input data-role="combobox"
@@ -1160,6 +1163,22 @@
 							                             enabled: editingForAssignee,
 							                             events:{ change : selectAssignee }"
 							                   			 style="width:100%;"/>	
+							               <#else>
+							               <#if __project?? >${ CommunityContextHelper.getCommunityAclService().getPermissionBundle(__project).admin?string } 
+							               <span class="d-block g-font-size-13 g-mb-5">또는 이름 또는 아이디로 검색 후 지정합니다.</span>
+				                          	<input data-role="combobox"
+								                   		 data-placeholder="이름을 입력하세요."
+														 data-filter="contains"
+								                   		 data-text-field="name"
+								                   	 	 data-value-field="username"
+								                   	 	 data-autoBind: false,
+								                   		 data-bind="value: issue.assignee, 
+							                             source: userDataSource,
+							                             visible: isDeveloper,
+							                             enabled: editingForAssignee,
+							                             events:{ change : selectAssignee }"
+							                   			 style="width:100%;"/> 
+							               </#if>
 							               </#if>    			 
 				                        </div>
 				                      </div>
