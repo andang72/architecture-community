@@ -13,6 +13,7 @@ import architecture.ee.util.StringUtils;
  * 
  * "binding.?.parameters.id"
  * "binding.?.attribute.name"
+ * "binding.?.required"
  * 
  * @author donghyuck
  *
@@ -28,15 +29,22 @@ public class ScmObjectBinder implements ObjectBinder {
 	/**
 	 * 
 	 */
-	public void bind(Model model, String name, Map<String, String> properties, Map<String, String> vairables, ConfigurableBeanFactory beanFactory) {  
+	public void bind(Model model, String name, Map<String, String> properties, Map<String, String> vairables, ConfigurableBeanFactory beanFactory) throws Exception {  
+		
 		ScmService service = beanFactory.getBean(ScmService.class);
+		
+		boolean required = getBooleanProperty( properties, new StringBuilder(PREFIX).append(name).append(".required").toString(), false ); 
+		
 		Long scmId = getLongProperty( vairables, getProperty(properties, name, ".parameters.id", name.toLowerCase() + "Id"), -1L ); 
+		
 		if( scmId > 0L) {
 			try {
 				Scm scm = service.getScmById(scmId);
 				String attributeName = getProperty(properties, name, ".attribute.name", "__"+name.toLowerCase());
 				model.addAttribute(attributeName, scm);
 			} catch (ScmNotFoundException e) {
+				if( required )
+					throw e;
 			}
 		}
 	}
@@ -51,6 +59,14 @@ public class ScmObjectBinder implements ObjectBinder {
 		return null;
 	}
 
+	private Boolean getBooleanProperty( Map<String, String> properties , String key, Boolean defaultValue ) {
+		String value = properties.get(key);
+		try {
+			return Boolean.parseBoolean(value);
+		} catch (Exception e) { } 
+		return defaultValue;
+	}
+	
 	private Long getLongProperty( Map<String, String> properties , String key, Long defaultValue ) {
 		String value = properties.get(key);
 		try {

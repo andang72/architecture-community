@@ -44,7 +44,6 @@ import architecture.community.viewcount.ViewCountService;
 import architecture.community.web.spring.controller.view.binding.ObjectBinder;
 import architecture.community.web.util.ServletUtils;
 import architecture.ee.service.ConfigService;
-import architecture.ee.util.NumberUtils;
 
 @Controller("community-display-controller")
 @RequestMapping("/display")
@@ -173,14 +172,10 @@ public class DisplayController {
  			log.debug(" '{}' and '{}' is {}" , 
  					formatS, 
  					pattern.getPattern(), 
- 					StringUtils.equals(formatS, pattern.getPattern()));
- 			
- 			
- 			boolean isPattern = pathMatcher.isPattern(pattern.getPattern());
- 			
+ 					StringUtils.equals(formatS, pattern.getPattern())); 
+ 			boolean isPattern = pathMatcher.isPattern(pattern.getPattern()); 
  			boolean match = false;
- 			Map<String, String> variables = null;
- 			
+ 			Map<String, String> variables = null; 
  			if( isPattern) {
  				AntPathRequestMatcher matcher = new AntPathRequestMatcher(pattern.getPattern());
  				match = matcher.matches(request) ;
@@ -214,11 +209,21 @@ public class DisplayController {
 							try {
 								String nameToUse = StringUtils.removeStart(key, "binding.");
 								nameToUse = StringUtils.removeEnd(nameToUse, ".handler.class");
-								Class<?> clazz = ClassUtils.forName(page.getProperties().get(key), this.getClass().getClassLoader());
+								Class<?> clazz = ClassUtils.forName(page.getProperties().get(key), this.getClass().getClassLoader());								
 								ObjectBinder binder = (ObjectBinder) clazz.newInstance(); 
-								binder.bind( model, nameToUse, page.getProperties(), variables , beanFactory );
-							} catch (Throwable e) {
-								e.printStackTrace();
+								try {
+									binder.bind( model, nameToUse, page.getProperties(), variables , beanFactory );
+								} catch (Exception e) {
+									if( e instanceof NotFoundException) {
+										throw (NotFoundException) e;
+									}
+								}
+							} catch (ClassNotFoundException | LinkageError e) {
+								// ignore..
+							} catch (InstantiationException e) {
+								// ignore ..
+							} catch (IllegalAccessException e) {
+								// ignore ..
 							}
  						} 
  					}
