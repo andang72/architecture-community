@@ -245,8 +245,7 @@
                   <#list CommunityContextHelper.getScmService().listEntries( __svn, __path?remove_beginning("/") ) as item >
 					<tr>
                       <td class="align-middle text-nowrap">
-                      <#if item.kind.ID == 0 > <i class="fa fa-folder-o"></i> <#else> <i class="fa fa-file"></i> </#if>
-                      
+                      <#if item.kind.ID == 0 > <i class="fa fa-folder-o"></i> <#else> <i class="fa fa-file"></i> </#if> 
                       <a class="g-color-gray-dark-v5 g-color-primary--hover g-font-size-16 g-text-underline--none--hover" 
                       	href="<@spring.url "/display/pages/scm/"/>${__scm.scmId}/${__page.name}?path=<#if __info.kind.ID == 0 && __path != "" >${__path?ensure_starts_with("/")}</#if>${item.name?ensure_starts_with("/") }" >${item.name}</a>
                       </td>  
@@ -270,22 +269,18 @@
  			<!-- Default Outline Panel-->
 			<div class="card rounded-0">
 			  <h3 class="card-header h5 rounded-0"> 
-			    	<a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">${ __info.name }</a>
-			    	<ul class="list-inline g-color-gray-dark-v4 g-font-size-12 g-mt-5">
+			    <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">${ __info.name }</a>
+			    <ul class="list-inline g-color-gray-dark-v4 g-font-size-12 g-mt-5">
                       <li class="list-inline-item">
                         <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">${ __info.author }</a>
-                      </li>
-                      
+                      </li> 
                       <li class="list-inline-item">/</li>
                       <li class="list-inline-item">${__info.date?string('yyyy.MM.dd HH:mm:ss')}</li>
-                      
                       <li class="list-inline-item">/</li>
                       <li class="list-inline-item"> revision ${__info.getRevision()?c }</li>
-                      
                       <li class="list-inline-item">/</li>
                       <li class="list-inline-item">${__info.getSize() } bytes</li>
-                      
-                    </ul>
+                </ul> 
                     <#if __info.getCommitMessage()?? > 
                     <h4 class="g-font-size-16 g-color-gray-dark-v1">
                         <small class="g-color-gray-dark-v4">${ __info.getCommitMessage() }</small>
@@ -293,27 +288,69 @@
                     </#if>
                     
 			    <div class="text-right">
-			    <a href="/display/pages/scm/${__scm.scmId}/scm-viewer.html?${__path?ensure_starts_with("/")?keep_before_last("/")}" class="btn u-btn-outline-darkgray g-mr-5" >이전</a>
-			    <a href="/display/scm/${__scm.scmId}/download?path=${__path?url_path('utf-8')}" class="btn u-btn-outline-darkgray g-mr-5" target="_blank;">다운로드</a>
+				    <a href="/display/pages/scm/${__scm.scmId}/scm-viewer.html?path=${__path?ensure_starts_with("/")?keep_before_last("/")}" class="btn u-btn-outline-darkgray g-mr-5" >이전</a>
+				    <a href="/display/scm/${__scm.scmId}/download?path=${__path?remove_beginning("/")?url_path('utf-8')}" class="btn u-btn-outline-darkgray g-mr-5" target="_blank;">다운로드</a>
 			    </div>
 			  </h3> 
 			  	<#if  CommunityContextHelper.getScmService().getMineType( __svn, __path )?? >
 				<#assign __minetype = CommunityContextHelper.getScmService().getMineType( __svn, __path ) /> 
 				<#if  __minetype?starts_with("text") >
 			 	<div class="card-block g-pa-0"> 	
- 				<div id="code-highlighter" ></div>
+ 					<div id="code-highlighter" ></div>
  				</div>	
  				<#else>
  				<div class="card-block"> 
  				<#if __info.name?ends_with(".png") || __info.name?ends_with(".gif") || __info.name?ends_with(".jpg")>
- 				<img src="/display/scm/${__scm.scmId}/download?path=${__path?url_path('utf-8')}" style="max-width:100%;"/>
+ 				<img src="/display/scm/${__scm.scmId}/download?path=${__path?remove_beginning("/")?url_path('utf-8')}" style="max-width:100%;"/>
+				<#else>
+ 				<section class="w-100 align-self-center text-center g-color-darkblue-v2 g-my-30">
+                        <svg width="150px" height="192px" viewBox="0 0 58 74" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g transform="translate(-1060.000000, -374.000000)" fill="#1CC9E4">
+                              <g transform="translate(284.000000, 232.000000)">
+                                <g transform="translate(704.000000, 80.000000)">
+                                  <g transform="translate(72.000000, 62.000000)">
+                                    <rect opacity="0.15" x="0" y="36" width="58" height="27"></rect>
+                                    <path d="M40.0002553,0 L0,0 L0,74 L58,74 L58,17.9894 L40.0002553,0 Z M40.7234043,4.2106 L53.7869787,17.2666667 L40.7234043,17.2666667 L40.7234043,4.2106 Z M2.46808511,71.5333333 L2.46808511,2.46666667 L38.2553191,2.46666667 L38.2553191,19.7333333 L55.5319149,19.7333333 L55.5319149,71.5333333 L2.46808511,71.5333333 Z" fill-rule="nonzero"></path>
+                                    <text font-size="14" font-weight="normal" letter-spacing="0.209999993">
+                                      <tspan x="15.3182813" y="52">${__info.name?keep_after_last(".")}</tspan>
+                                    </text>
+                                  </g>
+                                </g>
+                              </g>
+                            </g>
+                          </g>
+                        </svg>
+                </section>
  				</#if>
  				</div>
 				</#if> 
-				<#else>
+				<#else> 
 				<div class="card-block g-pa-0 g-min-height-300"> 	
- 					<div id="code-highlighter" ></div>
- 				</div>	    
+ 				<#if __info.name?ends_with(".png") || __info.name?ends_with(".gif") || __info.name?ends_with(".jpg")>
+ 				<img src="/display/scm/${__scm.scmId}/download?path=${__path?remove_beginning("/")?url_path('utf-8')}" style="max-width:100%;"/>
+ 				<#else>
+ 				<section class="w-100 align-self-center text-center g-color-darkblue-v2 g-my-30">
+                        <svg width="150px" height="192px" viewBox="0 0 58 74" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g transform="translate(-1060.000000, -374.000000)" fill="#1CC9E4">
+                              <g transform="translate(284.000000, 232.000000)">
+                                <g transform="translate(704.000000, 80.000000)">
+                                  <g transform="translate(72.000000, 62.000000)">
+                                    <rect opacity="0.15" x="0" y="36" width="58" height="27"></rect>
+                                    <path d="M40.0002553,0 L0,0 L0,74 L58,74 L58,17.9894 L40.0002553,0 Z M40.7234043,4.2106 L53.7869787,17.2666667 L40.7234043,17.2666667 L40.7234043,4.2106 Z M2.46808511,71.5333333 L2.46808511,2.46666667 L38.2553191,2.46666667 L38.2553191,19.7333333 L55.5319149,19.7333333 L55.5319149,71.5333333 L2.46808511,71.5333333 Z" fill-rule="nonzero"></path>
+                                    <text font-size="14" font-weight="normal" letter-spacing="0.209999993">
+                                      <tspan x="15.3182813" y="52">${__info.name?keep_after_last(".")}</tspan>
+                                    </text>
+                                  </g>
+                                </g>
+                              </g>
+                            </g>
+                          </g>
+                        </svg>
+                </section>
+ 				</#if>
+ 				</div>
 			    </#if> 
 			</div>
 			<!-- End Default Outline Panel-->               
