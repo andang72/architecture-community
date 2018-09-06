@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import architecture.ee.service.Repository;
 
-public class CommunityWatchService {
+public class CommunityFileMonitorService {
 	
 	private Logger log = LoggerFactory.getLogger(CommunityDataService.class);
 	
@@ -26,7 +26,7 @@ public class CommunityWatchService {
 	@Qualifier("repository")
 	private Repository repository;
 	
-	public CommunityWatchService() {
+	public CommunityFileMonitorService() {
 		
 	}
 	

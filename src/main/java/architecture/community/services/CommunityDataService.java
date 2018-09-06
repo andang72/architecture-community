@@ -61,8 +61,8 @@ public class CommunityDataService implements FileAlterationListener {
 	private CustomQueryJdbcDao customQueryJdbcDao;
 	
 	@Autowired
-	@Qualifier("customFileWatchService")
-	private CommunityWatchService customFileWatchService;
+	@Qualifier("customFileMonitorService")
+	private CommunityFileMonitorService customFileWatchService;
 	
 	private Logger log = LoggerFactory.getLogger(CommunityDataService.class);
 	
