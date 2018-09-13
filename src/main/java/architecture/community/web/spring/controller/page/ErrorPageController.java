@@ -24,17 +24,15 @@ public class ErrorPageController {
     public String displayErrorPage (@PathVariable String error, HttpServletRequest request, HttpServletResponse response, Model model) {
 		
 		String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);		
-		log.debug("error restOfTheUrl:" + restOfTheUrl);	
-		
+		log.debug("error restOfTheUrl:" + restOfTheUrl);	 
 		if( ServletUtils.isAcceptJson(request)){
 			ServletUtils.setContentType("application/json;charset=UTF-8", response);
 			model.addAttribute("output", "json"); 
 		}else{
 			ServletUtils.setContentType(null, response);
 			model.addAttribute("output", "html") ;
-		}
+		}	
+		
 		return "/error/" + error ;
     }
-	
-	
 }

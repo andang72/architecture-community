@@ -62,15 +62,17 @@ public class SecurityTest {
 	
 	@Test
 	public void testPassword () {
-		String password = "hyshin";
+		String password = "dhson007";
 		String encPassword = passwordEncoder.encode(password);
 		log.debug( "PASSWORD : {} > {}", password, encPassword);
 		
+
+		log.debug( "PASSWORD VARIFY : {}", passwordEncoder.matches("dhson007", "$2a$10$RQ8r8nscuGuvIa.L3Oe0deOKFIRFC9C08PQdHCPoOHgsIC6niK7Ia") );
 	}
  
 	public void testRolePermission() throws UserNotFoundException, RoleNotFoundException {
 		
-		
+			
 		setAuthentication("king");
 		Role role = roleManager.getRole("ROLE_ADMINISTRATOR");		
 		CommuintyUserDetails details = (CommuintyUserDetails)userDetailsManager.loadUserByUsername("king");		

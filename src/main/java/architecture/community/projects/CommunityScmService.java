@@ -196,8 +196,9 @@ public class CommunityScmService implements ScmService {
 	
 	public String getMineType( SVNRepository repository, String path ) {
 		SVNProperties fileProperties = new SVNProperties();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
-			repository.getFile(path, -1, fileProperties, null);
+			repository.getFile(path, -1, fileProperties, baos);
 		} catch (SVNException e) {
 			logger.error(e.getMessage());
 		}

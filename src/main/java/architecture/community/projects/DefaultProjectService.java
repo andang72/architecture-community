@@ -47,8 +47,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 	
 	@Inject
 	@Qualifier("projectIssueCache")
-	private Cache projectIssueCache;	
- 
+	private Cache projectIssueCache;	 
 	
 	@Inject
 	@Qualifier("taskService")
@@ -64,19 +63,15 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 
 	@Autowired(required = false)
 	@Qualifier("communitySpringEventPublisher")
-	private CommunitySpringEventPublisher eventPublisher;
-	
+	private CommunitySpringEventPublisher eventPublisher; 
 	
 	private com.google.common.cache.LoadingCache<Long, Stats> projectIssueTypeStatsCache = null;
 	
-	private com.google.common.cache.LoadingCache<Long, Stats> projectResolutionStatsCache = null;
-
+	private com.google.common.cache.LoadingCache<Long, Stats> projectResolutionStatsCache = null; 
 	
-	public DefaultProjectService() { 
+	public DefaultProjectService() {  
 		
-	}	
-	
-	
+	}	 
 	
 	public void initialize(){		
 		logger.debug("creating cache ...");		
@@ -145,8 +140,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		}
 	}
  
-	public List<Project> getProjects() {
-		
+	public List<Project> getProjects() { 
 		List<Long> ids = projectDao.getAllProjectIds();
 		List<Project> list = new ArrayList<Project>(ids.size());
 		for(Long projectId : ids ) {
@@ -174,8 +168,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		return projectDao.getProjectCount(dataSourceRequest);
 	}
 	
-	public Project getProject(long projectId) throws ProjectNotFoundException {
-		
+	public Project getProject(long projectId) throws ProjectNotFoundException { 
 		Project project = getProjectInCache(projectId);		
 		if( project == null ) {
 			project = projectDao.getProjectById(projectId);
@@ -196,9 +189,9 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		projectDao.saveOrUpdateProject(project);
 	}
 	
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdateProject(Project project, Map<String, String> properties) {
-		
 		if( project.getProjectId() > 0 && projectCache.get(project.getProjectId()) != null  ) {
 			projectCache.remove(project.getProjectId());
 			projectDao.setProjectProperties(project.getProjectId(), properties); 
@@ -281,9 +274,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		
 		projectDao.saveOrUpdateIssues(issues); 
 		
-	}
-	 
-	
+	} 
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void deleteIssue(Issue issue) {
@@ -294,8 +285,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 			clearProjectStats(issue.getObjectId());
 			projectDao.deleteIssue(issue);
 		}
-	}
-	
+	} 
 	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void saveOrUpdateIssue(Issue issue) {
@@ -311,6 +301,7 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		if( issue.getIssueId() > 0 && projectIssueCache.get(issue.getIssueId()) != null  ) {
 			projectIssueCache.remove(issue.getIssueId());
 		} 
+		
 		clearProjectStats(issue.getObjectId());
 		
 		logger.debug("save or update user {}" , issue );
@@ -333,27 +324,22 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		Issue issue = geIssueInCache(issueId);		
 		if( issue == null ) {
 			issue = projectDao.getIssueById(issueId);
-			if( issue != null && issue.getIssueId() > 0 ) {
-				
+			if( issue != null && issue.getIssueId() > 0 ) { 
 				if( issue.getAssignee().getUserId() > 0) {
 					issue.setAssignee( userManager.getUser(issue.getAssignee()));
-				}
-				
+				} 
 				if( issue.getRepoter().getUserId() > 0) {
 					issue.setRepoter( userManager.getUser(issue.getRepoter()));				
-				}
-				
+				} 
 				if( issue.getTask().getTaskId() > 0 ) {
 					try {
 						issue.setTask(taskService.getTask(issue.getTask().getTaskId()));
 					} catch (TaskNotFoundException e) { }
-				}
-				
+				} 
 				((DefaultIssue)issue).setIssueTypeName(getCodeText( "ISSUE_TYPE", issue.getIssueType()));
 				((DefaultIssue)issue).setPriorityName(getCodeText( "PRIORITY", issue.getPriority()));	
 				((DefaultIssue)issue).setStatusName(getCodeText( "ISSUE_STATUS", issue.getStatus()));
-				((DefaultIssue)issue).setResolutionName(getCodeText( "RESOLUTION", issue.getResolution()));
-				
+				((DefaultIssue)issue).setResolutionName(getCodeText( "RESOLUTION", issue.getResolution())); 
 				projectIssueCache.put(new Element(issueId, issue ));
 			}
 		}
@@ -412,5 +398,4 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 		return list;
 	}  
 
-	
 }

@@ -47,12 +47,7 @@ public class IssueStateChangeEventListener  {
 	
 	@Subscribe 
 	public void handelIssueStateChangeEvent(IssueStateChangeEvent e) {
-		
-		 
 		logger.debug("ISSUE User : {}, STATE :{}" , e.getUser().getUsername(), e.getState().name() );
-		
-		
 	}
-	
-	
+		
 }

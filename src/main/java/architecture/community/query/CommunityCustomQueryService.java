@@ -188,6 +188,7 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper);
 	}
 	
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public int update ( String statement , Object... args) {
 		return customQueryJdbcDao.getExtendedJdbcTemplate().update(customQueryJdbcDao.getBoundSql(statement).getSql(), args);

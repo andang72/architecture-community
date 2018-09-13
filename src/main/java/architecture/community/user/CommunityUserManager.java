@@ -315,6 +315,7 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		userToUse.setEnabled( user.isEnabled() );
 		userToUse.setStatus( user.getStatus() );
 		userToUse.setModifiedDate(new Date());		
+		
 		if( !StringUtils.isNullOrEmpty( user.getPassword() ) ){
 			userToUse.setPasswordHash(getPasswordHash(user));	
 		}else {
@@ -322,12 +323,20 @@ public class CommunityUserManager extends EventSupport implements UserManager {
 		}		
 		wireTemplateDates(userToUse);
 		try {
+			
 			userDao.updateUser(userToUse); 
 			// cache 수정 ..
+			
+			userCache.remove(userToUse.getUserId());
+			if (previousUsername != null)
+				userIdCache.remove(previousUsername);
+			
+			/**
 			userCache.put(new Element(userToUse.getUserId(), userToUse));
 			if (previousUsername != null)
 				userIdCache.remove(previousUsername);
 			userIdCache.put(new Element(userToUse.getUsername(), userToUse.getUserId())); 
+			**/
 		} catch (DataAccessException ex) { 
 			throw ex;
 		}

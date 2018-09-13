@@ -21,13 +21,14 @@ public class SSEController {
 	private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
 	public SSEController() {
+		
 	}
 
+	
 	@Secured({ "ROLE_USER" })
 	@GetMapping("/issue.json")
 	public SseEmitter handle() { 
 	    final SseEmitter emitter = new SseEmitter();
-	   
 	    this.emitters.add(emitter); 
 	    emitter.onCompletion( new Runnable() {
 			public void run() {
@@ -42,8 +43,9 @@ public class SSEController {
 	    return emitter;
 	}
 	
+	
 	@EventListener
-	public void onIssueStateChangeEvent(IssueStateChangeEvent event) {
+	public void onIssueStateChangeEvent(IssueStateChangeEvent event) { 
 		List<SseEmitter> deadEmitters = new ArrayList<>();
 		for(SseEmitter emitter : emitters ) { 
 			try {
