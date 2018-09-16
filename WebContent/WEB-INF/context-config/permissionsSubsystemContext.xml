@@ -14,7 +14,7 @@
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
 	<beans:description><![CDATA[
-       Spring Security Domain Object ACL 설정  
+       Spring Security Domain Object ACL Context  
 	]]></beans:description>
 
 	<beans:bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler" 
@@ -34,7 +34,7 @@
 		<beans:constructor-arg ref="lookupStrategy" />
 		<beans:constructor-arg ref="aclCache" />
 		<beans:property name="classIdentityQuery" value="SELECT @@IDENTITY"/>
-		<beans:property name="sidIdentityQuery" value="SELECT @@IDENTITY"/>
+		<beans:property name="sidIdentityQuery" value="SELECT MAX( ID ) FROM ACL_SID "/>
 	</beans:bean>
 	
 	<beans:bean id="lookupStrategy" class="architecture.community.security.spring.acls.CommunityLookupStrategy">
@@ -62,7 +62,7 @@
 	</beans:bean>
 	
 	<beans:bean id="adminAuthority" class="org.springframework.security.core.authority.SimpleGrantedAuthority">
-		<beans:constructor-arg value="ROLE_ADMIN" />
+		<beans:constructor-arg value="ROLE_ADMINISTRATOR" />
 	</beans:bean>
     
 </beans:beans> 

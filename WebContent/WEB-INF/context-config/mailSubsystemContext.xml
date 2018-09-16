@@ -13,5 +13,25 @@
 	
 	<!-- Email Monitor -->
 	<beans:bean id="emailMonitor" class="architecture.community.components.mail.EmailMonitor" />
+
+    <beans:bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl" 
+    	p:defaultEncoding="UTF-8"
+    	p:host="mail.podosw.com" 
+    	p:username="noreply"
+    	p:password="podo))&amp;" > 
+		<property name="javaMailProperties">
+		   <props>
+		   			<!-- >
+					<prop key="mail.transport.protocol">smtp</prop>
+	                <prop key="mail.smtp.auth">true</prop>
+	                <prop key="mail.smtp.starttls.enable">true</prop>
+	                -->
+	                <prop key="mail.debug">false</prop>
+	       	   </props>
+		</property>  
+	  	
+    </beans:bean>	
 	
+	<beans:bean id="mailService" class="architecture.community.services.CommunityMailService" />
+		
 </beans:beans> 

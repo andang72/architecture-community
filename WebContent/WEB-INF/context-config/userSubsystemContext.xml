@@ -10,7 +10,11 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-   
+
+	<beans:description><![CDATA[
+       User Context  
+	]]></beans:description>
+	
 	<beans:bean id="userIdCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" p:cacheName="userIdCache"  p:maxElementsInMemory="5000" p:diskPersistent="false"  p:overflowToDisk="false" p:timeToIdle="1800"   p:timeToLive="3600"  p:eternal="false"  p:diskExpiryThreadIntervalSeconds="0" p:statisticsEnabled="true"  />
 	
 	<beans:bean id="userCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" p:cacheName="userCache"  p:maxElementsInMemory="5000"  p:diskPersistent="false" p:overflowToDisk="false"  p:timeToIdle="1800"   p:timeToLive="3600" p:eternal="false"  p:diskExpiryThreadIntervalSeconds="0"  p:statisticsEnabled="true" />
