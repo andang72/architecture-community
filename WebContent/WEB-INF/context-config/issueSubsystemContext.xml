@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<beans:description><![CDATA[
+      Helpdesk Subsystem Context  
+	]]></beans:description>
+
+	<!-- ================================= -->
+	<!-- PROPERTY 						  -->
+	<!-- ================================= -->
+	
+	<beans:bean id="propertyDao" class="architecture.ee.jdbc.property.dao.impl.JdbcPropertyDao" p:dataSource-ref="dataSource" />
+
+	<!-- ================================= -->
+	<!-- MENU 							  -->
+	<!-- ================================= -->
+	<beans:bean id="menuDao" class="architecture.community.menu.dao.JdbcMenuDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="menuService" class="architecture.community.menu.CommunityMenuService" />	  	
+    
+	<!-- ================================= -->
+	<!-- PROJECTS					 	  -->
+	<!-- ================================= -->
+ 
+	<beans:bean id="projectDao" class="architecture.community.projects.dao.jdbc.JdbcProjectDao" p:dataSource-ref="dataSource" />
+	
+	<beans:bean id="projectCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean"  p:cacheName="projectCache"   p:maxElementsInMemory="5000"   p:diskPersistent="false"  p:overflowToDisk="false" p:timeToIdle="1800"   p:timeToLive="3600"  p:eternal="false"   p:diskExpiryThreadIntervalSeconds="0"   p:statisticsEnabled="true" />
+	
+	<beans:bean id="projectIssueCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" p:cacheName="projectIssueCache"   p:maxElementsInMemory="5000"   p:diskPersistent="false"  p:overflowToDisk="false"   p:timeToIdle="1800" p:timeToLive="3600"  p:eternal="false"   p:diskExpiryThreadIntervalSeconds="0"   p:statisticsEnabled="true" />
+    
+     
+    <beans:bean id="projectService" class="architecture.community.projects.DefaultProjectService" init-method="initialize" />	  	
+
+	<!-- ================================= -->
+	<!-- TASKS	 					 	   -->
+	<!-- ================================= -->
+	
+	<beans:bean id="taskCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean" p:cacheName="taskCache"   p:maxElementsInMemory="5000"   p:diskPersistent="false"  p:overflowToDisk="false"   p:timeToIdle="1800" p:timeToLive="3600"  p:eternal="false"   p:diskExpiryThreadIntervalSeconds="0"   p:statisticsEnabled="true" />
+   
+	<beans:bean id="taskService" class="architecture.community.projects.CommunityTaskService"  />	  	
+	
+	<!-- ================================= -->
+	<!-- SCM	     					   -->
+	<!-- ================================= -->
+	<beans:bean id="scmService" class="architecture.community.projects.CommunityScmService" init-method="initialize" />	
+		      		
+
+</beans:beans> 
