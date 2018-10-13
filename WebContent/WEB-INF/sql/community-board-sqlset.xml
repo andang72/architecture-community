@@ -11,7 +11,6 @@
 		DISPLAY_NAME,
 		DESCRIPTION,
 		CREATION_DATE,
-		MODIFIED_DATE
 	) VALUES ( ?, ?, ?, ?, ?, ? )
     ]]></sql-query>	
 	<sql-query name="UPDATE_BOARD" description="BOARD 업데이트"><![CDATA[    

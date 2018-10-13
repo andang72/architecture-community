@@ -45,10 +45,10 @@
 			</parameter-mappings>
 			-->
 			<result-mappings>
-				<parameter index="11" name="DUE_DATE" jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
-				<parameter index="12" name="RESOLUTION_DATE"   jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
-				<parameter index="13" name="CREATION_DATE" jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
-				<parameter index="14" name="MODIFIED_DATE"   jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>				
+				<parameter index="13" name="DUE_DATE" jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
+				<parameter index="14" name="RESOLUTION_DATE"   jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
+				<parameter index="15" name="CREATION_DATE" jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>
+				<parameter index="16" name="MODIFIED_DATE"   jdbcType="TIMESTAMP" javaType="string" pattern="yyyy.MM.dd"/>				
 			</result-mappings>
 		</source>
 		<target>	
@@ -59,12 +59,14 @@
 		<header>true</header>
 		<columns>
 			<column index="0" field="PROJECT_NAME" title="프로젝트" width="9000" />
-			<column index="1" field="ISSUE_TYPE" title="이슈유형코드" width="3000" />
-			<column index="2" field="ISSUE_RESOLUTION" title="처리결과코드" width="3000"/>
-			<column index="3" field="ISSUE_SUMMARY" title="이슈" width="18000"/>
-			<column index="4" field="CREATION_DATE" title="접수일" width="3000"/>
-			<column index="5" field="DUE_DATE" title="예정일" width="3000"/>
-			<column index="6" field="RESOLUTION_DATE" title="처리일" width="3000"/>
+			<column index="1" field="ISSUE_TYPE_NAME" title="이슈유형" width="3000" />
+			<column index="2" field="ISSUE_TYPE" title="이슈유형코드" width="3000" />
+			<column index="3" field="RESOLUTION_NAME" title="처리결과" width="3000"/>
+			<column index="4" field="ISSUE_RESOLUTION" title="처리결과코드" width="3000"/>
+			<column index="5" field="ISSUE_SUMMARY" title="이슈" width="18000"/>
+			<column index="6" field="CREATION_DATE" title="접수일" width="3000"/>
+			<column index="7" field="DUE_DATE" title="예정일" width="3000"/>
+			<column index="8" field="RESOLUTION_DATE" title="처리일" width="3000"/>
 		</columns>
 	</data-service>
 	

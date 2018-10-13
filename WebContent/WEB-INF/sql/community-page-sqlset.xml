@@ -125,6 +125,7 @@
 			pv.SUMMARY,
 			pv.TEMPLATE,
 			p.PATTERN,
+			pv.SCRIPT,
 			pv.SECURED
     	FROM 
     		REP_PAGE p, REP_PAGE_VERSION pv
@@ -141,12 +142,13 @@
 			TITLE,
 			SUMMARY,
 			TEMPLATE, 
+			SCRIPT,
 			SECURED,
 			USER_ID,
 			CREATION_DATE,
 			MODIFIED_DATE		
  		) VALUES (
- 			?,?,?,?,?,?,?,?,?,?
+ 			?,?,?,?,?,?,?,?,?,?,?
  		)
     ]]></sql-query>	
  	
@@ -157,6 +159,7 @@
 			TITLE = ?,
 			SUMMARY = ?,
 			TEMPLATE = ?, 
+			SCRIPT = ?, 
 			SECURED = ?,
 			USER_ID = ?,
 			MODIFIED_DATE = ?		
@@ -197,6 +200,7 @@
 			TITLE,
 			SUMMARY,
 			TEMPLATE,
+			SCRIPT,
 			SECURED,
 			USER_ID,
 			CREATION_DATE,

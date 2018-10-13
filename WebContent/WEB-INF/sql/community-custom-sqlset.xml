@@ -50,8 +50,7 @@
  	</#if>
  	 ]]></dynamic></sql-query>	
  	 
-	<sql-query name="SELECT_ISSUE_STATS_BY_YEAR" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[  
-
+	<sql-query name="SELECT_ISSUE_STATS_BY_YEAR" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[   
 	SELECT 
 		T1.ISSUE_TYPE,
 		T1.ISSUE_STATUS,
@@ -65,39 +64,58 @@
 	]]><dynamic><![CDATA[  	
 		AND T1.OBJECT_TYPE = 19
 		AND T1.OBJECT_ID = T2.PROJECT_ID 
-		AND T2.CONTRACT_STATE NOT IN ( '004' )
-	<#if data.projectId?? >
-		AND T2.PROJECT_ID = ${data.projectId} 
-	</#if>	
+		<#if filter??><#if filter.logic??>${filter.logic}</#if><#list filter.filters as item >
+		<#if item.logic??>${item.logic}</#if><#if item.operator == "doesnotcontain" > ${item.field} NOT IN ( ${item.value} )<#elseif item.operator == "eq" > ${item.field} = ${item.value}</#if>
+		</#list></#if>
+	--	AND T2.PROJECT_ID NOT IN (28)
 	<#if data.contractor?? >
 		AND T2.CONTRACTOR =  '${data.contractor}'
 	</#if> 		
  	]]></dynamic></sql-query>
  	<sql-query name="SELECT_ISSUE_SUMMARY_BY_PERIOD" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[    	
 	SELECT  
-			T2.PROJECT_ID, 
-			T2.NAME AS PROJECT_NAME ,
-			T1.ISSUE_ID, 
-			T1.SUMMARY AS ISSUE_SUMMARY,
-			T1.ISSUE_TYPE,
-			T1.PRIORITY AS ISSUE_PRIORITY,
-			T1.RESOLUTION AS ISSUE_RESOLUTION,
-			T1.ISSUE_STATUS, 
-			T1.REPOTER,
-			T1.ASSIGNEE,
-			T1.DUE_DATE,
-			T1.RESOLUTION_DATE,
-			T1.CREATION_DATE,
-			T1.MODIFIED_DATE
+		T2.PROJECT_ID, 
+		T2.NAME AS PROJECT_NAME ,
+		T1.ISSUE_ID, 
+		T1.SUMMARY AS ISSUE_SUMMARY,
+		T1.ISSUE_TYPE,
+		( SELECT NAME FROM REP_CODESET WHERE GROUP_CODE = 'ISSUE_TYPE' AND CODE = T1.ISSUE_TYPE ) AS ISSUE_TYPE_NAME,
+		T1.PRIORITY AS ISSUE_PRIORITY,
+		T1.RESOLUTION AS ISSUE_RESOLUTION,
+		( SELECT NAME FROM REP_CODESET WHERE GROUP_CODE = 'RESOLUTION' AND CODE = T1.RESOLUTION ) AS RESOLUTION_NAME,
+		T1.ISSUE_STATUS, 
+		T1.REPOTER,
+		T1.ASSIGNEE,
+		T1.DUE_DATE,
+		T1.RESOLUTION_DATE,
+		T1.CREATION_DATE,
+		T1.MODIFIED_DATE
 	FROM REP_ISSUE T1 , REP_PROJECT T2
 	]]><dynamic><![CDATA[    
 	WHERE 
 	T1.OBJECT_TYPE = 19
 	AND T1.OBJECT_ID = T2.PROJECT_ID 	
 	AND T2.CONTRACT_STATE NOT IN ( '004' )
-	<#if data.contractor?? >
-		AND T2.CONTRACTOR =  '${data.contractor}'
-	</#if> 	
+	<#if data.projectIds?? >
+	AND T2.PROJECT_ID NOT IN (
+	<#list data.projectIds as item >
+	${item.projectId}<#if !item?is_last>,</#if>
+	</#list>
+	) 
+	</#if>
+	<#if filter?? > 
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if> ${item.field} 
+	<#if item.value?? >
+	<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+	<#elseif item.operator == "eq" > = '${item.value}'
+	<#elseif item.operator == "neq"> != '${item.value}'
+	<#elseif item.operator == "gte"> >= ${item.value}
+	<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+	<#else>
+	<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+	</#if>
+ 	</#list></#if>	 
 	AND (
 	      ( T1.DUE_DATE IS NULL AND TO_CHAR( T1.CREATION_DATE , 'YYYYMMDD' ) BETWEEN '${data.startDate}' AND '${data.endDate}' )  
 	   OR ( T1.DUE_DATE IS NOT NULL AND TO_CHAR( T1.DUE_DATE , 'YYYYMMDD' ) BETWEEN '${data.startDate}' AND '${data.endDate}' ) 
@@ -116,13 +134,29 @@
 		T1.OBJECT_TYPE = 19
 		AND T1.OBJECT_ID = T2.PROJECT_ID
 		AND T2.CONTRACT_STATE NOT IN ( '004' )
-		<#if data.contractor?? >
-		AND T2.CONTRACTOR =  '${data.contractor}'
-		</#if> 
+		<#if data.projectIds?? >
+		AND T2.PROJECT_ID NOT IN (
+		<#list data.projectIds as item >
+		${item.projectId}<#if !item?is_last>,</#if>
+		</#list>
+		)</#if>	 
+		<#if filter?? > 
+		<#list filter.filters as item >
+		<#if item.logic??>${item.logic}</#if> ${item.field} 
+		<#if item.value?? >
+		<#if item.operator == "startswith" && item.value?? > LIKE '${item.value}%'
+		<#elseif item.operator == "eq" > = '${item.value}'
+		<#elseif item.operator == "neq"> != '${item.value}'
+		<#elseif item.operator == "gte"> >= ${item.value}
+		<#elseif item.operator == 'lte'> <= ${item.value}</#if>
+		<#else>
+		<#if item.operator == "eq" > IS NULL <#elseif item.operator == "neq"> IS NOT NULL </#if>
+		</#if>
+	 	</#list></#if>	
 	  	AND ( T1.ISSUE_STATUS != '005' OR T1.ISSUE_STATUS IS NULL )
 		AND (
-		      ( T1.DUE_DATE IS NULL AND TO_CHAR( T1.CREATION_DATE , 'YYYYMMDD' ) <= '${data.endDate}' )  
-		   OR ( T1.DUE_DATE IS NOT NULL AND TO_CHAR( T1.DUE_DATE , 'YYYYMMDD' ) <= '${data.endDate}' ) 
+			( T1.DUE_DATE IS NULL AND TO_CHAR( T1.CREATION_DATE , 'YYYYMMDD' ) <= '${data.endDate}' )  
+			OR ( T1.DUE_DATE IS NOT NULL AND TO_CHAR( T1.DUE_DATE , 'YYYYMMDD' ) <= '${data.endDate}' ) 
 		)
 		GROUP BY T2.PROJECT_ID, T2.NAME 
     ]]></dynamic></sql-query>

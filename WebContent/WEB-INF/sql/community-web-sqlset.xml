@@ -238,7 +238,7 @@
  	<#if item.filters?has_content >
  	${item.logic} ( <#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
  	<#else>
-	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE is null </#if>
+	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE < 1 </#if>
  	<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
  	</#if>
  	</#list></#if>
@@ -275,11 +275,13 @@
  	<#if item.filters?has_content >
  	${item.logic} ( <#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
  	<#else>
-	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE is null </#if>
+	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE < 1 </#if>
  	<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
  	</#if>
  	</#list></#if>
- 	ORDER BY T1.OBJECT_ID, T1.ISSUE_ID, T1.ISSUE_TYPE 	
+	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
+	ORDER BY T1.OBJECT_ID, T1.ISSUE_ID, T1.ISSUE_TYPE, T1.CREATION_DATE desc
+	</#if> 	
  	 ]]></dynamic></sql-query>	        
 	<!--  ====================================  -->
 	<!-- PROJECT						 		   -->

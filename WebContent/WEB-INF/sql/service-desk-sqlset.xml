@@ -2,7 +2,15 @@
 <sqlset>
 	<name>SERVICE_DESK</name>
 	<description>SERVICE DESK SUBSYSTEM QUERIES</description>	
- 	
+ 	<!--  WATCHER  -->
+	<sql-query name="SELECT_WATCHERS_BY_OBJECT_TYPE" description="SELECT_WATCHERS_BY_OBJECT_TYPE"><![CDATA[    	
+  	SELECT 
+		USER_ID, OBJECT_TYPE, OBJECT_ID, WATCH_TYPE
+	FROM AC_SD_WATCH
+  	WHERE OBJECT_TYPE = ?     
+ 	]]></sql-query>	
+
+ 	<!--  SCM -->
  	<sql-query name="SELECT_SCM_IDS" description="SELECT_SCM_IDS"><![CDATA[    	
   	SELECT SCM_ID FROM AC_SD_SCM    
  	]]><dynamic><![CDATA[    	
