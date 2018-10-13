@@ -119,7 +119,7 @@
 		  	'features.accounts.authenticate' :function(e){
 		  		if( !e.token.anonymous ){
 		  			observable.setUser(e.token);
-		    	}
+		    		}
 		  	}
 		});	   
 		
@@ -147,22 +147,22 @@
 	        function scrollY() {
 	            return window.pageYOffset || docElem.scrollTop;
 	        }
-        	init();
-		})(); 
+        		init();
+		})();
            		
 		var observable = new community.ui.observable({ 
 			currentUser : new community.model.User(),
 			isDeveloper : false,
 			enabled : false,
-			visible : false,
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
 				$this.set('isDeveloper', isDeveloper());
 				$this.set('enabled', true);
-				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
-				createNotification($this);				
-				</#if>
+				if($this.get('isDeveloper')){
+					createIssueGrid($this);	
+					createNotification($this);				
+				}
 			},
 			notificationEnabled : false,
 			requestPermission : function (){ 
@@ -181,9 +181,25 @@
 			        }
 			    }); 
 			},
-			goStats : function () {
-			
-			},
+			dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
+				transport:{
+					read:{
+						contentType: "application/json; charset=utf-8"
+					},
+					parameterMap: function (options, operation){		
+						options.data = options.data || {} ;
+						options.data.enabled = true;
+						return community.ui.stringify(options)
+					} 			
+				},	
+				serverPaging:false,
+				pageSize : 100,
+				schema: {
+					total: "totalCount",
+					data: "items",
+					model: community.model.Project
+				}
+			}),
 			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/CONTRACTOR/list.json" />' , {} ),
 			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PROJECT/list.json" />' , {} ),
 			projectsDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/list_v2.json"/>' , {
@@ -218,9 +234,8 @@
 				}else if ($this.filter.PROJECT_CONTRACTOR != null ){
 					filters.push({ field: "contractor", operator: "eq", value: $this.filter.PROJECT_CONTRACTOR });
 				}
-				community.ui.listview($('#project-listview')).dataSource.filter( filters ); 
+				$this.dataSource.filter( filters );
 			},
-			/** Issue Grid Filters */
 			filter2 : {
 				ASSIGNEE_TYPE : "1",
 				TILL_THIS_WEEK : true,
@@ -228,29 +243,36 @@
 			},
 			doFilter2 : function(){ 
 				var $this = this , filters = [];
-				var grid = $('#issue-grid'); 
 				if( observable.filter2.STATUS_ISNULL ){
 					filters.push({ logic: "AND" , filters:[{ field: "ISSUE_STATUS", operator: "neq", value: "005" },{field: "ISSUE_STATUS", operator: "eq", logic: "OR" } ] } );
 				}else{
 					filters.push({ logic: "AND" , filters:[{ field: "ISSUE_STATUS", operator: "neq", value: "005" }]});
 				}
 				filters.push({ field: "assigneeType", operator: "eq", value: $this.filter2.ASSIGNEE_TYPE, logic: "AND" });
-				community.ui.grid(grid).dataSource.filter( filters );
+				community.ui.grid($('#issue-grid')).dataSource.filter( filters );
 				return false;
-			}
-    	}); 
-    	
-    	
-    	observable.bind("change", function(e) { 
+			},
+			showAllOpenIssue: function(e){
+				$('html, body').stop().animate({ scrollTop: $("#worklist").offset().top - 50 }, 500);
+				//e.preventDefault();
+				$("#navbar").collapse('hide');				
+ 			}
+    		});
+    		observable.bind("change", function(e) { 
+    			//console.log( e.field ) ;
     			if( e.field == 'filter.PROJECT_CONTRACT' || e.field == 'filter.NAME' || e.field == 'filter.ID' || e.field == 'filter.PROJECT_CONTRACTOR' ) {
     				observable.applyFilters();
     			}else if (e.field == 'filter2.ASSIGNEE_TYPE' || e.field == 'filter2.TILL_THIS_WEEK' || e.field == 'filter2.STATUS_ISNULL'){
     				observable.doFilter2();  				
     			}
-    	});
-    	
-    	var renderTo = $('#page-top');	
-    	
+    		});
+    		
+    		var renderTo = $('#page-top');
+    		renderTo.data('model', observable);
+    		community.ui.bind(renderTo, observable );	
+    		community.ui.tooltip(renderTo);
+    		createProjectListView(observable);
+    		
 		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view], a[data-action=view2], button[data-action=overviewstats]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
@@ -264,41 +286,24 @@
 			}else if( actionType == 'overviewstats'){
 				community.ui.send("<@spring.url "/display/pages/issue-overviewstats.html" />");
 				return;	
+			} else if ( actionType == 'create' && !isDeveloper() ){
+				if( observable.dataSource.total() == 1 ){
+					community.ui.send("<@spring.url "/display/pages/issue.html" />", { 'projectId': observable.dataSource.at(0).projectId });
+					return;
+				}	
 			}
+			// only for developers and client who has many projects.	
+			var targetObject = new community.model.Issue();	
+			targetObject.set('objectType', 19 );
+			if( observable.dataSource.total() == 1 ){
+				targetObject.set('objectId', observable.dataSource.at(0).projectId);
+			}						
+ 			createOrOpenIssueEditor (targetObject);		
 			return false;		
-		});	
-		
-    		
-    	
-    	renderTo.data('model', observable);
-    	community.ui.bind(renderTo, observable );	
-    	community.ui.tooltip(renderTo); 
-    	 
-    	createContentTabs(observable);		 
+		});	 
+				
 	});
-	
-	function createContentTabs(observable){  
-		$('#nav-tabstrip a[data-toggle="tab"]').on('show.bs.tab', function (e) {
-			var url = $(this).attr("href"); // the remote url for content
-			var target = $(this).data("target"); // the target pane
-			var tab = $(this); // this tab
-			 
-			if(url === '#nav-issues'){
-				createIssueGrid(observable)
-			}else if (url === '#nav-projects'){ 
-				createProjectListView(observable);		
-			} 
-		}); 
-		observable.set('visible', true );
-		// Select first tab
-		var index = 1 ;
-		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
-		if (window.location.hash === '#nav-projects'){
-			index = 2 ; 
-		} 
-		</#if>
-		$('#nav-tabstrip a[data-toggle="tab"]:nth-child('+ index +')').tab('show');
-	}
+
 
 	var iconDataURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKBJREFUeNpiYBjpgBFd4P///wJAaj0QO9DEQiAg5ID9tLIcmwMYsDgABhqoaTHMUHRxpsGYBv5TGqTIZsDkYWLo6gc8BEYdMOqAUQeMOoAqDgAWcgZAfB9EU63SIAGALH8PZb+H8v+jVz64KiOK6wIg+ADEArj4hOoCajiAqMpqtDIadcCoA0YdQIoDDtCqQ4KtBY3NAYG0csQowAYAAgwAgSqbls5coPEAAAAASUVORK5CYII=";
 
@@ -413,6 +418,7 @@
 		var name = "";
 		if( code == null )
 			return "";
+		
 		var renderTo = $('#page-top');
 		$.each( renderTo.data("model").contractorDataSource.data(), function( index, value ){
 			if( value.code == code )
@@ -425,31 +431,11 @@
 	}
 			
 	function createProjectListView(observable){
-		var renderTo = $('#project-listview');
-		if( !community.ui.exists(renderTo) ){ 
-			community.ui.listview( renderTo , {
-				dataSource: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
-					transport:{
-						read:{
-							contentType: "application/json; charset=utf-8"
-						},
-						parameterMap: function (options, operation){		
-							options.data = options.data || {} ;
-							options.data.enabled = true;
-							return community.ui.stringify(options)
-						} 			
-					},	
-					serverPaging:false,
-					pageSize : 100,
-					schema: {
-						total: "totalCount",
-						data: "items",
-						model: community.model.Project
-					}
-				}),
-				template: community.ui.template($("#template").html())
-			}); 
-		}	
+		var renderTo = $('#project-listview');	    		
+		community.ui.listview( renderTo , {
+			dataSource: observable.dataSource,
+			template: community.ui.template($("#template").html())
+		}); 	
 	}
 
 	function getFirstDayOfWeek(){
@@ -470,7 +456,6 @@
 	}
 	
 	function createIssueGrid(observable){
-	
 		var renderTo = $('#issue-grid');	 	
 		if( !community.ui.exists(renderTo) ){
 			console.log("create grid for issues.");
@@ -498,6 +483,8 @@
 					}
 				}),
 				dataBound: function() {		
+					//if( this.items().length == 0)
+			        //	renderTo.html('<tr class="g-height-50"><td colspan="10" class="align-middle g-font-weight-300 g-color-black text-center">조건에 해당하는 이슈가 없습니다.</td></tr>');
 			    },
 			    pageable: { refresh: true }, 
 				sortable: true,
@@ -515,10 +502,9 @@
 					{ field: 'T1.CREATION_DATE', title: "등록일", filterable: false, sortable: true , width : 100 , media: "(min-width: 992px)", template: '#if (data.creationDate != null){ # #: community.data.getFormattedDate( data.creationDate , "yyyy-MM-dd") # #}#', attributes:{ class:"text-center" }}, 
 				]
 			});
-       	 	renderTo.removeClass('k-widget');  
+       	 	//renderTo.removeClass('k-widget');  
 		}		
 	}
-	
 	
 	function createOrOpenIssueEditor( data ){
 		var renderTo = $('#issue-editor-modal');
@@ -578,7 +564,6 @@
  			
 	</script>	
 	<style>
-	
 	.w-100{
 		width: 100%!important;
 	}
@@ -657,18 +642,6 @@
 	    font-weight : 400;
 	}
 	
-	
-	#nav-tabstrip .nav-item.active {
-		font-weight:600;
-	}
-	
-	// Small devices (landscape phones, 576px and up)
-	@media (min-width: 0) {
-	
-		#nav-tabstrip button { right: 15px; }
-		
-	}
-	
 	</style>	
 </head>
 <body id="page-top" class="landing-page no-skin-config">
@@ -681,50 +654,172 @@
 		<#else>
 		<div class="divimage dzsparallaxer--target w-100 g-bg-pos-bottom-center" style="height: 120%; background-image: url(  /images/bg/endless_streets_by_andreasrocha-d3fhbhg.jpg );"></div>	
 		</#if> 
-        <div class="container text-center g-bg-cover__inner g-pt-100">
+        <div class="container text-center g-bg-cover__inner g-pt-150">
         <div class="row justify-content-center">
-			<div class="col-lg-9">
+          <div class="col-lg-9">
             <div class="mb-5">
               <h1 class="g-color-white h1 mb-4"><#if __page?? >${__page.title}</#if></h1>
               <h2 class="g-color-white g-font-weight-400 g-font-size-18 mb-0 text-left" style="line-height: 1.8;"><#if __page?? >${__page.summary}</#if></h2>
             </div>
-          	</div>
-			</div> 
-		</div><!-- /.row -->
-		</div><!-- /.container -->
-	</section>
- 	<!-- tabs -->
-	 <div class="u-shadow-v19 g-bg-gray-light-v5">
-		<section class="container g-py-30 g-pos-rel"  data-bind="visible: visible" style="display:none;">
-			<#if currentUser.anonymous >
-			로그인이 필요한 서비스입니다.
-			<#else>
-			 <nav id="nav-tabstrip" class="g-font-weight-400">
-			  <div class="nav justify-content-center text-uppercase u-nav-v5-1 u-nav-dark g-line-height-1_4" id="nav-tab" role="tablist">
-			  	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-			    <a class="nav-item nav-link g-px-25" id="nav-home-tab" data-toggle="tab" href="#nav-issues" role="tab" aria-controls="nav-home" aria-selected="true"><i class="icon-finance-222 u-line-icon-pro"></i> 금주 나에게 배정된 업무</a>
-			    </#if>
-			    <a class="nav-item nav-link g-px-25" id="nav-profile-tab" data-toggle="tab" href="#nav-projects" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="icon-sport-155 u-line-icon-pro"></i> 프로젝트</a>
-			    <#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") > 
-			    <button class="btn btn-md u-btn-darkred g-pos-abs" style="right:0px;" data-action="overviewstats" data-toggle="tooltip" data-placement="top" data-original-title="이슈 관련 통계 데이터를 확인할 수 있습니다." style="">통계</button>
-				</#if>  
-			  </div>
-			</nav>	
-			</#if>
-		</section>
-	</div>
-	<!-- /.tabs -->
-<div class="tab-content g-min-height-600" id="nav-tabContent">
+          </div>
+        </div>
+        <div class="row justify-content-center">
+        	<div class="btn-group">
+ 				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
+				<button class="btn btn-xxl rounded-0 btn-block u-btn-red g-mt-5 g-font-weight-400" type="button"  role="button" 
+					data-toggle="tooltip" data-placement="top" data-original-title="이번주에 내가 처리할 업무를 확인합니다." 
+					data-bind="click: showAllOpenIssue" >금주 나에게 배정된 업무 확인하기</button>                          				                				
+				</#if>      
+				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
+	            <button class="btn btn-xxl rounded-0 btn-block  u-btn-purple g-mt-5 g-font-weight-400" type="button"  role="button" 
+	            		data-toggle="tooltip" data-placement="top" data-original-title="기간별 이슈 처리현황을 확인합니다." 
+	            		data-object-id="0" data-action="overviewstats">통계</button>	                            				                				
+				</#if>   	
+				<button  class="btn btn-xxl btn-block rounded-0 u-btn-darkred g-mt-5 g-font-weight-400" disabled data-bind="invisible: notificationEnabled, click:requestPermission"
+					data-toggle="tooltip" data-placement="top" data-original-title="새로운 이슈가 등록되거나 삭제되면 알림을 받을 수 있습니다." 
+					style="display:none;" >데스크탑 알림 권한 요청</button> 
+	        	</div>					    	
+        	</div>
+      </div>
+    </section>
+    
+    <!-- ANNOUNCES -->
+    <#assign announces = CommunityContextHelper.getAnnounceService().getAnnounces(0,0) />	
+    <#if ( announces?size > 0 ) && SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
+	<section class="g-pt-50">
+		<div class="container"> 
+			<div class="row justify-content-center">
+				<div class="col-md-12 align-self-md-center">
+				<p class="lead g-mb-30"><i class="fa fa-bullhorn"></i> 새로운 공지가 있습니다.</p> 
+										
+				<#list announces as announce >
+				<!-- Announce -->
+				<div class="g-brd-around g-brd-gray-light-v4 g-brd-left-4 g-brd-blue-left g-line-height-1_8 g-rounded-3 g-pa-20 g-mb-30" role="alert">
+				  <h3 class="g-color-blue g-font-weight-600"> ${announce.subject}</h3>
+				  <p class="mb-0 g-font-size-20"> 
+				  ${announce.body}
+				  </p>
+				</div>
+  				<!-- End Announce -->				
+				</#list>
+				</div>	
+			</div>	
+		 </div>
+	</section>					
+    </#if>
+    <!-- END ANNOUNCES -->
+    
+	<section id="features" class="services">
+		<div class="u-shadow-v19 g-bg-gray-light-v5">
+		<div class="container" data-bind="visible:isDeveloper" style="display:none;">
+		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
+		<!-- Filters -->		
+        <!-- Contractor -->
+        <div class="row align-items-center g-pt-40 g-pb-10">
+          <!-- Category -->
+          <div class="col-md-6 col-lg-4 g-mb-30">
+            <h3 class="h6 mb-3">계약자:</h3>
+            <div class="form-group">
+				<input data-role="combobox" 
+					data-option-label="계약자를 선택하세요."
+					data-placeholder="프로젝트 계약자를 선택하세요."
+					data-value-primitive="true"
+					data-auto-bind="true"
+					data-text-field="name"
+					data-value-field="code"
+					data-bind="value: filter.PROJECT_CONTRACTOR, source: contractorDataSource"
+					style="width: 100%;" />             
+            </div>
+          </div>
+          <!-- End Contractor -->
+          <!-- Contract -->
+          <div class="col-md-6 col-lg-4 g-mb-30">
+            <h3 class="h6 mb-3">계약상태:</h3>
+            <div class="form-group">
+ 				<input data-role="combobox" 
+				data-option-label="계약상태를 선택하세요."
+				data-placeholder="프로젝트 계약상태를 선택하세요."
+				data-value-primitive="true"
+				data-auto-bind="true"
+				data-text-field="name"
+				data-value-field="code"
+				data-bind="value: filter.PROJECT_CONTRACT, source: contractDataSource"
+				style="width: 100%;" />             
+            </div>
+          </div>
+          <!-- End Contract -->
+          <!-- Project -->
+          <div class="col-md-6 col-lg-4 g-mb-30">
+            <h3 class="h6 mb-3">프로젝트:</h3>
+            <div class="form-group">
+ 				<input data-role="combobox" 
+				data-option-label="프로젝트를 선택하세요."
+				data-placeholder="프로젝트를 선택하세요."
+				data-value-primitive="true"
+				data-auto-bind="true"
+				data-text-field="name"
+				data-value-field="projectId"
+				data-bind="value: filter.ID, source: projectsDataSource"
+				style="width: 100%;" />             
+            </div>
+          </div>
+          <!-- End Project -->
+        </div>
+        <!-- End Filters -->
+		</#if>
+        <!-- Filters -->
+        <div class="g-brd-y g-brd-gray-light-v4 g-pt-40 g-pb-10">
+          <div class="row align-items-center">
+            <!-- Project Name  -->
+            <div class="col-md-6 col-lg-4 g-mb-30">
+              <h2 class="h6 mb-3">프로젝트:</h2>            
+			  <div class="form-group">
+				 <input type="text" class="form-control" placeholder="프로젝트 이름을 입력하세요." data-bind="value:filter.NAME">
+			  </div>               
+            </div>
+            <!-- End Project Name  --> 
+            <div class="col-md-6 col-lg-4 g-mb-30">
+              <h3 class="h6 mb-3"></h3>
+            </div> 
+            <!-- Buttons -->
+			<div class="col-md-6 col-lg-4 g-mb-30 text-right">
+              <ul class="list-inline mb-0">
+                <li class="list-inline-item">
+                  <button class="btn u-btn-outline-darkgray btn-md" type="button" role="button" role="button" 
+					data-toggle="tooltip" data-placement="bottom" data-original-title="적용된 필터 조건을 초기화합니다." 
+					data-object-id="0" data-bind="click:clearFilters" >초기화</button>
+                </li>
+              </ul>
+            </div>            
+            <!-- End Buttons -->
+          </div>
+        </div>
+        <!-- End Filters -->
+      	</div>
+      	
+      	<div class="g-bg-white  g-min-height-500 g-py-15">
+		<div class="container">            
+			<div class="row justify-content-center">
+				<div class="col-lg-12">
+                <#if !currentUser.anonymous >                      		                       		
+				<p>프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</p>
+				<div id="project-listview" class="no-border" ></div>                      
+				</#if>
+				</div>
+			</div>
+		</div>	
+		</div>	
+	</section>	
+	
 	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-	<div class="tab-pane fade" id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab" >  
-	<section data-bind="visible:isDeveloper">
+	<section id="worklist" class="" data-bind="visible:isDeveloper">
 		<div class="u-shadow-v19 g-bg-gray-light-v5">
 	    <div class="container">
 	        <div class="row g-pt-25">
 	            <div class="col-lg-12">
 		            <div class="u-heading-v2-4--bottom g-mb-40">
 					  <h2 class="text-uppercase u-heading-v2__title g-mb-10">금주 나에게 배정된 업무</h2>
-					  <h4 class="g-font-weight-200">금주에 처리해야할 업무입니다. <span class="g-color-red">담당자가 지정되지 않은 이슈는 협의하여 담당자를 지정해주세요.</span> </h4>
+					  <h4 class="g-font-weight-200">금주에 처리해야할 업무입니다.</h4>
 					</div>
 	            </div>
 	        </div>
@@ -780,157 +875,7 @@
 	        </div>
 	    </div>
 	</section>	
-	</div>
-	</#if> 
-	<div class="tab-pane fade" id="nav-projects" role="tabpanel" aria-labelledby="nav-projects-tab">
-	<section class="services">
-		<div class="u-shadow-v19 g-bg-gray-light-v5" >
-		<div class="container" data-bind="visible:isDeveloper" >
-			<div class="row g-pt-25">
-	            <div class="col-lg-12">
-		            <div class="u-heading-v2-4--bottom g-mb-40">
-					  <h2 class="text-uppercase u-heading-v2__title g-mb-10">프로젝트 & 유지보수</h2>
-					  <h4 class="g-font-weight-200">프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</h4>
-					</div>
-	            </div>
-	        </div>
-	        		
-		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
-		<!-- Filters -->		
-        <!-- Contractor -->
-        <div class="row align-items-center g-pt-10 g-pb-10">
-          <!-- Category -->
-          <div class="col-md-6 col-lg-4 g-mb-30">
-            <h3 class="h6 mb-3">계약자:</h3>
-            <div class="form-group">
-				<input data-role="combobox" 
-					data-option-label="계약자를 선택하세요."
-					data-placeholder="프로젝트 계약자를 선택하세요."
-					data-value-primitive="true"
-					data-auto-bind="true"
-					data-text-field="name"
-					data-value-field="code"
-					data-bind="value: filter.PROJECT_CONTRACTOR, source: contractorDataSource"
-					style="width: 100%;" />             
-            </div>
-          </div>
-          <!-- End Contractor -->
-          <!-- Contract -->
-          <div class="col-md-6 col-lg-4 g-mb-30">
-            <h3 class="h6 mb-3">계약상태:</h3>
-            <div class="form-group">
- 				<input data-role="combobox" 
-				data-option-label="계약상태를 선택하세요."
-				data-placeholder="프로젝트 계약상태를 선택하세요."
-				data-value-primitive="true"
-				data-auto-bind="true"
-				data-text-field="name"
-				data-value-field="code"
-				data-bind="value: filter.PROJECT_CONTRACT, source: contractDataSource"
-				style="width: 100%;" />             
-            </div>
-          </div>
-          <!-- End Contract -->
-          <!-- Project -->
-          <div class="col-md-6 col-lg-4 g-mb-30">
-            <h3 class="h6 mb-3">프로젝트:</h3>
-            <div class="form-group">
- 				<input data-role="combobox" 
-				data-option-label="프로젝트를 선택하세요."
-				data-placeholder="프로젝트를 선택하세요."
-				data-value-primitive="true"
-				data-auto-bind="true"
-				data-text-field="name"
-				data-value-field="projectId"
-				data-bind="value: filter.ID, source: projectsDataSource"
-				style="width: 100%;" />             
-            </div>
-          </div>
-          <!-- End Project -->
-        </div>
-        <!-- End Filters -->
-		</#if>
-        <!-- Filters -->
-        <div class="g-brd-y g-brd-gray-light-v4 g-pt-10 g-pb-10">
-          <div class="row align-items-center">
-            <!-- Project Name  -->
-            <div class="col-md-6 col-lg-4 g-mb-30">
-              <h2 class="h6 mb-3">프로젝트:</h2>            
-			  <div class="form-group">
-				 <input type="text" class="form-control" placeholder="프로젝트 이름을 입력하세요." data-bind="value:filter.NAME">
-			  </div>               
-            </div>
-            <!-- End Project Name  --> 
-            <div class="col-md-6 col-lg-4 g-mb-30">
-              <h3 class="h6 mb-3"></h3>
-            </div> 
-            <!-- Buttons -->
-			<div class="col-md-6 col-lg-4 g-mb-30 text-right">
-              <ul class="list-inline mb-0">
-                <li class="list-inline-item">
-                  <button class="btn u-btn-outline-darkgray btn-md" type="button" role="button" role="button" 
-					data-toggle="tooltip" data-placement="bottom" data-original-title="적용된 필터 조건을 초기화합니다." 
-					data-object-id="0" data-bind="click:clearFilters" >초기화</button>
-                </li>
-              </ul>
-            </div>            
-            <!-- End Buttons -->
-          </div>
-        </div>
-        <!-- End Filters -->
-      	</div> 
-      	<div class="g-bg-white  g-min-height-500 g-py-15 g-brd-0 g-brd-gray-dark-v4 g-brd-top-3 g-brd-style-solid g-min-height-50">
-			<div class="container">            
-				<div class="row justify-content-center">
-					<div class="col-lg-12">
-	                <#if !currentUser.anonymous >
-					<div id="project-listview" class="no-border"></div>                      
-					</#if>
-					</div>
-				</div>
-			</div>	
-		</div>	
-	</section>	  
-  
-  
-  
-  </div>
-  <div class="tab-pane fade" id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab">
-  
-  
-  
-
-  
-  
-  
-  </div>
-</div>           
-    <!-- ANNOUNCES -->
-    <#assign announces = CommunityContextHelper.getAnnounceService().getAnnounces(0,0) />	
-    <#if ( announces?size > 0 ) && SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-	<section class="g-pt-50">
-		<div class="container"> 
-			<div class="row justify-content-center">
-				<div class="col-md-12 align-self-md-center">
-				<p class="lead g-mb-30"><i class="fa fa-bullhorn"></i> 새로운 공지가 있습니다.</p> 
-										
-				<#list announces as announce >
-				<!-- Announce -->
-				<div class="g-brd-around g-brd-gray-light-v4 g-brd-left-4 g-brd-blue-left g-line-height-1_8 g-rounded-3 g-pa-20 g-mb-30" role="alert">
-				  <h3 class="g-color-blue g-font-weight-600"> ${announce.subject}</h3>
-				  <p class="mb-0 g-font-size-20"> 
-				  ${announce.body}
-				  </p>
-				</div>
-  				<!-- End Announce -->				
-				</#list>
-				</div>	
-			</div>	
-		 </div>
-	</section>					
-    </#if>
-    <!-- END ANNOUNCES --> 
-
+	</#if>
 	<!-- FOOTER START -->   
 	<#include "includes/user-footer.ftl">
 	<!-- FOOTER END -->   
@@ -1104,8 +1049,10 @@
 				 	<div class="form-group">
 					<textarea class="form-control" placeholder="상세내용" data-bind="value:issue.description"></textarea>
 	 				</div> 
+	 				
 	 				<h6 class="text-light-gray text-semibold g-mt-15" data-bind="visible: isDeveloper">예정일</h6>	
 					<input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled:editable" style="width: 100%">
+					
 					<h6 class="text-light-gray text-semibold">우선순위 <span class="text-danger">*</span></h6>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
@@ -1117,6 +1064,7 @@
 		                   data-bind="value:issue.priority, source:priorityDataSource"
 		                   style="width: 100%;"/>			        	  
 					</div>
+						
 					<h6 class="text-light-gray text-semibold">지원방법</h6>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
@@ -1128,6 +1076,7 @@
 		                   data-bind="source:methodsDataSource"
 		                   style="width: 100%;"/>
 					</div>	
+
 					<h6 class="text-light-gray text-semibold">처리결과</h6>
 					<div class="form-group">
 						<input data-role="dropdownlist"  
@@ -1150,7 +1099,8 @@
 		                   data-value-field="code"
 		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource"
 		                   style="width: 100%;"/>
-					</div>																															
+					</div>	
+																																						
 				</form>   
 				<div class="text-editor"></div>
 				</div>

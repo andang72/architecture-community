@@ -9,7 +9,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title><#if __page?? >${__page.title}</#if></title>
- 	
+ 
+  	<#include "/community/includes/header_globle_site_tag.ftl">
+  			
 	<!-- Bootstrap core CSS -->
    	<link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
    	
@@ -77,6 +79,7 @@
 			"hs.header" : { "deps" :['jquery', 'hs.core'] },
 			"hs.tabs" : { "deps" :['jquery', 'hs.core'] },
 			"hs.hamburgers" : { "deps" :['jquery', 'hs.core'] },
+			"hs.dropdown" : { "deps" :['jquery', 'hs.core'] },
 	        "dzsparallaxer" : { "deps" :['jquery'] },
 	        "dzsparallaxer.dzsscroller" : { "deps" :['jquery', 'dzsparallaxer' ] },
 			"dzsparallaxer.advancedscroller" : { "deps" :['jquery', 'dzsparallaxer' ] }	
@@ -101,6 +104,7 @@
 			"hs.header" 	   				: "/js/bootstrap.theme/unify/components/hs.header",
 			"hs.tabs" 	   					: "/js/bootstrap.theme/unify/components/hs.tabs",
 			"hs.hamburgers"   				: "/js/bootstrap.theme/unify/helpers/hs.hamburgers",
+			"hs.dropdown" 	   				: "/assets/js/components/hs.dropdown",
 			<!-- Dzsparallaxer -->		
 			"dzsparallaxer"           			: "/assets/vendor/dzsparallaxer/dzsparallaxer",
 			"dzsparallaxer.dzsscroller"			: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
@@ -111,7 +115,7 @@
 	require([ 
 		"jquery", "bootstrap", 
 		"community.data", "kendo.messages.min",
-		"hs.header", "hs.tabs", "hs.hamburgers", 'dzsparallaxer.advancedscroller',
+		"hs.header", "hs.tabs", "hs.hamburgers", 'hs.dropdown', 'dzsparallaxer.advancedscroller',
 		"summernote-ko-KR", "dropzone" 		
 	], function($, kendo ) {	
 
@@ -119,7 +123,10 @@
 		$.HSCore.components.HSHeader.init($('#js-header'));	
 		$.HSCore.components.HSTabs.init('[role="tablist"]');
 		$.HSCore.helpers.HSHamburgers.init('.hamburger');
-		
+
+		// initialization of HSDropdown component
+      	$.HSCore.components.HSDropdown.init($('[data-dropdown-target]')); 
+      			
 		$(window).on('resize', function () {
 		    setTimeout(function () {
 		    	$.HSCore.components.HSTabs.init('[role="tablist"]');

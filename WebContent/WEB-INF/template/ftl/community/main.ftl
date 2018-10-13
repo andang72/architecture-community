@@ -58,13 +58,14 @@
 			"kendo.web.min" 			: { "deps" :['jquery'] },
 	        "kendo.culture.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	   
 	        "kendo.messages.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	  
-			<!-- community -- >
+			<!-- community -->
 	        "community.ui.core"			: { "deps" :['jquery', 'kendo.web.min', 'kendo.culture.min' ] },
 	        "community.data" 			: { "deps" :['jquery', 'kendo.web.min', 'community.ui.core' ] },
-	        <!-- Unify -- > 			
+	        <!-- Unify --> 			
 			"hs.core" : { "deps" :['jquery', 'bootstrap'] },
 			"hs.header" : { "deps" :['jquery', 'hs.core'] },
 			"hs.hamburgers" : { "deps" :['jquery', 'hs.core'] },
+			"hs.dropdown" : { "deps" :['jquery', 'hs.core'] },
 	        "dzsparallaxer" : { "deps" :['jquery'] },
 	        "dzsparallaxer.dzsscroller" : { "deps" :['jquery', 'dzsparallaxer' ] },
 			"dzsparallaxer.advancedscroller" : { "deps" :['jquery', 'dzsparallaxer' ] }
@@ -84,6 +85,7 @@
 	    	"hs.core" 	   					: "/js/bootstrap.theme/unify/hs.core",
 			"hs.header" 	   				: "/js/bootstrap.theme/unify/components/hs.header",
 			"hs.hamburgers"   				: "/js/bootstrap.theme/unify/helpers/hs.hamburgers",
+			"hs.dropdown" 	   				: "/assets/js/components/hs.dropdown",
 			<!-- Dzsparallaxer -->		
 			"dzsparallaxer"           	: "/assets/vendor/dzsparallaxer/dzsparallaxer",
 			"dzsparallaxer.dzsscroller"	: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
@@ -93,12 +95,15 @@
 	require([ 
 		"jquery", "bootstrap", 
 		"community.data", "kendo.messages.min",
-		"hs.header", "hs.hamburgers",  'dzsparallaxer.advancedscroller'
+		"hs.header", "hs.hamburgers", "hs.dropdown", 'dzsparallaxer.advancedscroller'
 		], function($) { 
 		
 		// init header 
 		$.HSCore.components.HSHeader.init($('#js-header'));	
 		$.HSCore.helpers.HSHamburgers.init('.hamburger');
+		
+		// initialization of HSDropdown component
+      	$.HSCore.components.HSDropdown.init($('[data-dropdown-target]')); 
 		
 		community.ui.setup({
 		  	features : {

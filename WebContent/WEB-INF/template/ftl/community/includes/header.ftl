@@ -11,17 +11,13 @@
               </span>
               </span>
             </button>
-            <!-- End Responsive Toggle Button -->
-
+            <!-- End Responsive Toggle Button --> 
             <!-- Logo -->
             <a href="/" class="navbar-brand">
-              <img src="/images/icons/ios/helpdesk.svg" class="g-width-50" alt="Image Description">
+              <img src="<@spring.url "/images/icons/ios/helpdesk.svg"/>" class="g-width-50 g-pos-abs" style="top:-5px;" alt="Image Description">
             </a>
-            <!-- End Logo --> 
-            <#if SecurityHelper.isUserInRole("ROLE_ADMINISTRATOR") >
-            <a class="back g-mt-5 g-ml-10" href="<@spring.url "/secure/display/ftl/admin_v2.0/main"/>" ><i class="icon-svg icon-svg-sm icon-svg-dusk-administrative-tools "></i></a>
-            </#if>
-                    
+            <!-- End Logo -->  
+                                                        
             <!-- Navigation -->
             <#assign user_top_menu = CommunityContextHelper.getMenuService().getTreeWalker("USER_TOP_MENU") />		
             <div class="collapse navbar-collapse align-items-center flex-sm-row g-pt-10 g-pt-5--lg" id="navBar">
@@ -31,12 +27,41 @@
 			<li class="nav-item g-mx-20--lg <#if __page?? && ( isGranted( item, __page)) >active</#if>" ><a href="${ item.location }" class="nav-link px-0">${ item.name } </a></li>   
 			</#if>
             </#list>
-            <#if !currentUser.anonymous >
-            <li class="nav-item g-mx-20--lg" ><a  href="<@spring.url "/accounts/logout"/>" class="nav-link px-0" >로그아웃</a></li>
-            <#else>
+            <#if currentUser.anonymous >
             <li class="nav-item g-mx-20--lg" ><a  href="<@spring.url "/accounts/login"/>" class="nav-link px-0" >로그인</a></li>
             </#if>
             </ul>
+
+            <!-- User -->
+            <#if !currentUser.anonymous >                           
+			<div class="g-pos-rel g-width-150 g-pt-3--lg g-ml-30 g-ml-0--lg  g-font-weight-400">
+				<a href="#!" class="g-color-white g-color-primary--hover g-text-underline--none--hover d-block" aria-controls="accounts-me-dropdown" aria-haspopup="true" aria-expanded="false" data-dropdown-event="click" data-dropdown-target="#accounts-me-dropdown" data-dropdown-type="css-animation" data-dropdown-duration="500" data-dropdown-hide-on-scroll="false" data-dropdown-animation-in="fadeIn" data-dropdown-animation-out="fadeOut">
+		             <span class="g-pos-rel">
+	        			<span class="u-badge-v2--xs u-badge--top-right g-hidden-sm-up g-bg-lightblue-v5 g-mr-5"></span>
+	                	<img class="g-width-30 g-height-30 rounded-circle g-mr-10--sm" src="/download/avatar/${ currentUser.username }?height=96&amp;width=96" alt="Image description">
+	                </span>				
+	                <span class="g-pos-rel g-top-2">
+	        			<!--<span class="g-hidden-sm-down">${currentUser.name} </span>-->
+	                	<i class="fa fa-angle-down"></i> 
+	                </span>				
+				</a>
+	              <ul id="accounts-me-dropdown" class="list-unstyled text-left u-shadow-v23 g-pos-abs g-left-0 g-bg-white g-width-160 g-z-index-2 g-py-20 g-pb-15 g-mt-25--lg g-mt-20--lg--scrolling u-dropdown--css-animation u-dropdown--hidden" aria-labelledby="languages-dropdown-invoker-2" style="animation-duration: 500ms; left: 0px;">
+		            <#if SecurityHelper.isUserInRole("ROLE_ADMINISTRATOR") >
+		            <li> 
+		            <a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="<@spring.url "/secure/display/ftl/admin_v2.0/main"/>">관리자</a>
+		            </li>
+		            </#if>                  
+	                <li>
+	                  <a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="<@spring.url "/display/pages/profile.html"/>">프로파일</a>
+	                </li>
+	                <li>
+	                  <a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="<@spring.url "/accounts/logout"/>">로그아웃</a>
+	                </li>
+	              </ul>
+			</div>
+            </#if>                                                                                           
+            <!-- End User -- >
+                                    
             </div>
             <!-- End Navigation -->
           </div>

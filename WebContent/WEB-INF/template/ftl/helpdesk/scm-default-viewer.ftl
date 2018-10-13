@@ -1,13 +1,5 @@
 <#ftl encoding="UTF-8"/>
 <#compress>
-<#if  RequestParameters.path?? >
-<#assign __path = RequestParameters.path /> 
-<#else>
-<#assign __path = "" /> 
-</#if>
-<#if __scm?? && __scm.objectType == 19 >
-<#assign __project = CommunityContextHelper.getProjectService().getProject( __scm.objectId ) />
-</#if>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title><#if __page?? >${__page.title}</#if></title> 
+    <title><#if __page?? >${__page.title}</#if></title>
+ 	
 	<!-- Bootstrap core CSS -->
    	<link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
    	
@@ -56,8 +49,10 @@
 	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
 	<!-- Application JavaScript
     		================================================== -->    
-	<script> 
-    var __observable; 
+	<script>
+		
+    var __observable;
+	
 	require.config({
 		shim : {
 			<!-- summernote -->
@@ -89,6 +84,7 @@
 			"kendo.web.min"	 			: "/js/kendo/2018.1.221/kendo.web.min",
 			"kendo.culture.min"			: "/js/kendo/2018.1.221/cultures/kendo.culture.ko-KR.min",	
 			"kendo.messages.min"		: "/js/kendo.extension/kendo.messages.ko-KR",	
+			"ace" 						: "/js/ace/ace",
 			<!-- summernote -->
 			"summernote.min"             : "/js/summernote/summernote-bs4.min",
 			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"	,
@@ -96,7 +92,6 @@
 			<!-- community -- >
 			"community.ui.core" 		: "/js/community.ui/community.ui.core",
 			"community.data" 			: "/js/community.ui/community.data",   
-			"ace" 						: "/js/ace/ace",
 			<!-- Unify -->
 	    	"hs.core" 	   					: "/js/bootstrap.theme/unify/hs.core",
 			"hs.header" 	   				: "/js/bootstrap.theme/unify/components/hs.header",
@@ -111,7 +106,8 @@
 	
 	require([ 
 		"jquery", "bootstrap", 
-		"community.data", "kendo.messages.min", "ace",
+		"community.data", "kendo.messages.min",
+		"ace",
 		"hs.header", "hs.tabs", "hs.hamburgers", 'dzsparallaxer.advancedscroller'	
 	], function($, kendo ) {	
 
@@ -135,11 +131,11 @@
 		  			__observable.setUser(e.token);
 		    	}
 		  	}
-		});	        
-		
-        var featuresTo = $('#features');    
+		}); 
+       
 		__observable = new community.ui.observable({ 
-			currentUser : new community.model.User(),		 
+			currentUser : new community.model.User(),			
+			isDeveloper : false ,
 			setUser : function( data ){
 				var $this = this;				
 				data.copy($this.currentUser);
@@ -149,13 +145,14 @@
 				window.history.back();
 				return false;			
 			},	
-    	}); 
-		community.ui.bind(featuresTo, __observable );
+    	});
+ 		var featuresTo = $('#features');  
+		community.ui.bind(featuresTo, __observable );	
 		
 		var renderTo = $('#code-highlighter') ;
 		crateCodeHighlighter(renderTo);
-			 
-	});  
+		
+	}); 
 	
 	function crateCodeHighlighter(renderTo){
 		if( renderTo.length == 1 ){
@@ -165,7 +162,7 @@
 	    	community.ui.progress(renderTo, true);	
 	    	$.ajax({
 	    		type : 'POST',
-	    		url : '/display/scm/${__scm.scmId}/download?path=${__path?remove_beginning("/")?url_path('utf-8')}', 
+	    		url : '/display/scm/${__scm.scmId}/download?path=${__path?url_path('utf-8')}', 
 				success: function(response){	
 					editor.setValue( response ) ;
 					community.ui.progress(renderTo, false);	
@@ -173,39 +170,43 @@
 			});	
     	}
 	}
-								
+	
+	function isDeveloper( user ){ 
+		return user.hasRole('ROLE_DEVELOPER') || <#if __project?? >${ CommunityContextHelper.getCommunityAclService().getPermissionBundle(__project).admin?string } </#if> ;
+	} 
+ 			
 	</script>	
 	<style>
-	#code-highlighter {
-		min-height:600px;
-		height: 100%;
-	}	
+		#code-highlighter {
+			min-height:600px;
+			height : auto;
+		}	 
 	</style>	
 </head>
 <body id="page-top" class="landing-page no-skin-config">
+	<#include "/community/includes/header.ftl">
     <!-- Promo Block -->
     <section class="dzsparallaxer auto-init height-is-based-on-content use-loading mode-scroll loaded dzsprx-readyall g-bg-cover g-color-white" data-options='{direction: "reverse", settings_mode_oneelement_max_offset: "150"}'>
-		<#if (__page.getBooleanProperty( "header.image.random", false) ) >
 		<div class="divimage dzsparallaxer--target w-100 g-bg-pos-top-center" style="height: 120%; background-image: url( '<@spring.url "/download/images/" />${ CommunityContextHelper.getCustomQueryService().queryForString("COMMUNITY_CS.SELECT_IMAGE_ID_RANDOMLY" ) }' );"></div>
-		<#else>
-		<div class="divimage dzsparallaxer--target w-100 g-bg-pos-top-center" 
-			style="height: 120%; background-image: url(  /images/bg/endless_streets_by_andreasrocha-d3fhbhg.jpg );"></div>
-		</#if>
-     	<div class="container g-bg-cover__inner g-py-50 g-mt-50 g-mb-0">
+		<div class="container g-bg-cover__inner g-py-50 g-mt-50 g-mb-0">
 			<header class="g-mb-20">
-				<#if ( __page.getLongProperty( "pages.parent.pageId",0 ) > 0 ) > 
-				<h3 class="h5 g-font-weight-300 g-mb-5">${ CommunityContextHelper.getPageService().getPage(  __page.getLongProperty( "pages.parent.pageId",0 )  ).getTitle() }</h3>
-				</#if>
-				<h3 class="h5 g-font-weight-300 g-mb-5">${__scm.description!""}</h3>
 				<h2 class="h4 g-font-weight-400 text-uppercase" >
-			    <#if __scm?? >${__scm.name}</#if>
+			    <#if __scm?? >${__scm.name}<span class="g-color-primary">${__scm.description!""}</span></#if>
 		        </h2>
 			</header> 
 			<div class="d-flex justify-content-end g-font-size-11">
-            <ul class="u-list-inline g-bg-gray-dark-v1 g-font-weight-300 g-rounded-50 g-py-5 g-px-20">          
+            <ul class="u-list-inline g-bg-gray-dark-v1 g-font-weight-300 g-rounded-50 g-py-5 g-px-20">
+              <li class="list-inline-item g-mr-5">
+                <a class="u-link-v5 g-color-white g-color-primary--hover" href="/">Home</a>
+                <i class="g-color-white-opacity-0_5 g-ml-5">/</i>
+              </li>            
               <#if __project?? >
               <li class="list-inline-item g-mr-5">
-                <a class="u-link-v5 g-color-white g-color-primary--hover" href="#">${ __project.name }</a>
+                <a class="u-link-v5 g-color-white g-color-primary--hover" href="<@spring.url "/display/pages"/>${ CommunityContextHelper.getPageService().getPage(  7  ).getName() }">${ CommunityContextHelper.getPageService().getPage(  7  ).getTitle() }</a>
+                <i class="g-color-white-opacity-0_5 g-ml-5">/</i>
+              </li> 
+              <li class="list-inline-item g-mr-5">
+                <a class="u-link-v5 g-color-white g-color-primary--hover" href="<@spring.url "/display/pages"/>issues.html?projectId=${__project.projectId}">${ __project.name }</a>
                 <i class="g-color-white-opacity-0_5 g-ml-5">/</i>
               </li> 
               </#if>
@@ -222,32 +223,39 @@
 	<section id="features" class="services">
 		<div class="container g-py-15">
 			<#if __scm?? >  
-			<#assign __svn = CommunityContextHelper.getScmService().getSVNRepository( __scm ) /> 
-			<#assign __info = __svn.info( __path?remove_beginning("/") , -1) /> 
+			<#assign __svn = CommunityContextHelper.getScmService().getSVNRepository(__scm) /> 
+			<#assign __info = __svn.info(__path, -1) /> 
+			<!-- Toolbar -->
+			<div class="g-brd-gray-dark-v4 g-brd-bottom g-brd-bottom-3 g-pt-20 g-pb-20">  
+			<#if __info.kind.ID == 0 >
+			<h4 class="h5 g-color-black g-mb-5"><i class="fa fa-folder-o"></i> ${__path?ensure_starts_with("/")} </h4> 	
+			<#else>
+			<h4 class="h5 g-color-black g-mb-5"><i class="fa fa-file"></i> ${__path} </h4>
+			</#if> 
+            </div>
+            <!-- /. End Toolbar -->			
 			<#if __info.kind.ID == 0 > 
-			<table class="table table-bordered u-table--v2 g-font-size-14 g-font-weight-400">
-                  <thead class="text-uppercase g-letter-spacing-1">
-                    <tr class="g-bg-gray-light-v3">
+			<table class="table table-bordered u-table--v2 g-font-size-16 g-font-weight-400">
+                  <thead class="text-uppercase g-letter-spacing-1" style="display:none;">
+                    <tr class="g-bg-gray-light-v3" >
                       <th class="g-font-weight-300 g-color-black">FILE</th> 
-                      <th class="g-font-weight-300 g-color-black g-width-150 text-center">REVISION</th>
-                      <th class="g-font-weight-300 g-color-black text-nowrap text-center g-width-150">AUTHOR</th>
-                      <th class="g-font-weight-300 g-color-black text-center g-width-150">DATE</th>
+                      <th class="g-font-weight-300 g-color-black g-width-150">REVISION</th>
+                      <th class="g-font-weight-300 g-color-black text-nowrap g-width-150">AUTHOR</th>
+                      <th class="g-font-weight-300 g-color-black g-width-150">DATE</th>
                     </tr>
                   </thead> 
                   <tbody> 
                   <#if __path != "" >
 					<tr>
 					<td class="align-middle text-nowrap" colspan="4">
-					 <a class="g-color-gray-dark-v5 g-color-primary--hover g-font-size-default g-text-underline--none--hover" 
-					 	href="<@spring.url "/display/pages/scm/"/>${__scm.scmId}/${__page.name}?path=${__path?ensure_starts_with("/")?keep_before_last("/")}">..</a></td>
+					 <a class="g-color-gray-dark-v5 g-color-primary--hover g-font-size-default g-text-underline--none--hover" href="/display/scm/${__scm.scmId}/tree/${__path?ensure_starts_with("/")?keep_before_last("/")}">..</a></td>
 					</tr>         
 				  </#if>	           
-                  <#list CommunityContextHelper.getScmService().listEntries( __svn, __path?remove_beginning("/") ) as item >
+                  <#list CommunityContextHelper.getScmService().listEntries(__svn, __path ) as item >
 					<tr>
                       <td class="align-middle text-nowrap">
-                      <#if item.kind.ID == 0 > <i class="fa fa-folder-o"></i> <#else> <i class="fa fa-file"></i> </#if> 
-                      <a class="g-color-gray-dark-v5 g-color-primary--hover g-font-size-16 g-text-underline--none--hover" 
-                      	href="<@spring.url "/display/pages/scm/"/>${__scm.scmId}/${__page.name}?path=<#if __info.kind.ID == 0 && __path != "" >${__path?ensure_starts_with("/")}</#if>${item.name?ensure_starts_with("/") }" >${item.name}</a>
+                      <#if item.kind.ID == 0 > <i class="fa fa-folder-o"></i> <#else> <i class="fa fa-file"></i> </#if><a class="g-color-gray-dark-v5 g-color-primary--hover g-font-size-16 g-text-underline--none--hover" 
+                      	href="<@spring.url "/display/scm/"/>${__scm.scmId}/tree<#if __info.kind.ID == 0 && __path != "" >${__path?ensure_starts_with("/")}</#if>${item.name?ensure_starts_with("/") }" > ${item.name}  </a>
                       </td>  
                       <td class="align-middle text-center">
                       <#if item.commitMessage?? >
@@ -264,75 +272,83 @@
                     </tr> 
                   </#list> 
                   </tbody>
-                </table>	
-                <#else>  
- 			<!-- Default Outline Panel-->
+            </table> 			
+			<#else>  
+			<!-- Default Outline Panel-->
 			<div class="card rounded-0">
-			  <h3 class="card-header h5 rounded-0"> 
-			    <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">${ __info.name }</a>
-			    <ul class="list-inline g-color-gray-dark-v4 g-font-size-12 g-mt-5">
-                      <li class="list-inline-item">
-                        <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">${ __info.author }</a>
-                      </li> 
-                      <li class="list-inline-item">/</li>
-                      <li class="list-inline-item">${__info.date?string('yyyy.MM.dd HH:mm:ss')}</li>
-                      <li class="list-inline-item">/</li>
-                      <li class="list-inline-item"> revision ${__info.getRevision()?c }</li>
-                      <li class="list-inline-item">/</li>
-                      <li class="list-inline-item">${__info.getSize() } bytes</li>
-                </ul> 
-                    <#if __info.getCommitMessage()?? > 
-                    <h4 class="g-font-size-16 g-color-gray-dark-v1">
-                        <small class="g-color-gray-dark-v4">${ __info.getCommitMessage() }</small>
-                    </h4>
-                    </#if>
-                    
+			  <h3 class="card-header h5 rounded-0">
+			    ${__info.name } ${__info.getRevision()?c } ${__info.getSize() } Bytes
 			    <div class="text-right">
-				    <a href="/display/pages/scm/${__scm.scmId}/scm-viewer.html?path=${__path?ensure_starts_with("/")?keep_before_last("/")}" class="btn u-btn-outline-darkgray g-mr-5" >이전</a>
-				    <a href="/display/scm/${__scm.scmId}/download?path=${__path?remove_beginning("/")?url_path('utf-8')}" class="btn u-btn-outline-darkgray g-mr-5" target="_blank;">다운로드</a>
+			    <a href="/display/scm/${__scm.scmId}/tree/${__path?ensure_starts_with("/")?keep_before_last("/")}" class="btn u-btn-outline-darkgray g-mr-5" >이전</a>
+			    <a href="/display/scm/${__scm.scmId}/download?path=${__path?url_path('utf-8')}" class="btn u-btn-outline-darkgray g-mr-5" target="_blank;">다운로드</a>
 			    </div>
 			  </h3> 
-			  	<#assign __minetype = CommunityContextHelper.getScmService().getMineType( __svn, __path ) !""/>  
-			  	<#if  __minetype?starts_with("text") >
+			  	<#if  CommunityContextHelper.getScmService().getMineType( __svn, __path )?? >
+				<#assign __minetype = CommunityContextHelper.getScmService().getMineType( __svn, __path ) /> 
+				<#if  __minetype?starts_with("text") >
 			 	<div class="card-block g-pa-0"> 	
- 					<div id="code-highlighter" ></div>
+ 				<div id="code-highlighter" ></div>
  				</div>	
  				<#else>
- 				<div class="card-block g-pa-0 text-center"> 
+ 				<div class="card-block"> 
  				<#if __info.name?ends_with(".png") || __info.name?ends_with(".gif") || __info.name?ends_with(".jpg")>
- 				<div class="g-pa-20">
- 				<img src="/display/scm/${__scm.scmId}/download?path=${__path?remove_beginning("/")?url_path('utf-8')}" style="max-width:100%;"/>
- 				</div>
- 				<#elseif  __info.name?starts_with(".") || __info.name?ends_with(".txt") || __info.name?ends_with(".java") || __info.name?ends_with(".jsp") || __info.name?ends_with(".html") || __info.name?ends_with(".xml") >
- 					<div id="code-highlighter" ></div>
-				<#else>
- 				<section class="w-100 align-self-center text-center g-color-darkblue-v2 g-my-30">
-                        <svg width="150px" height="192px" viewBox="0 0 58 74" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                            <g transform="translate(-1060.000000, -374.000000)" fill="#1CC9E4">
-                              <g transform="translate(284.000000, 232.000000)">
-                                <g transform="translate(704.000000, 80.000000)">
-                                  <g transform="translate(72.000000, 62.000000)">
-                                    <rect opacity="0.15" x="0" y="36" width="58" height="27"></rect>
-                                    <path d="M40.0002553,0 L0,0 L0,74 L58,74 L58,17.9894 L40.0002553,0 Z M40.7234043,4.2106 L53.7869787,17.2666667 L40.7234043,17.2666667 L40.7234043,4.2106 Z M2.46808511,71.5333333 L2.46808511,2.46666667 L38.2553191,2.46666667 L38.2553191,19.7333333 L55.5319149,19.7333333 L55.5319149,71.5333333 L2.46808511,71.5333333 Z" fill-rule="nonzero"></path>
-                                    <text font-size="14" font-weight="normal" letter-spacing="0.209999993">
-                                      <tspan x="15.3182813" y="52">${__info.name?keep_after_last(".")}</tspan>
-                                    </text>
-                                  </g>
-                                </g>
-                              </g>
-                            </g>
-                          </g>
-                        </svg>
-                </section>
+ 				<img src="/display/scm/${__scm.scmId}/download?path=${__path?url_path('utf-8')}" style="max-width:100%;"/>
  				</#if>
  				</div>
-				</#if>
+				</#if> 
+				<#else>
+				<div class="card-block g-pa-0"> 	
+ 				<div id="code-highlighter" ></div>
+ 				</div>	    
+			    </#if> 
 			</div>
-			<!-- End Default Outline Panel-->               
-                </#if>
+			<!-- End Default Outline Panel-->
 			</#if> 
-        </div>
+			</#if> 
+			<div class="g-mb-30" >
+				<!--
+				<div class="u-divider u-divider-solid g-brd-gray-light-v3 g-brd-3 g-mb-30">
+					<i class="fa fa-circle u-divider__icon g-bg-white g-color-gray-light-v3"></i>
+				</div>	
+				-->
+				<div class="g-pa-15">	              																	
+									<!-- Nav tabs --> 
+									<ul class="g-font-size-16 nav u-nav-v5-3 g-brd-bottom--md g-brd-gray-light-v4 g-font-weight-400" role="tablist" data-target="nav-5-3-default-hor-left-border-bottom" data-tabs-mobile-type="slide-up-down" data-btn-classes="btn btn-md btn-block rounded-0 u-btn-outline-lightgray"> 
+										<li class="nav-item"> 
+											<a class="nav-link active" data-toggle="tab" href="#nav-5-3-default-hor-left-border-bottom--1" role="tab">댓글</a> 
+										</li> 
+										<li class="nav-item"> 
+											<a class="nav-link" data-toggle="tab" href="#nav-5-3-default-hor-left-border-bottom--2" role="tab">활동</a> 
+										</li> 
+										<li class="nav-item"> 
+											<a class="nav-link" data-toggle="tab" href="#nav-5-3-default-hor-left-border-bottom--3" role="tab">속성</a> 
+										</li> 
+									</ul> 
+									<!-- End Nav tabs --> 
+								
+								<!-- Tab panes --> 
+								<div id="nav-5-3-default-hor-left-border-bottom" class="tab-content g-pt-20"> 
+								
+									<div class="tab-pane fade show active" id="nav-5-3-default-hor-left-border-bottom--1" role="tabpanel"> 
+ 	 
+									<p class="g-font-size-14">아직 지원하지 않는 기능입니다.</p>
+									</div> 
+									<div class="tab-pane fade" id="nav-5-3-default-hor-left-border-bottom--2" role="tabpanel"> 
+									<p class="g-font-size-14">아직 지원하지 않는 기능입니다.</p>
+									</div> 
+									<div class="tab-pane fade" id="nav-5-3-default-hor-left-border-bottom--3" role="tabpanel"> 
+									<p class="g-font-size-14">아직 지원하지 않는 기능입니다.</p>
+									</div> 
+ 
+								</div> 
+								<!-- End Tab panes --> 
+								
+
+				</div>  
+				    					
+			</div>  
+			
+        </div><!-- /.container -->
 	</section>			
 	<!-- FOOTER START -->   
 	<#include "includes/user-footer.ftl">
