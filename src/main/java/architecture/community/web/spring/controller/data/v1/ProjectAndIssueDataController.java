@@ -669,10 +669,11 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 	public ItemList getOverviewstats(
 		@RequestBody DataSourceRequest dataSourceRequest,
 		NativeWebRequest request) {
+		
 		ItemList items = new ItemList();
+		
 		List<CodeSet> issueTypes = codeSetService.getCodeSets(-1, -1L, "ISSUE_TYPE");		
 		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_SUMMARY_BY_PERIOD");
-		
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");		
 		Date startDate = null;
 		Date endDate = null;		
@@ -680,6 +681,8 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 			startDate = simpleDateFormat.parse(dataSourceRequest.getDataAsString("startDate", null));
 			endDate = simpleDateFormat.parse(dataSourceRequest.getDataAsString("endDate", null));
 		} catch (ParseException e) {}
+		
+		log.debug("data : {}", dataSourceRequest.getData());
 		
 		List<IssueSummary> summaries = customQueryService.list (dataSourceRequest, new RowMapper<IssueSummary>() {
 			public IssueSummary mapRow(ResultSet rs, int rowNum) throws SQLException {

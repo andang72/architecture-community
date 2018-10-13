@@ -102,9 +102,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.TIMESTAMP, page.getModifiedDate()));
 
 		insertPageVersion(page);
-
 		insertPageBody(page);
-
 		insertProperties(page);
 	}
 	
@@ -263,16 +261,17 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 
 		// INSERT V2_PAGE_VERSION
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_PAGE.INSERT_PAGE_VERSION").getSql(),
-				new SqlParameterValue(Types.NUMERIC, page.getPageId()),
-				new SqlParameterValue(Types.NUMERIC, page.getVersionId()),
-				new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
-				new SqlParameterValue(Types.VARCHAR, page.getTitle()), 
-				page.getSummary() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getSummary()),
-				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()), 
-				new SqlParameterValue(Types.NUMERIC, page.isSecured() ? 1 : 0 ),								
-				new SqlParameterValue(Types.NUMERIC, page.getVersionId() <= 1 ? page.getUser().getUserId() : SecurityHelper.getUser().getUserId()),
-				new SqlParameterValue(Types.DATE, page.getCreationDate()),
-				new SqlParameterValue(Types.DATE, page.getModifiedDate()));
+			new SqlParameterValue(Types.NUMERIC, page.getPageId()),
+			new SqlParameterValue(Types.NUMERIC, page.getVersionId()),
+			new SqlParameterValue(Types.VARCHAR, page.getPageState().name().toLowerCase()),
+			new SqlParameterValue(Types.VARCHAR, page.getTitle()), 
+			page.getSummary() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getSummary()),
+			page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()), 
+			page.getScript() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getScript()), 
+			new SqlParameterValue(Types.NUMERIC, page.isSecured() ? 1 : 0 ),								
+			new SqlParameterValue(Types.NUMERIC, page.getVersionId() <= 1 ? page.getUser().getUserId() : SecurityHelper.getUser().getUserId()),
+			new SqlParameterValue(Types.DATE, page.getCreationDate()),
+			new SqlParameterValue(Types.DATE, page.getModifiedDate()));
 	}
 
 	private void cleanupVersionsOnPublish(Page page) {
@@ -292,8 +291,8 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 					page.setVersionId(1);
 			}
 			List<Long> toDelete = getExtendedJdbcTemplate().queryForList(
-					getBoundSql("COMMUNITY_PAGE.SELECT_DRAFT_PAGE_VERSIONS").getSql(), Long.class,
-					new SqlParameterValue(Types.NUMERIC, page.getPageId()));
+				getBoundSql("COMMUNITY_PAGE.SELECT_DRAFT_PAGE_VERSIONS").getSql(), Long.class,
+				new SqlParameterValue(Types.NUMERIC, page.getPageId()));
 			for (Long version : toDelete)
 				deleteVersion(page, version.intValue());
 		}
@@ -404,6 +403,7 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 				new SqlParameterValue(Types.VARCHAR, page.getTitle()),
 				new SqlParameterValue(Types.VARCHAR, page.getSummary()),
 				page.getTemplate() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getTemplate()), 
+				page.getScript() == null ? new SqlParameterValue(Types.NULL, null) : new SqlParameterValue(Types.VARCHAR, page.getScript()), 		
 				new SqlParameterValue(Types.NUMERIC, page.isSecured() ? 1 : 0 ),			
 				new SqlParameterValue(Types.NUMERIC, modifierId),
 				new SqlParameterValue(Types.DATE, page.getModifiedDate()),
@@ -493,7 +493,9 @@ public class JdbcPageDao extends ExtendedJdbcDaoSupport implements PageDao {
 					page.setSummary(rs.getString("SUMMARY"));
 					page.setTemplate(rs.getString("TEMPLATE"));
 					page.setPattern(rs.getString("PATTERN"));
-					
+					if(StringUtils.isNotEmpty(rs.getString("SCRIPT"))) {
+						page.setScript(rs.getString("SCRIPT"));
+					}
 					page.setSecured(rs.getInt("SECURED") == 1 ? true : false);
 					page.setCreationDate(rs.getTimestamp("CREATION_DATE"));
 					page.setModifiedDate(rs.getTimestamp("MODIFIED_DATE"));

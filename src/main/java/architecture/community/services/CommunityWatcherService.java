@@ -85,7 +85,7 @@ public class CommunityWatcherService {
 			if( w.getObjectType() == Models.PROJECT.getObjectType() && w.getObjectId()  == issue.getObjectId() ) {
 				
 				try {
-					User user = userManager.getUser(w.userId);
+					User user = userManager.getUser(w.getUserId());
 					log.debug("{} : {} : {} send to {} ", event.getState().name(), issue.getRepoter(),  issue.getSummary(), user.getName() );
 					try {
 						mailService.send(

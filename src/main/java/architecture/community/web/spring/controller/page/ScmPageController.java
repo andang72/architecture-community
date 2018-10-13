@@ -153,10 +153,7 @@ public class ScmPageController {
 			}
 			
 			response.setContentType(mimeType);
-			
-			/* "Content-Disposition : inline" will show viewable types [like images/text/pdf/anything viewable by browser] right on browser 
-            while others(zip e.g) will be directly downloaded [may provide save as popup, based on your browser setting.]*/
-        
+
 			response.setHeader("Content-Disposition", "inline; filename=\"" + ServletUtils.getEncodedFileName(info.getName()) +"\"");
 			response.setContentLength((int)info.getSize()); 
 			baos.writeTo( response.getOutputStream()); 

@@ -2,8 +2,6 @@ package architecture.community.page;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import architecture.community.model.ModelObjectAware;
 import architecture.community.tag.TagDelegator;
 import architecture.community.user.User;
@@ -65,6 +63,10 @@ public interface Page extends ModelObjectAware {
     public abstract String getTemplate();
     
     public abstract void setTemplate(String template);
+    
+    public abstract String getScript();
+    
+    public abstract void setScript(String script);    
  
 	public abstract boolean isSecured() ;
  
@@ -73,4 +75,6 @@ public interface Page extends ModelObjectAware {
 	public abstract String getPattern() ;
 	 
 	public abstract void setPattern(String pattern) ; 
+	
+	
 }

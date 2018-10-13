@@ -207,4 +207,14 @@ public class PageView implements Page {
 		page.setPattern( pattern );
 	}
 
+	@JsonProperty
+	public String getScript() {
+		return page.getScript();
+	}
+
+	@Override
+	public void setScript(String script) {
+		page.setScript(script);
+	}
+
 }

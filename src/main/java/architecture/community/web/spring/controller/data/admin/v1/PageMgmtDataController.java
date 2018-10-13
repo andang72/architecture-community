@@ -126,6 +126,7 @@ public class PageMgmtDataController {
 					|| !StringUtils.equals(page.getTemplate(), pageToUse.getTemplate()) 
 					|| pageToUse.isSecured() != page.isSecured()
 					|| !StringUtils.equals(page.getPattern(), pageToUse.getPattern()) 
+					|| !StringUtils.equals(page.getScript(), pageToUse.getScript()) 
 					|| includeBodyContent 
 					|| includeProperties ) {
 				doUpdate = true;
@@ -144,16 +145,14 @@ public class PageMgmtDataController {
 					pageToUse.setPageState(page.getPageState());
 			
 			pageToUse.setPattern(page.getPattern());
+			pageToUse.setScript(page.getScript());
 			pageToUse.setSummary(page.getSummary());
 			pageToUse.setTemplate(page.getTemplate());
-			pageToUse.setSecured(page.isSecured());
-			
+			pageToUse.setSecured(page.isSecured()); 
 			if (includeBodyContent && page.getBodyContent() != null)
-				pageToUse.setBodyText(page.getBodyContent().getBodyText());			
-			
+				pageToUse.setBodyText(page.getBodyContent().getBodyText());		 
 			if (includeProperties)
-				pageToUse.setProperties(page.getProperties());
-			
+				pageToUse.setProperties(page.getProperties());  
 			pageService.saveOrUpdatePage(pageToUse);
 		}
 		
@@ -208,6 +207,7 @@ public class PageMgmtDataController {
 
 		User user = SecurityHelper.getUser();
 		Page page = pageService.getPage(pageId, versionId);
+		
 		return new PageView(page, includeBodyContent) ;
 	}
 	
@@ -225,6 +225,7 @@ public class PageMgmtDataController {
 		}
 		Page page = pageService.getPage(pageId, versionId);
 		Map<String, String> properties = page.getProperties();
+		
 		return toList(properties);
 	}
 
@@ -236,6 +237,7 @@ public class PageMgmtDataController {
 			@RequestParam(value = "versionId", defaultValue = "1") Integer versionId,
 			@RequestBody List<Property> newProperties, 
 			NativeWebRequest request) throws NotFoundException {
+		
 		User user = SecurityHelper.getUser();
 		Page page = pageService.getPage(pageId, versionId);
 		Map<String, String> properties = page.getProperties();
@@ -246,6 +248,7 @@ public class PageMgmtDataController {
 		if (newProperties.size() > 0) {
 			pageService.saveOrUpdatePage(page);
 		}
+		
 		return toList(properties);
 	}
 
@@ -257,6 +260,7 @@ public class PageMgmtDataController {
 			@RequestParam(value = "versionId", defaultValue = "1") Integer versionId,
 			@RequestBody List<Property> newProperties, 
 			NativeWebRequest request) throws NotFoundException {
+		
 		User user = SecurityHelper.getUser();
 		Page page = pageService.getPage(pageId, versionId);
 		Map<String, String> properties = page.getProperties();
@@ -266,6 +270,7 @@ public class PageMgmtDataController {
 		if (newProperties.size() > 0) {
 			pageService.saveOrUpdatePage(page);
 		}
+		
 		return toList(properties);
 	}
 
@@ -279,7 +284,7 @@ public class PageMgmtDataController {
 	}
 
 	public static class FileInfo {
-
+		
 		private boolean customized;
 		private boolean directory;
 		private String path;

@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ import architecture.community.image.Image;
 import architecture.community.image.ImageService;
 import architecture.community.image.ThumbnailImage;
 import architecture.community.link.ExternalLinkService;
+import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.community.user.AvatarImage;
 import architecture.community.user.UserAvatarService;
 import architecture.community.web.spring.controller.data.v1.ImagesDataController;
@@ -73,6 +75,10 @@ public class DownloadController {
 	@Inject
 	@Qualifier("userAvatarService")
 	private UserAvatarService userAvatarService;
+	
+	@Inject
+	@Qualifier("communityAclService")
+	private CommunityAclService communityAclService;
 	
 	public DownloadController() {
 		
@@ -116,7 +122,7 @@ public class DownloadController {
 	}
 
 	
-	
+	@Secured({ "ROLE_USER" })
 	@RequestMapping(value = "/files/{fileId:[\\p{Digit}]+}/{filename:.+}", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public void getAttachmentFile(
@@ -133,7 +139,10 @@ public class DownloadController {
 		    		log.debug("name {} decoded {}.", filename, ServletUtils.getEncodedFileName(filename));
 		    		
 		    		Attachment attachment = 	attachmentService.getAttachment(fileId);
-		    	
+		    		
+		    		int objectType = attachment.getObjectType() ;
+		    		long objectId = attachment.getObjectId();
+		    		
 		    		log.debug("checking equals plain : {} , decoded : {} ", 
 		    				org.apache.commons.lang3.StringUtils.equals(filename, attachment.getName()) , 
 		    				org.apache.commons.lang3.StringUtils.equals(ServletUtils.getEncodedFileName(filename), attachment.getName()));

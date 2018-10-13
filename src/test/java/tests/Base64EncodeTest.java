@@ -16,7 +16,7 @@ private static Logger log = LoggerFactory.getLogger(NumberFormatTest.class);
 		
 		try {
 			String enc = "" ; //new String( Base64.encode(FileUtils.readFileToByteArray(new File("/Users/donghyuck/Documents/podo_workspace/neuro_english/WebContent/images/common/icons/basic/color/Siren.svg")) ));
-			String text = "인터넷";
+			String text = "0521.xls";
 			
 			enc = Base64.encodeBase64String(text.getBytes());
 			
@@ -30,6 +30,11 @@ private static Logger log = LoggerFactory.getLogger(NumberFormatTest.class);
 			enc = URLEncoder.encode(text, "EUC-KR");
 			
 			log.debug( enc );
+			
+			enc = URLEncoder.encode(text, "UTF-8");
+			
+			log.debug( enc );
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

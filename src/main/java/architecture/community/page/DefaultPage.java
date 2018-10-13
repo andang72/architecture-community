@@ -32,12 +32,13 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 	private String title;
 	private String summary;
 	private String template;
+	private String pattern;
+	private String script;
 	private BodyContent bodyContent;
 	private Date creationDate;
 	private Date modifiedDate;
 	private User user;
 	private boolean secured;
-	private String pattern;
 	
 	public DefaultPage() {
 		super(-1, -1L);
@@ -52,6 +53,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.modifiedDate = creationDate;
 		this.secured = false;
 		this.pattern = null;
+		this.script = null;
 	}
 
 	public DefaultPage(Long pageId) {
@@ -67,6 +69,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.modifiedDate = creationDate;
 		this.secured = false;
 		this.pattern = null;
+		this.script = null;
 	}
 
 	public DefaultPage(int objectType, long objectId) {
@@ -82,6 +85,7 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.modifiedDate = creationDate;
 		this.secured = false;
 		this.pattern = null;
+		this.script = null;
 	}
 
  
@@ -265,7 +269,13 @@ public class DefaultPage extends ModelObjectAwareSupport implements Page {
 		this.user = user;
 	}
 
- 
+	public String getScript() {
+		return script;
+	}
+
+	public void setScript(String script) {
+		this.script = script;
+	}
 
 	@JsonIgnore
 	public String getBodyText() {
