@@ -12,7 +12,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<beans:bean id="communityContextHelper" class="architecture.community.util.CommunityContextHelper" />
+
+		
+	<beans:bean id="communitySpringEventPublisher" class="architecture.community.services.CommunitySpringEventPublisher"  />		
 	
+		
 	<beans:bean id="customQueryJdbcDao" class="architecture.community.query.dao.CustomQueryJdbcDao" p:dataSource-ref="dataSource" />
 	
 	<beans:bean id="customQueryService" class="architecture.community.query.CommunityCustomQueryService" />
@@ -20,9 +24,8 @@
 	<beans:bean id="customDataService" class="architecture.community.services.CommunityDataService" init-method="initialize" p:configFileName="data-services-config.xml" />
 	
 	<beans:bean id="customFileMonitorService" class="architecture.community.services.CommunityFileMonitorService" init-method="initialize" destroy-method="destroy" />
-	
-	<!-- Content Watcher Service -->
-	<beans:bean id="communityWatcherService" class="architecture.community.services.CommunityWatcherService"  />		
- 
- 
+
+	<beans:bean id="communityGroovyService" class="architecture.community.services.CommunityGroovyService" />
+
+
 </beans:beans> 
