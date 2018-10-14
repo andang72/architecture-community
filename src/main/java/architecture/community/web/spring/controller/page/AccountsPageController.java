@@ -82,7 +82,6 @@ public class AccountsPageController {
 	
 	
 	private String getPageView(String filename, String defaultViewName , Model model) {
-		
 		String view = defaultViewName ;
 		try {
 			Page page = pageService.getPage(filename, 1);
