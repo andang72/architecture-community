@@ -925,18 +925,6 @@
 				<#if __project?? >${__project.name}</#if>
 		        <span class="g-color-primary"></span>
 				</h2>
-				<div data-bind="visible: visible" style="display:none;" class="animated fadeIn"> 
-				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	 
-				<div class="btn-group" role="group">
-					<a class="btn btn-md u-btn-3d u-btn-darkpurple g-px-25 g-py-13" href="#!" style="display:none;" role="button" 
-					data-toggle="tooltip" data-placement="top" data-original-title="프로젝트 관련 정보를 확인할 수 있습니다." data-bind="click:displayProjectInfo,visible:isDeveloper">정보보기</a>
-				</div>
-				</#if>	
-				<!--
-				<p class="g-font-size-16 g-font-weight-400" ><#if __project?? >${ __project.summary?html?replace("\n", "<br>")}</#if></p> 
-				<a class="btn btn-md u-btn-3d u-btn-lightred g-px-25 g-py-13" href="#" role="button" data-toggle="tooltip" data-placement="bottom" data-original-title="새로운 이슈를 등록합니다." data-object-id="0" data-action="create" data-action-target="issue">기술지원요청하기</a>	
-				-->
-				</div>
 			</header> 
 			<div class="d-flex justify-content-end g-font-size-11">
             <ul class="u-list-inline g-bg-gray-dark-v1 g-font-weight-300 g-rounded-50 g-py-5 g-px-20">
@@ -979,6 +967,7 @@
 	</div>
 	<!-- /.tabs -->
 	<div class="tab-content g-min-height-400" id="nav-tabContent">
+		<!-- project issues tab content -->
 		<div class="tab-pane fade" id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab" >
 		<!-- Filter -->
 		<div class="u-shadow-v19 g-bg-gray-light-v5 g-min-height-300" >
@@ -1114,23 +1103,23 @@
 				</div>				
 			</div>	
 		</div>  
-		<div class="tab-pane fade" id="nav-info" role="tabpanel" aria-labelledby="nav-info-tab" > 
+		<!-- project info tab content -->
+		<div class="tab-pane fade" id="nav-info" role="tabpanel" aria-labelledby="nav-info-tab" >  
 			<div class="u-shadow-v19 g-bg-gray-light-v5">
 				<div class="container g-pt-30" id="year-stats-summary" >   
 					<!-- heading -->
 					<div class="u-heading-v2-4--bottom g-mb-10">
-			           	<!--<h2 class="text-uppercase u-heading-v2__title g-mb-10">년간 누적 이슈처리 현황</h2>-->
-			           	<h4 class="g-font-weight-200"> 
-			           	<p class="g-font-size-16 g-font-weight-400" ><#if __project?? >${ __project.summary?html?replace("\n", "<br>")}</#if></p>
-			           	</h4>
+						<!--<h2 class="text-uppercase u-heading-v2__title g-mb-10">년간 누적 이슈처리 현황</h2>-->
+						<h4 class="g-font-weight-200"> 
+							<p class="g-font-size-16 g-font-weight-400" ><#if __project?? >${ __project.summary?html?replace("\n", "<br>")}</#if></p>
+						</h4>
 					</div>  
-					<!-- /.heading -->
-					
+					<!-- /.heading --> 
 					<div class="row">
 		                <div class="col-md-8 g-mb-30 g-brd-2 g-brd-blue">
 							<div id="chart_div" style="width: 100%; height:100px;"></div> 
-		                </div>
-		                <div class="col-md-4 g-mb-30 g-font-size-14">
+						</div>
+						<div class="col-md-4 g-mb-30 g-font-size-14">
 		                  <!-- List -->
 		                  <ul class="list-unstyled g-color-text g-font-weight-400">
 							<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
@@ -1155,7 +1144,7 @@
 		                    </li>                   
 		                  </ul>
 		                  <!-- End List -->
-		                </div>
+						</div>
 					</div>  
 					<!-- Nav tabs -->
 					<ul class="nav justify-content-end u-nav-v5-3 u-nav-dark g-brd-bottom--md g-brd-gray-light-v4 g-font-weight-500 g-font-size-16" role="tablist" data-target="project-view-modal-tabs" data-tabs-mobile-type="slide-up-down" data-btn-classes="btn btn-md btn-block rounded-0 u-btn-outline-darkgray">
@@ -1175,99 +1164,55 @@
 					<!-- End Nav tabs --> 
 				</div>
 			</div>
+		
+			<div class="g-bg-white" >
+				<div class="container-fluid">
+					<div class="row">
+						<!-- Tab panes -->
+						<div id="project-view-modal-tabs" class="tab-content g-pt-0">
+							<div class="tab-pane fade" id="project-view-modal-tabs--1" role="tabpanel">
+								<div class="grid"></div> 
+							</div> 
+							<div class="tab-pane fade" id="project-view-modal-tabs--2" role="tabpanel">
+								<div class="grid"></div> 
+							</div>
+							<div class="tab-pane fade" id="project-view-modal-tabs--3" role="tabpanel"> 
+								<div class="grid"></div>
+							</div>
+							<div class="tab-pane fade" id="project-view-modal-tabs--4" role="tabpanel">
+								<div class="row">
+									<div class="col-lg-6">
+										<div id="project_piechart_div" style="width: 100%; height:200px;"></div>
+									</div>
+									<div class="col-lg-6">
+									<div class="g-pt-30 text-center">			
+										<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
+										<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div><span>전체</span></div>
+										<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
+										<div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount">0</div><span>오류</span></div>
+										<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
+										<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount">0</div><span>종결</span></div>
+										<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
+										<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div><span>미처리</span></div>			
+									</div> 
+									</div>
+								</div> 	
+								<!-- linechart -->
+								<div class="row">
+									<div class="col-sm-12" >
+										<div id="project_linechart_div" style="width: 100%; min-height:300px;"></div>
+									</div>
+								</div>
+								<!-- end linechart -->	 
+							</div> 
+						</div>
+						<!-- End Tab panes --> 		
+					</div>		
+				</div> 			
+			</div> 
 		</div>
 	</div>
-	<section class="g-bg-white" >
-		<div class="container-fluid">
-			<div class="row">
-				<!-- Tab panes -->
-				<div id="project-view-modal-tabs" class="tab-content g-pt-0">
-					<div class="tab-pane fade" id="project-view-modal-tabs--1" role="tabpanel">
-						<div class="grid"></div> 
-					</div> 
-					<div class="tab-pane fade" id="project-view-modal-tabs--2" role="tabpanel">
-						<div class="grid"></div> 
-					</div>
-					<div class="tab-pane fade" id="project-view-modal-tabs--3" role="tabpanel"> 
-						<div class="grid"></div>
-					</div>
-					<div class="tab-pane fade" id="project-view-modal-tabs--4" role="tabpanel">
-						<div class="row">
-							<div class="col-lg-6">
-								<div id="project_piechart_div" style="width: 100%; height:200px;"></div>
-							</div>
-							<div class="col-lg-6">
-							<div class="g-pt-30 text-center">			
-								<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-								<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div><span>전체</span></div>
-								<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-								<div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount">0</div><span>오류</span></div>
-								<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-								<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount">0</div><span>종결</span></div>
-								<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-								<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div><span>미처리</span></div>			
-							</div> 
-							</div>
-						</div> 	
-						<!-- linechart -->
-						<div class="row">
-							<div class="col-sm-12" >
-								<div id="project_linechart_div" style="width: 100%; min-height:300px;"></div>
-							</div>
-						</div>
-						<!-- end linechart -->	 
-					</div> 
-				</div>
-				<!-- End Tab panes --> 		
-			</div>		
-		</div>
-	</div>		
-
-	<section class="g-bg-white" >
-		<div class="container">
-			<!-- Start Stats -->
-			<div class="u-shadow-v11 g-rounded-7 g-bg-white g-pa-20 g-mb-30" id="project-overviewstats" style="display:none;">
-				<div class="u-heading-v2-4--bottom g-mb-10">
-					<!--<h2 class="text-uppercase u-heading-v2__title g-mb-10">프로젝트 이슈요약</h2>-->
-					<h4 class="g-font-weight-200"><span class="g-color-primary g-font-weight-400"><#if __project?? > ${__project.name} </#if></span> 에 대한 누적 이슈처리 현황입니다.</h4>
-				</div>
-				<div class="row">
-					<div class="col-lg-6">
-						<div id="chart_div" style="width: 100%; height:200px;"></div>
-					</div>
-					<div class="col-lg-6">			
-						<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:totalIssueCount">0</div>
-							<span>전체</span>
-							</div>
-							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-							<div class="g-font-size-45 g-font-weight-300 g-color-red g-line-height-1 mb-0" data-bind="text:errorIssueCount">0</div>
-							<span>오류</span>
-							</div>
-							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:closeIssueCount">0</div>
-							<span>종결</span>
-							</div>
-							<div class="d-inline-block g-px-15 g-mx-15 g-mb-30 text-center">
-							<div class="g-font-size-45 g-font-weight-300 g-line-height-1 mb-0" data-bind="text:openIssueCount">0</div>
-							<span>미처리</span>
-							</div>			
-						</div>
-					</div>
-					<div class="row">
-					
-					</div>
-					<div class="row">
-						<div class="col-sm-12">
-							<div id="linechart_div" style="width: 100%; max-height:500px;"></div>
-						</div>
-					</div>
-			</div> 	
-			<!-- End Stats -->	
-		</div> 
-	</section>
-	</section>			
-	
+	 
 	<div id="dialog"></div>	
 	
 	<!-- FOOTER START -->   
