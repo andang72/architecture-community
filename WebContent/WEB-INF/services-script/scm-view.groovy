@@ -33,13 +33,9 @@ public class ScmView extends architecture.community.web.spring.view.AbstractScri
 		HttpServletResponse response) throws Exception { 
 		Page page = model.get("__page");
 		Map<String, String> variables = model.get("__variables");
-		
-		System.out.println("##############################1");
-		System.out.println("##############################2	");
-		String name = "scm"; 
-		
+
+		String name = "scm"; 		
 		boolean required =  getBooleanProperty( page.getProperties(), new StringBuilder(getPrefix()).append("parameters.").append(name).append(".required").toString(), false );
-		
 		Long scmId = getLongProperty( variables, getProperty( page.getProperties(), new StringBuilder(getPrefix()).append("parameters.").append(name).append(".key").toString(), name.toLowerCase() + "Id"), -1L ); 
 		if( scmId > 0L) {
 			try {

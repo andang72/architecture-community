@@ -130,6 +130,7 @@ public class SecurityMgmtDataController {
 		
 		dataSourceRequest.setStatement("COMMUNITY_USER.COUNT_USERS_BY_REQUEST");	
 		int totalCount = customQueryService.queryForObject(dataSourceRequest, Integer.class);
+		customQueryService.list(dataSourceRequest);
 		
 		List<User> users = new ArrayList<User>(totalCount);
 		if( totalCount > 0) {

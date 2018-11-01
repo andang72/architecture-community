@@ -2,8 +2,108 @@
 <sqlset>
 	<name>COMMUNITY_CUSTOM</name>
 	<description>COMMUNITY CUSTOM SUBSYSTEM QUERIES</description>	
+	
+	<sql-query name="SELECT_ISSUE_STATS_BY_MONTHLY" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[   
+	SELECT 
+		MONTH,
+		ISSUE_TYPE,
+		COUNT (ISSUE_TYPE) AS CNT
+	FROM (
+		SELECT
+		T1.ISSUE_STATUS,
+		T1.ISSUE_TYPE, 
+	]]><dynamic><![CDATA[
+	<#if data.complete?? && data.complete == true >
+		TO_CHAR( NVL( T1.RESOLUTION_DATE, T1.MODIFIED_DATE ) ,'YYYY.MM') AS MONTH
+	<#else>
+		TO_CHAR( NVL( T1.DUE_DATE, T1.CREATION_DATE ) ,'YYYY.MM') AS MONTH 
+	</#if>		
+		FROM REP_ISSUE T1
+		WHERE T1.ISSUE_STATUS IS NOT NULL
+	<#if data.complete?? && data.complete == true >
+		AND T1.ISSUE_STATUS = '005'
+	</#if>
+	<#if filter??>
+	<#if filter.logic??>${filter.logic} </#if>
+	<#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if><#if item.operator == "doesnotcontain" > ${item.field} NOT IN ( ${item.value} )<#elseif item.operator == "eq" > ${item.field} = ${item.value}</#if>
+	</#list></#if>
+	]]></dynamic><![CDATA[	
+	) G1
+	GROUP BY MONTH , ISSUE_TYPE
+	ORDER BY MONTH
+ 	]]></sql-query>
  	
  	
+	<sql-query name="SELECT_ISSUE_STATS_BY_PROJECT" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[   
+	SELECT 
+      T2.PROJECT_ID AS PROJECT_ID, 
+      T2.NAME,
+      T1.ISSUE_TYPE , 
+      COUNT( T1.ISSUE_TYPE) AS CNT, 
+      T1.ISSUE_STATUS 
+    FROM REP_ISSUE T1 , REP_PROJECT T2
+    WHERE T1.ASSIGNEE > 0 
+    AND T1.OBJECT_ID = T2.PROJECT_ID
+	]]><dynamic><![CDATA[
+	<#if data.complete?? && data.complete == true >
+	AND T1.ISSUE_STATUS = '005'
+	</#if>
+	<#if filter??><#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if><#if item.operator == "doesnotcontain" > ${item.field} NOT IN ( ${item.value} )<#elseif item.operator == "eq" > ${item.field} = ${item.value}</#if>
+	</#list></#if>
+	GROUP BY T2.PROJECT_ID , T2.NAME, T1.ISSUE_TYPE, T1.ISSUE_STATUS	
+	ORDER BY T2.PROJECT_ID , T1.ISSUE_TYPE
+ 	]]></dynamic></sql-query>
+ 		
+	<sql-query name="SELECT_ISSUE_STATS_BY_ASSIGNEE" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[   
+	SELECT 
+      T1.ASSIGNEE AS USER_ID, 
+      T1.ISSUE_TYPE , 
+      COUNT( T1.ISSUE_TYPE) AS CNT, 
+      T1.ISSUE_STATUS 
+    FROM REP_ISSUE T1 , REP_USER T2
+    WHERE T1.ASSIGNEE > 0 
+    AND T1.ASSIGNEE = T2.USER_ID
+	]]><dynamic><![CDATA[
+	<#if filter??><#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if><#if item.operator == "doesnotcontain" > ${item.field} NOT IN ( ${item.value} )<#elseif item.operator == "eq" > ${item.field} = ${item.value}</#if>
+	</#list></#if>
+	GROUP BY T1.ASSIGNEE , T2.NAME, T1.ISSUE_TYPE, T1.ISSUE_STATUS	
+	ORDER BY T1.ASSIGNEE , T1.ISSUE_TYPE
+ 	]]></dynamic></sql-query>
+ 	
+	<sql-query name="SELECT_ISSUE_STATS_BY_ASSIGNEE_MONTHLY" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[   
+	SELECT 
+		MONTH,
+		ISSUE_TYPE,
+		COUNT (ISSUE_TYPE) AS CNT
+	FROM 
+	(
+	SELECT
+	T1.ASSIGNEE AS USER_ID,
+	T1.ISSUE_STATUS,
+	T1.ISSUE_TYPE, 
+	]]><dynamic><![CDATA[
+	<#if data.complete?? && data.complete == true >
+		TO_CHAR( NVL( T1.RESOLUTION_DATE, T1.MODIFIED_DATE ) ,'YYYY.MM') AS MONTH
+	<#else>
+		TO_CHAR( NVL( T1.DUE_DATE, T1.CREATION_DATE ) ,'YYYY.MM') AS MONTH 
+	</#if>
+	FROM REP_ISSUE T1
+	WHERE T1.ASSIGNEE > 0 	
+	<#if data.complete?? && data.complete == true >
+	AND T1.ISSUE_STATUS = '005'
+	</#if>
+	<#if filter??><#list filter.filters as item >
+	<#if item.logic??>${item.logic}</#if><#if item.operator == "doesnotcontain" > ${item.field} NOT IN ( ${item.value} )<#elseif item.operator == "eq" > ${item.field} = ${item.value}</#if>
+	</#list></#if>
+	]]></dynamic><![CDATA[	
+	) G1
+	GROUP BY MONTH , ISSUE_TYPE
+	ORDER BY MONTH
+ 	]]></sql-query>
+ 			
  	<sql-query name="SELECT_ISSUE_BY_PORJECT" description="SELECT_ISSUE_BY_PORJECT"><![CDATA[    	
   	SELECT 
 	  OBJECT_TYPE,
@@ -72,6 +172,7 @@
 		AND T2.CONTRACTOR =  '${data.contractor}'
 	</#if> 		
  	]]></dynamic></sql-query>
+ 	
  	<sql-query name="SELECT_ISSUE_SUMMARY_BY_PERIOD" description="특정 기간 동안 이슈 요약 정보 조회"><![CDATA[    	
 	SELECT  
 		T2.PROJECT_ID, 

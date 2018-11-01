@@ -161,6 +161,7 @@ public class CommunityDataController extends AbstractCommunityDateController {
 		
 		if (!StringUtils.isNullOrEmpty(group)) {
 			codes = codeSetService.getCodeSets(objectType, objectId, group);
+			
 		}
 		return codes ;
 	}

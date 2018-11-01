@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import architecture.community.model.json.JsonDateDeserializer;
 import architecture.community.model.json.JsonDateSerializer;
+import architecture.community.security.spring.acls.JdbcCommunityAclService.PermissionsBundle;
 
 public class ProjectView {
 
@@ -40,6 +41,19 @@ public class ProjectView {
 	
 	public ProjectView( Project project ) {
 		this.project = project;
+	}
+	
+	@JsonIgnore
+	public void setPermissionsBundle( PermissionsBundle bundle ) {
+		this.admin = bundle.isAdmin();
+		this.writable = bundle.isWrite();
+		this.readable = bundle.isRead();
+		this.createAttachement = bundle.isCreateAttachment();
+		this.readComment = bundle.isReadComment();
+		this.createComment = bundle.isCreateComment();
+		this.createImage = bundle.isCreateImage();
+		this.createThread = bundle.isCreateThread();
+		this.createThreadMessage = bundle.isCreateThreadMessage();	
 	}
 
 	@JsonGetter

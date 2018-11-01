@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,7 +42,10 @@ import architecture.community.attachment.Attachment;
 import architecture.community.attachment.AttachmentService;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
+import architecture.community.user.User;
+import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
+import architecture.community.web.model.json.Result;
 
 @Controller("attachments-data-controller")
 @RequestMapping("/data/api/v1/attachments")
@@ -55,11 +59,28 @@ public class AttachmentsDataController {
 	
 	private Logger log = LoggerFactory.getLogger(AttachmentsDataController.class);
 	
-
+	@Secured({ "ROLE_USER", "ROLE_ADMINISTRATOR" })
+    @RequestMapping(value = "/{attachmentId:[\\p{Digit}]+}/remove.json", method = RequestMethod.POST)
+    @ResponseBody
+    public Result remove (
+    		@PathVariable Long attachmentId,	
+    		NativeWebRequest request ) throws NotFoundException, IOException, UnAuthorizedException {
+		User user = SecurityHelper.getUser();
+		
+		Attachment attachment = attachmentService.getAttachment(attachmentId);
+		if( attachment.getUser().getUserId() == user.getUserId() || SecurityHelper.isUserInRole("ROLE_ADMINISTRATOR"))
+			attachmentService.removeAttachment(attachment);
+		else 
+			throw new UnAuthorizedException("권한이 없습니다.");
+		
+		return Result.newResult();
+	}
+	
+	
 	@Secured({ "ROLE_USER" })
     @RequestMapping(value = "/upload.json", method = RequestMethod.POST)
     @ResponseBody
-    public List<Attachment> uploadFiles(
+    public List<Attachment> upload(
     		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
     		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
     	    MultipartHttpServletRequest request ) throws NotFoundException, IOException, UnAuthorizedException {
@@ -76,12 +97,12 @@ public class AttachmentsDataController {
 		    list.add(attachment);
 		}			
 		return list;
-    }
+	}
 	
 	
 	@RequestMapping(value = "/list.json", method = RequestMethod.POST)
 	@ResponseBody
-	public ItemList listMessageFile(
+	public ItemList list (
     		@RequestParam(value = "objectType", defaultValue = "-1", required = false) Integer objectType,
     		@RequestParam(value = "objectId", defaultValue = "-1", required = false) Long objectId,
     	    @RequestParam(value = "startIndex", defaultValue = "0", required = false) Integer startIndex,

@@ -214,13 +214,12 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
 		List<Project> list = new ArrayList<Project> ();
 		for( Long projectId : ids)
-		{	
-			Project project;
+		{	 
 			try {
-				project = projectService.getProject(projectId);
-				PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, project.getProjectId() );	
+				PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, projectId );	
 				if( bundle.isAdmin() || bundle.isWrite() || bundle.isRead() || bundle.isCreate() )
 				{
+					Project project = projectService.getProject(projectId);
 					list.add(project);
 				}
 			} catch (ProjectNotFoundException e) {
@@ -574,7 +573,7 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		}
 		
 		log.debug("monthly index : {}", monthlyIssueCounts.keySet());
-		
+	
 		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_STATS_BY_YEAR");
 		customQueryService.query(dataSourceRequest, new RowCallbackHandler() {
 			public void processRow(ResultSet rs) throws SQLException {
@@ -620,6 +619,7 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 	private MonthIssueCount createMonthIssueCount(String month , List<CodeSet> issueTypes ) {
 		MonthIssueCount m = new MonthIssueCount(month);
 		for( CodeSet code : issueTypes ) {
+			
 			m.aggregate.put(code.getCode(), 0);
 		}	
 		m.aggregate.put("000", 0);
@@ -718,6 +718,7 @@ public class ProjectAndIssueDataController extends AbstractCommunityDateControll
 		}
 		
 		log.debug("overviews : {}", overviewStats.values());
+		
 		
 		dataSourceRequest.setStatement("COMMUNITY_CUSTOM.SELECT_ISSUE_REMAILS_BY_DATE");
 		List<OverviewStats> map = customQueryService.list(dataSourceRequest, new RowMapper<OverviewStats>() { 

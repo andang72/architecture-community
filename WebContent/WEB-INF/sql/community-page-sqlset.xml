@@ -2,7 +2,13 @@
 <sqlset>
 	<name>COMMUNITY_PAGE</name>
 	<description>COMMUNITY PAGE SUBSYSTEM QUERIES</description>	
+
+
 	
+	<!--  ====================================  -->
+	<!--  PAGE						 		   -->
+	<!--  ====================================  -->
+			
 	<sql-query name="SELECT_ALL_PATTERN_AND_ID" description="SELECT_ALL_PATTERN_AND_ID"><![CDATA[    	
  		SELECT 
  			PAGE_ID, PATTERN

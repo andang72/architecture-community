@@ -12,6 +12,5 @@ public class EmailMonitorTest {
 	@Test
 	public void testConnection() {
 		EmailMonitor monitor = new EmailMonitor();
-		//monitor.testConnection();
 	}
 }

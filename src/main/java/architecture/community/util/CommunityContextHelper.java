@@ -109,6 +109,7 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 	}
 	
 	
+	
 	public static <T> T getComponent(Class<T> requiredType) {
 		if (applicationContext == null) {
 			throw new IllegalStateException(CommunityLogLocalizer.getMessage("012005"));
@@ -116,8 +117,7 @@ public final class CommunityContextHelper implements ApplicationContextAware {
 		
 		if (requiredType == null) {
 			throw new IllegalArgumentException(CommunityLogLocalizer.getMessage("012001"));
-		}
-
+		} 
 		try {
 			return applicationContext.getBean(requiredType);
 		} catch (NoSuchBeanDefinitionException e) {

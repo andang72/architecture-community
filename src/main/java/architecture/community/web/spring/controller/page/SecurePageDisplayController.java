@@ -50,6 +50,8 @@ public class SecurePageDisplayController {
 		return lcStr;
     }
 	
+	
+	
 	@Secured({ "ROLE_USER" , "ROLE_ADMINISTRATOR"})
 	@RequestMapping(value = "/{filename:.+}", method = { RequestMethod.POST, RequestMethod.GET })
     public String page(@PathVariable String filename, 
