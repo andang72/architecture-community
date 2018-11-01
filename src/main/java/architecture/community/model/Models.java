@@ -29,6 +29,7 @@ import architecture.community.image.LogoImage;
 import architecture.community.menu.Menu;
 import architecture.community.menu.MenuItem;
 import architecture.community.page.Page;
+import architecture.community.page.api.Api;
 import architecture.community.projects.Issue;
 import architecture.community.projects.Project;
 import architecture.community.projects.Scm;
@@ -61,7 +62,8 @@ public enum Models {
 	TASK(20, Task.class),
 	SCM(21, Scm.class),
 	MENU(25, Menu.class),
-	MENU_ITEM(26, MenuItem.class)
+	MENU_ITEM(26, MenuItem.class),
+	API(30, Api.class)
 	;
 	
 	
@@ -81,8 +83,7 @@ public enum Models {
 	public int getObjectType()
 	{
 		return objectType;
-	}
-
+	} 
 	
 	public static Models valueOf(int objectType){
 		Models selected = Models.UNKNOWN ;

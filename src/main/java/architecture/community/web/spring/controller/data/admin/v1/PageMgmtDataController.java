@@ -39,9 +39,19 @@ import architecture.community.page.DefaultPage;
 import architecture.community.page.Page;
 import architecture.community.page.PageService;
 import architecture.community.page.PageView;
+import architecture.community.page.api.Api;
+import architecture.community.page.api.ApiNotFoundException;
+import architecture.community.page.api.ApiService;
+import architecture.community.projects.Project;
+import architecture.community.query.CustomQueryService;
+import architecture.community.security.spring.acls.CommunityAclService;
+import architecture.community.user.EmailAlreadyExistsException;
 import architecture.community.user.User;
+import architecture.community.user.UserAlreadyExistsException;
+import architecture.community.user.UserNotFoundException;
 import architecture.community.util.SecurityHelper;
 import architecture.community.web.model.ItemList;
+import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 import architecture.ee.service.ConfigService;
 /**
@@ -59,10 +69,21 @@ public class PageMgmtDataController {
 	@Qualifier("pageService")
 	private PageService pageService;
 
+	@Inject
+	@Qualifier("apiService")
+	private ApiService apiService;
 	
 	@Inject
 	@Qualifier("configService")
 	private ConfigService configService;
+	
+	@Inject
+	@Qualifier("customQueryService")
+	private CustomQueryService customQueryService;
+	
+	@Inject
+	@Qualifier("communityAclService")
+	private CommunityAclService communityAclService;
 	
 	
 	@Autowired
@@ -452,4 +473,111 @@ public class PageMgmtDataController {
 			this.lastModifiedDate = lastModifiedDate;
 		}
 	}
+	
+	
+
+	/**
+	 * API API 
+	******************************************/ 
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/api/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public ItemList getApis (@RequestBody DataSourceRequest dataSourceRequest, NativeWebRequest request) {
+
+		dataSourceRequest.setStatement("COMMUNITY_UI.COUNT_SERVICE_BY_REQUEST");
+		int totalCount = customQueryService.queryForObject(dataSourceRequest, Integer.class);
+		
+		dataSourceRequest.setStatement("COMMUNITY_UI.SELECT_SERVICE_IDS_BY_REQUEST");
+		
+		List<Long> ids = customQueryService.list(dataSourceRequest, Long.class);
+		List<Api> apis = new ArrayList<Api>(ids.size());
+		for( Long apiId : ids ) {
+			try {
+				apis.add(apiService.getApiById(apiId));
+			} catch (ApiNotFoundException e) {
+				log.error(e.getMessage(), e);
+			}
+		}		
+		return new ItemList(apis, totalCount);	
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/api/save-or-update.json", method = { RequestMethod.POST, RequestMethod.GET })
+    @ResponseBody
+    public Result updateApi(@RequestBody Api api , NativeWebRequest request) throws  UserNotFoundException, UserAlreadyExistsException, EmailAlreadyExistsException { 
+		log.debug("Save or update api {} ",  api );
+		
+		User user = SecurityHelper.getUser();
+		Api apiToUse = api ;
+		
+		if( apiToUse.getApiId() <= 0 ) {
+			apiToUse.setCreator(user );
+		}
+		apiService.saveOrUpdate(apiToUse);
+		return Result.newResult("item", apiToUse);
+    }
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/api/{apiId:[\\p{Digit}]+}/get.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Api getApi(@PathVariable Long apiId, NativeWebRequest request) throws NotFoundException {
+		User user = SecurityHelper.getUser();
+		Api api = apiService.getApiById(apiId);
+		return api ;
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/api/{apiId:[\\p{Digit}]+}/delete.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public Result deleteApi(@PathVariable Long apiId, NativeWebRequest request) throws NotFoundException {
+		User user = SecurityHelper.getUser();
+		Api api = apiService.getApiById(apiId);
+		apiService.deleteApi(api);
+		return Result.newResult("item", api);
+	}	
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/api/{apiId:[\\p{Digit}]+}/properties/list.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> getRESTfulAPIProperties (
+		@PathVariable Long apiId, 
+		NativeWebRequest request) throws NotFoundException {
+		Api api = apiService.getApiById(apiId);
+		Map<String, String> properties = api.getProperties(); 
+		return toList(properties);
+	}
+
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/api/{apiId:[\\p{Digit}]+}/properties/update.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> updateRESTfulAPIProperties (
+		@PathVariable Long apiId, 
+		@RequestBody List<Property> newProperties,
+		NativeWebRequest request) throws NotFoundException {
+		Api api = apiService.getApiById(apiId);
+		Map<String, String> properties = api.getProperties();   
+		// update or create
+		for (Property property : newProperties) {
+		    properties.put(property.getName(), property.getValue().toString());
+		} 
+		apiService.saveOrUpdate(api); 
+		return toList(apiService.getApiById(apiId).getProperties());
+	}
+	
+	@Secured({ "ROLE_ADMINISTRATOR" })
+	@RequestMapping(value = "/api/{apiId:[\\p{Digit}]+}/properties/delete.json", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public List<Property> deleteRESTfulAPIProperties (
+		@PathVariable Long apiId, 
+		@RequestBody List<Property> newProperties,
+		NativeWebRequest request) throws NotFoundException {
+		
+		Api api = apiService.getApiById(apiId);
+		Map<String, String> properties = api.getProperties();  
+		for (Property property : newProperties) {
+		    properties.remove(property.getName());
+		}
+		apiService.saveOrUpdate(api); 
+		return toList(apiService.getApiById(apiId).getProperties());
+	}	
 }

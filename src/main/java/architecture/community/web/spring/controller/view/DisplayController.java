@@ -21,12 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.View;
 import org.springframework.web.util.UrlPathHelper;
 
-import architecture.community.board.Board;
-import architecture.community.board.BoardNotFoundException;
 import architecture.community.board.BoardService;
-import architecture.community.board.BoardThread;
-import architecture.community.board.DefaultBoard;
-import architecture.community.board.DefaultBoardThread;
 import architecture.community.exception.NotFoundException;
 import architecture.community.exception.UnAuthorizedException;
 import architecture.community.model.Models;
@@ -106,32 +101,6 @@ public class DisplayController {
 				e.printStackTrace();
 			}
 		}
-		/**
-		if( Boolean.parseBoolean(StringUtils.defaultString(page.getProperties().get("pages.board"), "false")) )
-		{
-			Board board = new DefaultBoard();
-			if( boardId > 0 ) {
-				try {
-					board = boardService.getBoardById(boardId);
-				} catch (BoardNotFoundException e) { 
-				}	
-			} 
-			model.addAttribute("__board", board);	 
-		}
-		
-		if( Boolean.parseBoolean(StringUtils.defaultString(page.getProperties().get("pages.board.thread"), "false")) )
-		{	
-			BoardThread thread ;
-			if( threadId > 0 ) {
-				thread = boardService.getBoardThread(threadId);
-				if( viewCountService!=null && !preview  )
-					viewCountService.addViewCount(thread);			
-			}else {
-				thread = new DefaultBoardThread();
-			}
-			model.addAttribute("__thread", thread);	
-		} 
-		**/
 		ServletUtils.setContentType(ServletUtils.DEFAULT_HTML_CONTENT_TYPE, response);
 		String view = page.getTemplate();
 		if(StringUtils.isNotEmpty( view ) )

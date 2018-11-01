@@ -34,13 +34,16 @@ import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.web.model.json.Result;
 
 /**
- * UI컴포넌트 관리자 API
+ *	UI컴포넌트 관리자 API
+ *
+ *	<p>MENU</p> 
+ *	<p>MENU</p> 
  * 
- * <p>MENU</p> 
  * 
  * @author donghyuck
- *
+ * 
  */
+
 @Controller("data-api-v1-mgmt-ui-controller")
 @RequestMapping("/data/api/mgmt/v1/ui")
 public class ResourceMgmtDataController {
@@ -58,6 +61,10 @@ public class ResourceMgmtDataController {
 	public ResourceMgmtDataController() {
 	}
 
+	
+	
+	
+	
 	/**
 	 * MENU API 
 	******************************************/
@@ -124,8 +131,9 @@ public class ResourceMgmtDataController {
     public Result createMenuItem(@PathVariable Long menuId, @RequestBody MenuItem newMenuItem, NativeWebRequest request) throws MenuNotFoundException, MenuAlreadyExistsException { 
 		
 		Menu menu = menuService.getMenuById(menuId);	
-		if( newMenuItem.getMenuId() != menu.getMenuId())
+		if( newMenuItem.getMenuId() != menu.getMenuId()) {
 			newMenuItem.setMenuId(menu.getMenuId());
+		}
 		menuService.saveOrUpdateMenuItem(newMenuItem);
 		Result r = Result.newResult();
 		return Result.newResult();
@@ -137,13 +145,11 @@ public class ResourceMgmtDataController {
     @ResponseBody
     public Result saveOrUpdateMenuItem(@PathVariable Long menuId, @RequestBody MenuItem newMenuItem, NativeWebRequest request) throws MenuNotFoundException, MenuAlreadyExistsException, MenuItemNotFoundException { 
 		
-		Menu menu = menuService.getMenuById(menuId);		
-		
+		Menu menu = menuService.getMenuById(menuId);
 		MenuItem menuItem ;
 		if( newMenuItem.getMenuItemId() > 0 )
 		{
-			menuItem = menuService.getMenuItemById(newMenuItem.getMenuItemId());		
-			
+			menuItem = menuService.getMenuItemById(newMenuItem.getMenuItemId());	 
 			if (!org.apache.commons.lang3.StringUtils.equals(newMenuItem.getName(), menuItem.getName())) {
 				menuItem.setName(newMenuItem.getName());
 			} 
@@ -169,25 +175,21 @@ public class ResourceMgmtDataController {
 		}
 		menuService.saveOrUpdateMenuItem(menuItem);
 		menuService.refresh(menu);
-		return Result.newResult();
-    
+		return Result.newResult(); 
 	}
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })
 	@RequestMapping(value = "/menus/{menuId}/items/delete.json", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     public Result deleteMenuItem(@PathVariable Long menuId, @RequestBody MenuItem newMenuItem, NativeWebRequest request) throws MenuNotFoundException, MenuAlreadyExistsException, MenuItemNotFoundException { 
-		
 		Menu menu = menuService.getMenuById(menuId);	 
-		
 		if( newMenuItem.getMenuItemId() > 0 )
 		{
 			MenuItem menuItem = menuService.getMenuItemById(newMenuItem.getMenuItemId());	
 			menuService.deleteMenuItem(menuItem);
 			menuService.refresh(menu);
 		}
-		return Result.newResult();
-    
+		return Result.newResult(); 
 	}	
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })

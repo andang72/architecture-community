@@ -57,19 +57,12 @@ public abstract class AbstractCommunityDateController {
 	protected ProjectView getProjectView(CommunityAclService communityAclService, Project project) {		
 		
 		CommuintyUserDetails userDetails = SecurityHelper.getUserDetails();
+		
 		log.debug("Board View : {} {} for {}.", project.getProjectId(),  project.getName(), userDetails.getUsername() );		
 		
 		PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, project.getProjectId() );				
 		ProjectView projectView = new ProjectView(project);
-		projectView.setAdmin(bundle.isAdmin());
-		projectView.setWritable(bundle.isWrite());
-		projectView.setReadable(bundle.isRead());
-		projectView.setCreateAttachement(bundle.isCreateAttachment());
-		projectView.setReadComment(bundle.isReadComment());
-		projectView.setCreateComment(bundle.isCreateComment());
-		projectView.setCreateImage(bundle.isCreateImage());
-		projectView.setCreateThread(bundle.isCreateThread());
-		projectView.setCreateThreadMessage(bundle.isCreateThreadMessage());	
+		projectView.setPermissionsBundle(bundle);
 		
 		return projectView;
 	}
