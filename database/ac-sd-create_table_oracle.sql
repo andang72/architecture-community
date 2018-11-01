@@ -1,5 +1,22 @@
 	-- =================================================  
-	--   SERVICE DESK  
+	--   SERVICE DESK MODULE 
+	--   WATCHER 
+	-- =================================================	
+	CREATE TABLE AC_SD_WATCH (
+		USER_ID				INTEGER NOT NULL,
+		OBJECT_TYPE			INTEGER NOT NULL,
+		OBJECT_ID			INTEGER NOT NULL,
+		WATCH_TYPE			INTEGER NOT NULL,
+		CREATION_DATE		TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+		MODIFIED_DATE		TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+		CONSTRAINT AC_SD_WATCH_PK PRIMARY KEY (USER_ID, OBJECT_TYPE, OBJECT_ID, INTEGER)
+	);
+	
+	CREATE INDEX AC_SD_WATCH_IDX_01 ON AC_SD_WATCH (OBJECT_TYPE);
+	
+
+    -- =================================================  
+	--   SERVICE DESK MODULE 
 	--   PROJECT
 	-- =================================================	
 	
@@ -14,8 +31,11 @@
 	COMMENT ON COLUMN "AC_SD_PROJECT_PROPERTY"."PROPERTY_NAME" IS '프로퍼티 이름'; 
 	COMMENT ON COLUMN "AC_SD_PROJECT_PROPERTY"."PROPERTY_VALUE" IS '프로퍼티 값'; 
 	COMMENT ON TABLE  "AC_SD_PROJECT_PROPERTY"  IS 'TASK 프로퍼티 테이블';	
-		
-	-- SCM --	
+
+    -- =================================================  
+	--   SERVICE DESK MODULE 
+	--   SCM
+	-- =================================================	
 	CREATE TABLE AC_SD_SCM (
 		SCM_ID				INTEGER NOT NULL,
 		NAME				VARCHAR2(255) NOT NULL,
