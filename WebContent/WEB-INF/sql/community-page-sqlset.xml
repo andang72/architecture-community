@@ -2,8 +2,6 @@
 <sqlset>
 	<name>COMMUNITY_PAGE</name>
 	<description>COMMUNITY PAGE SUBSYSTEM QUERIES</description>	
-
-
 	
 	<!--  ====================================  -->
 	<!--  PAGE						 		   -->
