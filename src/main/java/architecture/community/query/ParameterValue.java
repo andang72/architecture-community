@@ -1,5 +1,7 @@
 package architecture.community.query;
 
+import java.sql.Types;
+
 public class ParameterValue {
 
 	private int index;
@@ -38,6 +40,7 @@ public class ParameterValue {
 		this.valueText = null;
 		this.valueObject = valueObject;
 		this.isSetByObject = true;
+		
 	}
 	
 	public int getIndex() {

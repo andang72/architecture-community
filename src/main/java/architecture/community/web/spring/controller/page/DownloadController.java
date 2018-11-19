@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -83,7 +84,18 @@ public class DownloadController {
 	public DownloadController() {
 		
 	}
+	
+	@RequestMapping(value = "/proxy", method = RequestMethod.POST)
+	public @ResponseBody void save(String fileName, String base64, String contentType, HttpServletResponse response) throws IOException {
 
+	    response.setHeader("Content-Disposition", "attachment;filename=" + fileName); 
+	    response.setContentType(contentType); 
+	    byte[] data = DatatypeConverter.parseBase64Binary(base64); 
+	    response.setContentLength(data.length);
+	    response.getOutputStream().write(data);
+	    response.flushBuffer();
+	}
+	
 	@PreAuthorize("permitAll")
 	@RequestMapping(value = "/avatar/{username:.+}", method = RequestMethod.GET)
 	@ResponseBody

@@ -61,6 +61,7 @@ public abstract class AbstractCommunityDateController {
 		log.debug("Board View : {} {} for {}.", project.getProjectId(),  project.getName(), userDetails.getUsername() );		
 		
 		PermissionsBundle bundle = communityAclService.getPermissionBundle(SecurityHelper.getAuthentication(), Project.class, project.getProjectId() );				
+		
 		ProjectView projectView = new ProjectView(project);
 		projectView.setPermissionsBundle(bundle);
 		

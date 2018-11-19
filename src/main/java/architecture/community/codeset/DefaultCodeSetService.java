@@ -1,11 +1,13 @@
 package architecture.community.codeset;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -127,6 +129,20 @@ public class DefaultCodeSetService implements CodeSetService {
 		}
 		return list;
 	}	
+
+ 
+	public List<CodeSet> getCodeSets(String group, String code) {
+		if( StringUtils.isNotEmpty(group) ) {
+			if( StringUtils.isNotEmpty( code )) {
+				getCodeSets(-1, -1L, group , code  );
+			}else {
+				return getCodeSets(-1, -1L, group );
+			}
+		}
+		return Collections.EMPTY_LIST;
+	}
+	
+	
 	
 	@Override
 	public int getCodeSetCount(CodeSet codeset) {

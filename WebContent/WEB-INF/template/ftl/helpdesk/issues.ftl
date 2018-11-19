@@ -13,11 +13,13 @@
  	<#include "/community/includes/header_globle_site_tag.ftl">
  	 	
 	<!-- Bootstrap core CSS -->
-   	<link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+   	<link href="<@spring.url "/css/bootstrap/4.1.3/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
    	
-	<!-- Professional Kendo UI --> 	 
+	<!-- Bootstrap Unify Theme -->
 	<link href="<@spring.url "/css/bootstrap.theme/unify-bootstrap-v4/all.css"/>" rel="stylesheet" type="text/css" />	
- 	<link href="<@spring.url "/css/kendo/2018.3.911/kendo.bootstrap.mobile.min.css"/>" rel="stylesheet" type="text/css" />	
+	
+	<!-- Professional Kendo UI --> 	 
+ 	<link href="<@spring.url "/css/kendo/2018.3.1017/kendo.bootstrap.mobile.min.css"/>" rel="stylesheet" type="text/css" />	
    	
    	<!-- Fonts & Icons CSS -->
 	<link href="<@spring.url "/fonts/font-awesome.css"/>" rel="stylesheet" type="text/css" />	
@@ -34,91 +36,62 @@
 	<link rel="stylesheet" href="<@spring.url "/js/summernote/summernote-bs4.css"/>">
 	
 					
-	<!-- CSS Bootstrap Theme Unify -->		    
+	<!-- CSS Theme Unify --> 
     <link href="<@spring.url "/assets/vendor/icon-hs/style.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/assets/vendor/hs-megamenu/src/hs.megamenu.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/assets/vendor/hamburgers/hamburgers.min.css"/>" rel="stylesheet" type="text/css" />	
     <link href="<@spring.url "/assets/vendor/icon-line/css/simple-line-icons.css"/>" rel="stylesheet" type="text/css" />			 
 	<link href="<@spring.url "/assets/vendor/icon-line-pro/style.css"/>" rel="stylesheet" type="text/css" />
+	
 	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/unify-core.css"/>">
 	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/unify-components.css"/>">
-	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/unify-globals.css"/>"> 
-	
+	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/unify-globals.css"/>">  
 	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/custom.css"/>">
 		
 	<!-- Page landing js -->	   	
-	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>   	
-	<!-- Requirejs for js loading -->
-	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
-	<!-- Application JavaScript
-    		================================================== -->    
+	<link rel="stylesheet" href="<@spring.url "/css/pace/pace-theme-flash.css"/>">
+	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>
+	
+	<!-- Yepnope for js loading -->
+	<script src="<@spring.url "/js/yepnope/1.5.4/yepnope.min.js"/>" type="text/javascript"></script>
+	
+	<!-- Application JavaScript 
+	     ================================================== -->    
 	<script>
 	
 	var __projectId = <#if RequestParameters.projectId?? >${RequestParameters.projectId}<#else>0</#if>;
 	<#if CommunityContextHelper.getProjectService().getProject( ServletUtils.getStringAsLong( RequestParameters.projectId ) )?? >
 	<#assign __project = CommunityContextHelper.getProjectService().getProject( ServletUtils.getStringAsLong( RequestParameters.projectId ) ) />
 	</#if>
+	yepnope([{
+		load: [			 
+			'<@spring.url "/js/jquery/jquery-3.3.1.min.js"/>', 
+			'<@spring.url "/js/bootstrap/4.1.3/bootstrap.bundle.min.js"/>', 
+			
+			'<@spring.url "/js/kendo/2018.3.1017/kendo.all.min.js"/>',
+			'<@spring.url "/js/kendo/2018.3.1017/cultures/kendo.culture.ko-KR.min.js"/>',
+			'<@spring.url "/js/kendo.extension/kendo.messages.ko-KR.js"/>',	 
+			
+			'<@spring.url "/js/community.ui/community.ui.core.js"/>',
+			'<@spring.url "/js/community.ui/community.data.js"/>',
+			'<@spring.url "/js/community.ui/community.ui.professional.js"/>',
+			
+			'<@spring.url "/js/bootstrap.theme/unify/hs.core.js"/>',
+			'<@spring.url "/js/bootstrap.theme/unify/components/hs.header.js"/>',
+			'<@spring.url "/js/bootstrap.theme/unify/helpers/hs.hamburgers.js"/>',
+			'<@spring.url "/assets/js/components/hs.dropdown.js"/>',
+			'<@spring.url "/assets/js/components/hs.tabs.js"/>',
+			
+			'<@spring.url "/assets/vendor/dzsparallaxer/dzsparallaxer.js"/>',
+			'<@spring.url "/assets/vendor/dzsparallaxer/dzsscroller/scroller.js"/>',
+			'<@spring.url "/assets/vendor/dzsparallaxer/advancedscroller/plugin.js"/>',
+			
+			
+			'<@spring.url "/js/ace/ace.js"/>'
+		],
+		complete: function() { 
+		// Start of Application Initialization
 		
-	require.config({
-		shim : {
-			<!-- summernote -->
-			"summernote-ko-KR" : { "deps" :['summernote.min'] },
-			<!-- Bootstrap -->
-			"jquery.cookie" 			: { "deps" :['jquery'] },
-	        "bootstrap" 				: { "deps" :['jquery'] },
-			<!-- Professional Kendo UI -->
-			"kendo.web.min" 			: { "deps" :['jquery'] },
-	        "kendo.culture.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	   
-	        "kendo.messages.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	  
-			<!-- community -- >
-	        "community.ui.core"			: { "deps" :['jquery', 'kendo.web.min', 'kendo.culture.min' ] },
-	        "community.data" 			: { "deps" :['jquery', 'kendo.web.min', 'community.ui.core' ] },
-	        <!-- Unify -- > 			
-			"hs.core" : { "deps" :['jquery', 'bootstrap'] },
-			"hs.header" : { "deps" :['jquery', 'hs.core'] },
-			"hs.hamburgers" : { "deps" :['jquery', 'hs.core'] },
-			"hs.dropdown" : { "deps" :['jquery', 'hs.core'] },
-			"hs.tabs" : { "deps" :['jquery', 'hs.core'] },
-	        "dzsparallaxer" : { "deps" :['jquery'] },
-	        "dzsparallaxer.dzsscroller" : { "deps" :['jquery', 'dzsparallaxer' ] },
-			"dzsparallaxer.advancedscroller" : { "deps" :['jquery', 'dzsparallaxer' ] }	
-	    },
-		paths : {
-			"jquery"    				: "/js/jquery/jquery-3.1.1.min",
-			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"bootstrap" 				: "/js/bootstrap/4.0.0/bootstrap.bundle.min",
-			<!-- Professional Kendo UI --> 
-			"kendo.web.min"	 			: "/js/kendo/2018.3.911/kendo.web.min",
-			"kendo.culture.min"			: "/js/kendo/2018.3.911/cultures/kendo.culture.ko-KR.min",	
-			"kendo.messages.min"		: "/js/kendo.extension/kendo.messages.ko-KR",	
-			<!-- summernote -->
-			"summernote.min"             : "/js/summernote/summernote-bs4.min",
-			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"	,
-			"dropzone"					: "/js/dropzone/dropzone",			
-			<!-- community -- >
-			"community.ui.core" 		: "/js/community.ui/community.ui.core",
-			"community.data" 			: "/js/community.ui/community.data",   
-			<!-- Unify -->
-	    	"hs.core" 	   					: "/js/bootstrap.theme/unify/hs.core",
-			"hs.header" 	   				: "/js/bootstrap.theme/unify/components/hs.header",
-			"hs.hamburgers"   				: "/js/bootstrap.theme/unify/helpers/hs.hamburgers",
-			"hs.dropdown" 	   				: "/assets/js/components/hs.dropdown",
-			"hs.tabs" 	   				: "/assets/js/components/hs.tabs",
-			<!-- Dzsparallaxer -->		
-			"dzsparallaxer"           	: "/assets/vendor/dzsparallaxer/dzsparallaxer",
-			"dzsparallaxer.dzsscroller"	: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
-			"dzsparallaxer.advancedscroller"	: "/assets/vendor/dzsparallaxer/advancedscroller/plugin"
-		}
-	});
-	
-	require([ 
-		"jquery", "bootstrap", 
-		"community.data", "kendo.messages.min",
-		"hs.header", "hs.hamburgers", 'hs.dropdown', 'hs.tabs', 'dzsparallaxer.advancedscroller',
-		"summernote-ko-KR", "dropzone", 		
-		"https://www.gstatic.com/charts/loader.js"
-	], function($, kendo ) {	
-
 		// init header 
 		$.HSCore.components.HSHeader.init($('#js-header'));	
 		$.HSCore.helpers.HSHamburgers.init('.hamburger');
@@ -154,6 +127,8 @@
 			isDeveloper : false,
 			projectId : __projectId,
 			project : new community.model.Project(),
+			wiki : new community.model.Wiki(),
+			editable : false,
 			projectPeriod : "",
 			enabled : false,
 			visible : false,
@@ -161,6 +136,7 @@
 			errorIssueCount: 0,
 			closeIssueCount: 0,
 			openIssueCount : 0,
+			
 			setUser : function( data ){
 				var $this = this;
 				data.copy($this.currentUser)
@@ -172,38 +148,48 @@
 			back : function(){
 				var $this = this;
 				//window.history.back();
-				community.ui.send("<@spring.url "/display/pages/technical-support.html" />");
+				community.ui.send("<@spring.url "/display/pages/technical-support.html#nav-projects" />");
 				return false;			
 			},			
 			load : function( objectId ){
 				var $this = this;
 				if( objectId > 0 ){  
-					community.ui.progress($('body'), true);	
+					//community.ui.progress($('body'), true);	
 					community.ui.ajax('/data/api/v1/projects/'+ objectId +'/info.json/', {
 						success: function(response){		
 							$this.set('project', new community.model.Project(response) );		
 							$this.set('project.summary', community.data.replaceLineBreaksToBr( $this.get('project.summary') ) );
 							$this.set('projecPeriod' , community.data.getFormattedDate( $this.project.startDate , 'yyyy-MM-dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy-MM-dd' ) );
-							$.each($this.project.issueTypeStats.items , function (index, item ){
-								if( item.name == 'TOTAL' )
-									$this.set('totalIssueCount', item.value );
-								else if ( item.name == '001' )
-									$this.set('errorIssueCount', item.value );	
-							});
-							$.each($this.project.resolutionStats.items , function (index, item ){
-								if( item.name == 'TOTAL' )
-									$this.set('closeIssueCount', item.value );
-							});
 							
-							$this.set('openIssueCount', $this.get('totalIssueCount') - $this.get('closeIssueCount') ); 
 							$this.set('enabled', true);
 							$this.set('visible', true);   
 							createContentTabs(observable);
 						}	
 					}).always( function () {
-						community.ui.progress($('body'), false);
+						//community.ui.progress($('body'), false);
 					});	 
 				}
+			},
+			setWiki : function (item){
+				var $this = this;
+				item.copy($this.wiki);  
+			},
+			saveOrUpdateWiki : function(e){				
+				var $this = this;		
+				community.ui.progress(renderTo, true);
+				if( $this.wiki.title == null ){
+					$this.wiki.title = "제목없음"; 
+				}
+				community.ui.ajax( '<@spring.url " /data/apis/wiki/save-or-update.json" />', {
+					data: community.ui.stringify($this.wiki),
+					contentType : "application/json",		
+					success : function(response){ 
+						$this.setWiki( new community.model.Wiki(response ) ); 
+					}
+				}).always( function () {
+					$this.set('editable', false );
+					community.ui.progress(renderTo, false);
+				});
 			},
 			displayProjectInfo : function () {
 				var $this = this ;
@@ -272,26 +258,24 @@
 					filter.filter.filters.push({ field: "END_DATE", operator: "lte", value : community.data.getFormattedDate( $this.filter.END_DATE, 'yyyyMMdd' ), logic: "AND" });
 				}
 				return filter;			
-			},
-			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
-			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
-			resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
-			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} ),
-			taskDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/" />' + __projectId + '/tasks/list.json' , {
-				transport : {
-					parameterMap: function (options, operation){	 
-						if (operation !== "read" && options.models) { 
-							return community.ui.stringify(options.models);
-						} 
-						return community.ui.stringify(options);
-					}				
-				},
-			 	schema: {
-					total: "totalCount",
-					data: "items",
-					model: community.model.Task
-				}
-			}),			
+			}, 
+			issueTypeData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("ISSUE_TYPE", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],
+			priorityData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("PRIORITY", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],
+			resolutionData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("RESOLUTION", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],
+			statusData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("ISSUE_STATUS", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],  
+			taskData : [
+			<#list CommunityContextHelper.getCustomQueryService().listByValue("SERVICE_DESK.SELECT_TASK_NAME_BY_OBJECT_TYPE_AND_OBJECT_ID", __project.projectId ) as item >
+			{ taskId : ${ item.TASK_ID }, taskName : '${ item.TASK_NAME }' }<#if !item?is_last>,</#if>
+			</#list>
+			],
 			userDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/users/find.json" />' , {
 			 	serverFiltering: true,
 			 	transport: {
@@ -310,14 +294,12 @@
 				}
 			})		
     	});
-		   		
-     	// google charts loading 
-		google.charts.load('current', {'packages':['corechart']}); 
-    	observable.load(__projectId);  
+		
+		observable.load(__projectId);  
 		var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	
-		community.ui.tooltip(renderTo);  
+		//community.ui.tooltip(renderTo);   
 		
 		renderTo.on("click", "button[data-action=create], button[data-action=update], a[data-action=update], a[data-action=create], a[data-action=edit], a[data-action=view]", function(e){			
 			var $this = $(this);
@@ -346,8 +328,11 @@
 			}			
 			send(targetObject);	
 			return false;		
-		});
-	});
+		});		
+		
+		// End of Application Initialization
+		}
+	}]); 				
 
 	function createNotifications(observable){  
 	 	var enabled = false;
@@ -379,20 +364,7 @@
         storage[obj.timestamp]=obj;
 		localStorage.setItem('NotificationList', JSON.stringify(storage));
 	}  
-
-	/**
-	 * Drawing Charting .
-	 */
-	function drawPieChart(elementId, data) {
-        var options = {
-          title: '',
-          subtitle: '금일까지 요청된 이슈들에 대한 유형입니다.'
-        };
-        var chart = new google.visualization.PieChart(document.getElementById(elementId));
-        chart.draw(data, options);
-    }
-
-
+ 
 	function createContentTabs(observable){ 
 		$('#nav-tabstrip a[data-toggle="tab"]').on('show.bs.tab', function (e) {
 			var url = $(this).attr("href"); // the remote url for content
@@ -400,11 +372,9 @@
 			var tab = $(this); // this tab 
 			if(url === '#nav-issues'){
 				createIssueGrid(observable);
-			}else if (url === '#nav-info'){ 
-				//createProjectListView(observable);		
+			}else if (url === '#nav-info'){  
 				createProjectInfo(observable)
-			}
-			//community.ui.send("<@spring.url "" />"+ url ); 
+			} 
 		});
 		
 		// Select first tab
@@ -475,61 +445,220 @@
 	function createProjectInfo(observable){ 
 		var renderTo = $('#nav-info');
 		if( !community.ui.defined(renderTo.data('init')) ){
-			console.log('project info init...');
-			
+			console.log('project info init...'); 
 			renderTo.data('init', true);
 			renderTo.find('a[data-toggle="tab"]').on('shown.bs.tab', function (e) { 
 				var url = $(this).attr("href"); // the remote url for content
-				var targetTo = $(url +' .grid')
+				var targetTo = $(url +' .grid');
 				var targetAction = $(e.target).data('kind');  
 				if(targetAction === 'task'){
 						createProjectTaskGrid(targetTo, observable.project).dataSource.read();
 				}else if (targetAction === 'stats'){  
-					if( !community.ui.defined( $($(e.target).attr('href')).data('load') ) ){ 
-						createProjectPieAndLineChart(observable);
-				  		$($(e.target).attr('href')).data('load', true);
-					} 
+					createProjectStateSummaryAsChart(observable);
+					createProjectIssueStateAsChart(observable);
 				}else if (targetAction === 'attachment'){  
-					createProjectAttachments(targetTo, observable.project ).dataSource.read();	
+					createProjectAttachments(targetTo, observable ).dataSource.read();	
 				}else if (targetAction === 'scm'){  
 					createProjectScmGrid(targetTo, observable.project ).dataSource.read();
+				}else if (targetAction === 'wiki'){  
+					createWikiEditor ( url,  $('#wiki-editor'), observable );
 				}
-			});  
-			
+			}); 
 			$('#nav-info').find('a[data-toggle="tab"]:first').tab('show');
 		}
 	}
 	
+	function createWikiCodeEditor( observable ){
+		var renderTo = $("#wiki-code-editor");
+		if( renderTo.contents().length == 0 ){ 
+			var editor = ace.edit(renderTo.attr("id"));		
+			editor.getSession().setMode("ace/mode/html");
+			editor.getSession().setUseWrapMode(true);
+		}
+		return ace.edit(renderTo.attr("id"));
+	}
+		
+	function createWikiEditor( url, renderTo, observable ){
+		if( !community.ui.exists( renderTo ) ){  
+			var editor = community.ui.editor(renderTo, {
+				tools: [
+				"bold",
+                "italic",
+                "underline",
+                "strikethrough",
+                "justifyLeft",
+                "justifyCenter",
+                "justifyRight",
+                "justifyFull",
+                "insertUnorderedList",
+                "insertOrderedList",
+                "indent",
+                "outdent",
+                "createLink",
+                "unlink",
+                "insertImage",
+                "insertFile",
+                "subscript",
+                "superscript",
+                "tableWizard",
+                "createTable",
+                "addRowAbove",
+                "addRowBelow",
+                "addColumnLeft",
+                "addColumnRight",
+                "deleteRow",
+                "deleteColumn",
+                "formatting",
+                "cleanFormatting",
+                "fontName",
+                "fontSize",
+                "foreColor",
+                "backColor",
+                "print"
+			],
+			stylesheets: [
+			"<@spring.url "/css/bootstrap.theme/unify/unify-core.css"/>",
+			"<@spring.url "/css/bootstrap.theme/unify/unify-components.css"/>",
+			"<@spring.url "/css/bootstrap.theme/unify/unify-globals.css"/>",
+			"<@spring.url "/css/bootstrap.theme/unify/custom.css"/>"
+            ]}); 
+            
+			community.ui.progress($('body'), true);	
+			community.ui.ajax( '<@spring.url "/data/apis/projects/"/>' + observable.project.projectId + '/wiki/get.json', {
+				success: function(response){	 
+					if( response.error ){ 
+						return;
+					}
+					
+					var newWiki = new community.model.Wiki(response );
+					if( newWiki.get("objectType") <= 0 ){
+						newWiki.set("objectType", 19);
+					}
+					if(newWiki.get("objectId") <= 0 ){
+						newWiki.set("objectId", observable.project.projectId );
+					}
+					
+					newWiki.copy( observable.wiki );  
+					editor.value(observable.wiki.bodyContent.bodyText);
+				}	
+			}).always( function () {
+				community.ui.progress($('body'), false);
+			});
+			
+			$( url +' button.edit').click(function(e){ 
+				editor.value(observable.wiki.bodyContent.bodyText);
+				observable.set('editable', true );
+				$('#wiki-nav-tab a:first').tab('show');
+			});
+			
+			$( url +' button.cancle').click(function(e){ 
+				observable.set('editable', false );
+			});
+			
+			$( url +' button.update').click(function(e){  
+				if($('#wiki-nav-tab a.active').attr('href') == '#wiki-nav-editor'){
+					observable.wiki.bodyContent.bodyText = editor.value();
+				}else{
+					observable.wiki.bodyContent.bodyText = createWikiCodeEditor( observable ).getValue() ;
+				} 
+				observable.saveOrUpdateWiki();
+			}); 
+			
+			$('#wiki-nav-tab a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+				e.target // newly activated tab
+				e.relatedTarget // previous active tab 
+				var url = $(this).attr("href");
+				if( url == '#wiki-nav-editor2' ){
+					//createWikiCodeEditor( observable ).setValue(observable.wiki.bodyContent.bodyText);
+					createWikiCodeEditor( observable ).setValue(editor.value());
+				}else if ( url == '#wiki-nav-editor' ){
+					editor.value( createWikiCodeEditor( observable ).getValue() );
+				}
+			}); 			
+		}
+	}
+	
+	
 	/** project attachments */
-	function createProjectAttachments ( renderTo , project ){
-		if( !community.ui.exists( renderTo ) ){	 
+	function createProjectAttachments ( renderTo , observable ){
+		if( !community.ui.exists( renderTo ) ){	   
  			var grid = community.ui.grid( renderTo , {
 				dataSource: community.ui.datasource('<@spring.url "/data/api/v1/attachments/list.json"/>', {
 					transport : {
+						destroy: {
+							url: "/Products/Destroy",
+							type:'post', contentType: "application/json; charset=utf-8"
+						},
 						parameterMap :  function (options, operation){
-							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 19 , objectId : project.projectId }
+							return { startIndex: options.skip, pageSize: options.pageSize, objectType : 19 , objectId : observable.project.projectId }
 						}
 					},
-					pageSize: 10,
+					pageSize: 50,
+					serverSorting:false,
 					schema: {
 						total: "totalCount",
 						data: "items",
 						model : community.model.Attachment
 					}
 				}),  
+				autoBind : false,
+				selectable : 'row',
 				pageable: false, 
-				sortable: false,
+				sortable: true,
 				filterable: false, 
 				columns: [
-					{ field: "name", title: "&nbsp;", width: 70, filterable: false, sortable: false , template : $('#thumbnail-column-template').html(), attributes:{ class:"text-center" }},
-					{ field: "name", title: "파일", filterable: false, sortable: true , template : $('#filename-column-template').html(), attributes:{ class:"g-font-size-14" } },
-					{ field: "size", title: "크기(Byte)", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(data.size) #', attributes:{ class:"text-right" } }
+					{ field: "attachmentId", title: "&nbsp;", width: 70, filterable: false, sortable: false , template : $('#thumbnail-column-template').html(), attributes:{ class:"text-center g-pa-10" }},
+					{ field: "name", title: "이름", filterable: false, sortable: true , template : $('#filename-column-template').html(), attributes:{ class:"text-left g-font-size-14" } }, 
+					{ field: "modifiedDate", title: "수정일", sortable: true , format: "{0:yyyy.MM.dd}",  width: 100 , media: "(min-width: 992px)" },
+					{ field: "size", title: "크기(Byte)", filterable: false, sortable: true, width: 150, media: "(min-width: 992px)", template:'#= community.data.getFormattedNumber(data.size) #', attributes:{ class:"text-right" } }
+					<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >		
+					,{ field: "size", title: "&nbsp;", filterable: false, sortable: false, width: 70,  template:'<a href="\\#!" class="k-grid-delete  g-font-size-16 g-color-red--hover" data-object-id="#= attachmentId #" ><i class="icon-hotel-restaurant-214 u-line-icon-pro"></i><a>', attributes:{ class:"text-center" } }
+					
+					</#if>
 				]		
-			});  	
+			});   
+			createProjectFileUpload(observable, grid );
+			renderTo.on("click", "a.k-grid-delete", function(e){		
+				var $this = $(this); 
+				if( confirm("파일을 삭제하시겠습까?") ){
+					community.ui.progress(renderTo, true);  
+					community.ui.ajax( '<@spring.url "/data/apis/projects/" />' + observable.project.projectId + '/attachments/' + $this.data("object-id") + '/remove.json', {
+						contentType : "application/json",
+						data : community.ui.stringify({}) ,
+						success : function(response){		
+							grid.dataSource.read();				
+						}
+					}).always( function () {
+						community.ui.progress(renderTo, false);
+					});
+				}		
+				return false; 
+			});			
 		}
 		return community.ui.grid( renderTo );
 	}
 	
+	
+	function createProjectFileUpload( observable, grid ){ 
+		var renderTo = $('#project-file-upload');
+		if( !community.ui.exists( renderTo ) ){	
+			community.ui.upload( renderTo, {
+				enabled: true,
+		        async: {
+		            saveUrl: '<@spring.url "/data/apis/projects/" />' + observable.project.projectId + '/attachments/upload.json',
+		            autoUpload: true
+		        },
+		        dropZone: ".dropZoneElement.file",
+		        success: function(e){ 
+		        	grid.dataSource.read();		
+		        }
+		    }); 
+		    $('.dropZoneElement.file').click(function(e){
+		    	renderTo.click();
+		    });
+		} 
+	}
+		
 	/** project scm  */
 	function createProjectScmGrid ( renderTo, data ){
 		if( !community.ui.exists( renderTo ) ){		 
@@ -615,106 +744,226 @@
 					{ field: "startDate", title: "시작일" , format: "{0:yyyy.MM.dd}", width: 100},
 					{ field: "endDate", title: "종료일", format: "{0:yyyy.MM.dd}",  width: 100 },
 					{ field: "progress", title: "진행율", width: 80  },
-					{ field: "description", title: "설명"  }
+					{ field: "description", title: "설명" , template : "#if(description != null){ ##= community.data.replaceLineBreaksToBr(description) # #}#"  }
 				]
 			}); 
  		}
  		return community.ui.grid( renderTo );
+ 	} 
+ 	
+ 	function createProjectIssueTypeAsChart( renderTo, title, data ){  
+			renderTo.kendoChart({
+                title: {
+                    position: "top",
+                    text: title
+                },
+                legend: {
+                    visible: false
+                },
+                chartArea: {
+                    background: ""
+                },
+                seriesDefaults: {
+                	type: "radarArea" 
+                },
+                series: [{ 
+                    name: "OPEN",
+                    categoryField: "category",
+                    field: "value",
+                    data: data
+                }],
+                tooltip: {
+                    visible: true,
+                    format: "${0} 건" 
+                }
+            }); 
  	}
-	function createProjectPieAndLineChart(observable){
- 		var data = new google.visualization.DataTable();
-		data.addColumn('string', '유형');
-		data.addColumn('number', '건수');
-		$.each(observable.project.issueTypeStats.items , function(index, item ){				
-							switch (item.name) {
-								case "001" :
-									data.addRow(['오류', item['value'] ]);
-									break;
-								case "002" :
-									data.addRow(['데이터작업', item.value ]);
-									break;
-								case "003" :
-									data.addRow(['기능변경', item['value'] ]);
-									break;
-								case "004" :
-									data.addRow(['추가개발', item['value'] ]);	
-									break;
-								case "005" :
-									data.addRow(['기술지원', item['value'] ]);
-									break;
-								case "006" :
-									data.addRow(['영업지원', item['value'] ]);
-									break;
-								default :
-									break;
+ 	
+ 	function createProjectStateSummaryAsChart(observable){
+ 		var renderTo = $("#project_piechart_1");
+ 		if( !community.ui.exists( renderTo ) ){	 
+			community.ui.ajax( '<@spring.url "/data/apis/projects/"/>' + observable.project.projectId + '/stats/summary.json', {
+					data: community.ui.stringify({}),
+					contentType : "application/json",		
+					success : function(response){ 
+						console.log( response ) ;
+						createProjectIssueTypeAsChart( renderTo, "이슈유형", response.issueTypeStats.items );
+						createProjectIssueTypeAsChart( $("#project_piechart_2"), "완료유형", response.issueResolutionStats.items );
+						observable.set('totalIssueCount', response.issueTypeStats.total );
+						observable.set('closeIssueCount', response.issueResolutionStats.total );
+						observable.set('openIssueCount', observable.get('totalIssueCount') - observable.get('closeIssueCount' ) );
+						$.each(response.issueTypeStats.items , function (index, item ){
+							if ( item.name == '001' ){
+								observable.set('errorIssueCount', item.value );	
+								return false;
 							}
-		} );
-		google.charts.setOnLoadCallback(drawPieChart('project_piechart_div', data)); 
-		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >					
-		community.ui.progress($('#project_linechart_div'), true);
-		community.ui.ajax('/data/api/v1/issues/overviewstats/monthly/stats/list.json', {
-			contentType : "application/json",	
-			data: community.ui.stringify({
-				data : { projectId : observable.project.projectId },
-				filter : { filters : [ 
-					{ field: "T2.PROJECT_ID", operator: "eq", value: observable.project.projectId , logic: "AND" }
-				]}
-			}),
-							success: function(response){	 
-								data = new google.visualization.DataTable();
-								data.addColumn('string', '월');
-								data.addColumn('number', '오류');
-								data.addColumn('number', '데이터작업');
-								data.addColumn('number', '기능변경');
-								data.addColumn('number', '추가개발');
-								data.addColumn('number', '기술지원');
-								data.addColumn('number', '영업지원');
-					
-								data.addColumn('number', '요청');
-								data.addColumn('number', '완료');
-								
-								$.each(response.items, function( index, item ) {				
-									data.addRow([ item.month + '월', item['aggregate']['001'],item['aggregate']['002'],item['aggregate']['003'],item['aggregate']['004'],item['aggregate']['005'],item['aggregate']['006'],
-									item['aggregate']['001']+item['aggregate']['002']+item['aggregate']['003']+item['aggregate']['004']+item['aggregate']['005']+item['aggregate']['006'],
-									item['aggregate']['000']
-									]);
-								});
-								google.charts.setOnLoadCallback(drawLineChart('project_linechart_div', data));				
-			}	
-		}).always( function () {
-			community.ui.progress($('#project_linechart_div'), false);
-		});	
-		</#if>			
+						});
+					}
+			}).always( function () {
+			});
+ 		}
  	}
-	
-	 					 					
-	/**
-	 * Drawing Charting .
-	 */
-	function drawLineChart(elementId, data) {
-        var options = {
-          title: '',
-          subtitle: '완료건은 해당기간에 요청된 이슈들에 대한 완료 건입니다.',
-          series : {
-          	0: {lineDashStyle: [10,2], lineWidth: 2  },
-          	1: {lineDashStyle: [10,2], lineWidth: 2  },
-          	2: {lineDashStyle: [10,2], lineWidth: 2  },
-          	3: {lineDashStyle: [10,2], lineWidth: 2  },
-          	4: {lineDashStyle: [10,2], lineWidth: 2  },
-          	5: {lineDashStyle: [10,2], lineWidth: 2  },
-          	6: { lineWidth: 4  },
-          	7: { lineWidth: 4  }
-          },
-         axes: {
-          x: {
-            0: {side: 'top'}
-          }
-         }
-        };
-        var chart = new google.visualization.LineChart(document.getElementById(elementId));
-        chart.draw(data, options);
-    }
-        	
+ 	
+ 	function createProjectIssueStateAsChart(observable){  
+ 		var renderTo = $("#project_linechart_div");
+ 		if( !community.ui.exists( renderTo ) ){		 
+			renderTo.kendoChart({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '<@spring.url "/data/apis/stats_assinee_by_monthly.json"/>', 
+                            type:'post', 
+                            contentType: "application/json; charset=utf-8", 
+                            dataType: 'json'
+                        },
+                        parameterMap : function (options, operation){		
+							return community.ui.stringify(options);
+						}
+                    }, 
+					filter : { filters : [ 
+								{ logic: 'AND', field: "T1.OBJECT_ID", operator: "eq", value: observable.project.projectId }
+					]}, 
+                    sort: {
+                        field: "month",
+                        dir: "asc"
+                    },
+                    serverFiltering : true,
+                    schema: {
+						total: "totalCount",
+						data:  "items"
+					}
+                }, 
+                title: {
+                    text: "월별 이슈 현황"
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    type: "line"
+                },
+                series: [{
+                	type: "line",
+                	style: "smooth", 
+                	color: "red",
+                	axis: "open",
+                    field: "aggregate['001'].value",
+                    categoryField: "month",
+                    name: "오류"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['002'].value",
+                    categoryField: "month",
+                    name: "데이터작업"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['003'].value",
+                    categoryField: "month",
+                    name: "기능변경"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['004'].value",
+                    categoryField: "month",
+                    name: "추가개발"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['005'].value",
+                    categoryField: "month",
+                    name: "기술지원"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['006'].value",
+                    categoryField: "month", 
+                    name: "영업지원"
+                },
+                {
+                	type: "area",
+                	axis: "open",
+                	style: "smooth", 
+                    field: "totalCount",
+                    categoryField: "month",
+                    name: "OPEN"
+                },
+                {
+                	type: "area",
+                	axis: "closed",
+                	style: "smooth", 
+                	color: "#ccc",
+                    field: "closedCount",
+                    categoryField: "month",
+                    name: "CLOSED"
+                }],
+                categoryAxis: {
+                    labels: {
+                        rotation: -90
+                    },
+                    crosshair: {
+                        visible: true
+                    }
+                },
+                valueAxis: [{
+                	name : "open",
+                	title: { text: "OPEN" },
+                    labels: {
+                        format: "N0"
+                    },
+                    majorUnit: 5
+                },
+                {
+                	name : "closed",
+                	title: { text: "CLOSED" },
+                    labels: {
+                        format: "N0"
+                    },
+                    color: "#ccc",
+                    majorUnit: 5
+                }],
+                tooltip: {
+                    visible: true,
+                    shared: true,
+                    format: "N0"
+                }
+            }); 
+            
+			$('a[data-action=export][data-target]').click(function(){
+				var $this = $(this);
+				var target = $($this.data('target')); 
+				kendo.drawing.drawDOM(target)
+		        .then(function(group) {
+		            // Render the result as a PDF file
+		            return kendo.drawing.exportPDF(group, {
+		                paperSize: "auto",
+		                margin: { left: "1cm", top: "1cm", right: "1cm", bottom: "1cm" }
+		            });
+		        })
+		        .done(function(data) {
+		            // Save the PDF file
+		            kendo.saveAs({
+		                dataURI: data,
+		                fileName: observable.project.name + "_현황.pdf",
+		                proxyURL: "<@spring.url "/download/proxy"/>"
+		            });
+		        }); 
+            });
+            
+		}
+ 	}
+ 	    	
 	function send ( issue ) {
 		community.ui.send("<@spring.url "/display/pages/issue.html" />", { projectId: issue.objectId, issueId: issue.issueId });
 	}
@@ -745,6 +994,7 @@
 					{ field: "name", title: "&nbsp;", width: 70, filterable: false, sortable: false , template : $('#thumbnail-column-template').html(), attributes:{ class:"text-center" }},
 					{ field: "name", title: "파일", filterable: false, sortable: true , template : $('#filename-column-template').html(), attributes:{ class:"g-font-size-14" } },
 					{ field: "size", title: "크기(Byte)", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(data.size) #', attributes:{ class:"text-right" } }
+					
 				]		
 			});  
 			var renderTo2 = $('#project-view-modal-tabs--2 .grid') ; 
@@ -766,10 +1016,7 @@
 		 				
  		}
  		renderTo.modal('show');
- 	}
- 	
- 
-
+ 	} 
  	
  	function createOrOpenIssueBatchEditor (parent, data){ 	
  		var renderTo = $('#isses-update-modal');
@@ -785,8 +1032,8 @@
 					$this.set('resolutionDate', new Date());
 					$this.issues.data(data);
  				},
- 				statusDataSource : parent.statusDataSource,
- 				resolutionDataSource : parent.resolutionDataSource,
+ 				statusData : parent.statusData,
+ 				resolutionData : parent.resolutionData,
  				issues: community.ui.datasource_v2({
  				    data:[]
 		        }),
@@ -832,6 +1079,21 @@
  			
 	</script>
 	<style>
+	@font-face {
+	  font-family: "DejaVu Sans";
+	  font-style: normal;
+	  font-weight: 300;
+	  src: url(<@spring.url "/fonts/nanumgothic/v3/"/>NanumGothic-Regular.eot);
+	  src: url(<@spring.url "/fonts/nanumgothic/v3/"/>NanumGothic-Regular.eot?#iefix) format('embedded-opentype'),
+	       url(<@spring.url "/fonts/nanumgothic/v3/"/>NanumGothic-Regular.woff) format('woff'),
+	       url(<@spring.url "/fonts/nanumgothic/v3/"/>NanumGothic-Regular.ttf) format('truetype');
+	}
+	/*
+            Use the DejaVu Sans font for display and embedding in the PDF file.
+            The standard PDF fonts have no support for Unicode characters.
+	*/
+    .k-chart {font-family: "DejaVu Sans", "Arial", sans-serif;}	
+    	
 	.k-checkbox-label, .k-radio-label {
     	padding-left: 16px;
     }	
@@ -953,7 +1215,7 @@
 	<section id="features"> 
  	<!-- tabs -->
 	<div class="u-shadow-v19 g-bg-gray-light-v5">
-		<section class="container g-py-30 g-pos-rel" data-bind="visible:visible" style="display:none;">
+		<section class="container g-py-30 g-pos-rel">
 			 <nav id="nav-tabstrip" class="g-font-weight-400" >
 			  <div class="nav justify-content-center text-uppercase u-nav-v5-1 u-nav-dark g-line-height-1_4" id="nav-tab" role="tablist"> 
 			    <a class="nav-item nav-link g-px-25" id="nav-issues-tab" data-toggle="tab" href="#nav-issues" role="tab" aria-controls="nav-issues" aria-selected="true"><i class="icon-finance-222 u-line-icon-pro"></i> 이슈</a>
@@ -963,10 +1225,16 @@
 			    <button class="btn u-btn-outline-darkgray btn-md g-pos-abs" style="right:0px;" data-bind="click:back" data-toggle="tooltip" data-placement="top" data-original-title="이전 페이지로 이동합니다." style="">이전</button>
 			  </div>
 			</nav>	
+			<!-- pre image before loading --> 
+			<div data-bind="invisible: visible" style="width: 100%; height: 100%; top: 0px; left: 0px;">
+				<span class="k-loading-text">Loading...</span>
+				<div class="k-loading-image"></div>
+				<div class="k-loading-color"></div>
+			</div>		
 		</section>
 	</div>
 	<!-- /.tabs -->
-	<div class="tab-content g-min-height-400" id="nav-tabContent">
+	<div class="tab-content g-min-height-500 g-bg-gray-light-v5" id="nav-tabContent">
 		<!-- project issues tab content -->
 		<div class="tab-pane fade" id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab" >
 		<!-- Filter -->
@@ -981,7 +1249,7 @@
 					data-value-primitive="true"
 					data-text-field="name"
 					data-value-field="code"
-					data-bind="source:issueTypeDataSource, value:filter.ISSUE_TYPE, visible:visible"
+					data-bind="source:issueTypeData, value:filter.ISSUE_TYPE, visible:visible"
 					style="width:100%; display:none;"/>	
               <!-- End 요청구분 --> 
             </div> 
@@ -993,7 +1261,7 @@
 					data-value-primitive="true"
 					data-text-field="name"
 					data-value-field="code"
-					data-bind="source: priorityDataSource, value:filter.PRIORITY, visible:visible"
+					data-bind="source: priorityData, value:filter.PRIORITY, visible:visible"
 					style="width:100%; display:none;"/>	
               
               <!-- End 우선순위 -->
@@ -1007,7 +1275,7 @@
 					data-value-primitive="true"
 					data-text-field="name"
 					data-value-field="code"
-					data-bind="source:resolutionDataSource, value:filter.RESOLUTION, visible:visible"
+					data-bind="source:resolutionData, value:filter.RESOLUTION, visible:visible"
 					style="width:100%; display:none;"/>	
               
               <!-- End 처리결과 -->
@@ -1032,7 +1300,7 @@
 					data-value-primitive="true"
 					data-text-field="name"
 					data-value-field="code"
-					data-bind="source:statusDataSource, value:filter.ISSUE_STATUS, visible:visible"
+					data-bind="source:statusData, value:filter.ISSUE_STATUS, visible:visible"
 					style="width: 100%; display:none;"/>
               <!-- End 상태 -->
             </div> 
@@ -1058,7 +1326,7 @@
 					data-text-field="taskName"
 					data-value-field="taskId"
 					data-value-primitive="true" 
-					data-bind="value:filter.TASK, source: taskDataSource, visible:visible" 
+					data-bind="value:filter.TASK, source: taskData, visible:visible" 
 					style="width: 100%;display:none;"/>
 							                   
 			  	</div>
@@ -1077,7 +1345,7 @@
 			<div class="row"> 
 	            <div class="col-lg-6">
 					<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	 
-					<div class="btn-group">
+					<div class="g-pb-5">
 					<a class="btn btn-md u-btn-3d u-btn-outline-blue g-px-25 g-py-9" href="#!" style="display:none;" role="button" data-object-id="0" data-action="update" data-action-target="issue" 
 					data-toggle="tooltip" data-placement="bottom" data-original-title="체크된 이슈들의 상태를 한꺼번에 변경할 수 있습니다." data-bind="visible:isDeveloper">이슈상태변경</a>
 					<a class="btn btn-md u-btn-3d u-btn-outline-blue g-px-25 g-py-9" href="#!" style="display:none;" role="button" 
@@ -1115,41 +1383,39 @@
 						</h4>
 					</div>  
 					<!-- /.heading --> 
-					<div class="row">
-		                <div class="col-md-8 g-mb-30 g-brd-2 g-brd-blue">
-							<div id="chart_div" style="width: 100%; height:100px;"></div> 
-						</div>
-						<div class="col-md-4 g-mb-30 g-font-size-14">
-		                  <!-- List -->
-		                  <ul class="list-unstyled g-color-text g-font-weight-400">
-							<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-		                      <span>계약자:</span>
-		                      <span class="float-right g-color-black" ><#if __project?? >${ CommunityContextHelper.getCodeSetService().getCodeSetByCode("CONTRACTOR", __project.contractor).name }</#if></span>
-		                    </li>
-							<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-		                      <span>계약상태:</span>
-		                      <span class="float-right g-color-black" ><#if ( __project??  &&  __project.contractState?? ) >${ CommunityContextHelper.getCodeSetService().getCodeSetByCode("PROJECT", __project.contractState).name }</#if></span>
-		                    </li>                    
-							<li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-		                      <span>비용(월):</span>
-		                      <span class="float-right g-color-black" ><#if __project?? >${__project.maintenanceCost?string.currency}</#if></span>
-		                    </li>
-		                    <li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-		                      <span>시작일:</span>
-		                      <span class="float-right g-color-black" ><#if __project?? >${__project.startDate?string["yyyy.MM.dd"]}</#if></span>
-		                    </li>
-		                     <li class="g-brd-bottom--dashed g-brd-gray-light-v3 pt-1 mb-3">
-		                      <span>종료일:</span>
-		                      <span class="float-right g-color-black"><#if __project?? >${__project.endDate?string["yyyy.MM.dd"]}</#if></span>
-		                    </li>                   
-		                  </ul>
-		                  <!-- End List -->
-						</div>
-					</div>  
+					<!-- start project details -->
+					
+				<div class="table-responsive">
+                <table class="table table-bordered u-table--v2 g-font-size-14">
+                  <thead class="text-uppercase g-letter-spacing-1">
+                    <tr>
+                      <th class="g-font-weight-300 g-color-black g-min-width-200">계약자</th>
+                      <th class="g-font-weight-300 g-color-black g-min-width-200">계약상태</th>
+                      <th class="g-font-weight-300 g-color-black g-min-width-200">비용</th>
+                      <th class="g-font-weight-300 g-color-black g-width-100">시작일</th>
+                      <th class="g-font-weight-300 g-color-black g-width-100">종료일</th>
+                    </tr>
+                  </thead> 
+                  <tbody>
+                    <tr class="g-bg-white">
+                      <td class="align-middle text-nowrap"><#if __project?? >${ CommunityContextHelper.getCodeSetService().getCodeSetByCode("CONTRACTOR", __project.contractor).name }</#if></td>
+                      <td class="align-middle"><#if ( __project??  &&  __project.contractState?? ) >${ CommunityContextHelper.getCodeSetService().getCodeSetByCode("PROJECT", __project.contractState).name }</#if></td>
+                      <td class="align-middle"><#if __project?? >${__project.maintenanceCost?string.currency}</#if></td>
+                      <td class="align-middle"><#if __project?? >${__project.startDate?string["yyyy.MM.dd"]}</#if></td>
+                      <td class="align-middle text-nowrap"><#if __project?? >${__project.endDate?string["yyyy.MM.dd"]}</#if></td>
+                    </tr>
+                  </tbody>
+                </table>
+				</div>		
+					<!-- /. end project details -->
 					<!-- Nav tabs -->
 					<ul class="nav justify-content-end u-nav-v5-3 u-nav-dark g-brd-bottom--md g-brd-gray-light-v4 g-font-weight-500 g-font-size-16" role="tablist" data-target="project-view-modal-tabs" data-tabs-mobile-type="slide-up-down" data-btn-classes="btn btn-md btn-block rounded-0 u-btn-outline-darkgray">
+
 					  <li class="nav-item">
-					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--1" role="tab" data-kind="attachment">관련자료</a>
+					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--5" role="tab" data-kind="wiki">WIKI</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--1" role="tab" data-kind="attachment">파일</a>
 					  </li>
 					  <li class="nav-item">
 					    <a class="nav-link" data-toggle="tab" href="#project-view-modal-tabs--2" role="tab" data-kind="task">과업</a>
@@ -1166,11 +1432,21 @@
 			</div>
 		
 			<div class="g-bg-white" >
-				<div class="container-fluid">
+				<div class="container g-py-15">
 					<div class="row">
 						<!-- Tab panes -->
 						<div id="project-view-modal-tabs" class="tab-content g-pt-0">
 							<div class="tab-pane fade" id="project-view-modal-tabs--1" role="tabpanel">
+								<section class="g-my-10">
+									<div class="dropZoneElement file u-dropzone u-file-attach-v3 g-mb-15 dz-clickable">
+								                <div class="textWrapper">
+									                <p class="g-color-primary btn g-font-size-24"><i class="icon-communication-039 u-line-icon-pro "></i></p>
+									                <h3 class="g-font-size-16 g-font-weight-400 g-color-gray-dark-v2 mb-0">업로드할 파일은 이곳에 드레그 <span class="g-color-primary">Drag &amp; Drop</span> 하여 놓아주세요.</h3>
+									                <p class="g-font-size-14 g-color-gray-light-v2 mb-0">최대파일 크기는 10MB 입니다.</p>
+												</div>
+									</div>
+									<input name="project-files" id="project-file-upload" type="file"/>
+								</section> 
 								<div class="grid"></div> 
 							</div> 
 							<div class="tab-pane fade" id="project-view-modal-tabs--2" role="tabpanel">
@@ -1182,7 +1458,11 @@
 							<div class="tab-pane fade" id="project-view-modal-tabs--4" role="tabpanel">
 								<div class="row">
 									<div class="col-lg-6">
-										<div id="project_piechart_div" style="width: 100%; height:200px;"></div>
+										<a class="u-link-v5 g-color-gray-dark-v4 g-color-gray-light-v6 g-color-secondary--hover g-mr-15 g-font-weight-300" href="#!" 
+											data-action="export"
+											data-target="#project-view-modal-tabs--4" >
+											<i class="icon-share-alt g-font-size-18"></i> SAVE AS PDF
+										</a>
 									</div>
 									<div class="col-lg-6">
 									<div class="g-pt-30 text-center">			
@@ -1197,6 +1477,14 @@
 									</div> 
 									</div>
 								</div> 	
+								
+								
+								<!-- piechart -->
+								<div class="row">
+									<div class="col-lg-6"><div id="project_piechart_1" style="width: 100%;"></div></div>
+									<div class="col-lg-6"><div id="project_piechart_2" style="width: 100%;"></div></div>
+								</div>								
+								<!-- end piechart -->
 								<!-- linechart -->
 								<div class="row">
 									<div class="col-sm-12" >
@@ -1204,6 +1492,56 @@
 									</div>
 								</div>
 								<!-- end linechart -->	 
+							</div> 
+							<div class="tab-pane fade g-pa-15" id="project-view-modal-tabs--5" role="tabpanel">
+								
+								<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
+								<div class="text-right">
+									<button class="btn u-btn-blue u-btn-3d g-mr-10 g-mb-15 edit" type="button" role="button" data-bind="invisible:editable" >수정</button>
+								</div> 
+								</#if>
+								
+								<div class="row" data-bind="visible:editable" >
+									<div class="col-md-8">
+										<div class="form-group g-mb-20">
+											<input type="text" name="issue-requestor-name" class="form-control form-control-md" placeholder="문서 이름을 입력하세요." data-bind="value: wiki.title, enabled:editable">
+										</div> 
+									</div>
+									<div class="col-md-4"> 
+										<select class="form-control form-control-md g-pos-rel" data-bind="value: wiki.wikiState" style="width: 180px">
+											<option value="INCOMPLETE">INCOMPLETE</option>
+											<option value="APPROVAL">APPROVAL</option>
+											<option value="PUBLISHED">PUBLISHED</option>
+											<option value="REJECTED">REJECTED</option>
+											<option value="ARCHIVED">ARCHIVED</option>
+											<option value="DELETED">DELETED</option>
+											<option value="NONE">NONE</option>
+										</select>									
+									</div>
+								</div>
+								<article>
+									<h1 data-bind="html: wiki.title, invisible:editable" style=""></h1>
+									<div class="content-body g-min-height-500" data-bind="html: wiki.bodyContent.bodyText, invisible:editable"></div>
+								</article> 
+								<section data-bind="visible:editable" style="">
+								<div class="nav nav-tabs g-mb-5 g-px-15 g-font-size-14 g-font-weight-400" id="wiki-nav-tab" role="tablist">
+									<a class="nav-item nav-link active show" id="wiki-nav-editor-tab" data-toggle="tab" href="#wiki-nav-editor" role="tab" aria-controls="wiki-nav-editor" aria-selected="true">글쓰기</a>
+									<a class="nav-item nav-link" id="wiki-nav-editor2-tab" data-toggle="tab" href="#wiki-nav-editor2" role="tab" aria-controls="wiki-nav-editor2" aria-selected="true">코드</a>
+								</div> 
+								<div class="tab-content" id="wiki-editor-nav-tabcontent">
+									<div class="tab-pane fade active show" id="wiki-nav-editor" role="tabpanel" aria-labelledby="wiki-nav-editor-tab">
+									<textarea id="wiki-editor" rows="10" cols="30" style="height:500px" aria-label="wiki-editor" ></textarea> 
+									</div>
+									<div class="tab-pane fade" id="wiki-nav-editor2" role="tabpanel" aria-labelledby="wiki-nav-editor2-tab">
+									<div id="wiki-code-editor" style="min-height:577px;"></div>
+									</div>
+								</div>
+								</section> 
+								<div class="g-mt-15 text-right">
+									<button class="btn u-btn-outline-blue g-mr-10 g-mb-15 cancle" type="button" role="button" data-bind="visible:editable" >취소</button>
+									<button class="btn u-btn-outline-blue g-mr-10 g-mb-15 update" type="button" role="button" data-bind="visible:editable" >저장</button>
+								</div>
+								
 							</div> 
 						</div>
 						<!-- End Tab panes --> 		
@@ -1235,7 +1573,7 @@
 	# }else if( contentType === "application/pdf" || contentType === "application/vnd.openxmlformats-officedocument.presentationml.presentation" ){ #		
 	<img class="g-brd-around g-brd-gray-light-v4 g-width-50 g-height-50" src="#= community.data.getAttachmentThumbnailUrl( data, true) #" />
 	# } else { #			
-	<i class="icon-svg icon-svg-sm icon-svg-dusk-attach m-t-xs"></i>
+	<i class="icon-communication-117 u-line-icon-pro"></i>
 	# } #  
     </a>
     </script>	
@@ -1330,7 +1668,7 @@
 			                   data-value-primitive="true"
 			                   data-text-field="name"
 			                   data-value-field="code"
-			                   data-bind="value:issueStatus, source:statusDataSource"
+			                   data-bind="value:issueStatus, source:statusData"
 			                   style="width: 100%;"/>
 							<small class="form-text text-muted g-font-size-default g-mt-10">작업 진행 상태 변경이 있는 경우 선택하여 주세요.</small>
                 			</div>
@@ -1345,7 +1683,7 @@
 							    data-value-primitive="true"
 							    data-text-field="name"
 						        data-value-field="code"
-						        data-bind="value:resolution, source:resolutionDataSource"
+						        data-bind="value:resolution, source:resolutionData"
 						        style="width: 100%;" />
 							<small class="form-text text-muted g-font-size-default g-mt-10">작업이 완료된 경우 결과를 선택하여 주세요.</small>
                 			</div>

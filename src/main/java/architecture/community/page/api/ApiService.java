@@ -1,5 +1,9 @@
 package architecture.community.page.api;
 
+import java.util.List;
+
+import architecture.community.page.PathPattern;
+
 public interface ApiService {
 
 	public Api getApiById( long apiId ) throws ApiNotFoundException; 
@@ -9,5 +13,7 @@ public interface ApiService {
 	public void deleteApi( Api api ) ;
 	
 	public void saveOrUpdate(Api api);
+	
+	public List<PathPattern> getPathPatterns(String prefix);
 	
 }

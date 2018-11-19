@@ -70,14 +70,14 @@ public class DisplayController {
 	private ViewCountService viewCountService;
 	
 	@RequestMapping(value = "/pages/{filename:.+}", method = { RequestMethod.POST, RequestMethod.GET })
-    public String page (
-    		@PathVariable String filename,
-    		@RequestParam(value = "version", defaultValue = "1", required = false) int version,
-    		@RequestParam(value = "preview", defaultValue = "false", required = false) boolean preview,
-	    HttpServletRequest request, 
-	    HttpServletResponse response, 
-	    Model model) 
-	    throws NotFoundException, UnAuthorizedException {	
+	public String page (
+			@PathVariable String filename,
+			@RequestParam(value = "version", defaultValue = "1", required = false) int version,
+			@RequestParam(value = "preview", defaultValue = "false", required = false) boolean preview,
+		HttpServletRequest request, 
+		HttpServletResponse response, 
+		Model model) 
+		throws NotFoundException, UnAuthorizedException {	
 		
 		log.debug("page : {} {}", filename, version );
 		Page page = pageService.getPage(filename, version);	
@@ -110,12 +110,13 @@ public class DisplayController {
 			view = configService.getLocalProperty("view.html.page");
 		}
 		return view;
-    }
+	} 
+	
 	
 	
 	/**
 	 * 
-	 * binding.*.handler.class = 
+	 * pattern 기반의 페이지 호출 처리 .
 	 * 
 	 */
 	@RequestMapping(value = "/pages/*/**", method = { RequestMethod.POST, RequestMethod.GET })
@@ -146,6 +147,7 @@ public class DisplayController {
  			}	
  			
  			log.debug("Path Pattern Checking (pattern:{}) : {}, match : {}, variables: {}", isPattern, pattern.getPattern(), match, variables);
+ 			
  			if( match ) {  
  				Page page = pageService.getPage(pattern.getObjectId(), version);
  				if( page.getPageId() > 0 ) {
@@ -180,8 +182,5 @@ public class DisplayController {
 		} 
 		log.debug("return view [{}]", view);
  		return view;
-	}
-	
-	
-	
+	} 
 }

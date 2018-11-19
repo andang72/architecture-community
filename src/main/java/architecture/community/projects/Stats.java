@@ -10,7 +10,10 @@ public class Stats implements Serializable{
 		
 	private List<Item> items ;
 	
+	private int total;
+	
 	public Stats() {
+		total = 0 ;
 		items = new ArrayList<Item>();
 	}
 
@@ -27,6 +30,22 @@ public class Stats implements Serializable{
 			items.add(new Item(name, value ));
 	}
 	
+	public void add(String category, String name, Integer value ) {
+		boolean exist = false;
+		for( Item i : items ) {
+			if(StringUtils.equals(name, i.name)) {
+				if( StringUtils.isEmpty( i.category) ) {
+					i.category = category;
+				}
+				i.value = i.value + value;
+				exist = true;
+				break;
+			}
+		}
+		if( !exist )
+			items.add(new Item(category, name, value ));
+	}
+	
 	public List<Item> getItems() {
 		return items;
 	}
@@ -35,14 +54,43 @@ public class Stats implements Serializable{
 		this.items = items;
 	}
 	
+	public int getTotal() {
+		if( this.items.size() > 0 && this.total == 0)
+		{
+			for(Item i : this.items) {
+				this.total = this.total + i.value ;
+			}
+		}
+		return this.total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
 	public class Item implements Serializable {
 		
+		private String category;
 		private String name;
 		private Integer value;
 		
 		public Item() {
 			this.name = null;
 			this.value = 0;
+		}
+
+		public Item(String category, String name, Integer value) {
+			this.category = category;
+			this.name = name;
+			this.value = value;
+		}
+
+		public String getCategory() {
+			return category;
+		}
+
+		public void setCategory(String category) {
+			this.category = category;
 		}
 
 		public Item(String name, Integer value) {

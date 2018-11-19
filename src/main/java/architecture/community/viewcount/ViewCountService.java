@@ -27,11 +27,20 @@ public interface ViewCountService {
 	
 	public abstract void clearCount(BoardThread thread);
 	
+	
+	
 	public abstract void addViewCount(Page page);
 
 	public abstract int getViewCount(Page page);
 	
 	public abstract void clearCount(Page page);
+	
+	
+	public abstract void addViewCount(int objectType, long objectId );
+
+	public abstract int getViewCount(int objectType, long objectId );
+	
+	public abstract void clearCount(int objectType, long objectId );
 	
 	
 	public abstract void updateViewCounts();

@@ -38,6 +38,7 @@ import architecture.community.tag.ContentTag;
 import architecture.community.user.AvatarImage;
 import architecture.community.user.Role;
 import architecture.community.user.User;
+import architecture.community.wiki.Wiki;
 
 public enum Models {
 	
@@ -63,9 +64,10 @@ public enum Models {
 	SCM(21, Scm.class),
 	MENU(25, Menu.class),
 	MENU_ITEM(26, MenuItem.class),
-	API(30, Api.class)
+	API(30, Api.class),
+	WIKI(35, Wiki.class),
+	WIKI_BODY(36, architecture.community.wiki.BodyContent.class)
 	;
-	
 	
 	private int objectType;
 	

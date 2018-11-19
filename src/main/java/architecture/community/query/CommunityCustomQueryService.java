@@ -181,6 +181,10 @@ public class CommunityCustomQueryService implements CustomQueryService {
 			return dao.getExtendedJdbcTemplate().queryForList(dao.getBoundSql(statement).getSql());
 	}
 
+	public List<Map<String, Object>> listByValue( String statement, Object value) {
+		return customQueryJdbcDao.getExtendedJdbcTemplate().queryForList(customQueryJdbcDao.getBoundSql(statement).getSql(), value ); 
+	} 
+	
 	public <T> List<T> list( String statement, List<ParameterValue> values, RowMapper<T> rowmapper) {
 		if (values.size() > 0)
 			return customQueryJdbcDao.getExtendedJdbcTemplate().query(customQueryJdbcDao.getBoundSql(statement).getSql(), rowmapper, getSqlParameterValues(values).toArray());

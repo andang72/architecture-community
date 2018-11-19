@@ -3,6 +3,7 @@ package architecture.community.services;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.inject.Inject;
@@ -21,6 +22,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.scripting.ScriptSource;
 import org.springframework.scripting.groovy.GroovyScriptFactory;
 import org.springframework.scripting.support.ResourceScriptSource;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 
 import architecture.ee.service.Repository;
 import groovy.lang.GroovyClassLoader;
@@ -43,6 +47,8 @@ public class CommunityGroovyService implements ResourceLoaderAware , Application
 	
 	private GroovyClassLoader groovyClassLoader;
 	
+	private com.google.common.cache.LoadingCache<String, Object> scriptServiceCache = null;
+	
 	@Inject
 	@Qualifier("repository")
 	private Repository repository;
@@ -62,6 +68,17 @@ public class CommunityGroovyService implements ResourceLoaderAware , Application
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
+	
+	public void initialize(){		
+		log.debug("creating cache ...");		
+		scriptServiceCache = CacheBuilder.newBuilder().maximumSize(500).expireAfterAccess( 60 * 100, TimeUnit.MINUTES).build(		
+				new CacheLoader<String, Object>(){			
+					public Object load(String projectId) throws Exception {
+						return null;
+					}
+				}
+			);
+	}	
 	
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -107,19 +124,19 @@ public class CommunityGroovyService implements ResourceLoaderAware , Application
 		}
 	}
 	
-	public <T> T getService(String name, Class<T> requiredType) {
+	public <T> T getService(String name, Class<T> requiredType, boolean usingCache ) {
 		
-		
-		GroovyScriptFactory factory = new GroovyScriptFactory(name);
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(factory);
-		
-		log.debug("get groovy service {}", name );
-		
-		try {
 			
+		return getService(name, requiredType);
+	}
+	
+	public <T> T getService(String name, Class<T> requiredType) { 
+		GroovyScriptFactory factory = new GroovyScriptFactory(name);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(factory); 
+		log.debug("get groovy service {}", name ); 
+		try { 
 			T obj = (T) factory.getScriptedObject(getScriptSource(name), requiredType);
 			applicationContext.getAutowireCapableBeanFactory().autowireBean(obj);
-			
 			return obj;
 		} catch (Exception e) { 
 			e.printStackTrace();

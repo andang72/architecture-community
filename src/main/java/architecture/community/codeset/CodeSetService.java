@@ -26,6 +26,8 @@ public interface CodeSetService {
 
     public List<CodeSet> getCodeSets(int objectType, long objectId, String group, String code);
 
+    public List<CodeSet> getCodeSets(String group, String code);
+    
     public int getCodeSetCount(CodeSet codeset);
 
     public int getRecrusiveCodeSetCount(CodeSet codeset);

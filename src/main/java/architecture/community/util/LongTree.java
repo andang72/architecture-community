@@ -22,6 +22,8 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 /**
+ * <p>source code from jivesoftware openfire.</p>
+ * 
  * A simple tree structure for long values. It's nowhere near a complete tree
  * implementation since we don't really need one. However, if anyone is
  * interested in finishing this class, or optimizing it, that would be

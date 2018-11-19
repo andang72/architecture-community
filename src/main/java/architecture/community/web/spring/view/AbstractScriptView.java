@@ -7,13 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.web.servlet.View;
 
 import architecture.community.web.util.ServletUtils;
-import architecture.ee.util.StringUtils;
 
-public abstract class AbstractScriptView implements View {
+public abstract class AbstractScriptView extends ScriptSupport implements View {
 
 	private static final String DEFAULT_PREFIX = "view.";
 	
@@ -44,31 +42,12 @@ public abstract class AbstractScriptView implements View {
 		prepareResponse(request, response);
 		renderMergedOutputModel((Map<String, Object>) model, request, response); 
 	}
+	 
 	
 	protected abstract void renderMergedOutputModel( Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception;
 	
 	protected void prepareResponse(HttpServletRequest request, HttpServletResponse response) {
 		
-	}
- 
-	public String getProperty( Map<String, String> properties, String name, String defaultValue) {
-		return StringUtils.defaultString( properties.get( name ), defaultValue );
-	}
-	
-	public Boolean getBooleanProperty( Map<String, String> properties , String key, Boolean defaultValue ) {
-		String value = properties.get(key);
-		try {
-			return Boolean.parseBoolean(value);
-		} catch (Exception e) { } 
-		return defaultValue;
-	}
-	
-	public Long getLongProperty( Map<String, String> properties , String key, Long defaultValue ) {
-		String value = properties.get(key);
-		try {
-			return Long.parseLong(value);
-		} catch (Exception e) { } 
-		return defaultValue;
-	}
+	} 
 	
 }

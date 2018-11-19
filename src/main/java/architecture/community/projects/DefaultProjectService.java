@@ -83,14 +83,16 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 						Stats stats = projectDao.getIssueTypeStats(projectId);
 						int total = 0;
 						for ( CodeSet code : list ) {
-							stats.add(code.getCode(), 0);
+							stats.add(code.getName(), code.getCode(), 0);
 						}
+						/*
 						for( Stats.Item item : stats.getItems())
 						{
 							if(!StringUtils.equals("ETC", item.getName()))
 								total = total + item.getValue();
 						}
-						stats.add("TOTAL", total);
+						*/
+						//stats.add("TOTAL", total);
 						return stats;
 					}
 				}
@@ -104,14 +106,16 @@ public class DefaultProjectService extends EventSupport implements ProjectServic
 						Stats stats = projectDao.getResolutionStats(projectId);
 						int total = 0;
 						for ( CodeSet code : list ) {
-							stats.add(code.getCode(), 0);
+							stats.add(code.getName(), code.getCode(), 0);
 						}
+						/*
 						for( Stats.Item item : stats.getItems())
 						{
 							if(!StringUtils.equals("ETC", item.getName()))
 								total = total + item.getValue();
 						}
-						stats.add("TOTAL", total);	
+						*/
+						//stats.add("TOTAL", total);	
 						return stats;
 					}			
 		});	 

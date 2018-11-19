@@ -1,15 +1,19 @@
 package architecture.community.page.api.dao;
 
+import java.util.List;
+
 import architecture.community.page.api.Api;
 
 public interface ApiDao {
 	
-	public void saveOrUpdate(Api api);
+	public abstract void saveOrUpdate(Api api);
 	
-	public Api getApiById(long apiId);
+	public abstract Api getApiById(long apiId);
 	
-	public Long getApiIdByName(String name);
+	public abstract Long getApiIdByName(String name);
 	
-	public void deleteApi(Api api);
+	public abstract void deleteApi(Api api);
+	
+	public abstract List<Api> getAllApiHasPatterns ();
 	
 }

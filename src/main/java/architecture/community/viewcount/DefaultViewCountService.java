@@ -94,6 +94,34 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 	}
 	
 
+	
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void addViewCount(int objectType, long objectId) {
+		if (viewCountsEnabled) {
+			addCount(objectType, objectId , viewCountCache, 1);
+		}
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public int getViewCount(int objectType, long objectId) {
+		if (viewCountsEnabled) {
+			return getCachedCount(objectType, objectId );
+		} else {
+			return -1;
+		}
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public void clearCount(int objectType, long objectId) {
+		if (viewCountsEnabled) {
+			String key = getCacheKey(objectType, objectId );
+			queue.remove(key);
+			doClearCount(objectType, objectId );
+		}
+	}
+	
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void addViewCount(Page page) {
 		if (viewCountsEnabled) {
@@ -115,9 +143,11 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 		if (viewCountsEnabled) {
 			String key = getCacheKey(Models.PAGE.getObjectType(), page.getPageId());
 			queue.remove(key);
-			clearCount(Models.PAGE.getObjectType(), page.getPageId());
+			doClearCount(Models.PAGE.getObjectType(), page.getPageId());
 		}
 	}
+	
+	
 	
 	
 	
@@ -142,7 +172,7 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 		if (viewCountsEnabled) {
 			String key = getCacheKey(Models.BOARD_THREAD.getObjectType(), thread.getThreadId());
 			queue.remove(key);
-			clearCount(Models.BOARD_THREAD.getObjectType(), thread.getThreadId());
+			doClearCount(Models.BOARD_THREAD.getObjectType(), thread.getThreadId());
 		}
 	}
 	
@@ -177,13 +207,11 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 			List<ViewCountInfo> list = new ArrayList<ViewCountInfo>(localQueue.values());
 			viewCountDao.updateViewCounts(list);
 		}		
-	}
-
-
+	} 
 	
-	private synchronized void clearCount(int entityType, long entityId) {
+	private synchronized void doClearCount(int entityType, long entityId) {
 		viewCountDao.deleteViewCount(entityType, entityId);
-	}
+	} 
 
 	private void addCount(int entityType, long entityId, Cache cache, int amount) {
 		int count = -1;
@@ -223,5 +251,5 @@ public class DefaultViewCountService extends EventSupport implements ViewCountSe
 		buf.append(entityType).append("-").append(entityId);
 		return buf.toString();
 	}
-	
+
 }

@@ -48,6 +48,15 @@ public class Api extends ModelObjectAwareSupport {
 		this.creationDate = Calendar.getInstance().getTime();
 		this.modifiedDate = this.creationDate;		 
 	}
+
+	public Api(long apiId  ) {
+		this(-1, -1L);
+		this.apiId = apiId;
+		this.pattern = null;
+		this.title = null;
+		this.creationDate = Calendar.getInstance().getTime();
+		this.modifiedDate = this.creationDate;		 
+	}
 	
 	public Api(int objectType, long objectId, long taskId) {
 		super(objectType, objectId);

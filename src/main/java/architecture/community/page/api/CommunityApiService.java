@@ -1,5 +1,8 @@
 package architecture.community.page.api;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 
+import architecture.community.page.PathPattern;
 import architecture.community.page.api.dao.ApiDao;
 import architecture.community.user.UserManager;
 
@@ -33,6 +37,8 @@ public class CommunityApiService implements ApiService {
 	
 	private com.google.common.cache.LoadingCache<String, Long> apiIdCache = null;
 	
+	private com.google.common.cache.LoadingCache<String, List<PathPattern>> apiPatternMatchersCache = null;
+	
 	public CommunityApiService() { 
 		apiCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(60 * 100, TimeUnit.MINUTES).build(		
 				new CacheLoader<Long, Api>(){			
@@ -46,6 +52,17 @@ public class CommunityApiService implements ApiService {
 					public Long load(String name) throws Exception {
 						Long id = apiDao.getApiIdByName(name);
 						return id;
+				}}
+		);
+		
+		apiPatternMatchersCache = CacheBuilder.newBuilder().maximumSize(50).expireAfterAccess(60 * 100, TimeUnit.MINUTES).build(		
+				new CacheLoader<String, List<PathPattern>>(){			
+					public List<PathPattern>  load(String prefix) throws Exception {
+						List<PathPattern> matchers =  new ArrayList<PathPattern>();
+						for( Api p : apiDao.getAllApiHasPatterns()) {
+							matchers.add(new PathPattern( p.getApiId(), prefix + p.getPattern()));
+						} 
+						return matchers;
 				}}
 		);
 	}
@@ -77,12 +94,23 @@ public class CommunityApiService implements ApiService {
 		}
 		return api;
 	}
-
+	
+	public List<PathPattern> getPathPatterns(String prefix){  
+		try {
+			return apiPatternMatchersCache.get(prefix);
+		} catch (ExecutionException e) {
+			return Collections.emptyList();
+		}
+	}
+	
+	
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void deleteApi(Api api) {
 		if( api.getApiId() > 0 )
 			apiCache.invalidate(api.getApiId());
 		apiDao.deleteApi(api);
+		
+		apiPatternMatchersCache.invalidateAll();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -90,6 +118,8 @@ public class CommunityApiService implements ApiService {
 		if( api.getApiId() > 0 )
 			apiCache.invalidate(api.getApiId());
 		apiDao.saveOrUpdate(api);
+		
+		apiPatternMatchersCache.invalidateAll();
 	}
 
 }

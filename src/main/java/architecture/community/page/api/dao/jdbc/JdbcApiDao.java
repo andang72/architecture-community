@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -153,6 +154,19 @@ public class JdbcApiDao extends ExtendedJdbcDaoSupport implements ApiDao  {
 		getExtendedJdbcTemplate().update(getBoundSql("COMMUNITY_UI.DELETE_API_BY_ID").getSql(), 
 				new SqlParameterValue(Types.NUMERIC, toUse.getApiId())
 		);
+	}
+
+	@Override
+	public List<Api> getAllApiHasPatterns() {
+		return getExtendedJdbcTemplate().query(
+				getBoundSql("COMMUNITY_UI.SELECT_ALL_API_PATTERN_AND_ID").getSql(),
+				new RowMapper<Api>() {
+					public Api mapRow(ResultSet rs, int rowNum) throws SQLException {
+						Api page = new Api(rs.getLong(1));
+						page.setPattern(rs.getString(2));
+						return page;
+					}
+				});
 	}
 
 }

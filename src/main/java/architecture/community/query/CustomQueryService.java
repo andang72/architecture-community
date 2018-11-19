@@ -84,6 +84,9 @@ public interface CustomQueryService {
 	public <T> List<T> list(String statement, List<ParameterValue> values, Class<T> elementType);
 	
 	
+	public List<Map<String, Object>> listByValue( String statement, Object value);
+	
+	
 	/**
 	 * 
 	 * @param statement 쿼리 키
