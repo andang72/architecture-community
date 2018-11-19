@@ -161,7 +161,17 @@
 		if( renderTo.length == 1 ){
 			var editor = ace.edit(renderTo.attr('id'));
 			editor.setTheme("ace/theme/chrome");
-	    	//editor.session.setMode("ace/mode/javascript"); 
+			<#if __path?ends_with(".xml") >
+	    	editor.session.setMode("ace/mode/xml"); 
+	    	<#elseif __path?ends_with(".js") >
+	    	editor.session.setMode("ace/mode/javascript"); 
+	    	<#elseif __path?ends_with(".java") >
+	    	editor.session.setMode("ace/mode/java"); 
+	    	<#elseif __path?ends_with(".sql") >
+	    	editor.session.setMode("ace/mode/sql"); 
+	    	<#elseif __path?ends_with(".css") >
+	    	editor.session.setMode("ace/mode/css"); 
+	    	</#if>
 	    	community.ui.progress(renderTo, true);	
 	    	$.ajax({
 	    		type : 'POST',
@@ -303,7 +313,15 @@
  				<div class="g-pa-20">
  				<img src="/display/scm/${__scm.scmId}/download?path=${__path?remove_beginning("/")?url_path('utf-8')}" style="max-width:100%;"/>
  				</div>
- 				<#elseif  __info.name?starts_with(".") || __info.name?ends_with(".txt") || __info.name?ends_with(".java") || __info.name?ends_with(".jsp") || __info.name?ends_with(".html") || __info.name?ends_with(".xml") >
+ 				<#elseif  __info.name?starts_with(".") || 
+ 					__info.name?ends_with(".txt") || 
+ 					__info.name?ends_with(".java") || 
+ 					__info.name?ends_with(".jsp") || 
+ 					__info.name?ends_with(".html") || 
+ 					__info.name?ends_with(".css") ||
+ 					__info.name?ends_with(".sql") ||
+ 					__info.name?ends_with(".js") ||  
+ 					__info.name?ends_with(".xml") > 
  					<div id="code-highlighter" ></div>
 				<#else>
  				<section class="w-100 align-self-center text-center g-color-darkblue-v2 g-my-30">

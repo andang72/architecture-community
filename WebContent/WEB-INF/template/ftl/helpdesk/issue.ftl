@@ -13,7 +13,7 @@
   	<#include "/community/includes/header_globle_site_tag.ftl">
   			
 	<!-- Bootstrap core CSS -->
-   	<link href="<@spring.url "/css/bootstrap/4.0.0/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
+   	<link href="<@spring.url "/css/bootstrap/4.1.3/bootstrap.min.css"/>" rel="stylesheet" type="text/css" />	
    	
 	<!-- Professional Kendo UI --> 	
 	<link href="<@spring.url "/css/bootstrap.theme/unify-bootstrap-v4/all.css"/>" rel="stylesheet" type="text/css" />	
@@ -85,12 +85,12 @@
 			"dzsparallaxer.advancedscroller" : { "deps" :['jquery', 'dzsparallaxer' ] }	
 	    },
 		paths : {
-			"jquery"    				: "/js/jquery/jquery-3.1.1.min",
+			"jquery"    				: "/js/jquery/jquery-3.3.1.min",
 			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
-			"bootstrap" 				: "/js/bootstrap/4.0.0/bootstrap.bundle.min",
+			"bootstrap" 				: "/js/bootstrap/4.1.3/bootstrap.bundle.min",
 			<!-- Professional Kendo UI --> 
-			"kendo.web.min"	 			: "/js/kendo/2018.1.221/kendo.web.min",
-			"kendo.culture.min"			: "/js/kendo/2018.1.221/cultures/kendo.culture.ko-KR.min",	
+			"kendo.web.min"	 			: "/js/kendo/2018.3.1017/kendo.web.min",
+			"kendo.culture.min"			: "/js/kendo/2018.3.1017/cultures/kendo.culture.ko-KR.min",	
 			"kendo.messages.min"		: "/js/kendo.extension/kendo.messages.ko-KR",	
 			<!-- summernote -->
 			"summernote.min"             : "/js/summernote/summernote-bs4.min",
@@ -150,8 +150,13 @@
 			currentUser : new community.model.User(),			
 			isDeveloper : false,
 			issue : new community.model.Issue(),
-			project : new community.model.Project(),
-			projectPeriod : "",
+			project : new community.model.Project({
+			<#if __project??>
+				projectId : ${__project.projectId },
+				name : '${__project.name }'
+			</#if>
+			}),
+			projectPeriod : "${ __project.startDate?string["yyyy.MM.dd"] } ~ ${ __project.endDate?string["yyyy.MM.dd"] } ",
 			autherAvatarSrc : "/images/no-avatar.png",
 			repoterAvatarSrc : "/images/no-avatar.png",
 			assigneeAvatarSrc : "/images/no-avatar.png",
@@ -184,22 +189,22 @@
 				data.copy($this.currentUser)
 				$this.set('isDeveloper', isDeveloper($this.currentUser));
 			},
-			load : function( projectId, issueId ){
+			load : function( issueId ){
 				var $this = this; 
 				if( issueId > 0 ){
 					community.ui.ajax('/data/api/v1/issues/'+ issueId +'/get-with-project.json', {
 						success: function(data){	
-							$this.set('project', new community.model.Project(data.project) );	
-							$this.set('projectPeriod', community.data.getFormattedDate( $this.project.startDate , 'yyyy.MM.dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy.MM.dd' ) );
+							//$this.set('project', new community.model.Project(data.project) );	
+							//$this.set('projectPeriod', community.data.getFormattedDate( $this.project.startDate , 'yyyy.MM.dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy.MM.dd' ) );
 							$this.set('backUrl', '/display/pages/issues.html?projectId=' + $this.project.projectId );	
 							$this.setSource(new community.model.Issue(data.issue) );	
 						}	
 					});
 				}else{
-					community.ui.ajax('/data/api/v1/projects/'+ projectId +'/info.json/', {
-						success: function(data){		
-							$this.set('project', new community.model.Project(data) );
-							$this.set('projectPeriod', community.data.getFormattedDate( $this.project.startDate , 'yyyy.MM.dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy.MM.dd' ) );
+					//community.ui.ajax('/data/api/v1/projects/'+ projectId +'/info.json/', {
+					//	success: function(data){		
+						//	$this.set('project', new community.model.Project(data) );
+						//	$this.set('projectPeriod', community.data.getFormattedDate( $this.project.startDate , 'yyyy.MM.dd')  +' ~ '+  community.data.getFormattedDate( $this.project.endDate, 'yyyy.MM.dd' ) );
 							var targetObject = new community.model.Issue();	
 							targetObject.set('issueId', 0);
 							targetObject.set('objectType', 19);
@@ -207,8 +212,8 @@
 							targetObject.set('status', '001');
 							targetObject.set('repoter', $this.currentUser );
 							$this.setSource(targetObject);
-						}	
-					});	 
+					//	}	
+					//});	 
 				}
 				$this.set('visible', true);
 			},
@@ -223,24 +228,20 @@
 				}
 				return false;
 			},
-			cancle : function(e){
-				
+			cancle : function(e){ 
 				var $this = this;
 				if($this.get('isNew')){
 					$this.back();
 					return ;
-				}
-			 	
+				} 
 			 	$this.set('editing', false );
 			 	$this.set('editingForAssignee', false );
-			 	$this.set('editable' , true ); 
-			 	
+			 	$this.set('editable' , true );  
 			 	var editorTo = $('#issue-description-editor');
 			 	if( community.ui.defined(editorTo.data('summernote')) ){
 					editorTo.summernote('destroy'); 
 					editorTo.html("");
-				}
-				
+				} 
 			},
 			edit : function(e){
 			 	var $this = this;
@@ -380,25 +381,23 @@
 				}
 				getEmojis();
 			},
-			issueTypeDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_TYPE/list.json" />' , {} ),
-			priorityDataSource  : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PRIORITY/list.json" />' , {} ),
-			resolutionDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/RESOLUTION/list.json" />' , {} ),
-			statusDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/ISSUE_STATUS/list.json" />' , {} )	,
-			taskDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/" />' + __projectId + '/tasks/list.json' , {
-				transport : {
-					parameterMap: function (options, operation){	 
-						if (operation !== "read" && options.models) { 
-							return community.ui.stringify(options.models);
-						} 
-						return community.ui.stringify(options);
-					}				
-				},
-			 	schema: {
-					total: "totalCount",
-					data: "items",
-					model: community.model.Task
-				}
-			}),	
+			issueTypeData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("ISSUE_TYPE", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],
+			priorityData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("PRIORITY", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],
+			resolutionData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("RESOLUTION", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],
+			statusData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("ISSUE_STATUS", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],  
+			taskData : [
+			<#list CommunityContextHelper.getCustomQueryService().listByValue("SERVICE_DESK.SELECT_TASK_NAME_BY_OBJECT_TYPE_AND_OBJECT_ID", __project.projectId  ) as item >
+			{ taskId : ${ item.TASK_ID }, taskName : '${ item.TASK_NAME }' }<#if !item?is_last>,</#if>
+			</#list>
+			],
 			userDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/users/find.json" />' , {
 			 	serverFiltering: true,
 			 	transport: {
@@ -426,7 +425,7 @@
     		}
     	});
     		
-    	observable.load(__projectId, __issueId); 
+    	observable.load(__issueId); 
     	var renderTo = $('#page-top');
 		renderTo.data('model', observable);		
 		community.ui.bind(renderTo, observable );	
@@ -561,7 +560,7 @@
 				url: '/data/api/v1/attachments/upload.json',
 				paramName: 'file',
 				maxFilesize: 20,
-				previewsContainer: '#issue-attachment-dropzone .dropzone-previews'	,
+				previewsContainer: '#issue-attachment-dropzone .dropzone-previews',
 				previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div></div>'
 			});
 			
@@ -685,110 +684,7 @@
 		return renderTo.data('model');
 	}
 		
-	function createOrOpenIssueEditor( data ){ 
-		var renderTo = $('#issue-editor-modal');
-		var editorTo = renderTo.find('.text-editor');
-		if( !renderTo.data("model") ){
-			var observable = new community.ui.observable({ 
-				isNew : false,	
-				editable : false, 
-				isDeveloper : false,
-				isOpen : false,
-				isClosed : false,
-				issue : new community.model.Issue(),
-				issueTypeDataSource : getPageModel().issueTypeDataSource ,
-				priorityDataSource  : getPageModel().priorityDataSource,
-			 	methodsDataSource   : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/SUPPORT_METHOD/list.json" />' , {} ),
-			 	resolutionDataSource : getPageModel().resolutionDataSource,
-			 	statusDataSource : getPageModel().statusDataSource,
-			 	userDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/users/find.json" />' , {
-			 		serverFiltering: true,
-			 		transport: {
-				 		parameterMap: function (options, operation){
-	                        	if (community.ui.defined(options.filter) && options.filter.filters.length > 0 ) {
-									return { nameOrEmail: options.filter.filters[0].value };
-								}else{
-									return { };
-								}
-						}
-					},
-			 	 	schema: {
-						total: "totalCount",
-						data: "items",
-						model: community.model.User
-					}
-			 	}),
-			 	setSource : function( data ){
-			 		var $this = this;
-					var orgIssueId = $this.issue.issueId ;
-					data.copy( $this.issue ); 
-					if(  $this.issue.issueId > 0 ){
-						$this.set('isNew', false );
-						$this.set('editable', false );
-					}else{
-						$this.set('isNew', true );	
-						$this.edit();
-						//$this.set('editable', true );
-					}
-					if($this.issue.status == '001' || $this.issue.status == '002' || $this.issue.status == '003' || $this.issue.status == '004' ){
-			 			$this.set('isOpen', true);
-			 			$this.set('isClosed', false);
-			 		}else if($this.issue.status == '005' ){
-			 			$this.set('isOpen', false);
-			 			$this.set('isClosed', true);
-			 		}else{
-			 			$this.set('isOpen', false);
-			 			$this.set('isClosed', false);
-			 		}
-					$this.set('isDeveloper', isDeveloper());
-					
-					$.each(renderTo.find('input[data-role=combobox]'), function( index, value ) {
-					  	$(value).data('kendoComboBox').refresh();
-					});
-			 	},
-			 	edit : function(e){
-			 		var $this = this;
-			 		$this.set('editable', true );
-			 		console.log('summernote create.');
-			 		editorTo.summernote({
-						placeholder: '자세하게 기술하여 주세요.',
-						dialogsInBody: true,
-						height: 300
-					});			 	
-					editorTo.summernote('code', $this.issue.get('description'));	
-			 	},
-				saveOrUpdate : function(e){				
-					var $this = this;
-					community.ui.progress(renderTo.find('.modal-content'), true);	
-					$this.issue.set('description', editorTo.summernote('code') );	
-					community.ui.ajax( '<@spring.url "/data/api/v1/issues/save-or-update.json" />', {
-						data: community.ui.stringify($this.issue),
-						contentType : "application/json",						
-						success : function(response){
-							community.ui.listview( $('#issue-listview') ).dataSource.read();
-						}
-					}).always( function () {
-						community.ui.progress(renderTo.find('.modal-content'), false);
-						renderTo.modal('hide');
-					});						
-				}
-			});
-			renderTo.data("model", observable );	
-			community.ui.bind( renderTo, observable );				
-			renderTo.on('show.bs.modal', function (e) {	});
-			renderTo.on('hide.bs.modal', function (e) {	
-				if(observable.get('editable') == true ){
-					console.log('summernote destory.');
-					editorTo.summernote('destroy');
-					editorTo.html('');
-				}
-			});
-		}	
-		
-		if( community.ui.defined(data) ) 
-			renderTo.data("model").setSource(data); 
-		renderTo.modal('show');
-	}
+
 
 	function isDeveloper( user ){ 
 		return user.hasRole('ROLE_DEVELOPER') || <#if __project?? >${ CommunityContextHelper.getCommunityAclService().getPermissionBundle(__project).admin?string } </#if> ;
@@ -957,7 +853,7 @@
 							                   data-auto-bind="true"
 							                   data-text-field="taskName"
 							                   data-value-field="taskId"
-							                   data-bind="value:issue.task, source: taskDataSource, enabled:editing" 
+							                   data-bind="value:issue.task, source: taskData, enabled:editing" 
 							                   style="width:100%;"/>
 								        </div>
 										<div class="row">
@@ -973,7 +869,7 @@
 							                   data-value-primitive="true"
 							                   data-text-field="name"
 							                   data-value-field="code"
-							                   data-bind="value:issue.issueType, source:issueTypeDataSource, enabled:editing"
+							                   data-bind="value:issue.issueType, source:issueTypeData, enabled:editing"
 							                   required data-required-msg="어떤 종류의 요청인지를 선택하여 주세요"
 							                   style="width:100%;"/>
 							                   <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg" data-for="issue-type" role="alert" style="display:none;"></span>	
@@ -990,7 +886,7 @@
 							                   data-value-primitive="true"
 							                   data-text-field="name"
 							                   data-value-field="code"
-							                   data-bind="value:issue.status, source:statusDataSource, enabled:editingForAssignee"
+							                   data-bind="value:issue.status, source:statusData, enabled:editingForAssignee"
 							                   style="width: 100%;"/>
 							                   </div>
 								              <!-- End Status -->
@@ -1008,7 +904,7 @@
 							                   data-value-primitive="true"
 							                   data-text-field="name"
 							                   data-value-field="code"
-							                   data-bind="value:issue.priority, source:priorityDataSource, enabled:editing"
+							                   data-bind="value:issue.priority, source:priorityData, enabled:editing"
 							                   style="width: 100%;"/>	
 							                    </div>
 								              <!-- End Priority -->
@@ -1023,7 +919,7 @@
 							                   data-value-primitive="true"
 							                   data-text-field="name"
 							                   data-value-field="code"
-							                   data-bind="value:issue.resolution, source:resolutionDataSource, enabled:editingForAssignee"
+							                   data-bind="value:issue.resolution, source:resolutionData, enabled:editingForAssignee"
 							                   style="width: 100%;"/>
 							                   </div>
 								              <!-- End Resolution -->
@@ -1323,168 +1219,7 @@
 			</div>
 		</div>
 	</div>	
-	<!-- issue editor modal -->
-	<div class="modal fade" id="issue-editor-modal" tabindex="-1" role="dialog" aria-hidden="true">
-		<div class="modal-dialog modal-lg" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			          	<i aria-hidden="true" class="icon-svg icon-svg-sm icon-svg-ios-close m-t-xs"></i>
-			        </button>
-			        <h2 class="modal-title">
-			        		<i class="icon-svg icon-svg-sm icon-svg-dusk-close-sign" data-bind="visible:isClosed"></i>
-			        		<i class="icon-svg icon-svg-sm icon-svg-dusk-open-sign" data-bind="visible:isOpen"></i> 
-			        		기술지원요청
-			        	</h2>
-		      	</div><!-- /.modal-content -->
-				<div class="modal-body">				
-				 <form>
-				 	<h4 class="text-light-gray text-semibold">요청구분 <span class="text-danger" data-bind="visible:editable" >*</span></h4>
-					<div class="form-group">
-						<input data-role="dropdownlist"  
-						   data-placeholder="선택"
-		                   data-auto-bind="true"
-		                   data-value-primitive="true"
-		                   data-text-field="name"
-		                   data-value-field="code"
-		                   data-bind="value:issue.issueType, source:issueTypeDataSource, enabled:editable"
-		                   style="width:100%;"/>	
-		                   		        	  
-					</div>	
-					
-					<!-- issue summary start -->
-					<h4 class="text-light-gray text-semibold">요약 <span class="text-danger" data-bind="visible:editable">*</span></h4>		
-					<div data-bind="text:issue.summary, invisible:editable" class="g-mb-15 g-brd-2 g-brd-bluegray g-rounded-5 g-brd-around--lg g-pa-15"></div>	
-					
-				 	<div class="form-group" data-bind="visible:editable">
-			            <input type="text" class="form-control" placeholder="요약" data-bind="value: issue.summary">
-			        </div> 	
-					<!-- issue summary start -->
 
-					<div class="form-group">			
-						<div class="row">
-						  	<div class="col-sm-6">
-						  		<h4 class="text-light-gray text-semibold">리포터</h4>		
-						  		<div data-bind="text:issue.repoter.name"></div>
-						  	</div>
-						    <div class="col-sm-6">
-						    		<span class="help-block m-b-none">이름으로 검색하고 선택하면 리포터가 지정됩니다.</span>
-						    		<input data-role="combobox"
-		                   		 data-placeholder="리포터 이름을 입력하세요."
-								 data-filter="contains" 
-		                   		 data-text-field="name"
-		                   	 	 data-value-field="username"
-		                   		 data-bind="value: issue.repotes,
-	                              source: userDataSource,
-	                              visible: isDeveloper,
-	                              enabled: editable"
-	                   			 style="width: 100%"/>
-						  	</div>
-					  	</div>   
-					</div>	
-
-					<div class="form-group">			
-						<div class="row">
-						  	<div class="col-sm-6">
-						  		<h4 class="text-light-gray text-semibold">담당자</h4>		
-						  		<div data-bind="text:issue.assignee.name"></div>
-						  	</div>
-						    <div class="col-sm-6">
-						    		<span class="help-block m-b-none">이름으로 검색하고 선택하면 담당자가 지정됩니다.</span>
-						    		<input data-role="combobox"
-		                   		 data-placeholder="담당자 이름을 입력하세요."
-								 data-filter="contains"
-		                   		 data-text-field="name"
-		                   	 	 data-value-field="username"
-		                   		 data-bind="value: issue.assignees,
-	                              source: userDataSource,
-	                              visible: isDeveloper,
-	                              enabled: editable"
-	                   			 style="width: 100%"/>
-						  	</div>
-					  	</div>   
-					</div>						
-
-					<!-- issue descripton start -->
-					<h4 class="text-light-gray text-semibold">상세 내용 <span class="text-danger" data-bind="visible:editable">*</span></h4>	
-					<div data-bind="html:issue.description, invisible:editable" class="g-mb-15 g-brd-2 g-brd-blue g-rounded-5 g-brd-around--lg g-pa-15"></div>
-					
-					<div class="text-editor" class="hide"></div>
-					
-	 				<!-- issue descripton end -->	
-	 				
-	 				<h4 class="text-light-gray text-semibold g-mt-20" data-bind="visible: isDeveloper">예정일</h4>	
-					<input data-role="datepicker" data-bind="value: issue.dueDate, visible: isDeveloper, enabled: editable" style="width: 100%">
-						  		 
-	 										
-					<h4 class="text-light-gray text-semibold g-mt-15">우선순위 <span class="text-danger" data-bind="visible:editable">*</span></h4>
-					<div class="form-group">
-						<input data-role="dropdownlist"  
-						   data-placeholder="선택"
-		                   data-auto-bind="true"
-		                   data-value-primitive="true"
-		                   data-text-field="name"
-		                   data-value-field="code"
-		                   data-bind="value:issue.priority, source:priorityDataSource, enabled:editable"
-		                   style="width: 100%;"/>			        	  
-					</div>
-					 					
-					<h4 class="text-light-gray text-semibold">지원방법</h4>
-					<div class="form-group">
-						<input data-role="dropdownlist"  
-						   data-placeholder="선택"
-		                   data-auto-bind="true"
-		                   data-value-primitive="true"
-		                   data-text-field="name"
-		                   data-value-field="code"
-		                   data-bind="source:methodsDataSource, visible: isDeveloper, enabled:editable"
-		                   style="width: 100%;"/>
-					</div>	
-
-						
-					<div class="row" >
-						<div class="col-sm-6">
-							<h4 class="text-light-gray text-semibold">처리결과</h4>
-							<div class="form-group">
-								<input data-role="dropdownlist"  
-								   data-placeholder="선택"
-				                   data-auto-bind="true"
-				                   data-value-primitive="true"
-				                   data-text-field="name"
-				                   data-value-field="code"
-				                   data-bind="visible: isDeveloper,value:issue.resolution, source:resolutionDataSource, enabled:editable"
-				                   style="width: 100%;"/>
-							</div>
-						</div>
-						<div class="col-sm-6">				
-							<h4 class="text-light-gray text-semibold">처리일자</h4>
-							<input data-role="datepicker" data-bind="value: issue.resolutionDate, visible: isDeveloper, enabled: editable" style="width: 100%">
-						</div>
-					</div>	
-					<h4 class="text-light-gray text-semibold">상태</h4>
-					<div class="form-group">
-						<input data-role="dropdownlist"  
-						   data-placeholder="선택"
-		                   data-auto-bind="true"
-		                   data-value-primitive="true"
-		                   data-text-field="name"
-		                   data-value-field="code"
-		                   data-bind="visible: isDeveloper,value:issue.status, source:statusDataSource, enabled:editable"
-		                   style="width: 100%;"/>
-					</div>																													
-				</form>   
-				
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="visible:editable" >취소</button>
-					<button type="button" class="btn btn-primary" data-bind="click:saveOrUpdate, visible:editable">확인</button>
-					
-					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="invisible:editable">취소</button>		
-					<button type="button" class="btn btn-primary" data-bind="invisible:editable,click:edit">수정</button>			
-				</div>
-			</div>
-		</div>
-	</div>	
 	<script type="text/x-kendo-template" id="template">
                     <tr>
                       <td class="align-middle text-center">

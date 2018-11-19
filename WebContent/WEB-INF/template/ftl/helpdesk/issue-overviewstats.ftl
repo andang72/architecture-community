@@ -40,10 +40,13 @@
 	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/unify-components.css"/>">
 	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/unify-globals.css"/>">  
 	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/custom.css"/>">
+	
 	<!-- Page landing js -->	   	
+	<link rel="stylesheet" href="<@spring.url "/css/pace/pace-theme-flash.css"/>">
 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>   	
+	
 	<!-- Yepnope for js loading -->
-	<script src="<@spring.url "/js/yepnope/1.5.4/yepnope.min.js"/>" type="text/javascript"></script> 
+	<script src="<@spring.url "/js/yepnope/1.5.4/yepnope.min.js"/>" type="text/javascript"></script>
 	
 	<!-- Application JavaScript
     		================================================== -->    
@@ -70,24 +73,22 @@
 			'<@spring.url "/assets/vendor/dzsparallaxer/advancedscroller/plugin.js"/>'
 		],
 		complete: function() { 
-		
-		// init header 
-		$.HSCore.components.HSHeader.init($('#js-header'));	
-		$.HSCore.helpers.HSHamburgers.init('.hamburger'); 
-		// initialization of HSDropdown component
-      	$.HSCore.components.HSDropdown.init($('[data-dropdown-target]')); 
-      				
+
 		community.ui.setup({
-		  	features : {
-				accounts: true
-		  	},
-		  	'features.accounts.authenticate' :function(e){
-		  		if( !e.token.anonymous ){
-		  			observable.setUser(e.token);
-		    		}
-		  	}
-		});	
-		
+		  	features:{
+				accounts:true,
+				unify:{
+					header:true,
+					hamburgers : true,
+					dorpdown : true
+				}
+			},
+			'features.accounts.authenticate' :function(e){
+				if( !e.token.anonymous ){
+					observable.setUser(e.token);
+				}
+			}
+		});	 
 		
         // Topnav animation feature
  		var cbpAnimatedHeader = (function() {
@@ -139,25 +140,10 @@
 	        remove: function (e) {
 	            console.log("event: remove");
 	        },
-			projects: community.ui.datasource('<@spring.url "/data/api/v1/projects/list.json"/>', {
-				transport:{
-					read:{
-						contentType: "application/json; charset=utf-8"
-					},
-					parameterMap: function (options, operation){		
-						options.data = options.data || {} ;
-						options.data.enabled = true;
-						return community.ui.stringify(options)
-					}
-				},	
-				serverPaging:false,
-				pageSize : 100,
-				schema: {
-					total: "totalCount",
-					data: "items",
-					model: community.model.Project
-				}
-			}),		
+	        projectsData : [
+			<#list CommunityContextHelper.getCustomQueryService().list ("COMMUNITY_CS.SELECT_PROJECT_ID_AND_NAME") as item >
+			{ projectId : ${ item.PROJECT_ID }, name : '${ item.PROJECT_NAME }' }<#if !item?is_last>,</#if>
+			</#list>], 
 			filters : function(dataSource){
 				var $this = this , filters = [];
 				
@@ -189,9 +175,16 @@
 				}) }, "POST");
 			},
 			back : function(){
+				//window.history.back();
 				community.ui.send("<@spring.url "/display/pages/technical-support.html" />" );
 				return false;
 			},
+			contractorData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("CONTRACTOR", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],
+			contractData : [
+			<#list CommunityContextHelper.getCodeSetService().getCodeSets("PROJECT", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
+			</#list>],
 			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/PROJECT/list.json" />' , {} ),
 			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/mgmt/v1/codeset/CONTRACTOR/list.json" />' , {} ),
 			withinPeriodIssueCount : 0,
@@ -199,16 +192,14 @@
 			unclosedTotalCount : 0
     		});     			
       	
-      	var renderTo = $('#page-top');
-    	renderTo.data('model', observable);
-   		community.ui.bind(renderTo, observable ); 
-    	createContentTabs(observable);
-    			
-		}
+	      	var renderTo = $('#page-top');
+	    	renderTo.data('model', observable);
+	   		community.ui.bind(renderTo, observable ); 
+	    	createContentTabs(observable);
+			}
 	}]); 		
 	 
-	function createContentTabs(observable){ 
-	
+	function createContentTabs(observable){  
 		$('#nav-tabstrip a[data-toggle="tab"]').on('show.bs.tab', function (e) {
 			console.log('clicked');
 			var url = $(this).attr("href"); // the remote url for content
@@ -216,15 +207,17 @@
 			var tab = $(this); // this tab 
 			console.log( url ) ;
 			if(url === '#nav-stats-year' ){ 
-				// google charts loading 
-				//google.charts.load('visualization', '1', {packages:["corechart"]});
-				//google.charts.setOnLoadCallback(drawingMonthlyStatsChart(observable));	  
+				createProjectIssueStateAsChart(observable);
+				window.location.hash = '#nav-stats-year';
 			}else if (url === '#nav-stats-project'){ 
 				createProjectStatsGrid( url, observable ).dataSource.read();
+				window.location.hash = '#nav-stats-project';
 			}else if (url === '#nav-stats-assinee'){ 
 				createAssineeGrid( url, observable ).dataSource.read();
+				window.location.hash = '#nav-stats-assinee';
 			}else if (url === '#nav-stats-terms'){ 
 				createSummaryListView(observable); 
+				window.location.hash = '#nav-stats-terms';
 			}
 			community.ui.send("<@spring.url "" />"+ url );
 		});
@@ -237,48 +230,10 @@
 		} 
 	}  
 
-function createChart() {
-            $("#chart").kendoChart({
-                title: {
-                    text: "Analog signal"
-                },
-                legend: {
-                    visible: false
-                },
-                series: [{
-                    type: "line",
-                    data: [20, 1, 18, 3, 15, 5, 10, 6, 9, 6, 10, 5, 13, 3, 16, 1, 19, 1, 20, 2, 18, 5, 12, 7, 10, 8],
-                    style: "smooth",
-                    markers: {
-                        visible: false
-                    }
-                }],
-                categoryAxis: {
-                    title: {
-                        text: "time"
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    majorTicks: {
-                        visible: false
-                    }
-                },
-                valueAxis: {
-                    max: 22,
-                    title: {
-                        text: "voltage"
-                    },
-                    majorGridLines: {
-                        visible: false
-                    },
-                    visible: false
-                }
-            });
-        }
         
 	function createProjectAssineeGrid ( renderTo , observable ){ 
 		if( !community.ui.exists( renderTo ) ){	 
+			
  			var grid = community.ui.grid( renderTo , {
 				dataSource: {
 					transport: { 
@@ -308,7 +263,7 @@ function createChart() {
 				columns: [
 					{ field: "user.name", title: "담당자", width: 120, filterable: false, sortable: true , template : '#= user.name #', attributes:{ class:"text-center" }},
 					{ field: "total", title: "이슈", filterable: false, sortable: false , template : $('#issue-column-template').html(), attributes:{ class:"g-font-size-14" } },
-					{ field: "completeCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(completeCount) #', attributes:{ class:"text-right" } },
+					{ field: "closedCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(closedCount) #', attributes:{ class:"text-right" } },
 					{ field: "totalCount", title: "전체", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(totalCount) #', attributes:{ class:"text-right" } }
 				]		
 			});
@@ -335,7 +290,7 @@ function createChart() {
 						data: "items"
 					},
 					sort: { field: "month", dir: "asc" },
-					aggregate: [ { field: "completeCount", aggregate: "average" }, { field: "completeCount", aggregate: "sum" }, { field: "totalCount", aggregate: "average" }, { field: "totalCount", aggregate: "sum" }]
+					aggregate: [ { field: "closedCount", aggregate: "average" }, { field: "closedCount", aggregate: "sum" }, { field: "totalCount", aggregate: "average" }, { field: "totalCount", aggregate: "sum" }]
 				},  
 				height: 400,
 				selectable: "row",
@@ -349,7 +304,7 @@ function createChart() {
 				columns: [
 					{ field: "month", title: "월", width: 120, filterable: false, sortable: true , template : '#= month #', attributes:{ class:"text-center" }},
 					{ field: "total", title: "이슈", filterable: false, sortable: false , template : $('#issue-column-template').html(), attributes:{ class:"g-font-size-14" } },
-					{ field: "completeCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(completeCount) #', attributes:{ class:"text-right" }
+					{ field: "closedCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(closedCount) #', attributes:{ class:"text-right" }
 					  , aggregates: ["average", "sum"], footerTemplate: "<div>sum : #= sum #</div> <div>average : #= average #</div>"
 					},
 					{ field: "totalCount", title: "전체", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(totalCount) #', attributes:{ class:"text-right" }
@@ -401,17 +356,63 @@ function createChart() {
 				columns: [
 					{ field: "project.projectId", title: "프로젝트", width: 280, filterable: false, sortable: true , template : $('#project-column-template').html() },
 					{ field: "total", title: "이슈", filterable: false, sortable: false , template : $('#issue-column-template').html(), attributes:{ class:"g-font-size-14" } },
-					{ field: "completeCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(completeCount) #', attributes:{ class:"text-right" } },
+					{ field: "closedCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(closedCount) #', attributes:{ class:"text-right" } },
 					{ field: "totalCount", title: "전체", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(totalCount) #', attributes:{ class:"text-right" } }
 				]		
-			});
-			createChart();
+			}); 
 		}
 		return community.ui.grid( renderTo );
 	}
 		
+	function createBarChart(renderTo , title, data, observable){
+		if( !community.ui.exists( renderTo ) ){	 
+			renderTo.kendoChart({
+                title: {
+                    text: title
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    type: "bar"
+                },
+                series: [{
+                    field: "totalCount",
+                    categoryField: "user.name",
+                    name: "요청건수",
+                    data: data
+                },{
+                    field: "closedCount",
+                    categoryField: "user.name",
+                    name: "완료건수",
+                    data: data
+                }],
+                categoryAxis: {
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                valueAxis: {
+                    labels: {
+                        format: "N0"
+                    },
+                    majorUnit: 50,
+                    line: {
+                        visible: false
+                    }
+                },
+                tooltip: {
+                    visible: true,
+                    format: "N0"
+                }
+            });		
+		}
+	}	
+			
 	function createAssineeGrid ( url , observable ){
 		var renderTo =  $(url + ' .grid');
+		var renderTo2 =  $(url + ' .barchart');
+		
 		if( !community.ui.exists( renderTo ) ){	 
  			var grid = community.ui.grid( renderTo , {
 				dataSource: {
@@ -442,15 +443,15 @@ function createChart() {
 				},
 				dataBound: function (){
 					var $this = this;
+					createBarChart(renderTo2, "담당자별 처리현황", $this.dataSource.data(), observable);
 				},
 				columns: [
 					{ field: "user.userId", title: "담당자", width: 120, filterable: false, sortable: true , template : '#= user.name #', attributes:{ class:"text-center" }},
 					{ field: "total", title: "이슈", filterable: false, sortable: false , template : $('#issue-column-template').html(), attributes:{ class:"g-font-size-14" } },
-					{ field: "completeCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(completeCount) #', attributes:{ class:"text-right" } },
+					{ field: "closedCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(closedCount) #', attributes:{ class:"text-right" } },
 					{ field: "totalCount", title: "전체", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(totalCount) #', attributes:{ class:"text-right" } }
 				]		
-			});
-			createChart();
+			}); 
 		}
 		return community.ui.grid( renderTo );
 	}
@@ -473,7 +474,7 @@ function createChart() {
 						data: "items"
 					},
 					sort: { field: "month", dir: "asc" },
-					aggregate: [ { field: "completeCount", aggregate: "average" }, { field: "completeCount", aggregate: "sum" }, { field: "totalCount", aggregate: "average" }, { field: "totalCount", aggregate: "sum" }]
+					aggregate: [ { field: "closedCount", aggregate: "average" }, { field: "closedCount", aggregate: "sum" }, { field: "totalCount", aggregate: "average" }, { field: "totalCount", aggregate: "sum" }]
 				},  
 				selectable: "row",
 				pageable: false, 
@@ -486,7 +487,7 @@ function createChart() {
 				columns: [
 					{ field: "month", title: "월", width: 120, filterable: false, sortable: true , template : '#= month #', attributes:{ class:"text-center" }},
 					{ field: "total", title: "이슈", filterable: false, sortable: false , template : $('#issue-column-template').html(), attributes:{ class:"g-font-size-14" } },
-					{ field: "completeCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(completeCount) #', attributes:{ class:"text-right" }
+					{ field: "closedCount", title: "완료", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(closedCount) #', attributes:{ class:"text-right" }
 					  , aggregates: ["average", "sum"], footerTemplate: "<div>sum : #= sum #</div> <div>average : #= average #</div>"
 					},
 					{ field: "totalCount", title: "전체", filterable: false, sortable: true, width: 150,  template:'#= community.data.getFormattedNumber(totalCount) #', attributes:{ class:"text-right" }
@@ -499,23 +500,165 @@ function createChart() {
 		return community.ui.grid( renderTo );
 	}
 	
-		 	 
-	function drawingMonthlyStatsChart(observable){  
-      	community.ui.ajax('/data/api/v1//issues/overviewstats/monthly/stats/list.json', {
-      		contentType : "application/json",	
-      		data: community.ui.stringify({
-				filter : { filters : [
-				]}
-      		}),
-			success: function(response){	
-				community.ui.progress($('#year-stats-summary'), true);	
-				setTimeout(function(){ 
-					drawChart(response.items , getContractorName(observable.get("contractor")) + ' 누적 월별 현황' );  
-					community.ui.progress($('#year-stats-summary'), false);	
-				}, 1500);
-			}	
-		});	
-	}
+	 	 
+	function createProjectIssueStateAsChart(observable){  
+ 		var renderTo = $("#chart_div");
+ 		if( !community.ui.exists( renderTo ) ){		 
+			var chart = renderTo.kendoChart({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '<@spring.url "/data/apis/stats_issue_by_year.json"/>', 
+                            type:'post', 
+                            contentType: "application/json; charset=utf-8", 
+                            dataType: 'json'
+                        },
+                        parameterMap : function (options, operation){		
+							return community.ui.stringify(options);
+						}
+                    }, 
+					filter : { filters : [ 
+						{ logic: 'AND', field: "T1.OBJECT_ID", operator: "doesnotcontain", value: 28 }
+					]}, 
+                    sort: {
+                        field: "month",
+                        dir: "asc"
+                    },
+                    serverFiltering : true,
+                    schema: {
+						total: "totalCount",
+						data:  "items"
+					}
+                }, 
+                title: {
+                    text: "월별 이슈 현황"
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    type: "line"
+                },
+                series: [{
+                	type: "line",
+                	style: "smooth", 
+                	color: "red",
+                	axis: "open",
+                    field: "aggregate['001'].value",
+                    categoryField: "month",
+                    name: "오류"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['002'].value",
+                    categoryField: "month",
+                    name: "데이터작업"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['003'].value",
+                    categoryField: "month",
+                    name: "기능변경"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['004'].value",
+                    categoryField: "month",
+                    name: "추가개발"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['005'].value",
+                    categoryField: "month",
+                    name: "기술지원"
+                },
+                {
+                	type: "line",
+                	style: "smooth", 
+                	axis: "open",
+                    field: "aggregate['006'].value",
+                    categoryField: "month", 
+                    name: "영업지원"
+                },
+                {
+                	type: "area",
+                	axis: "open",
+                	style: "smooth", 
+                    field: "totalCount",
+                    categoryField: "month",
+                    name: "OPEN"
+                },
+                {
+                	type: "area",
+                	axis: "closed",
+                	style: "smooth", 
+                	color: "#ccc",
+                    field: "closedCount",
+                    categoryField: "month",
+                    name: "CLOSED"
+                }],
+                categoryAxis: {
+                    labels: {
+                        rotation: -90
+                    },
+                    crosshair: {
+                        visible: true
+                    }
+                },
+                valueAxis: [{
+                	name : "open",
+                	title: { text: "OPEN" },
+                    labels: {
+                        format: "N0"
+                    },
+                    majorUnit: 5
+                },
+                {
+                	name : "closed",
+                	title: { text: "CLOSED" },
+                    labels: {
+                        format: "N0"
+                    },
+                    color: "#ccc",
+                    majorUnit: 5
+                }],
+                tooltip: {
+                    visible: true,
+                    shared: true,
+                    format: "N0"
+                }
+            }); 
+
+            
+            $('#year-stats-summary a[data-action=export]').click(function(){
+				kendo.drawing.drawDOM($("#year-stats-summary"))
+		        .then(function(group) {
+		            // Render the result as a PDF file
+		            return kendo.drawing.exportPDF(group, {
+		                paperSize: "auto",
+		                margin: { left: "1cm", top: "1cm", right: "1cm", bottom: "1cm" }
+		            });
+		        })
+		        .done(function(data) {
+		            // Save the PDF file
+		            kendo.saveAs({
+		                dataURI: data,
+		                fileName: "년간누적이슈처리현황.pdf",
+		                proxyURL: "<@spring.url "/download/proxy"/>"
+		            });
+		        });
+            });
+		}
+ 	}
+ 		 
 
 	function getContractorName(code){
 		var name = "";
@@ -523,7 +666,7 @@ function createChart() {
 			return "";
 		console.log( code );
 		var renderTo = $('#page-top');
-		$.each( renderTo.data("model").contractorDataSource.data(), function( index, value ){
+		$.each( renderTo.data("model").contractorData , function( index, value ){
 			if( value.code == code )
 			{
 				name = value.name;
@@ -532,50 +675,7 @@ function createChart() {
 		} );
 		return name;
 	}
-			
-	/**
-	 * Drawing Charting .
-	 */
-	function drawChart(data, title) {
-		var chart_data = new google.visualization.DataTable();
-		chart_data.addColumn('string', '월');
-		chart_data.addColumn('number', '오류');
-		chart_data.addColumn('number', '데이터작업');
-		chart_data.addColumn('number', '기능변경');
-		chart_data.addColumn('number', '추가개발');
-		chart_data.addColumn('number', '기술지원');
-		chart_data.addColumn('number', '영업지원');
-		chart_data.addColumn('number', '요청');
-		chart_data.addColumn('number', '완료');
-        $.each(data, function( index, item ) {				
-           chart_data.addRow([ item.month + '월', item['aggregate']['001'],item['aggregate']['002'],item['aggregate']['003'],item['aggregate']['004'],item['aggregate']['005'],item['aggregate']['006'],
-					item['aggregate']['001']+item['aggregate']['002']+item['aggregate']['003']+item['aggregate']['004']+item['aggregate']['005']+item['aggregate']['006'],
-					item['aggregate']['000']
-           ]);
-        });
-				
-        var options = {
-          title: title,
-          subtitle: '완료건은 해당기간에 요청된 이슈들에 대한 완료 건입니다.',
-          series : {
-          	0: {lineDashStyle: [10,2], lineWidth: 2  },
-          	1: {lineDashStyle: [10,2], lineWidth: 2  },
-          	2: {lineDashStyle: [10,2], lineWidth: 2  },
-          	3: {lineDashStyle: [10,2], lineWidth: 2  },
-          	4: {lineDashStyle: [10,2], lineWidth: 2  },
-          	5: {lineDashStyle: [10,2], lineWidth: 2  },
-          	6: { lineWidth: 4  },
-          	7: { lineWidth: 4  }
-          },
-         axes: {
-          x: {
-            0: {side: 'top'}
-          }
-        	 }
-        };
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        chart.draw(chart_data, options);
-    }
+		 
       	
 	function getFirstDayOfWeek(){
 		var now = new Date();	
@@ -646,6 +746,21 @@ function createChart() {
 	
 	</script>	
 	<style>
+	
+	@font-face {
+	  font-family: "DejaVu Sans";
+	  font-style: normal;
+	  font-weight: 300;
+	  src: url(<@spring.url "/fonts/nanumgothic/v3/"/>NanumGothic-Regular.eot);
+	  src: url(<@spring.url "/fonts/nanumgothic/v3/"/>NanumGothic-Regular.eot?#iefix) format('embedded-opentype'),
+	       url(<@spring.url "/fonts/nanumgothic/v3/"/>NanumGothic-Regular.woff) format('woff'),
+	       url(<@spring.url "/fonts/nanumgothic/v3/"/>NanumGothic-Regular.ttf) format('truetype');
+	}
+	/*
+            Use the DejaVu Sans font for display and embedding in the PDF file.
+            The standard PDF fonts have no support for Unicode characters.
+	*/
+    .k-chart {font-family: "DejaVu Sans", "Arial", sans-serif;}	
 	.w-100{
 		width: 100%!important;
 	}
@@ -728,7 +843,7 @@ function createChart() {
 		</div>
       </div>
     </section>
-    <div class="u-shadow-v19 g-bg-gray-light-v5"  data-bind="visible: visible" style="display:none;">
+    <div class="u-shadow-v19 g-bg-gray-light-v5" >
 	<section class="container g-py-30 g-pos-rel">
 	<!-- tabs -->
 	<nav id="nav-tabstrip" class="g-font-weight-400" >
@@ -750,6 +865,11 @@ function createChart() {
 	</nav> 
 	<!-- /.tabs --> 
 	</section> 
+	
+			<div data-bind="invisible: visible" class="text-center">
+				<img src="<@spring.url ""/>${__page.getProperty("preloader.image", "/images/preloaders/loader_holiday.gif") }" class="animated zoomIn img-fluid" />
+			</div>	
+		
 	</div>
 	<div class="tab-content g-bg-gray-light-v5 g-min-height-500" id="myTabContent">
 		<div class="tab-pane fade" id="nav-stats-year" role="tabpanel" aria-labelledby="home-tab"> 
@@ -761,14 +881,17 @@ function createChart() {
 		           	<h4 class="g-font-weight-200">년간 전체 프로젝트 이슈처리 현황입니다.</h4>
 				</div>  
 				<!-- /.heading -->		
-				<div id="chart_div" style="width: 100%; height: 500px;"></div> 
+				<div class="row">
+				<a class="u-link-v5 g-color-gray-dark-v4 g-color-gray-light-v6 g-color-secondary--hover g-mr-15 g-font-weight-300" href="#!" data-action="export">
+					<i class="icon-share-alt g-font-size-18"></i> SAVE AS PDF
+				</a>
+				<div id="chart_div" style="width: 100%; min-height: 500px;"></div> 
+				</div>
 			</div>
 		</div>
 		</div>
 		<div class="tab-pane fade" id="nav-stats-assinee" role="tabpanel" aria-labelledby="assinee-tab"> 
-			
-			<div id="chart" style="width: 100%; height: 500px;"></div>
-		
+			<div class="barchart"></div>
 			<div class="grid"></div>
 			<div class="monthly-grid"></div>
 		</div>
@@ -781,13 +904,14 @@ function createChart() {
 		<div class="u-shadow-v19 g-bg-gray-light-v5">
 		<section class="container g-py-30">
 			<!-- heading -->
+			<!--
 			<div class="u-heading-v2-4--bottom g-mb-10">
 	           	<h2 class="text-uppercase u-heading-v2__title g-mb-10">기간별 이슈처리 현황</h2>
 	           	<h4 class="g-font-weight-200">기간에 따른 이슈처리 현황입니다.</h4>
-			</div>  
+			</div>  -->
 			<!-- /.heading -->	
 			<!-- search condition -->
-			<div class="row align-items-center g-pt-40 g-pb-10">
+			<div class="row align-items-center g-pb-10">
 				<div class="col-md-6 col-lg-4 g-mb-30">
 					<h3 class="h6 mb-3"> 계약자 </h3>	
 					<input data-role="dropdownlist"
@@ -796,8 +920,8 @@ function createChart() {
 						data-auto-bind="true"
 						data-text-field="name"
 						data-value-field="code"
-						data-bind="value:contractor, source: contractorDataSource"
-						style="width: 100%;" /> 			
+						data-bind="value:contractor, source: contractorData"
+						style="width: 100%;" /> 
 				</div>
 				<div class="col-md-6 col-lg-4 g-mb-30">
 					<h3 class="h6 mb-3"> 시작일 </h3>	
@@ -810,34 +934,34 @@ function createChart() {
 			</div>
 			<h3 class="h6 mb-3"> 제외할 프로젝트를 선택하세요  </h3>	
 			<div class="row">
-				<div class="col-md-12"> 
-					<select id="listbox1" data-role="listbox" class="g-width-300 g-height-280"
+				<div class="col-md-6 col-lg-4 g-mb-30">
+					<select id="listbox1" data-role="listbox" class="g-height-150" style="min-width: 100%;"
 		                data-text-field="name"
 		                data-value-field="projectId" 
 		                data-toolbar='{
-		                tools: ["moveUp", "moveDown", "transferTo", "transferFrom", "transferAllTo", "transferAllFrom", "remove"]
+		                tools: ["transferTo", "transferFrom"]
 		            }'
 		                data-connect-with="listbox2"
-		                data-bind="source: projects,
+		                data-bind="source: projectsData,
 		                    events: {
 		                        change: change, 
 		                        reorder: reorder,
 		                        remove: remove
 		                    }">
-		       		</select> 
-		        	<select id="listbox2" data-role="listbox" class="g-width-250 g-height-280"
+		       		</select> 	
+		       	</div>				
+				<div class="col-md-12 col-lg-4 g-mb-30">
+		        	<select id="listbox2" data-role="listbox" class="g-height-150 g-brd-red g-brd-1" style="min-width: 100%;"
 		                data-connect-with="listbox1"
 		                data-text-field="name"
 		                data-value-field="projectId">
-		        	</select>							
-				</div>
-			</div>	 
-			<div class="row">
-				<div class="col-12 text-right g-pt-10"> 
+		        	</select>				
+				</div> 
+				<div class="col-md-6 col-lg-4 text-right">
 					<button type="button" class="btn btn-md u-btn-3d u-btn-darkgray g-px-25 g-py-13" data-bind="{click:search}">검색</button>
 					<button type="button" class="btn btn-lg u-btn-3d u-btn-lightred g-px-25 g-py-11" data-bind="{click:exportExcel}">엑셀 다운로드</button>
-				</div>	 
-			</div>	 		 		 	
+				</div>
+			</div> 		 	
 			<!-- search condition -->
 		</section>
 		<div class="u-shadow-v19 g-color-white g-bg-black-opacity-0_7">
@@ -892,12 +1016,12 @@ function createChart() {
 	</p>	
 	</script>
 	<script type="text/x-kendo-template" id="issue-column-template">
-	#:aggregate["001"].name # : #= aggregate["001"].value # #if( typeof completeAggregate !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= completeAggregate["001"].value # </span> #}# ,
-	#:aggregate["002"].name # : #= aggregate["002"].value # #if( typeof completeAggregate !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= completeAggregate["002"].value # </span> #}# ,
-	#:aggregate["003"].name # : #= aggregate["003"].value # #if( typeof completeAggregate !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= completeAggregate["003"].value # </span> #}# ,
-	#:aggregate["004"].name # : #= aggregate["004"].value # #if( typeof completeAggregate !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= completeAggregate["004"].value # </span> #}# ,
-	#:aggregate["005"].name # : #= aggregate["005"].value # #if( typeof completeAggregate !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= completeAggregate["005"].value # </span> #}# ,
-	#:aggregate["006"].name # : #= aggregate["006"].value # #if( typeof completeAggregate !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= completeAggregate["006"].value # </span> #}#
+	#:aggregate["001"].name # : #= aggregate["001"].value # #if( typeof closedAggregate["001"] !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= closedAggregate["001"].value # </span> #}# ,
+	#:aggregate["002"].name # : #= aggregate["002"].value # #if( typeof closedAggregate["002"] !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= closedAggregate["002"].value # </span> #}# ,
+	#:aggregate["003"].name # : #= aggregate["003"].value # #if( typeof closedAggregate["003"] !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= closedAggregate["003"].value # </span> #}# ,
+	#:aggregate["004"].name # : #= aggregate["004"].value # #if( typeof closedAggregate["004"] !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= closedAggregate["004"].value # </span> #}# ,
+	#:aggregate["005"].name # : #= aggregate["005"].value # #if( typeof closedAggregate["005"] !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= closedAggregate["005"].value # </span> #}# ,
+	#:aggregate["006"].name # : #= aggregate["006"].value # #if( typeof closedAggregate["006"] !== "undefined" ){# <span class="u-label u-label--sm g-bg-gray-light-v4 g-color-main g-rounded-20 g-px-10"> #= closedAggregate["006"].value # </span> #}#
 	</script>
 			
 	<script type="text/x-kendo-template" id="template">

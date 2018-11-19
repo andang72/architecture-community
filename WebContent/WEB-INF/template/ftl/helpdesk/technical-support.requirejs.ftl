@@ -42,39 +42,70 @@
 	<link rel="stylesheet" href="<@spring.url "/css/bootstrap.theme/unify/custom.css"/>">
 		
 	<!-- Page landing js -->	   	
-	<link rel="stylesheet" href="<@spring.url "/css/pace/pace-theme-flash.css"/>">
 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>   	
-	
-	<!-- Yepnope for js loading -->
-	<script src="<@spring.url "/js/yepnope/1.5.4/yepnope.min.js"/>" type="text/javascript"></script>
-		
+	<!-- Requirejs for js loading -->
+	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
 	<!-- Application JavaScript
     		================================================== -->    
 	<script>
-	yepnope([{
-		load: [			 
-			'<@spring.url "/js/jquery/jquery-3.3.1.min.js"/>', 
-			'<@spring.url "/js/bootstrap/4.1.3/bootstrap.bundle.min.js"/>', 
-			
-			'<@spring.url "/js/kendo/2018.3.1017/kendo.web.min.js"/>',
-			'<@spring.url "/js/kendo/2018.3.1017/cultures/kendo.culture.ko-KR.min.js"/>',
-			'<@spring.url "/js/kendo.extension/kendo.messages.ko-KR.js"/>',	 
-			
-			'<@spring.url "/js/community.ui/community.ui.core.js"/>',
-			'<@spring.url "/js/community.ui/community.data.js"/>',
-			
-			'<@spring.url "/js/bootstrap.theme/unify/hs.core.js"/>',
-			'<@spring.url "/js/bootstrap.theme/unify/components/hs.header.js"/>',
-			'<@spring.url "/js/bootstrap.theme/unify/helpers/hs.hamburgers.js"/>',
-			'<@spring.url "/assets/js/components/hs.dropdown.js"/>',
-			
-			'<@spring.url "/assets/vendor/dzsparallaxer/dzsparallaxer.js"/>',
-			'<@spring.url "/assets/vendor/dzsparallaxer/dzsscroller/scroller.js"/>',
-			'<@spring.url "/assets/vendor/dzsparallaxer/advancedscroller/plugin.js"/>'
-		],
-		complete: function() { 
-		// Start of Application Initialization
-		
+	require.config({
+		shim : {
+			<!-- summernote -->
+			"summernote-ko-KR" : { "deps" :['summernote.min'] },		
+			<!-- Bootstrap -->
+			"jquery.cookie" 			: { "deps" :['jquery'] },
+	        "bootstrap" 				: { "deps" :['jquery'] },
+			<!-- Professional Kendo UI -->
+			"kendo.web.min" 			: { "deps" :['jquery'] },
+	        "kendo.culture.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	   
+	        "kendo.messages.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	  
+			<!-- community -- >
+	        "community.ui.core"			: { "deps" :['jquery', 'kendo.web.min', 'kendo.culture.min' ] },
+	        "community.data" 			: { "deps" :['jquery', 'kendo.web.min', 'community.ui.core' ] },
+	        <!-- Unify -- > 			
+			"hs.core" : { "deps" :['jquery', 'bootstrap'] },
+			"hs.header" : { "deps" :['jquery', 'hs.core'] },
+			"hs.hamburgers" : { "deps" :['jquery', 'hs.core'] },
+			"hs.dropdown" : { "deps" :['jquery', 'hs.core'] },
+	        "dzsparallaxer" : { "deps" :['jquery'] },
+	        "dzsparallaxer.dzsscroller" : { "deps" :['jquery', 'dzsparallaxer' ] },
+			"dzsparallaxer.advancedscroller" : { "deps" :['jquery', 'dzsparallaxer' ] }	
+	    },
+		paths : {
+			"jquery"    				: "/js/jquery/jquery-3.3.1.min",
+			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
+			"bootstrap" 				: "/js/bootstrap/4.1.3/bootstrap.bundle.min",
+			<!-- Professional Kendo UI --> 
+			"kendo.web.min"	 			: "/js/kendo/2018.3.1017/kendo.web.min",
+			"kendo.culture.min"			: "/js/kendo/2018.3.1017/cultures/kendo.culture.ko-KR.min",	
+			"kendo.messages.min"		: "/js/kendo.extension/kendo.messages.ko-KR",	
+			<!-- summernote -->
+			"summernote.min"             : "/js/summernote/summernote-bs4.min",
+			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR"	,
+			"dropzone"					: "/js/dropzone/dropzone",			
+			<!-- community -- >
+			"community.ui.core" 		: "/js/community.ui/community.ui.core",
+			"community.data" 			: "/js/community.ui/community.data",   
+			<!-- Unify -->
+	    	"hs.core" 	   					: "/js/bootstrap.theme/unify/hs.core",
+			"hs.header" 	   				: "/js/bootstrap.theme/unify/components/hs.header",
+			"hs.hamburgers"   				: "/js/bootstrap.theme/unify/helpers/hs.hamburgers",
+			"hs.dropdown" 	   				: "/assets/js/components/hs.dropdown",
+			<!-- Dzsparallaxer -->		
+			"dzsparallaxer"           	: "/assets/vendor/dzsparallaxer/dzsparallaxer",
+			"dzsparallaxer.dzsscroller"	: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
+			"dzsparallaxer.advancedscroller"	: "/assets/vendor/dzsparallaxer/advancedscroller/plugin",
+			"polyfills"							: "/js/polyfills/EventSource"
+		}
+	});
+	
+	require([ 
+		"jquery", "bootstrap", 
+		"community.data", "kendo.messages.min",
+		"hs.header", "hs.hamburgers", 'hs.dropdown', 
+		'dzsparallaxer.advancedscroller',
+		'polyfills' ], function($, kendo ) {	
+
 		// init header 
 		$.HSCore.components.HSHeader.init($('#js-header'));	
 		$.HSCore.helpers.HSHamburgers.init('.hamburger');
@@ -130,6 +161,9 @@
 				data.copy($this.currentUser)
 				$this.set('isDeveloper', isDeveloper());
 				$this.set('enabled', true);
+				<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
+				createNotification($this);				
+				</#if>
 			},
 			notificationEnabled : false,
 			requestPermission : function (){ 
@@ -148,12 +182,9 @@
 			        }
 			    }); 
 			},
-			contractorData : [
-			<#list CommunityContextHelper.getCodeSetService().getCodeSets("CONTRACTOR", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
-			</#list>],
-			contractData : [
-			<#list CommunityContextHelper.getCodeSetService().getCodeSets("PROJECT", "") as item >{ code:'${item.code}', name:'${item.name}' }<#if !item?is_last>,</#if>
-			</#list>],
+			goStats : function () {
+			
+			},
 			contractorDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/CONTRACTOR/list.json" />' , {} ),
 			contractDataSource : community.ui.datasource( '<@spring.url "/data/api/v1/codeset/PROJECT/list.json" />' , {} ),
 			projectsDataSource : community.ui.datasource_v4( '<@spring.url "/data/api/v1/projects/list_v2.json"/>' , {
@@ -221,7 +252,7 @@
     	
     	var renderTo = $('#page-top');	
     	
-		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view], a[data-action=view2], a[data-action=overviewstats]", function(e){			
+		renderTo.on("click", "button[data-action=create], a[data-action=create], a[data-action=view], a[data-action=view2], button[data-action=overviewstats]", function(e){			
 			var $this = $(this);
 			var actionType = $this.data("action");		
 			var objectId = $this.data("object-id");		
@@ -244,13 +275,8 @@
     	community.ui.bind(renderTo, observable );	
     	community.ui.tooltip(renderTo); 
     	 
-    	createContentTabs(observable);		
-		<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >	
-		createNotification(observable);				
-		</#if>		
-		// End of Application Initialization
-		}
-	}]); 
+    	createContentTabs(observable);		 
+	});
 	
 	function createContentTabs(observable){  
 		$('#nav-tabstrip a[data-toggle="tab"]').on('show.bs.tab', function (e) {
@@ -260,10 +286,8 @@
 			 
 			if(url === '#nav-issues'){
 				createIssueGrid(observable)
-				window.location.hash = '#nav-issues'
 			}else if (url === '#nav-projects'){ 
 				createProjectListView(observable);		
-				window.location.hash = '#nav-projects';
 			} 
 		}); 
 		observable.set('visible', true );
@@ -391,7 +415,7 @@
 		if( code == null )
 			return "";
 		var renderTo = $('#page-top');
-		$.each( renderTo.data("model").contractorData, function( index, value ){
+		$.each( renderTo.data("model").contractorDataSource.data(), function( index, value ){
 			if( value.code == code )
 			{
 				name = value.name;
@@ -673,10 +697,9 @@
 	</section>
  	<!-- tabs -->
 	 <div class="u-shadow-v19 g-bg-gray-light-v5">
-		<section class="container g-py-30 g-pos-re" >
+		<section class="container g-py-30 g-pos-rel"  data-bind="visible: visible" style="display:none;">
 			<#if currentUser.anonymous >
-			
-			<a href="/accounts/login" class=" btn-link px-0">로그인</a>이 필요한 서비스입니다.
+			로그인이 필요한 서비스입니다.
 			<#else>
 			 <nav id="nav-tabstrip" class="g-font-weight-400">
 			  <div class="nav justify-content-center text-uppercase u-nav-v5-1 u-nav-dark g-line-height-1_4" id="nav-tab" role="tablist">
@@ -685,25 +708,15 @@
 			    </#if>
 			    <a class="nav-item nav-link g-px-25" id="nav-profile-tab" data-toggle="tab" href="#nav-projects" role="tab" aria-controls="nav-profile" aria-selected="false"><i class="icon-sport-155 u-line-icon-pro"></i> 프로젝트</a>
 			    <#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") > 
-			    <a href="#!" data-action="overviewstats" class="btn btn-xl u-btn-bluegray u-btn-hover-v1-4 g-letter-spacing-0_5 text-uppercase g-rounded-50 g-px-30 g-mr-10 g-mb-15 pull-right">
-                        <span class="pull-left text-left">
-                          통계
-                          <span class="d-block g-font-size-11">이슈 처리현황을 분석합니다.</span>
-                        </span>
-                        <i class="fa fa-area-chart float-right g-font-size-42 g-ml-15"></i>
-                      </a>
-				
+			    <button class="btn btn-md u-btn-darkred g-pos-abs" style="right:0px;" data-action="overviewstats" data-toggle="tooltip" data-placement="top" data-original-title="이슈 관련 통계 데이터를 확인할 수 있습니다." style="">통계</button>
 				</#if>  
 			  </div>
-			</nav>	 
-			<div data-bind="invisible: visible" class="text-center g-pa-30 img-fluid">
-				<img src="<@spring.url ""/>${__page.getProperty("preloader.image", "/images/preloaders/santa-loading.gif") }" class="animated rotateIn g-rounded-50x"/>
-			</div>			
+			</nav>	
 			</#if>
 		</section>
 	</div>
 	<!-- /.tabs -->
-<div class="tab-content" id="nav-tabContent">
+<div class="tab-content g-min-height-600" id="nav-tabContent">
 	<#if SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
 	<div class="tab-pane fade" id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab" >  
 	<section data-bind="visible:isDeveloper">
@@ -711,9 +724,10 @@
 	    <div class="container">
 	        <div class="row g-pt-25">
 	            <div class="col-lg-12">
-	            	<header class="">
-			            <p>금주에 처리해야할 업무입니다. <span class="g-color-red">담당자가 지정되지 않은 이슈는 협의하여 담당자를 지정해주세요.</span></p>
-					</header>
+		            <div class="u-heading-v2-4--bottom g-mb-40">
+					  <h2 class="text-uppercase u-heading-v2__title g-mb-10">금주 나에게 배정된 업무</h2>
+					  <h4 class="g-font-weight-200">금주에 처리해야할 업무입니다. <span class="g-color-red">담당자가 지정되지 않은 이슈는 협의하여 담당자를 지정해주세요.</span> </h4>
+					</div>
 	            </div>
 	        </div>
 			<div class="row align-items-center g-pt-10 g-pb-10">
@@ -776,9 +790,10 @@
 		<div class="container" data-bind="visible:isDeveloper" >
 			<div class="row g-pt-25">
 	            <div class="col-lg-12">
-	            	<header class="">
-			            <p>프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</p>
-					</header>
+		            <div class="u-heading-v2-4--bottom g-mb-40">
+					  <h2 class="text-uppercase u-heading-v2__title g-mb-10">프로젝트 & 유지보수</h2>
+					  <h4 class="g-font-weight-200">프로젝트 이름을 클릭하면 등록된 이슈들을 열람할 수 있습니다.</h4>
+					</div>
 	            </div>
 	        </div>
 	        		
@@ -797,7 +812,7 @@
 					data-auto-bind="true"
 					data-text-field="name"
 					data-value-field="code"
-					data-bind="value: filter.PROJECT_CONTRACTOR, source: contractorData"
+					data-bind="value: filter.PROJECT_CONTRACTOR, source: contractorDataSource"
 					style="width: 100%;" />             
             </div>
           </div>
@@ -813,7 +828,7 @@
 				data-auto-bind="true"
 				data-text-field="name"
 				data-value-field="code"
-				data-bind="value: filter.PROJECT_CONTRACT, source: contractData"
+				data-bind="value: filter.PROJECT_CONTRACT, source: contractDataSource"
 				style="width: 100%;" />             
             </div>
           </div>
@@ -829,7 +844,7 @@
 				data-auto-bind="true"
 				data-text-field="name"
 				data-value-field="projectId"
-				data-bind="value: filter.ID, source: projectsDatasource"
+				data-bind="value: filter.ID, source: projectsDataSource"
 				style="width: 100%;" />             
             </div>
           </div>
@@ -877,28 +892,46 @@
 				</div>
 			</div>	
 		</div>	
-	</section>	 
-  </div> 
+	</section>	  
+  
+  
+  
+  </div>
+  <div class="tab-pane fade" id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab">
+  
+  
+  
+
+  
+  
+  
+  </div>
 </div>           
-<!-- ANNOUNCES -->
-<#assign announces = CommunityContextHelper.getAnnounceService().getAnnounces(0,0) />	
-<#if ( announces?size > 0 ) && SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
-	<#list announces as announce >
-<section class="g-brd-around g-brd-gray-light-v4 g-pa-50">
-	<div class="container">	
-		<div class="row justify-content-md-around">
-			<div class="col-md-12 align-self-md-center">
-				<h2>${announce.subject}</h2>
-				<article class="lead g-mb-20 g-mb-0--md">
-				 ${announce.body}
-				 </article>
-			</div>
-		</div>
-	</div>
-</section>		
-	</#list>
-</#if>
-<!-- END ANNOUNCES --> 
+    <!-- ANNOUNCES -->
+    <#assign announces = CommunityContextHelper.getAnnounceService().getAnnounces(0,0) />	
+    <#if ( announces?size > 0 ) && SecurityHelper.isUserInRole("ROLE_DEVELOPER") >
+	<section class="g-pt-50">
+		<div class="container"> 
+			<div class="row justify-content-center">
+				<div class="col-md-12 align-self-md-center">
+				<p class="lead g-mb-30"><i class="fa fa-bullhorn"></i> 새로운 공지가 있습니다.</p> 
+										
+				<#list announces as announce >
+				<!-- Announce -->
+				<div class="g-brd-around g-brd-gray-light-v4 g-brd-left-4 g-brd-blue-left g-line-height-1_8 g-rounded-3 g-pa-20 g-mb-30" role="alert">
+				  <h3 class="g-color-blue g-font-weight-600"> ${announce.subject}</h3>
+				  <p class="mb-0 g-font-size-20"> 
+				  ${announce.body}
+				  </p>
+				</div>
+  				<!-- End Announce -->				
+				</#list>
+				</div>	
+			</div>	
+		 </div>
+	</section>					
+    </#if>
+    <!-- END ANNOUNCES --> 
 
 	<!-- FOOTER START -->   
 	<#include "includes/user-footer.ftl">
@@ -1013,19 +1046,19 @@
 						#}#
 					</div>
 					<div class="col-md-1 forum-info">
-						<span class="views-number"> #= issueTypeStats.total # </span>
+						<span class="views-number"> #= issueTypeStats.items[issueTypeStats.items.length - 1].value # </span>
 						<div>
 							<small>요청</small>
 						</div>
 					</div>
 					<div class="col-md-1 forum-info">
-						<span class="views-number"> #= resolutionStats.total # </span>
+						<span class="views-number"> #= resolutionStats.items[resolutionStats.items.length - 1].value # </span>
 						<div>
 							<small>처리</small>
 						</div>
 					</div>
 					<div class="col-md-1 forum-info">
-						<span class="views-number">#= issueTypeStats.total -  resolutionStats.total # </span>
+						<span class="views-number">#= issueTypeStats.items[issueTypeStats.items.length - 1].value -  resolutionStats.items[resolutionStats.items.length - 1].value # </span>
 						<div>
 							<small>미처리</small>
 						</div>
@@ -1056,7 +1089,7 @@
 		                   data-value-primitive="true"
 		                   data-text-field="name"
 		                   data-value-field="projectId"
-		                   data-bind="value:issue.objectId, source: projectsDataSource"
+		                   data-bind="value:issue.objectId, source:projectDataSource"
 		                   style="width: 100%;"/>			        	  
 					</div>
 									 

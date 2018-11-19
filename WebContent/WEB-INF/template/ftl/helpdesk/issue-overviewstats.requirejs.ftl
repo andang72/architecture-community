@@ -44,36 +44,73 @@
 	<script data-pace-options='{ "ajax": false }' src='<@spring.url "/js/pace/pace.min.js"/>'></script>   	
 	<!-- Yepnope for js loading -->
 	<script src="<@spring.url "/js/yepnope/1.5.4/yepnope.min.js"/>" type="text/javascript"></script> 
-	
+	<!-- Requirejs for js loading -->
+	<script src="<@spring.url "/js/require.js/2.3.5/require.js"/>" type="text/javascript"></script>
 	<!-- Application JavaScript
     		================================================== -->    
 	<script>
-	yepnope([{
-		load: [			 
-			'<@spring.url "/js/jquery/jquery-3.3.1.min.js"/>', 
-			'<@spring.url "/js/bootstrap/4.1.3/bootstrap.bundle.min.js"/>', 
-				 
-			'<@spring.url "/js/kendo/2018.3.1017/kendo.all.min.js"/>',
-			'<@spring.url "/js/kendo/2018.3.1017/cultures/kendo.culture.ko-KR.min.js"/>',
-			'<@spring.url "/js/kendo.extension/kendo.messages.ko-KR.js"/>',	 
-			
-			'<@spring.url "/js/community.ui/community.ui.core.js"/>',
-			'<@spring.url "/js/community.ui/community.data.js"/>',
-			
-			'<@spring.url "/js/bootstrap.theme/unify/hs.core.js"/>',
-			'<@spring.url "/js/bootstrap.theme/unify/components/hs.header.js"/>',
-			'<@spring.url "/js/bootstrap.theme/unify/helpers/hs.hamburgers.js"/>',
-			'<@spring.url "/assets/js/components/hs.dropdown.js"/>',
-			
-			'<@spring.url "/assets/vendor/dzsparallaxer/dzsparallaxer.js"/>',
-			'<@spring.url "/assets/vendor/dzsparallaxer/dzsscroller/scroller.js"/>',
-			'<@spring.url "/assets/vendor/dzsparallaxer/advancedscroller/plugin.js"/>'
-		],
-		complete: function() { 
-		
+	require.config({
+		shim : {
+			<!-- summernote -->
+			"summernote-ko-KR" : { "deps" :['summernote.min'] },
+			<!-- Bootstrap -->
+			"jquery.cookie" 			: { "deps" :['jquery'] },
+	        "bootstrap" 				: { "deps" :['jquery'] },
+			<!-- Professional Kendo UI -->
+			"kendo.web.min" 			: { "deps" :['jquery'] },
+	        "kendo.culture.min" 		: { "deps" :['jquery', 'kendo.web.min'] },	   
+	        "kendo.messages.min" 		: { "deps" :['jquery', 'kendo.web.min'] },
+			<!-- community -- >
+	        "community.ui.core"			: { "deps" :['jquery', 'kendo.web.min', 'kendo.culture.min' ] },
+			"community.data" 			: { "deps" :['jquery', 'kendo.web.min', 'community.ui.core' ] },
+			<!-- Unify -- > 			
+			"hs.core" : { "deps" :['jquery', 'bootstrap'] },
+			"hs.header" : { "deps" :['jquery', 'hs.core'] },
+			"hs.hamburgers" : { "deps" :['jquery', 'hs.core'] },
+			"hs.dropdown" : { "deps" :['jquery', 'hs.core'] },
+			"dzsparallaxer" : { "deps" :['jquery'] },
+			"dzsparallaxer.dzsscroller" : { "deps" :['jquery', 'dzsparallaxer' ] },
+			"dzsparallaxer.advancedscroller" : { "deps" :['jquery', 'dzsparallaxer' ] }	
+		},
+		paths : {
+			"jquery"    				: "/js/jquery/jquery-3.3.1.min",
+			"jquery.cookie"    			: "/js/jquery.cookie/1.4.1/jquery.cookie",
+			"bootstrap" 				: "/js/bootstrap/4.1.3/bootstrap.bundle.min",
+			<!-- Professional Kendo UI --> 
+			"kendo.web.min"	 			: "/js/kendo/2018.3.1017/kendo.all.min",
+			"kendo.culture.min"			: "/js/kendo/2018.3.1017/cultures/kendo.culture.ko-KR.min",
+			"kendo.messages.min"		: "/js/kendo.extension/kendo.messages.ko-KR",			
+			"jszip"						: "/js/kendo/2018.3.1017/jszip.min",
+			<!-- summernote -->
+			"summernote.min"             : "/js/summernote/summernote-bs4.min",
+			"summernote-ko-KR"           : "/js/summernote/lang/summernote-ko-KR",
+			"dropzone"					: "/js/dropzone/dropzone",
+			<!-- community -- >
+			"community.ui.core" 		: "/js/community.ui/community.ui.core",
+			"community.data" 			: "/js/community.ui/community.data",
+			<!-- Unify -->
+	    	"hs.core" 	   					: "/js/bootstrap.theme/unify/hs.core",
+			"hs.header" 	   				: "/js/bootstrap.theme/unify/components/hs.header",
+			"hs.hamburgers"   				: "/js/bootstrap.theme/unify/helpers/hs.hamburgers",
+			"hs.dropdown" 	   				: "/assets/js/components/hs.dropdown",
+			<!-- Dzsparallaxer -->		
+			"dzsparallaxer"           	: "/assets/vendor/dzsparallaxer/dzsparallaxer",
+			"dzsparallaxer.dzsscroller"	: "/assets/vendor/dzsparallaxer/dzsscroller/scroller",
+			"dzsparallaxer.advancedscroller"	: "/assets/vendor/dzsparallaxer/advancedscroller/plugin"
+		}
+	});
+	
+	require([ 
+		"jquery", "bootstrap", 
+		"community.data", "kendo.messages.min", "kendo.web.min", "jszip",
+		"hs.header", "hs.hamburgers", 'hs.dropdown', 'dzsparallaxer.advancedscroller',	
+		"https://www.gstatic.com/charts/loader.js"
+		], function($, kendo ) {		
+
 		// init header 
 		$.HSCore.components.HSHeader.init($('#js-header'));	
-		$.HSCore.helpers.HSHamburgers.init('.hamburger'); 
+		$.HSCore.helpers.HSHamburgers.init('.hamburger');
+		
 		// initialization of HSDropdown component
       	$.HSCore.components.HSDropdown.init($('[data-dropdown-target]')); 
       				
@@ -203,9 +240,7 @@
     	renderTo.data('model', observable);
    		community.ui.bind(renderTo, observable ); 
     	createContentTabs(observable);
-    			
-		}
-	}]); 		
+	});		
 	 
 	function createContentTabs(observable){ 
 	
