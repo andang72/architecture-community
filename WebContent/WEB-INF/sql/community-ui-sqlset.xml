@@ -365,5 +365,11 @@
 	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list></#if>
     ]]></dynamic></sql-query>
     
+    
+    <sql-query name="SELECT_ALL_API_PATTERN_AND_ID" description="SELECT_ALL_API_PATTERN_AND_ID"><![CDATA[
+	SELECT API_ID , PATTERN 
+	FROM AC_UI_API 
+	WHERE PATTERN IS NOT NULL
+	]]></sql-query> 
 
 </sqlset>

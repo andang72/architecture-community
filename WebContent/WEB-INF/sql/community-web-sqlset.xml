@@ -225,7 +225,8 @@
 	DELETE REP_ISSUE WHERE ISSUE_ID = ? 
     ]]></sql-query>	  
     
- 	<sql-query name="COUNT_ISSUE_SUMMARY_BY_REQUEST" description="COUNT_ISSUE_SUMMARY_BY_REQUEST"><![CDATA[    	
+ 	<sql-query name="COUNT_ISSUE_SUMMARY_BY_REQUEST" description="COUNT_ISSUE_SUMMARY_BY_REQUEST"><![CDATA[    
+ 	-- 	
 	SELECT 
 		count( T1.ISSUE_ID )
 	FROM REP_ISSUE T1 , REP_PROJECT T2
@@ -234,18 +235,30 @@
 		AND T1.OBJECT_ID = T2.PROJECT_ID
  	]]><dynamic><![CDATA[    	
  	<#if data.TILL_THIS_WEEK??> AND ( to_char( T1.DUE_DATE, 'yyyyMMdd') <= '${data.TILL_THIS_WEEK}' or ( T1.DUE_DATE is null AND to_char( T1.CREATION_DATE, 'yyyyMMdd') <= '${data.TILL_THIS_WEEK}' ) )</#if>
- 	<#if filter??><#list filter.filters as item >
+ 	<#if filter??> 
+ 	<#list filter.filters as item >
  	<#if item.filters?has_content >
  	${item.logic} ( <#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
  	<#else>
-	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE < 1 </#if>
- 	<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
+ 	<#if item.field == "assigneeType">
+ 	<#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE < 1 </#if>
+ 	<#else>
+	<#if item.logic??>${item.logic}</#if> 
+ 	<#if item.operator == "doesnotcontain" > ${item.field} NOT IN ( ${item.value} ) 
+ 	<#elseif item.operator == "eq" > ${item.field} = '${item.value}'
+ 	<#elseif item.operator == "neq" > ${item.field} != '${item.value}'
+ 	<#elseif item.operator == "gte" > ${item.field} >= '${item.value}'
+ 	<#elseif item.operator == "lte" > ${item.field} <= '${item.value}' </#if>
+ 	</#if> 
  	</#if>
- 	</#list></#if>
+ 	</#list>
+ 	</#if>
  	 ]]></dynamic></sql-query>		
 
 
  	<sql-query name="SELECT_ISSUE_SUMMARY_BY_REQUEST" description="SELECT_ISSUE_SUMMARY_BY_REQUEST"><![CDATA[    	
+ 	-- SELECT_ISSUE_SUMMARY_BY_REQUEST
+ 	
 	SELECT 
 		T2.PROJECT_ID, 
 		T2.CONTRACTOR AS PROJECT_CONTRACTOR ,
@@ -264,21 +277,34 @@
 		T1.DUE_DATE,
 		T1.RESOLUTION_DATE,
 		T1.CREATION_DATE,
-		T1.MODIFIED_DATE
-	FROM REP_ISSUE T1 , REP_PROJECT T2
+		T1.MODIFIED_DATE,
+		T1.TASK_ID,
+		T3.TASK_NAME
+	FROM REP_ISSUE T1 , REP_PROJECT T2,  AC_TASK T3
 	WHERE 
 		T1.OBJECT_TYPE = 19
 		AND T1.OBJECT_ID = T2.PROJECT_ID
+		AND T1.TASK_ID = T3.TASK_ID (+)
  	]]><dynamic><![CDATA[ 
  	<#if data.TILL_THIS_WEEK??>AND ( to_char( T1.DUE_DATE, 'yyyyMMdd') <= '${data.TILL_THIS_WEEK}' or ( T1.DUE_DATE is null AND to_char( T1.CREATION_DATE, 'yyyyMMdd') <= '${data.TILL_THIS_WEEK}' ) )</#if>
- 	<#if filter??><#list filter.filters as item >
+ 	<#if filter??> 
+ 	<#list filter.filters as item >
  	<#if item.filters?has_content >
  	${item.logic} ( <#list item.filters as item_item ><#if item_item.logic??>${item_item.logic}</#if> ${item_item.field} <#if item_item.operator == "eq" ><#if item_item.value??>=<#else>IS NULL</#if><#elseif item_item.operator == "neq"><#if item_item.value??>!=<#else>IS NOT NULL</#if><#elseif item_item.operator == "gte">>=<#elseif item_item.operator == 'lte'><=</#if><#if item_item.value?? >'${item_item.value}'</#if></#list> )
  	<#else>
-	<#if item.field == "assigneeType"><#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE < 1 </#if>
- 	<#else>${item.logic} ${item.field}<#if item.operator == "eq" >=<#elseif item.operator == "neq">!=<#elseif item.operator == "gte">>=<#elseif item.operator == 'lte'><=</#if>'${item.value}'</#if>
+ 	<#if item.field == "assigneeType">
+ 	<#if item.value == "1" >${item.logic} T1.ASSIGNEE = ${user.userId} <#elseif item.value  == "2" >${item.logic} T1.ASSIGNEE != ${user.userId} <#elseif item.value  == "3" >${item.logic} T1.ASSIGNEE < 1 </#if>
+ 	<#else>
+	<#if item.logic??>${item.logic}</#if> 
+ 	<#if item.operator == "doesnotcontain" > ${item.field} NOT IN ( ${item.value} ) 
+ 	<#elseif item.operator == "eq" > ${item.field} = '${item.value}'
+ 	<#elseif item.operator == "neq" > ${item.field} != '${item.value}'
+ 	<#elseif item.operator == "gte" > ${item.field} >= '${item.value}'
+ 	<#elseif item.operator == "lte" > ${item.field} <= '${item.value}' </#if>
+ 	</#if> 
  	</#if>
- 	</#list></#if>
+ 	</#list>
+ 	</#if>
 	<#if sort??  && ( sort?size > 0 ) > ORDER BY <#list sort as item > ${item.field} ${item.dir} </#list><#else>
 	ORDER BY T1.OBJECT_ID, T1.ISSUE_ID, T1.ISSUE_TYPE, T1.CREATION_DATE desc
 	</#if> 	
@@ -386,6 +412,7 @@
 	<sql-query name="SELECT_RESOLUTION_STATS_BY_PROJECT" description="SELECT_PROJECT_IDS"><![CDATA[    
 	SELECT RESOLUTION , COUNT ( ISSUE_ID ) AS CNT FROM REP_ISSUE 
 	WHERE OBJECT_TYPE = 19 AND OBJECT_ID = ?
+	AND RESOLUTION IS NOT NULL
 	GROUP BY ( RESOLUTION )
 	]]></sql-query>	 
 	    

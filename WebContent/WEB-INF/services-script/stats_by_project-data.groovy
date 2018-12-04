@@ -17,7 +17,7 @@ import architecture.community.query.CustomQueryService;
 import architecture.community.web.model.json.DataSourceRequest;
 import architecture.community.projects.stats.IssueCount;
 import architecture.community.projects.stats.IssueStateByProject;
-import architecture.ee.util.NumberUtils
+import architecture.ee.util.NumberUtils;
 
 public class StatsByProject extends architecture.community.web.spring.view.AbstractScriptDataView  {
 	
