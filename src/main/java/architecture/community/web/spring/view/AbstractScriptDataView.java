@@ -1,9 +1,11 @@
 package architecture.community.web.spring.view;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,6 +18,7 @@ import architecture.community.user.User;
 import architecture.community.user.UserManager;
 import architecture.community.user.UserNotFoundException;
 import architecture.community.util.SecurityHelper;
+import architecture.community.web.util.ServletUtils;
 
 public abstract class AbstractScriptDataView extends ScriptSupport implements DataView {
 
@@ -67,5 +70,12 @@ public abstract class AbstractScriptDataView extends ScriptSupport implements Da
  		return userManager.getUser(userId); 
 	}
 	
-
+	protected String toDateAsJsonValue (Map<String, Object> row, String key, String defaultValue) {
+		
+		String json = null;
+		Date date = (Date) row.get(key);
+		if( date != null )
+			json =  ServletUtils.getDataAsISO8601(date);
+		return StringUtils.defaultString(json, defaultValue);
+	}
 }

@@ -36,6 +36,12 @@ public class Task extends ModelObjectAwareSupport {
 	
 	private Date modifiedDate;
 	
+	public Task(int objectType, long objectId, Long taskId, String taskName) {
+		super(objectType, objectId);
+		this.taskId = taskId;
+		this.taskName = taskName;
+	}
+
 	public Task( ) {
 		this(-1, -1L);
 		this.taskId = -1L;

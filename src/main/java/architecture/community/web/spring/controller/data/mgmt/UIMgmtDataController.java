@@ -25,9 +25,9 @@ import architecture.community.security.spring.acls.CommunityAclService;
 import architecture.ee.service.ConfigService;
 
 /**
- * Data Controller for Web Management (Administrator)
- * Menu, Image, Attachment  
- * 
+ * Menu Data Controller for Web Management (Administrator)
+ *
+ *
  * @author donghyuck
  *
  */
@@ -59,7 +59,7 @@ public class UIMgmtDataController {
 	
 	
 	/** ----------------------------------
-	 * MENU ITEM PROPERTIED API
+	 * MENU ITEM PROPERTY API
 	 * ----------------------------------- **/
 	
 	@Secured({ "ROLE_ADMINISTRATOR" })

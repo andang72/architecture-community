@@ -1,19 +1,22 @@
 package architecture.community.web.util;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
+import org.springframework.core.io.Resource;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.web.servlet.support.RequestContext;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
@@ -58,12 +61,28 @@ public class ServletUtils {
 	 * @return
 	 */
 	public static String getReturnUrl(HttpServletRequest request, HttpServletResponse response) {
+		
 		RequestCache requestCache = new HttpSessionRequestCache();
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
 		if (savedRequest == null) {
 			return request.getSession().getServletContext().getContextPath();
-		}
+		} 
 		return savedRequest.getRedirectUrl();
+	}
+	
+	
+	public static String getResourceAsString(String location, String encoding, RequestContext context) {
+		 
+		
+		try {
+			Resource resource = context.getWebApplicationContext().getResource(location);
+			if( resource.exists() ) {
+				return FileUtils.readFileToString(resource.getFile(), StringUtils.defaultString(encoding, "UTF-8"));
+			}
+		} catch (IOException e) { 
+			e.printStackTrace();
+		}
+		return "";
 	}
 	
 	/**

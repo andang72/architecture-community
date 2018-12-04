@@ -19,8 +19,7 @@ private static Logger log = LoggerFactory.getLogger(NumberFormatTest.class);
 			String text = "0521.xls";
 			
 			enc = Base64.encodeBase64String(text.getBytes());
-			
-			
+
 			/* 
 			http://www.q-net.or.kr/obSearchMain.jsp?q=%C0%CE%C5%CD%B3%DD&w=qual_info&gSite=Q&gId=07
 			*/	

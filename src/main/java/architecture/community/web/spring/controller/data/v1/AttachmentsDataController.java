@@ -93,6 +93,7 @@ public class AttachmentsDataController {
 		    InputStream is = mpf.getInputStream();
 		    log.debug("upload - file:{}, size:{}, type:{} ", mpf.getOriginalFilename(), mpf.getSize() , mpf.getContentType() );
 		    Attachment attachment = attachmentService.createAttachment(objectType, objectId, mpf.getOriginalFilename(), mpf.getContentType(), is, (int) mpf.getSize());
+		    
 		    attachmentService.saveAttachment(attachment);
 		    list.add(attachment);
 		}			

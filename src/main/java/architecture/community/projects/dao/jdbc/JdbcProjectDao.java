@@ -601,6 +601,7 @@ public class JdbcProjectDao extends ExtendedJdbcDaoSupport implements ProjectDao
 			issue.setDueDate(rs.getDate("DUE_DATE"));			
 			issue.setCreationDate(rs.getDate("CREATION_DATE"));
 			issue.setModifiedDate(rs.getDate("MODIFIED_DATE"));		
+			issue.setTask(new Task(Models.PROJECT.getObjectType(), rs.getLong("PROJECT_ID"), rs.getLong("TASK_ID"), rs.getString("TASK_NAME")));
 			return issue;
 		}		
 	};

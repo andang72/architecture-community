@@ -48,9 +48,19 @@ public class IssueSummary implements Serializable {
 	private Date modifiedDate;
 
 	private Date resolutionDate;
+	
+	private Task task;
 
 	public IssueSummary(Long issueId) {
 		this.issueId = issueId;
+	}
+
+	public Task getTask() {
+		return task;
+	}
+
+	public void setTask(Task task) {
+		this.task = task;
 	}
 
 	public String getSummary() {
